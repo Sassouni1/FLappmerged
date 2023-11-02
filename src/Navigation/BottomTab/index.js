@@ -1,0 +1,139 @@
+import React from 'react';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import FontAwesome6  from 'react-native-vector-icons/FontAwesome6';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import Entypo from 'react-native-vector-icons/Entypo';
+import Foundation from 'react-native-vector-icons/Foundation';
+import {getHeight} from '../../../utils/ResponsiveFun';
+import WorkOut from '../../Screens/Workouts/WorkOut';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import Profile from '../../Screens/Myprofile';
+import Message from '../../Screens/Message';
+import Groups from '../../Screens/Group/Groups';
+import HomeSc from '../../Screens/HomeSc';
+import ConversationScreen from '../../Screens/Message/conversation';
+import Activity from '../../Screens/Activity';
+import Excercises from '../../Screens/Excersises';
+import Skills from '../../Screens/Skills';
+import Messages from '../../Screens/Messages';
+
+const Tab = createBottomTabNavigator();
+
+export default function BottomTab() {
+  return (
+    <Tab.Navigator
+
+      tabBarOptions={{
+        activeTintColor: '#F79300',
+        inactiveTintColor: 'white',
+        
+     }}
+      screenOptions={{
+        tabBarStyle: {
+          headerShown: false,
+          backgroundColor:'#0B0B0D',
+        },
+      }}
+      options={{headerShown: false}}
+   
+      >
+        <Tab.Screen
+        name="Home"
+        
+        component={HomeSc}
+        options={{
+          headerShown: false,
+
+          title: 'Home',
+          tabBarIcon: ({focused, color, size}) => (
+            <Foundation
+              name="home"
+              size={25}
+              color={focused ? '#F79300' : 'white'}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Workouts"
+        component={WorkOut}
+        options={{
+          headerShown: false,
+
+          title: 'Workouts',
+          tabBarIcon: ({focused, color, size}) => (
+            <Entypo
+            name="man"
+            size={25}
+            color={focused ? '#F79300' : 'white'}
+          />
+          ),
+        }}
+      />
+        <Tab.Screen
+        name="Skills"
+        component={Skills}
+        options={{
+          headerShown: false,
+
+          title: 'Skills',
+          tabBarIcon: ({focused, color, size}) => (
+            <FontAwesome5
+            name="hand-rock"
+            size={25}
+            color={focused ? '#F79300' : 'white'}
+          />
+          ),
+        }}
+      />
+        <Tab.Screen
+        name="Exercises"
+        component={Excercises}
+        options={{
+          headerShown: false,
+
+          title: 'Exercises',
+          tabBarIcon: ({focused, color, size}) => (
+            <FontAwesome6
+            name="bolt-lightning"
+            size={25}
+            color={focused ? '#F79300' : 'white'}
+          />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Messages"
+        component={Messages}
+        options={{
+          headerShown: false,
+          title: 'Messages',
+          tabBarIcon: ({focused, color, size}) => (
+            <Entypo
+            name="message"
+            size={25}
+            color={focused ? '#F79300' : 'white'}
+          />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Activity"
+        component={Activity}
+        tabBarOptions={{}}
+        options={{
+          headerShown: false,
+          title: 'Activity',
+          tabBarIcon: ({focused, color, size}) => (
+            <MaterialIcons
+            name="bar-chart"
+            size={25}
+            color={focused ? '#F79300' : 'white'}
+          />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
