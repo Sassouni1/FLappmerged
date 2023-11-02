@@ -1,10 +1,11 @@
 import {StyleSheet} from 'react-native';
 import {getFontSize, getHeight, getWidth} from '../../../utils/ResponsiveFun';
+import { colors } from '../../constants/colors';
 
 export const styles = StyleSheet.create({
   contaner: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.primary,
   },
 
   headerDivider: {

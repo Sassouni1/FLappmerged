@@ -1,11 +1,10 @@
-import {View, Text, TextInput,StyleSheet} from 'react-native';
+import {View, Text, TextInput,StyleSheet, TouchableOpacity} from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
-import {GernalStyle} from '../../constants/GernalStyle';
-import {colors} from '../../constants/colors';
-import {fonts} from '../../constants/fonts';
-
+import { GernalStyle } from '../../constants/GernalStyle';
+import { colors } from '../../constants/colors';
+import Header from '../../Components/Header';
 import GeneralStatusBar from '../../Components/GeneralStatusBar';
-import {getFontSize, getHeight, getWidth} from '../../../utils/ResponsiveFun';
+import { getFontSize,getHeight,getWidth } from '../../../utils/ResponsiveFun';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Button from '../../Components/Button';
 import { useNavigation } from '@react-navigation/native';
@@ -15,6 +14,7 @@ import { styles } from './styles';
 import { ApiCall } from '../../Services/Apis';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoader } from '../../Redux/actions/GernalActions';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
 const ContactUs = () => {
@@ -94,14 +94,26 @@ const ContactUs = () => {
   }, []);
 
   return (
-    <View style={{...GernalStyle.container, backgroundColor: colors.homeColor}}>
+    <View style={{...GernalStyle.continer, backgroundColor: colors.homeColor}}>
       <GeneralStatusBar
         barStyle="light-content"
         hidden={false}
         backgroundColor={colors.primary}
         translucent={true}
       />
-      {/* <AppHeader heading={'Contact us'} onPress={openDrawer} backAngel={false}/> */}
+      <Header
+      title={'Contact us'}
+      LeftIcon={
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons
+            style={{alignSelf: 'center', marginRight: getWidth(2)}}
+            name={'arrow-back'}
+            size={25}
+            color={'#ffff'}
+          />
+        </TouchableOpacity>
+      }
+    />
       <KeyboardAwareScrollView showsVerticalScrollIndicator={false} >
         <TextInput
           placeholder="Full Name"
@@ -230,8 +242,8 @@ const ContactUs = () => {
         </Text>
       </KeyboardAwareScrollView>
       <Button
-        buttonText={'Submit'}
-        style={{position: 'absolute', bottom: getHeight(4)}}
+        text={'Submit'}
+        btnStyle={{position: 'absolute', bottom: getHeight(4),width:getWidth(90),height:getHeight(6),justifyContent:"center",alignItems:"center",margin:getFontSize(2)}}
         onPress={()=>ContectToUser()}
       />
     </View>

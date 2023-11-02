@@ -7,29 +7,28 @@ import Payment from '../../Screens/PaymentMethod';
 import ContactUs from '../../Screens/ContactUs';
 import Profile from '../../Screens/Myprofile';
 import Message from '../../Screens/Message';
-import DayWorkOuts from '../../Screens/Workouts/DayWorkOuts';
-import WarmSession from '../../Screens/Workouts/WarmSession';
+// import WarmSession from '../../Screens/Workouts/WarmSession';
 import UpdateProfiles from '../../Screens/UpdateProfile';
 import Equipments from '../../Screens/Equipment/Equipments';
 import EquipmentDetails from '../../Screens/Equipment/EquipmentDetails';
 import AddNewEquipments from '../../Screens/Equipment/AddNewEquipments';
-import Fastpacedwalking from '../../Screens/Workouts/Fastpacedwalking';
-import Fastpacedwalking1 from '../../Screens/Workouts/Fastpacedwalking1';
+// import Fastpacedwalking from '../../Screens/Workouts/Fastpacedwalking';
+// import Fastpacedwalking1 from '../../Screens/Workouts/Fastpacedwalking1';
 import CoachSubscription from '../../Screens/Equipment/CoachSubscription';
 import GroupsName from '../../Screens/Group/GroupsName';
 import SelectedGroup from '../../Screens/Group/SelectedGroup';
 import GroupDayWorkOuts from '../../Screens/Group/GroupDayWorkouts';
 import WarmUpSession from '../../Screens/Group/Warmupsession';
-import WorkoutDetail from '../../Screens/Group/WorkoutDetail';
-import WorkoutDetail1 from '../../Screens/Group/WorkoutDetail1';
+// import WorkoutDetail from '../../Screens/Group/WorkoutDetail';
+// import WorkoutDetail1 from '../../Screens/Group/WorkoutDetail1';
 import EditEquipment from '../../Screens/Equipment/EditEquipment';
-import PastDayWorkouts from '../../Screens/Workouts/PastDayWorkouts';
+// import PastDayWorkouts from '../../Screens/Workouts/PastDayWorkouts';
 import ConversationScreen from '../../Screens/Message/conversation';
-import TodaysProgress from '../../Screens/Workouts/TodaysProgress';
+// import TodaysProgress from '../../Screens/Workouts/TodaysProgress';
 import OTP from '../../Screens/Auth/OTP';
-import RelaxDay from '../../Screens/Workouts/Relaxday';
-import CompletedTask from '../../Screens/Workouts/completedTask';
-import EditedWorkout from '../../Screens/Workouts/EditedWorkout';
+// import RelaxDay from '../../Screens/Workouts/Relaxday';
+// import CompletedTask from '../../Screens/Workouts/completedTask';
+// import EditedWorkout from '../../Screens/Workouts/EditedWorkout';
 import Sleepquality from '../../Screens/SurveyScreen/Sleepquality';
 import Mood from '../../Screens/SurveyScreen/Mood';
 import Energy from '../../Screens/SurveyScreen/Energy';
@@ -40,6 +39,14 @@ import ChangePassword from '../../Screens/ChangePassword';
 import AddCard from '../../Screens/AddCard';
 import VideoSkills from '../../Screens/Skills/Video';
 import AppCommunity from '../../Screens/Messages/AppCommunity';
+import WorkoutHistory from '../../Screens/Workouts/WorkoutHistory';
+import WorkoutSet from '../../Screens/Workouts/WorkoutSet';
+import WorkoutSucessfully from '../../Screens/Workouts/WorkoutSuccessfully';
+import ViewProgram from '../../Screens/Workouts/ViewProgram';
+import StartWorkout from '../../Screens/StartWorkout';
+import PrivacyPolicy from '../../Screens/PrivacyPolicy';
+
+
 const stack = createNativeStackNavigator();
 const HomeStack = () => {
   const user = useSelector(state => state.auth.userData);
@@ -89,7 +96,7 @@ const HomeStack = () => {
         name="AppCommunity"
         component={AppCommunity}
       />
-      <stack.Screen
+      {/* <stack.Screen
         options={{
           headerShown: false,
         }}
@@ -102,7 +109,7 @@ const HomeStack = () => {
         }}
         name="PastDayWorkouts"
         component={PastDayWorkouts}
-      />
+      /> */}
       <stack.Screen
         options={{
           headerShown: false,
@@ -110,13 +117,13 @@ const HomeStack = () => {
         name="ConversationScreen"
         component={ConversationScreen}
       />
-      <stack.Screen
+      {/* <stack.Screen
         options={{
           headerShown: false,
         }}
         name="WarmSession"
         component={WarmSession}
-      />
+      /> */}
 
       <stack.Screen
         options={{
@@ -166,7 +173,7 @@ const HomeStack = () => {
         name="AddCard"
         component={AddCard}
       />
-      <stack.Screen
+      {/* <stack.Screen
         options={{
           headerShown: false,
         }}
@@ -179,7 +186,7 @@ const HomeStack = () => {
         }}
         name="Fastpacedwalking1"
         component={Fastpacedwalking1}
-      />
+      /> */}
       <stack.Screen
         options={{
           headerShown: false,
@@ -215,20 +222,20 @@ const HomeStack = () => {
         name="WarmUpSession"
         component={WarmUpSession}
       />
-      <stack.Screen
+      {/* <stack.Screen
         options={{
           headerShown: false,
         }}
         name="WorkoutDetail"
         component={WorkoutDetail}
-      />
-      <stack.Screen
+      /> */}
+      {/* <stack.Screen
         options={{
           headerShown: false,
         }}
         name="WorkoutDetail1"
         component={WorkoutDetail1}
-      />
+      /> */}
       <stack.Screen
         options={{
           headerShown: false,
@@ -236,7 +243,42 @@ const HomeStack = () => {
         name="EditEquipment"
         component={EditEquipment}
       />
-      <stack.Screen
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="WorkoutHistory"
+        component={WorkoutHistory}
+      />
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="WorkoutSet"
+        component={WorkoutSet}
+      />
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="WorkoutSucessfully"
+        component={WorkoutSucessfully}
+      />
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="ViewProgram"
+        component={ViewProgram}
+      />
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="StartWorkout"
+        component={StartWorkout}
+      />
+      {/* <stack.Screen
         options={{
           headerShown: false,
         }}
@@ -263,7 +305,7 @@ const HomeStack = () => {
         }}
         name="EditedWorkout"
         component={EditedWorkout}
-      />
+      /> */}
       <stack.Screen
         options={{
           headerShown: false,
@@ -277,6 +319,13 @@ const HomeStack = () => {
         }}
         name="Mood"
         component={Mood}
+      />
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="PrivacyPolicy"
+        component={PrivacyPolicy}
       />
       <stack.Screen
         options={{

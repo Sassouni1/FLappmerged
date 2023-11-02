@@ -1,5 +1,7 @@
 import {StyleSheet} from 'react-native';
 import {getFontSize, getHeight, getWidth} from '../../utils/ResponsiveFun';
+import { colors } from './colors';
+import { fonts } from './fonts';
 
 export const GernalStyle = StyleSheet.create({
   continer: {
@@ -42,5 +44,17 @@ export const GernalStyle = StyleSheet.create({
     marginLeft: 10,
     marginTop: 3,
     // marginBottom: 2,
+  },
+  textinput:{
+    marginTop: getHeight(2.5),
+    backgroundColor: colors.secondary,
+    width: getWidth(93),
+    height:getHeight(7),
+    borderRadius:5,
+    paddingLeft:getHeight(3.5),
+    alignSelf:"center",
+    fontFamily:fonts.URe,
+    fontSize:getFontSize(1.9),
+    color:colors.graytext4
   },
 });

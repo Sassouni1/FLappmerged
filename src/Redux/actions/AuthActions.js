@@ -43,3 +43,7 @@ export const setSingleUser = data => (
     data,
   }
 );
+export const Assprogram = data => ({
+  type: ACTIONS.ASSIGNED_PROGRAM,
+  data,
+});

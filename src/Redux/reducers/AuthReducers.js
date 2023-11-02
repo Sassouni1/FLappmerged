@@ -4,6 +4,7 @@ const initialState = {
   userToken: null,
   FirstTime: true,
   userData: null,
+  assprogram: null
 };
 
 const authReducer = (state = initialState, action) => {
@@ -38,6 +39,11 @@ const authReducer = (state = initialState, action) => {
         ...state,
         FirstTime: false,
       };
+      case ACTIONS.ASSIGNED_PROGRAM:
+        return{
+          ...state,
+          assprogram:action.data,
+        }
     default:
       return state;
   }

@@ -22,6 +22,7 @@ import {ApiCall} from '../../Services/Apis';
 import GeneralStatusBar from '../../Components/GeneralStatusBar';
 import Header from '../../Components/Header';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { colors } from '../../constants/colors';
 const ChangePassword = ({navigation}) => {
   const dispatch = useDispatch();
   const inputRefs = {
@@ -93,10 +94,10 @@ const ChangePassword = ({navigation}) => {
        <GeneralStatusBar
       barStyle="dark-content"
       hidden={false}
-      backgroundColor="white"
+      backgroundColor={colors.primary}
       translucent={true}
     />
-    <View style={{backgroundColor:'white'}}>
+    <View style={{backgroundColor:colors.primary}}>
    
     <Header
       title={'Change Password'}
@@ -106,7 +107,7 @@ const ChangePassword = ({navigation}) => {
             style={{alignSelf: 'center', marginRight: getWidth(2)}}
             name={'arrow-back'}
             size={25}
-            color={'#182d4a'}
+            color={'#ffff'}
           />
         </TouchableOpacity>
       }

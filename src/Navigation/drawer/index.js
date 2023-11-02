@@ -19,7 +19,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {useNavigation} from '@react-navigation/native';
-import WorkOut from '../../Screens/Workouts/WorkOut';
+// import WorkOut from '../../Screens/Workouts/WorkOut';
 import Message from '../../Screens/Message';
 import {logout} from '../../Redux/actions/AuthActions';
 import ConversationScreen from '../../Screens/Message/conversation';
@@ -122,7 +122,7 @@ function CustomDrawerContent(props) {
           label={'Privacy Policy'}
         labelStyle={{fontFamily:'Ubuntu-Bold'}}
     
-          onPress={() => dispatch(logout())}
+          onPress={() => navigation.navigate('PrivacyPolicy')}
           inactiveTintColor={'#7B7A7A'}
           activeTintColor={'#7B7A7A'}
           labelStyle={{color: '#7B7A7A'}}
@@ -133,7 +133,7 @@ function CustomDrawerContent(props) {
 <DrawerItem
           label={'Term of Use'}
         labelStyle={{fontFamily:'Ubuntu-Bold'}}
-          onPress={() => dispatch(logout())}
+        //  onPress={() => dispatch(logout())}
      
 
           inactiveTintColor={'#7B7A7A'}
@@ -146,7 +146,7 @@ function CustomDrawerContent(props) {
 <DrawerItem
           label={'About this app'}
         labelStyle={{fontFamily:'Ubuntu-Bold'}}
-          onPress={() => dispatch(logout())}
+         // onPress={() => dispatch(logout())}
           inactiveTintColor={'#7B7A7A'}
           activeTintColor={'#7B7A7A'}
           labelStyle={{color: '#7B7A7A'}}

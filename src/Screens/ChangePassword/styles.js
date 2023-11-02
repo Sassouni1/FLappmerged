@@ -1,10 +1,12 @@
 import {StyleSheet} from 'react-native';
 import {getFontSize, getHeight, getWidth} from '../../../utils/ResponsiveFun';
+import { colors } from '../../constants/colors';
 
 export const styles = StyleSheet.create({
   contaner: {
     justifyContent: 'space-between',
     flex: 1,
+    backgroundColor:colors.primary
   },
   accounttext: {
     color: '#ffffff',

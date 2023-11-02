@@ -28,6 +28,7 @@ import SimpleToast from 'react-native-simple-toast';
 import {ApiCall} from '../../Services/Apis';
 import {getSingleUser} from '../../Redux/actions/AuthActions';
 import { BASE_URL } from '../../Services/Constants';
+import { colors } from '../../constants/colors';
 const UpdateProfiles = ({navigation}) => {
   const [pickerModalVisibile, setPickerModalVisibile] = useState(false);
   const user = useSelector(state => state.auth.userData);
@@ -254,7 +255,7 @@ lastNameError,
       <GeneralStatusBar
         barStyle="dark-content"
         hidden={false}
-        backgroundColor="white"
+        backgroundColor={colors.primary}
         translucent={true}
       />
       <Header
@@ -265,7 +266,7 @@ lastNameError,
               style={{alignSelf: 'center', marginRight: getWidth(2)}}
               name={'arrow-back'}
               size={25}
-              color={'#182d4a'}
+              color={'#ffff'}
             />
           </TouchableOpacity>
         }

@@ -5,7 +5,6 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Foundation from 'react-native-vector-icons/Foundation';
 import {getHeight} from '../../../utils/ResponsiveFun';
-import WorkOut from '../../Screens/Workouts/WorkOut';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Profile from '../../Screens/Myprofile';
 import Message from '../../Screens/Message';
@@ -16,6 +15,7 @@ import Activity from '../../Screens/Activity';
 import Excercises from '../../Screens/Excersises';
 import Skills from '../../Screens/Skills';
 import Messages from '../../Screens/Messages';
+import Workouts from '../../Screens/Workouts';
 
 const Tab = createBottomTabNavigator();
 
@@ -56,7 +56,7 @@ export default function BottomTab() {
       />
       <Tab.Screen
         name="Workouts"
-        component={WorkOut}
+        component={Workouts}
         options={{
           headerShown: false,
 
