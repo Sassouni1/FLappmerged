@@ -30,15 +30,12 @@ const Messages = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [users, setAllUser] = useState([]);
-  const openDrawer = () => {
-    navigation.openDrawer();
-  };
+
   const token = useSelector(state => state.auth.userToken);
   const user = useSelector(state => state.auth.userData);
   console.log('user',user)
 
   const ChatroomUser = async () => {
-    dispatch(setLoader(true))
     try {
       const res = await ApiCall({
         params: {category_name: 'skill'},
@@ -47,22 +44,21 @@ const Messages = () => {
         token: token,
       });
 
-      console.log('chatrooms id for all chat', res?.response?.chatrooms);
+
       if (res?.status == '200') {
-        const chatroom = res?.response?.chatrooms;
-
-        const users = chatroom?.map(chatroom => chatroom?.user);
-
-        console.log('users ', users);
-        setAllUser(users);
-        // console.log('workout',res?.response?.detail)
-
-        // setData(res?.response?.detail)
-        // setProgram(res?.response?.detail?.workouts);
+        const chatroom = res?.response?.chatrooms.map(
+          ({sender: user, message: text, ...rest}) => ({
+            user,
+            text,
+            ...rest,
+          }),
+        );
+ console.log('chat Romms',chatroom)
+        
+        setAllUser( res?.response?.chatrooms);
+       
         dispatch(setLoader(false));
-        // navigation.goBack();
-
-        // navigation.navigate('HomeScreen');
+ 
       } else {
         dispatch(setLoader(false));
 
@@ -71,10 +67,12 @@ const Messages = () => {
         ]);
       }
     } catch (e) {
-      console.log('api get skill error -- ', e.toString());
+      console.log('api get chatrooms error -- ', e.toString());
     }
   };
   useEffect(() => {
+    dispatch(setLoader(true))
+
     ChatroomUser();
   }, []);
   const HeadingText = ({style, buttontext}) => {
@@ -131,7 +129,7 @@ const Messages = () => {
             <View style={{...styles.logoCon, marginLeft: getWidth(4)}}>
               <Text style={styles.logotext}>logo</Text>
             </View>
-            <TouchableOpacity onPress={() => navigation.navigate('ConversationScreen',{channelId:user.groupChatId, channelName:'DaruStrong', reciver:{}, sender:user, chatRoomType:'App'})}>
+            <TouchableOpacity onPress={() => navigation.navigate('ConversationScreen',{channelId:user.chatroomId, channelName:'DaruStrong', reciver:{}, sender:user, chatRoomType:'chat'})}>
               <View style={styles.userCon}>
                 <Text style={styles.username}>DaruStrong</Text>
                 <Text style={styles.time}>11:40 AM</Text>
@@ -145,7 +143,7 @@ const Messages = () => {
       </View>
       <HeadingText buttontext={'Community'} style={{marginTop: getHeight(0)}} />
       <ChatUser
-        onPress={() => navigation.navigate('ConversationScreen',{channelId:user.groupChatId, channelName:'DaruStrong', reciver:{}, sender:user, chatRoomType:'App'})}
+        onPress={() => navigation.navigate('ConversationScreen',{channelId:user.groupChatId, channelName:'App Community', reciver:{}, sender:user, chatRoomType:'groupChat'})}
         userImg={<ChatUser1 height={30} width={30} />}
         userName={'App Community'}
         lastmsg={
@@ -157,14 +155,16 @@ const Messages = () => {
         <FlatList
           data={users}
           showsVerticalScrollIndicator={false}
+          refreshing={false}
+          onRefresh={()=>ChatroomUser()}
           ListFooterComponent={() => <View style={{height: getHeight(4)}} />}
           renderItem={({item}) => {
-            // console.log('item,',item)
+           console.log('item',item)
             return (
               <View style={{...styles.chatCon, height: getHeight(11)}}>
                 <TouchableOpacity
                   onPress={() =>
-                    navigation.navigate('ConversationScreen',{channelId:user.groupChatId, channelName:'DaruStrong', reciver:{}, sender:user, chatRoomType:'App'})
+                    navigation.navigate('ConversationScreen',{channelId:item._id, channelName:user?._id==item?.user?._id?item?.customer?.full_name:item?.user?.full_name, reciver:user?._id==item?.user?._id?item?.customer:item?.user, sender:user?._id==item?.user?._id?item?.user:item?.customer, chatRoomType:'chat'})
                   }
                   style={{...styles.row, marginTop: 5}}>
                   <View
@@ -174,25 +174,28 @@ const Messages = () => {
                       marginTop: 5,
                       backgroundColor: colors.gray8,
                     }}>
-                    {item?.profile_image == '' ? (
+                    {item?.customer?.profile_image == '' ? (
                       <UserChat3 height={60} width={60} />
                     ) : (
                       <Image
                         resizeMode="contain"
                         style={{height: 60, width: 60, borderRadius: 30}}
-                        source={{uri: item?.profile_image}}
+                        source={{uri: item?.customer?.profile_image}}
                       />
                     )}
                   </View>
                   <View>
                     <View style={styles.userCon}>
-                      <Text style={styles.username}>{item?.full_name}</Text>
+                      <Text style={styles.username}>{user?._id==item?.user?._id?item?.customer?.full_name:item?.user?.full_name}</Text>
                       <Text style={styles.time}>
-                        {item?.createdAt.slice(11, 19)}
+                    
+                      {item?.messages.length>0?new Date(item?.messages[item?.messages.length-1].date).toLocaleTimeString():null}
+
                       </Text>
                     </View>
                     <Text style={styles.lastmsg}>
-                      It will help you in anyway. Trust me.
+                    
+                      {item?.messages.length>0?item?.messages[item?.messages.length-1].sender==user?._id?'you:'+item?.messages[item?.messages.length-1].message:item?.customer?.full_name+':'+item?.messages[item?.messages.length-1].message:'Tap there and start conversation'}
                     </Text>
                   </View>
                 </TouchableOpacity>

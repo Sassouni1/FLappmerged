@@ -31,16 +31,10 @@ const AllMember = () => {
         // console.log('arra',arr)
         if (res?.status == '200') {
           console.log('Create chat box___', res?.response?.detail);
-          // setId(res?.response?.detail?._id)
-          // setAllUser(res?.response?.users)
-          // console.log('workout',res?.response?.detail)
-  
-          // setData(res?.response?.detail)
-          // setProgram(res?.response?.detail?.workouts);
+       
           dispatch(setLoader(false));
-          // navigation.goBack();
-  
-          // navigation.navigate('HomeScreen');
+          navigation.goBack();
+
         } else {
           dispatch(setLoader(false));
   
@@ -129,7 +123,8 @@ const getAllUser = async () => {
             <Pressable 
             onPress={()=>{
               createChatBox(item)
-              navigation.navigate('ChatRoom',{selectedUser:item})}} 
+        
+            }} 
             style={{flexDirection:"row",alignItems:"center",marginTop:getHeight(1.5)}}>
                 <Image
                 resizeMode='contain'

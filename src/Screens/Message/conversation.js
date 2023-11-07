@@ -61,12 +61,22 @@ const ConversationScreen = ({navigation, route}) => {
   const sendChat = async sms => {
     console.log('socket emit sms', sms);
    const date=new Date()
+   if(chatRoomType=='groupChat'){
     socket.emit('group-chat', {
       text: sms,
       groupChatId: channelId,
       senderId: sender?._id,
       date: date,
     });
+  }else if(chatRoomType=='chat'){
+    
+    socket.emit('chat', {
+      text: sms,
+      chatroomId: channelId,
+      senderId: sender?._id,
+      date: date,
+    });
+  }
   
     setSms('');
   };
@@ -83,17 +93,32 @@ const UploadFile = async () => {
       Platform.OS === 'ios' ? res.uri.replace('file://', '') : res.uri;
     const Base64 = await fs.readFile(uri, 'base64');
 
-    socket.emit(
-      'mob-upload-groupchat',
-      Base64,
-      res?.name,
-      res?.type,
-      sender?._id,
-      channelId,
-      status => {
-        console.log('file...', status);
-      },
-    );
+    if(chatRoomType=='groupChat'){
+      socket.emit(
+        'mob-upload-groupchat',
+        Base64,
+        res?.name,
+        res?.type,
+        sender?._id,
+        channelId,
+        status => {
+          console.log('file...', status);
+        },
+      );
+    }else if(chatRoomType=='chat'){
+      socket.emit(
+        'mob-upload',
+        Base64,
+        res?.name,
+        res?.type,
+        sender?._id,
+        channelId,
+        status => {
+          console.log('file...', status);
+        },
+      );
+    }
+   
   } catch (err) {
     console.log('ERROR is ', err);
     if (DocumentPicker.isCancel(err)) {
@@ -122,18 +147,32 @@ const uploadFromCamera = async () => {
   };
 
   setPickerModalVisibile(false);
-
-  socket.emit(
-    'mob-upload-groupchat',
-    Base64,
-    imageObject?.name,
-    imageObject?.type,
-    sender?._id,
-    channelId,
-    status => {
-      console.log('image', status);
-    },
-  );
+  if(chatRoomType=='groupChat'){
+    socket.emit(
+      'mob-upload-groupchat',
+      Base64,
+      imageObject?.name,
+      imageObject?.type,
+      sender?._id,
+      channelId,
+      status => {
+        console.log('image', status);
+      },
+    );
+  }else if(chatRoomType=='chat'){
+    socket.emit(
+      'mob-upload',
+      Base64,
+      imageObject?.name,
+      imageObject?.type,
+      sender?._id,
+      channelId,
+      status => {
+        console.log('image', status);
+      },
+    );
+  }
+  
 };
 
 // upload from gallery
@@ -159,30 +198,58 @@ const uploadFromGallry = async () => {
  
   setPickerModalVisibile(false);
   console.log('started');
-
-  socket.emit(
-    'mob-upload-groupchat',
-    Base64,
-    //imageObject?.uri,
-    imageObject?.name,
-    imageObject?.type,
-    sender?._id,
-    channelId,
-    status => {
-      console.log('image', status);
-    },
-  );
+  if(chatRoomType=='groupChat'){
+    socket.emit(
+      'mob-upload-groupchat',
+      Base64,
+      //imageObject?.uri,
+      imageObject?.name,
+      imageObject?.type,
+      sender?._id,
+      channelId,
+      status => {
+        console.log('image', status);
+      },
+    );
+  }else if(chatRoomType=='chat'){
+    socket.emit(
+      'mob-upload',
+      Base64,
+      //imageObject?.uri,
+      imageObject?.name,
+      imageObject?.type,
+      sender?._id,
+      channelId,
+      status => {
+        console.log('image', status);
+      },
+    );
+  }
+ 
   console.log('image end');
 };
 
   const getAllSms = async item => {
     try {
       dispatch(setLoader(true));
-      const res = await ApiCall({
-        route: `groupChat/group_chat_detail/${channelId}`,
-        verb: 'get',
-        token: token,
-      });
+let res=null;
+      if(chatRoomType=='groupChat'){
+         res = await ApiCall({
+          route: `groupChat/group_chat_detail/${channelId}`,
+          verb: 'get',
+          token: token,
+        });
+      
+      }else if(chatRoomType=='chat'){
+         res = await ApiCall({
+      
+          route: `chat/chat_detail/${channelId}`,
+          verb: 'get',
+          token: token,
+        });
+      }
+
+     
       if (res?.status == '200') {
         dispatch(setLoader(false));
         console.log('item', res);
@@ -196,7 +263,7 @@ const uploadFromGallry = async () => {
         );
         dispatch(setAllSms(newArrayOfObj));
       } else {
-        console.log('error', res?.response);
+        console.log('error', res);
         dispatch(setLoader(false));
       }
     } catch (e) {
@@ -213,7 +280,39 @@ const uploadFromGallry = async () => {
       senderId: sender?._id,
       chatroomId: channelId,
     });
-    socket.on('group-chat', payload => {
+    if(chatRoomType=='groupChat'){
+     
+      socket.on('group-chat', payload => {
+        console.log('payload there', payload);
+  
+        const newArray = [payload].map(item =>
+          item?.sender == sender?._id
+            ? {
+                PdfFile: IMAGE_URL  + item?.file?.url,
+                fileType: item?.file?.file_type,
+                user: sender,
+                reciver: reciver,
+                text: item?.message,
+                createdAt: item?.date,
+                _id: item?._id,
+              }
+            : {
+                PdfFile: IMAGE_URL  + item?.file?.url,
+                fileType: item?.file?.file_type,
+                user: reciver,
+                reciver: sender,
+                text: item?.message,
+                createdAt: item?.date,
+                _id: item?._id,
+              },
+        );
+        setMessages(previousMessages =>
+          GiftedChat.append(previousMessages, newArray),
+        );
+      });
+   
+   }else if(chatRoomType=='chat'){
+    socket.on('chat', payload => {
       console.log('payload there', payload);
 
       const newArray = [payload].map(item =>
@@ -241,6 +340,8 @@ const uploadFromGallry = async () => {
         GiftedChat.append(previousMessages, newArray),
       );
     });
+   }
+    
 
     return () => {
       dispatch(setAllSms([]));
