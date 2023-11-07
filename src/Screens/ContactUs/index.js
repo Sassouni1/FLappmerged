@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setLoader } from '../../Redux/actions/GernalActions';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import HeaderBottom from '../../Components/HeaderBottom';
+import Toast from "react-native-simple-toast";
 
 
 const ContactUs = () => {
@@ -62,7 +63,9 @@ const ContactUs = () => {
             if (res?.status == '200') {
     
             console.log('res,',res)
+            
               dispatch(setLoader(false));
+              Toast.show(res?.response?.message)
               navigation.goBack();
 
               // navigation.navigate('HomeScreen');
@@ -110,7 +113,7 @@ const ContactUs = () => {
             name={'arrow-back'}
             size={25}
             color={'#ffff'}
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.openDrawer()}
           />
       }
       RightIcon={<View/>}

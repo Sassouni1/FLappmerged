@@ -26,10 +26,10 @@ export const styles = StyleSheet.create({
   stxt: {
     color: 'white',
     marginLeft:getWidth(5),
-    marginTop:getHeight(3),
-    fontSize: 12,
+    marginTop:getHeight(5),
+    fontSize: getFontSize(1.7),
     // textAlign: 'justify',
-    lineHeight: 19,
+    lineHeight: 20,
     fontFamily: 'Ubuntu-Bold',
     width: getWidth(70),
     paddingBottom: getHeight(1),

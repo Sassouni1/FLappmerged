@@ -72,7 +72,7 @@ const AllMember = () => {
       });
 
       if (res?.status == "200") {
-        console.log("workout", res?.response?.users);
+        console.log("single meber data", res?.response?.users);
         setAllUser(res?.response?.users);
         // console.log('workout',res?.response?.detail)
 

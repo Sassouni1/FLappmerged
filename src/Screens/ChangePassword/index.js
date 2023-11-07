@@ -137,10 +137,10 @@ const ChangePassword = ({ navigation }) => {
             label={
               <Text style={GernalStyle.inputLabelStyle}>Old password</Text>
             }
-            theme={{ roundness: 15 }}
+            theme={{ roundness: getFontSize(0.5) }}
             outlineColor="#BDC3C4"
-            activeUnderlineColor="#182d4a"
-            activeOutlineColor="#182d4a"
+            activeUnderlineColor="#BDC3C4"
+            activeOutlineColor="#BDC3C4"
             style={GernalStyle.input}
             ref={inputRefs.oldPassword}
             value={state.oldPassword}
@@ -182,10 +182,10 @@ const ChangePassword = ({ navigation }) => {
             label={
               <Text style={GernalStyle.inputLabelStyle}>New password</Text>
             }
-            theme={{ roundness: 15 }}
+            theme={{ roundness:  getFontSize(0.5) }}
             outlineColor="#BDC3C4"
-            activeUnderlineColor="#182d4a"
-            activeOutlineColor="#182d4a"
+            activeUnderlineColor="#BDC3C4"
+            activeOutlineColor="#BDC3C4"
             style={GernalStyle.input}
             ref={inputRefs.newPassword}
             value={state.newPassword}
@@ -228,10 +228,10 @@ const ChangePassword = ({ navigation }) => {
             label={
               <Text style={GernalStyle.inputLabelStyle}>Confirm password</Text>
             }
-            theme={{ roundness: 15 }}
+            theme={{ roundness:  getFontSize(0.5) }}
             outlineColor="#BDC3C4"
-            activeUnderlineColor="#182d4a"
-            activeOutlineColor="#182d4a"
+            activeUnderlineColor="#BDC3C4"
+            activeOutlineColor="#BDC3C4"
             style={GernalStyle.input}
             ref={inputRefs.cnfrPassword}
             value={state.cnfrPassword}

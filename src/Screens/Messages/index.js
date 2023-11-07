@@ -255,10 +255,10 @@ const Messages = () => {
                 >
                   <View
                     style={{
-                    //  ...styles.logoCon,
+                      //  ...styles.logoCon,
                       marginLeft: getWidth(5),
                       marginTop: getFontSize(1),
-                   //   backgroundColor: colors.gray8,
+                      //   backgroundColor: colors.gray8,
                     }}
                   >
                     {item?.customer?.profile_image == "" ? (
@@ -266,7 +266,11 @@ const Messages = () => {
                     ) : (
                       <Image
                         resizeMode="cover"
-                        style={{ height: getFontSize(7), width: getFontSize(7), borderRadius: getFontSize(0.5) }}
+                        style={{
+                          height: getFontSize(7),
+                          width: getFontSize(7),
+                          borderRadius: getFontSize(0.5),
+                        }}
                         source={{ uri: item?.customer?.profile_image }}
                       />
                     )}
