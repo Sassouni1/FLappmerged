@@ -24,10 +24,10 @@ const Comments = ({navigation}) => {
         colors={['#F5F5F5', '#F5F5F5', '#FFFFFF']}
         style={styles.main}>
       <View style={{justifyContent:'flex-start',flexDirection:'row',margin:10}}>
-          <Image
+          {/* <Image
           style={{width:50,height:50,borderRadius:25}}
              source={require('../../assets/images/Profile.png')}
-                 />
+                 /> */}
                  <View>
 <Text style={{fontFamily:'Ubuntu-Bold',color:'#182d4a'}}>Trainer</Text>
 <Text style={{fontFamily:'Ubuntu-SemiBold', color:'#182d4a'}}>John Doe</Text>
@@ -35,10 +35,10 @@ const Comments = ({navigation}) => {
           
       </View>
       <Text style={{color:'#182d4a',margin:10,textAlign:'justify',fontFamily:'Ubuntu-Regular'}}>Lorem ipsum dolor sit amet, consectetur adipiscing eli. Integer magna felis volutpat vitae, elit ullamcorper en. Eu velit odio nulla tincidunt. Vel porta et nunc aenean risus vivamus fermentum quis integer. In leo imperdiet velit, eget tempor id non ornare.</Text>
-      <Image
+      {/* <Image
           style={{margin:10}}
              source={require('../../assets/images/Profile.png')}
-                 />
+                 /> */}
       </LinearGradient>
     </View>
   );

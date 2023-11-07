@@ -698,10 +698,10 @@ const WorkoutDetail1 = ({navigation}) => {
                 marginLeft: 10,
                 marginTop: 10,
               }}>
-              <Image
+              {/* <Image
                 style={{width: 40, height: 40, borderRadius: 25}}
                 source={require('../../../assets/images/Profile.png')}
-              />
+              /> */}
               <View style={{marginLeft: 7}}>
                 <Text
                   style={{
@@ -762,10 +762,10 @@ const WorkoutDetail1 = ({navigation}) => {
                 marginLeft: 10,
                 marginTop: 12,
               }}>
-              <Image
+              {/* <Image
                 style={{width: 40, height: 40, borderRadius: 25}}
                 source={require('../../../assets/images/Profile.png')}
-              />
+              /> */}
               <View style={{marginLeft: 7}}>
                 <Text
                   style={{

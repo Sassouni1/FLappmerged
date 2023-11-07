@@ -121,7 +121,7 @@ const Message = props => {
         title={'Messages'}
         RightIcon={
           <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
-            <Image
+            {/* <Image
               style={{
                 width: 37,
                 height: 37,
@@ -132,7 +132,7 @@ const Message = props => {
                   ? {uri: user?.profileImage}
                   : require('../../assets/images/Profile.png')
               }
-            />
+            /> */}
           </TouchableOpacity>
         }
       />
@@ -205,7 +205,7 @@ const Message = props => {
               alignItems: 'center',
             }}>
            
-              <Image
+              {/* <Image
                 style={{height: 45, width: 45, borderRadius: 40}}
                 resizeMode={'cover'}
                 source={
@@ -213,7 +213,7 @@ const Message = props => {
                     ? {uri: item?.coachId?.profileImage}
                     : require('../../assets/images/Profile.png')
                 }
-              />
+              /> */}
               
             <View style={{flex: 1, marginLeft: getWidth(5)}}>
               <Text

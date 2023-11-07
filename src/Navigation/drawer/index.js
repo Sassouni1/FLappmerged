@@ -27,6 +27,7 @@ import ChangePassword from '../../Screens/ChangePassword';
 import UpdateProfiles from '../../Screens/UpdateProfile';
 import ContactUs from '../../Screens/ContactUs';
 import Help from '../../Screens/Help';
+import ImageModal from 'react-native-image-modal';
 
 const Drawer = createDrawerNavigator();
 function NavHeader(props) {
@@ -48,20 +49,21 @@ function NavHeader(props) {
           // justifyContent: 'space-around',
           width: '100%',
         }}>
-        <Image
+        <ImageModal
           style={{
-            width: 75,
-            height: 75,
+            width: getWidth(15),
+            height: getHeight(8),
             borderRadius: 10,
             marginLeft: getWidth(3),
-            marginTop: getHeight(1),
+            marginTop: getHeight(3),
           }}
-      
+          resizeMode='cover'
+          modalImageResizeMode='contain'
           source={
             user?.profileImage
               ? {uri: user?.profileImage}
               : 
-              require('../../assets/images/Profile.png')
+              require('../../assets/images/user.png')
           }
         />
         <View
@@ -132,10 +134,8 @@ function CustomDrawerContent(props) {
 
 <DrawerItem
           label={'Term of Use'}
-        labelStyle={{fontFamily:'Ubuntu-Bold'}}
-        //  onPress={() => dispatch(logout())}
-     
-
+        labelStyle={{fontFamily:'Ubuntu-Bold'}}     
+        onPress={() => navigation.navigate('TermOfUse')}
           inactiveTintColor={'#7B7A7A'}
           activeTintColor={'#7B7A7A'}
           labelStyle={{color: '#7B7A7A'}}
@@ -146,8 +146,8 @@ function CustomDrawerContent(props) {
 <DrawerItem
           label={'About this app'}
         labelStyle={{fontFamily:'Ubuntu-Bold'}}
-         // onPress={() => dispatch(logout())}
-          inactiveTintColor={'#7B7A7A'}
+        onPress={() => navigation.navigate('About')}
+        inactiveTintColor={'#7B7A7A'}
           activeTintColor={'#7B7A7A'}
           labelStyle={{color: '#7B7A7A'}}
           activeBackgroundColor={'#7B7A7A'}
@@ -204,7 +204,7 @@ export default function MyDrawer() {
         }}
         style={{fontFamily: 'Ubuntu-Bold', fontSize: 12}}
 
-        name="ProfileSetting"
+        name="Profile Setting"
         component={UpdateProfiles}
      
       />
@@ -220,7 +220,7 @@ export default function MyDrawer() {
         }}
         style={{fontFamily: 'Ubuntu-Bold', fontSize: 12}}
 
-        name="ChangePassword"
+        name="Change Password"
         component={ChangePassword}
         
       />
@@ -254,7 +254,7 @@ export default function MyDrawer() {
         }}
         style={{fontFamily: 'Ubuntu-Bold', fontSize: 12}}
 
-        name="ContactUs"
+        name="Contact Us"
         component={ContactUs}
         
       />

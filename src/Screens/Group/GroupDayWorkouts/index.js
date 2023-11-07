@@ -219,10 +219,10 @@ const GroupDayWorkOuts = ({navigation}) => {
         </LinearGradient>
         {select==1? (<View style={styles.commentsBox}>
         <View style={{justifyContent:'flex-start',flexDirection:'row',marginLeft:10,marginTop:10}}>
-          <Image
+          {/* <Image
           style={{width:40,height:40,borderRadius:25}}
              source={require('../../../assets/images/Profile.png')}
-                 />
+                 /> */}
                  <View style={{marginLeft:7}}>
              <Text style={{fontFamily:'Ubuntu-Bold',color:'#182d4a',fontSize:12}}>John Doe<Text style={{fontFamily:'Ubuntu-SemiBold', color:'#182d4a',fontSize:10}}> (Trainer)</Text></Text>
              <Text style={{fontFamily:'Ubuntu-SemiBold', color:'#182d4a',fontSize:10}}>24 Nov, 2022 | 12:00 PM</Text>
@@ -238,10 +238,10 @@ const GroupDayWorkOuts = ({navigation}) => {
              source={require('../../../assets/images/addequip.png')}
                  />
                   <View style={{justifyContent:'flex-start',flexDirection:'row',marginLeft:10,marginTop:10}}>
-          <Image
+          {/* <Image
           style={{width:40,height:40,borderRadius:25}}
              source={require('../../../assets/images/Profile.png')}
-                 />
+                 /> */}
                  <View style={{marginLeft:7}}>
              <Text style={{fontFamily:'Ubuntu-Bold',color:'#182d4a',fontSize:12}}>You</Text>
              <Text style={{fontFamily:'Ubuntu-SemiBold', color:'#182d4a',fontSize:10}}>24 Nov, 2022 | 12:00 PM</Text>

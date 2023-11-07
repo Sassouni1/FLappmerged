@@ -46,7 +46,8 @@ import ViewProgram from '../../Screens/Workouts/ViewProgram';
 import StartWorkout from '../../Screens/StartWorkout';
 import PrivacyPolicy from '../../Screens/PrivacyPolicy';
 import AllMember from '../../Screens/Messages/AppCommunity/AllMember';
-
+import TermOfUse from '../../Screens/TermOfUse';
+import About from '../../Screens/About';
 
 const stack = createNativeStackNavigator();
 const HomeStack = () => {
@@ -68,6 +69,13 @@ const HomeStack = () => {
         }}
         name="Home"
         component={MyDrawer}
+      />
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="About"
+        component={About}
       />
       <stack.Screen
         options={{
@@ -320,6 +328,13 @@ const HomeStack = () => {
         }}
         name="Mood"
         component={Mood}
+      />
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="TermOfUse"
+        component={TermOfUse}
       />
        <stack.Screen
         options={{

@@ -4,8 +4,8 @@ import FontAwesome6  from 'react-native-vector-icons/FontAwesome6';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Foundation from 'react-native-vector-icons/Foundation';
-import {getHeight} from '../../../utils/ResponsiveFun';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import {getFontSize, getHeight} from '../../../utils/ResponsiveFun';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Profile from '../../Screens/Myprofile';
 import Message from '../../Screens/Message';
 import Groups from '../../Screens/Group/Groups';
@@ -16,6 +16,7 @@ import Excercises from '../../Screens/Excersises';
 import Skills from '../../Screens/Skills';
 import Messages from '../../Screens/Messages';
 import Workouts from '../../Screens/Workouts';
+
 
 const Tab = createBottomTabNavigator();
 
@@ -48,7 +49,8 @@ export default function BottomTab() {
           tabBarIcon: ({focused, color, size}) => (
             <Foundation
               name="home"
-              size={25}
+              size={22}
+              style={{marginTop:getFontSize(1)}}
               color={focused ? '#F79300' : 'white'}
             />
           ),
@@ -64,7 +66,8 @@ export default function BottomTab() {
           tabBarIcon: ({focused, color, size}) => (
             <Entypo
             name="man"
-            size={25}
+            size={22}
+            style={{marginTop:getFontSize(1)}}
             color={focused ? '#F79300' : 'white'}
           />
           ),
@@ -80,7 +83,8 @@ export default function BottomTab() {
           tabBarIcon: ({focused, color, size}) => (
             <FontAwesome5
             name="hand-rock"
-            size={25}
+            size={22}
+            style={{marginTop:getFontSize(1)}}
             color={focused ? '#F79300' : 'white'}
           />
           ),
@@ -96,7 +100,8 @@ export default function BottomTab() {
           tabBarIcon: ({focused, color, size}) => (
             <FontAwesome6
             name="bolt-lightning"
-            size={25}
+            size={21}
+            style={{marginTop:getFontSize(1)}}
             color={focused ? '#F79300' : 'white'}
           />
           ),
@@ -111,7 +116,8 @@ export default function BottomTab() {
           tabBarIcon: ({focused, color, size}) => (
             <Entypo
             name="message"
-            size={25}
+            size={23}
+            style={{marginTop:getFontSize(1)}}
             color={focused ? '#F79300' : 'white'}
           />
           ),
@@ -128,7 +134,8 @@ export default function BottomTab() {
           tabBarIcon: ({focused, color, size}) => (
             <MaterialIcons
             name="bar-chart"
-            size={25}
+            size={22}
+            style={{marginTop:getFontSize(1)}}
             color={focused ? '#F79300' : 'white'}
           />
           ),

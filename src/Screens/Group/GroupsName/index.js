@@ -68,7 +68,7 @@ const GroupsName = ({navigation}) => {
             style={styles.listItem}
             onPress={() => navigation.navigate('SelectedGroup')}>
   <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center',}}>
-              <Image
+              {/* <Image
               style={{height:20,width:20,borderRadius:20}}
                 source={
                   // user?.profileImage
@@ -76,7 +76,7 @@ const GroupsName = ({navigation}) => {
                   //   : 
                     require('../../../assets/images/Profile.png')
                 }
-              />
+              /> */}
             <Text style={styles.itemTitle}>John Doe</Text>
             </View>
             <MaterialIcons
@@ -103,7 +103,7 @@ const GroupsName = ({navigation}) => {
             style={styles.listItem}
             onPress={() => navigation.navigate('SelectedGroup')}>
   <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center',}}>
-              <Image
+              {/* <Image
               style={{height:20,width:20,borderRadius:20}}
                 source={
                   // user?.profileImage
@@ -111,7 +111,7 @@ const GroupsName = ({navigation}) => {
                   //   : 
                     require('../../../assets/images/Profile.png')
                 }
-              />
+              /> */}
             <Text style={styles.itemTitle}>David Warne</Text>
             </View>
             <MaterialIcons

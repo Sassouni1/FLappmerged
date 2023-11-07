@@ -60,7 +60,7 @@ const dispatch=useDispatch()
         title={'My Group'}
         RightIcon={
           <TouchableOpacity onPress={() => navigation.openDrawer()}>
-            <Image
+            {/* <Image
               style={styles.userImage}
               source={
                 user?.profileImage
@@ -68,7 +68,7 @@ const dispatch=useDispatch()
                   : 
                   require('../../../assets/images/Profile.png')
               }
-            />
+            /> */}
           </TouchableOpacity>
         }
       />
