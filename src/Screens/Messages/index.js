@@ -16,9 +16,9 @@ import {getFontSize, getHeight, getWidth} from '../../../utils/ResponsiveFun';
 import {
   ChatUser1,
   ChatUserBtn,
-  UserChat2,
-  UserChat3,
+
 } from '../../assets/images';
+import Userb from '../../assets/images/userb.svg';
 import {useNavigation} from '@react-navigation/native';
 import {styles} from './styles';
 import {setLoader} from '../../Redux/actions/GernalActions';
@@ -30,10 +30,12 @@ const Messages = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [users, setAllUser] = useState([]);
+  const [admin, setAdmin] = useState([]);
+  const [community, setCommunity] = useState([]);
 
   const token = useSelector(state => state.auth.userToken);
   const user = useSelector(state => state.auth.userData);
-  console.log('user',user)
+  
 
   const ChatroomUser = async () => {
     try {
@@ -46,17 +48,12 @@ const Messages = () => {
 
 
       if (res?.status == '200') {
-        const chatroom = res?.response?.chatrooms.map(
-          ({sender: user, message: text, ...rest}) => ({
-            user,
-            text,
-            ...rest,
-          }),
-        );
- console.log('chat Romms',chatroom)
-        
-        setAllUser( res?.response?.chatrooms);
        
+ console.log('chat Romms',res?.response?.chatrooms?.community)
+        
+        setAllUser( res?.response?.chatrooms?.member);
+       setAdmin(res?.response?.chatrooms?.admin)
+       setCommunity(res?.response?.chatrooms?.community)
         dispatch(setLoader(false));
  
       } else {
@@ -118,50 +115,93 @@ const Messages = () => {
        RightIcon={<View/>}
      />
       <HeadingText buttontext={'App'} />
-      <View
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: getWidth(100),
-        }}>
-        <View style={styles.chatCon}>
-          <View style={styles.row}>
-            <View style={{...styles.logoCon, marginLeft: getWidth(4)}}>
-              <Text style={styles.logotext}>logo</Text>
-            </View>
-            <TouchableOpacity onPress={() => navigation.navigate('ConversationScreen',{channelId:user.chatroomId, channelName:'DaruStrong', reciver:{}, sender:user, chatRoomType:'chat'})}>
-              <View style={styles.userCon}>
-                <Text style={styles.username}>DaruStrong</Text>
-                <Text style={styles.time}>11:40 AM</Text>
-              </View>
-              <Text style={styles.lastmsg}>
-                Yes, you can repeat some exercise today.
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-      <HeadingText buttontext={'Community'} style={{marginTop: getHeight(0)}} />
-      <ChatUser
-        onPress={() => navigation.navigate('ConversationScreen',{channelId:user.groupChatId, channelName:'App Community', reciver:{}, sender:user, chatRoomType:'groupChat'})}
-        userImg={<ChatUser1 height={30} width={30} />}
-        userName={'App Community'}
-        lastmsg={
-          '4 litres per day is recommended for the one that is continuo...'
-        }
-      />
-      <HeadingText buttontext={'Members'} style={{marginTop: getHeight(0)}} />
+      {console.log('admin',admin)}
+{admin.map((item)=><View style={{width:getWidth(95),alignSelf:"center",alignItems:"center"}}>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('ConversationScreen',{channelId:item._id, channelName:item?.admin?.full_name, reciver:item?.admin, sender:item?.customer, chatRoomType:'chat'})
+                  }
+                  style={{...styles.row, marginTop: 5}}>
+                  <View
+                    style={{
+                      ...styles.logoCon,
+                      marginLeft: getWidth(5),
+                      marginTop: 5,
+                      backgroundColor: colors.gray8,
+                    }}>
+                    {item?.admin?.profile_image == '' ? (
+                      <Userb height={50} width={50} />
+                    ) : (
+                      <Image
+                        resizeMode="contain"
+                        style={{height: 50, width: 50, borderRadius: 30}}
+                        source={{uri: item?.admin?.profile_image}}
+                      />
+                    )}
+                  </View>
+                  <View>
+                    <View style={styles.userCon}>
+                      <Text style={styles.username}>{item?.admin?.full_name}</Text>
+                      <Text style={styles.time}>
+                    
+                      {item?.messages.length>0?new Date(item?.messages[item?.messages.length-1].date).toLocaleTimeString():null}
+
+                      </Text>
+                    </View>
+                    <Text style={styles.lastmsg}>
+                    
+                      {item?.messages.length>0?item?.messages[item?.messages.length-1].sender==user?._id?'you:'+item?.messages[item?.messages.length-1].message:item?.customer?.full_name+':'+item?.messages[item?.messages.length-1].message:'Tap there and start conversation'}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>)}
+
+     
+      <HeadingText buttontext={'Community'} style={{marginTop: getHeight(1  )}} />
+  
+      {community?.map((item)=><View style={{width:getWidth(95),alignSelf:"center",alignItems:"center"}}>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('ConversationScreen',{channelId:item._id, channelName:'App Comunity', reciver:{}, sender:user, chatRoomType:'groupChat'})
+                  }
+                  style={{...styles.row, marginTop: 5}}>
+                  <View
+                    style={{
+                      ...styles.logoCon,
+                      marginLeft: getWidth(5),
+                      marginTop: 5,
+                      backgroundColor: colors.gray8,
+                    }}>
+                    <ChatUser1 height={30} width={30} />
+                  </View>
+                  <View>
+                    <View style={styles.userCon}>
+                      <Text style={styles.username}>{'App Comunity'}</Text>
+                      <Text style={styles.time}>
+                    
+                      {item?.messages?new Date(item?.last_message?.date).toLocaleTimeString():null}
+
+                      </Text>
+                    </View>
+                    <Text style={styles.lastmsg}>
+                      {item?.last_message?item?.last_message?.sender==user?._id?'you:'+item?.last_message.message:'Other:'+item?.last_message.message:'Tap there and start conversation'}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>)}
+      <HeadingText buttontext={'Members'} style={{marginTop: getHeight(1)}} />
       <View style={{alignSelf: 'center', flex: 1}}>
         <FlatList
           data={users}
           showsVerticalScrollIndicator={false}
           refreshing={false}
           onRefresh={()=>ChatroomUser()}
-          ListFooterComponent={() => <View style={{height: getHeight(4)}} />}
+          ListFooterComponent={() => <View style={{height: getHeight(10)}} />}
+          ItemSeparatorComponent={() => <View style={{height: getHeight(0.5)}} />}
           renderItem={({item}) => {
-           console.log('item',item)
+        
             return (
-              <View style={{...styles.chatCon, height: getHeight(11)}}>
+              <View style={{width:getWidth(95),alignSelf:"center",alignItems:"center"}}>
                 <TouchableOpacity
                   onPress={() =>
                     navigation.navigate('ConversationScreen',{channelId:item._id, channelName:user?._id==item?.user?._id?item?.customer?.full_name:item?.user?.full_name, reciver:user?._id==item?.user?._id?item?.customer:item?.user, sender:user?._id==item?.user?._id?item?.user:item?.customer, chatRoomType:'chat'})
@@ -170,16 +210,16 @@ const Messages = () => {
                   <View
                     style={{
                       ...styles.logoCon,
-                      marginLeft: getWidth(4),
+                      marginLeft: getWidth(5),
                       marginTop: 5,
                       backgroundColor: colors.gray8,
                     }}>
                     {item?.customer?.profile_image == '' ? (
-                      <UserChat3 height={60} width={60} />
+                      <Userb height={50} width={50} />
                     ) : (
                       <Image
                         resizeMode="contain"
-                        style={{height: 60, width: 60, borderRadius: 30}}
+                        style={{height: 50, width: 50, borderRadius: 30}}
                         source={{uri: item?.customer?.profile_image}}
                       />
                     )}
