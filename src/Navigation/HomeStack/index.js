@@ -45,6 +45,7 @@ import WorkoutSucessfully from '../../Screens/Workouts/WorkoutSuccessfully';
 import ViewProgram from '../../Screens/Workouts/ViewProgram';
 import StartWorkout from '../../Screens/StartWorkout';
 import PrivacyPolicy from '../../Screens/PrivacyPolicy';
+import AllMember from '../../Screens/Messages/AppCommunity/AllMember';
 
 
 const stack = createNativeStackNavigator();
@@ -117,13 +118,13 @@ const HomeStack = () => {
         name="ConversationScreen"
         component={ConversationScreen}
       />
-      {/* <stack.Screen
+      <stack.Screen
         options={{
           headerShown: false,
         }}
-        name="WarmSession"
-        component={WarmSession}
-      /> */}
+        name="AllMember"
+        component={AllMember}
+      />
 
       <stack.Screen
         options={{

@@ -202,7 +202,7 @@ const Messages = () => {
         />
       </View>
       <TouchableOpacity
-        onPress={() => navigation.navigate('ChatScreen')}
+        onPress={() => navigation.navigate('AllMember')}
         style={{
           height: getHeight(7),
           width: getWidth(15),

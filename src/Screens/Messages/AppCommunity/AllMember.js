@@ -1,16 +1,16 @@
 import { View, Text,TouchableOpacity, FlatList, Image, Pressable } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import GeneralStatusBar from '../../../../Components/GeneralStatusBar'
-import { colors } from '../../../../constants/colors'
-import { GernalStyle } from '../../../../constants/GernalStyle'
+import GeneralStatusBar from '../../../Components/GeneralStatusBar'
+import { colors } from '../../../constants/colors'
+import { GernalStyle } from '../../../constants/GernalStyle'
 import { styles } from './styles'
 import Feather from 'react-native-vector-icons/Feather';
-import { getFontSize, getWidth,getHeight} from '../../../../Config/functions copy'
-import { fonts } from '../../../../constants/fonts'
-import { ApiCall } from '../../../../Services/Apis'
+import { getFontSize, getWidth,getHeight} from '../../../../utils/ResponsiveFun'
+import { fonts } from '../../../constants/fonts'
+import { ApiCall } from '../../../Services/Apis'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
-import { setLoader } from '../../../../Redux/actions/GernalActions'
+import { setLoader } from '../../../Redux/actions/GernalActions'
 
 
 const AllMember = () => {
@@ -134,7 +134,7 @@ const getAllUser = async () => {
                 <Image
                 resizeMode='contain'
                 style={{width:getWidth(12),height:getHeight(6),borderRadius:30,marginLeft:getWidth(4)}}
-                source={item?.profile_image===""?require('../../../../assets/Images/user.png'):{uri:item?.profile_image}}
+                source={item?.profile_image===""?require('../../../assets/images/user.png'):{uri:item?.profile_image}}
                 />
                 <View style={{marginLeft:getWidth(4)}}>
                 <Text style={{fontSize:18,fontFamily:fonts.URe,color:colors.white}}>{item.full_name}</Text>
