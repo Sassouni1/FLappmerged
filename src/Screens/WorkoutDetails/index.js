@@ -19,7 +19,7 @@ import {styles} from './styles';
 import { ApiCall } from '../../Services/Apis';
 import {setLoader} from '../../Redux/actions/GernalActions';
 import {useDispatch, useSelector} from 'react-redux';
-import {Assprogram} from '../../Redux/actions/AuthActions';
+import {Assprogram, getSingleUser} from '../../Redux/actions/AuthActions';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const WorkoutDetails = () => {
@@ -35,7 +35,7 @@ const WorkoutDetails = () => {
   const [count, setCount] = useState(0);
   const token = useSelector(state => state.auth.userToken);
   const user = useSelector(state => state.auth.userData);
-  console.log('user workouts',user)
+
 
   const dispatch = useDispatch();
   const toggleModal = () => {
@@ -49,7 +49,7 @@ const WorkoutDetails = () => {
   const handleDayPress = day => {
     setSelectedDate(day.dateString);
   };
-  const today = new Date().toISOString().split('T')[0];
+
 
   const getAllProgram = async () => {
     dispatch(setLoader(true));
@@ -107,6 +107,7 @@ const WorkoutDetails = () => {
         // setData(res?.response?.detail)
         // console.log('ress___a,',res?.response?.Assigned_Program?.workout[0]?.innerWorkout[0]?.exercise)
         dispatch(Assprogram(res?.response?.Assigned_Program));
+        dispatch(getSingleUser(token))
         dispatch(setLoader(false));
         navigation.navigate('WorkoutSucessfully');
       } else {
@@ -120,6 +121,20 @@ const WorkoutDetails = () => {
       console.log('api get skill error -- ', e.toString());
     }
   };
+  
+  const toggleSelection = item => {
+         
+    setSelectedItemId(item?._id);
+
+    if (selectedItemId === item?._id) {
+      
+      setSelectedItemId(item?.id);
+
+    } else {
+     
+      setSelectedItemId(item?._id);
+    }
+  };
 
   return (
     <View style={{flex: 1}}>
@@ -128,22 +143,9 @@ const WorkoutDetails = () => {
         ListFooterComponent={() => <View style={{height: getHeight(8)}}></View>}
         showsVerticalScrollIndicator={false}
         renderItem={({item, index}) => {
-          const isSelected = selectedItems.includes(index);
+       
 
-          const toggleSelection = item => {
-            console.log(item);
-            setSelectedItemId(item?._id);
-
-            if (selectedItemId === item?._id) {
-              // setSelectedItems(selectedItems.filter((selected) => selected !== index));
-              setSelectedItemId(item?.id);
-              // setSelectedItems(item?._id)
-            } else {
-              // setSelectedItems([...selectedItems, index]);
-              setSelectedItemId(item?._id);
-            }
-          };
-          return (
+          return (  
             <View>
               <TouchableOpacity onPress={() => handleDoubleTap(item)}>
                 <ImageBackground

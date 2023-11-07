@@ -128,7 +128,7 @@ const ChatScreen = () => {
   const getChat = async () => {
     try {
       const res = await ApiCall({
-        params: {category_name: 'skill '},
+      
         route: `chat/chat_detail/${userId}`,
         verb: 'get',
         token: token,

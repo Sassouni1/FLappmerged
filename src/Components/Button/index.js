@@ -13,12 +13,13 @@ const Button = ({
   return (
     <TouchableOpacity
       activeOpacity={0.8}
+      style={btnStyle}
       onPress={() => (onPress ? onPress() : console.log('null'))}>
-      <LinearGradient colors={['rgba(247, 147, 0, 1)', 'rgba(247, 147, 0, 1)']} style={btnStyle}>
+    
         {leftIcon}
         <Text style={[btnTextStyle]}>{text}</Text>
         {RightIcon}
-      </LinearGradient>
+  
     </TouchableOpacity>
   );
 };

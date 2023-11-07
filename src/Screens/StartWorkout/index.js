@@ -22,6 +22,7 @@ import { styles } from "./styles";
 import Button from "../../Components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../Redux/actions/GernalActions";
+import { GernalStyle } from "../../constants/GernalStyle";
 import { ApiCall } from "../../Services/Apis";
 
 const StartWorkout = ({ route }) => {
@@ -29,16 +30,14 @@ const StartWorkout = ({ route }) => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.userToken);
   const user = useSelector((state) => state.auth.userData);
-  const userId = user?.plan_id;
+  const planId = user?.plan_id;
   const customSeparator = {
     // marginLeft: getWidth(5),
     width: getWidth(90),
   };
-  console.log("route ==", route?.params);
-  const exerciseId = route?.params?.exerciseId;
-  const innerWorkoutId = route?.params?.innerWorkoutId;
+
   const workoutId = route?.params?.workoutId;
-  const [data, setData] = useState();
+  const [data, setData] = useState([]);
 
   // const data1 = [
   //   {
@@ -88,18 +87,17 @@ const StartWorkout = ({ route }) => {
       const res = await ApiCall({
         params: {
           workout_objId: workoutId,
-          exercise_objId: exerciseId,
-          inner_objId: innerWorkoutId,
+          
         },
-        route: `assignProgram/single_exercise/${userId}`,
+        route: `assignProgram/view_workout/${planId}`,
         verb: "post",
         token: token,
       });
 
       if (res?.status == "200") {
         // console.log('single___-pp',res?.response)
-        console.log("single___-excercise", res?.response?.Exercise);
-        setData([res?.response?.Exercise]);
+        console.log("single___-excercise", res?.response?.Workout?.innerWorkout);
+        setData(res?.response?.Workout?.innerWorkout[0]);  
         // setAssigWorkout(res?.response?.Workout);
         // setData(res?.response?.detail)
 
@@ -146,16 +144,17 @@ const StartWorkout = ({ route }) => {
       >
         <View style={styles.contentContainer}>
           <View style={styles.section}>
-            <Text style={styles.title}>Chest & Triceps</Text>
-            <Text style={{ color: "#ffff" }}>9 total exercises</Text>
+            <Text style={styles.title}>{data?.workoutName}</Text>
+            <Text style={{ color: "#ffff",alignSelf:'center' }}>{data?.exercise&&data?.exercise.length} total exercises</Text>
           </View>
 
           <Seprator style={customSeparator} />
         </View>
 
         <View style={{ margin: getHeight(1) }}>
+
           <FlatList
-            data={data}
+            data={data?.exercise?data?.exercise:[]}
             ListFooterComponent={() => (
               <View style={{ height: getHeight(8) }}></View>
             )}
@@ -205,16 +204,13 @@ const StartWorkout = ({ route }) => {
         onPress={() => navigation.navigate("WorkoutSet")}
         text={"Complete workout"}
         btnStyle={{
-          width: getWidth(90),
-          height: getWidth(12),
+          ...GernalStyle.btn,
           backgroundColor: colors.buttonColor,
           position: "absolute",
           bottom: getHeight(2),
-          margin: getFontSize(2),
-          justifyContent: "center",
-          alignItems: "center",
-          borderRadius: getFontSize(1),
+        
         }}
+        btnTextStyle={{...GernalStyle.btnText,color:colors.white}}
       />
       {/* <TouchableOpacity onPress={()=>navigation.navigate('WorkoutSet')} style={{height:getHeight(7),backgroundColor:colors.buttonColor,width:getWidth(60),borderRadius:5,alignSelf:"center",position:"absolute",bottom:getHeight(1),justifyContent:"center",alignItems:"center"}}>
   <Text style={{fontSize:14,fontFamily:fonts.UBo,color:colors.white}}>Complete workout</Text>

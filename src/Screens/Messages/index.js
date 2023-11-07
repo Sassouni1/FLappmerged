@@ -71,28 +71,7 @@ const Messages = () => {
       </View>
     );
   };
-  const ChatUser = ({ userImg, userName, lastmsg, style, onPress }) => {
-    return (
-      <View style={{ alignSelf: "center" }}>
-        <View style={styles.chatCon}>
-          <TouchableOpacity onPress={onPress} style={styles.row}>
-            <View
-              style={[{ ...styles.logoCon, marginLeft: getWidth(4) }, style]}
-            >
-              {userImg}
-            </View>
-            <View>
-              <View style={styles.userCon}>
-                <Text style={styles.username}>{userName}</Text>
-                <Text style={styles.time}>11:40 AM</Text>
-              </View>
-              <Text style={styles.lastmsg}>{lastmsg}</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
+  
   return (
     <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
       <GeneralStatusBar

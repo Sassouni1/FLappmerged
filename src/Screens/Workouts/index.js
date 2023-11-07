@@ -19,17 +19,9 @@ import AddWorkouts from './AddWorkouts';
 import { GernalStyle } from '../../constants/GernalStyle';
 import GeneralStatusBar from '../../Components/GeneralStatusBar';
 
-const weekData = [
-  {day: 'Mon', date: '04'},
-  {day: 'Tue', date: '05'},
-  {day: 'Wed', date: '06'},
-  {day: 'Thu', date: '07'},
-  {day: 'Fri', date: '08'},
-  {day: 'Sat', date: '09'},
-  {day: 'Sun', date: '10'},
-];
+
 const Tab1 = () => <WorkoutDetails />;
-const Tab2 = () => <AddWorkouts data={weekData} />;
+const Tab2 = () => <AddWorkouts  />;
 
 const initialLayout = {width: Dimensions.get('window').width};
 

@@ -20,13 +20,13 @@ export const styles = StyleSheet.create({
       flex: 1,
     },
     contentContainer: {
-      marginHorizontal: getWidth(5),
+      // marginHorizontal: getWidth(5),
       marginTop: getHeight(1),
     },
     section: {
-      margin: getHeight(2),
-      flexDirection:"column",
-      alignItems:"center"
+      justifyContent:'center',
+      alignItems:"center",
+      marginVertical:getHeight(2.5),
     },
     title: {
       fontSize: getFontSize(3.2),

@@ -20,6 +20,14 @@ export const styles = StyleSheet.create({
       fontFamily:fonts.Re,
       color:colors.white,
     },
+    thumbnail: {
+      backgroundColor: colors.white,
+      justifyContent: 'center',
+      height: 80,
+      width: 80,
+      borderRadius: getFontSize(1),
+      alignItems: 'center',
+    },
     date: {
       fontFamily: 'Ubuntu-Bold',
       fontSize: 20,
