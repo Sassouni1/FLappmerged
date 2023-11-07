@@ -274,4 +274,9 @@ presence:{
       message: '^Please enter your weight',
     },
   },
+  fullname: {
+    presence: {
+      message: '^Please enter your full name',
+    },
+  },
 };

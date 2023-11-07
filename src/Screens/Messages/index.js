@@ -286,8 +286,8 @@ const Messages = () => {
                       <Userb height={50} width={50} />
                     ) : (
                       <Image
-                        resizeMode="contain"
-                        style={{ height: 50, width: 50, borderRadius: 30 }}
+                        resizeMode="cover"
+                        style={{ height: getFontSize(7), width: getFontSize(7), borderRadius: getFontSize(0.5) }}
                         source={{ uri: item?.customer?.profile_image }}
                       />
                     )}

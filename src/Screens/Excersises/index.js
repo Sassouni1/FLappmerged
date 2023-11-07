@@ -23,6 +23,8 @@ import {setLoader} from '../../Redux/actions/GernalActions';
 import {ApiCall} from '../../Services/Apis';
 import { RefreshControl } from 'react-native';
 import HeaderBottom from '../../Components/HeaderBottom';
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+
 
 const Excercises = () => {
   const navigation = useNavigation();
@@ -135,7 +137,7 @@ const Excercises = () => {
         {invalidEntry ? (
           <View
             style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
-            <InvalidSearch height={getFontSize(15)} width={getFontSize(10)} />
+            <FontAwesome size={getFontSize(10)} color={"white"} name="exclamation-circle" />
             <Text
               style={{
                 fontSize: getFontSize(2),
@@ -144,7 +146,7 @@ const Excercises = () => {
                 marginRight: getFontSize(5),
                 textAlign: 'center',
               }}>
-              No videos on Exercises found. Please try {`\n`} a different keyword.
+              No videos on Exercises found.
             </Text>
           </View>
         ) : (

@@ -51,7 +51,7 @@ export const GernalStyle = StyleSheet.create({
     width: getWidth(93),
     height:getHeight(7),
     borderRadius:5,
-    paddingLeft:getHeight(3.5),
+    paddingLeft:getHeight(2.5),
     alignSelf:"center",
     fontFamily:fonts.URe,
     fontSize:getFontSize(1.9),

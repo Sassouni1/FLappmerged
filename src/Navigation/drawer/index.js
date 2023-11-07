@@ -32,6 +32,7 @@ import ImageModal from 'react-native-image-modal';
 const Drawer = createDrawerNavigator();
 function NavHeader(props) {
   const user = useSelector(state => state.auth.userData);
+  console.log("user data",user)
   const token = useSelector(state => state.auth.userToken);
   const navigation = useNavigation();
   return (
@@ -60,8 +61,8 @@ function NavHeader(props) {
           resizeMode='cover'
           modalImageResizeMode='contain'
           source={
-            user?.profileImage
-              ? {uri: user?.profileImage}
+            user?.profile_image
+              ? {uri: user?.profile_image}
               : 
               require('../../assets/images/user.png')
           }
@@ -76,16 +77,16 @@ function NavHeader(props) {
               color: 'white',
               marginBottom: 5,
               width:getWidth(45),
-              fontSize: 18,
+              fontSize: getFontSize(2),
               // marginRight: getWidth(28),
             }}>
-            {user?.firstName} {user?.lastName}
+            {user?.full_name}
           </Text>
           <Text
             style={{
               color: 'white',
               width: '60%',
-              fontSize: 12,
+              fontSize: getFontSize(1.5),
               fontFamily: 'Ubuntu-Regular',
               // marginRight: getWidth(20),
             }}>

@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TextInput,
 } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { GernalStyle } from "../../constants/GernalStyle";
 import { colors } from "../../constants/colors";
 import { fonts } from "../../constants/fonts";
@@ -102,7 +102,6 @@ const UpdateProfiles = () => {
     height: user?.height,
     heightError: "",
   });
-
   const dispatch = useDispatch();
   const changeHandler = (type, value) => setState({ ...state, [type]: value });
 
@@ -193,6 +192,7 @@ const UpdateProfiles = () => {
   //     setState({ ...state, emailError, weightError, heightError });
   //   }
   // };
+
   return (
     <View
       style={{ ...GernalStyle.continer, backgroundColor: colors.homeColor }}
@@ -307,28 +307,6 @@ const UpdateProfiles = () => {
           onChangeText={(fullname) => changeHandler("fullname", fullname)}
           blurOnSubmit={false}
         />
-        {/* <TextInput
-            mode="outlined"
-            // label="First Name"
-            label={<Text style={GernalStyle.inputLabelStyle}>First Name</Text>}
-            theme={{ roundness: 15 }}
-            outlineColor="#BDC3C4"
-            activeUnderlineColor="#182d4a"
-            activeOutlineColor="#182d4a"
-            style={GernalStyle.input}
-            ref={inputRefs.userName}
-            value={state.firstName}
-            returnKeyType={"send"}
-            onFocus={() => setState({ ...state, userNameError: "" })}
-            onBlur={() =>
-              validateFields(state.firstName, "firstName", (error) =>
-                setState({ ...state, userNameError: error })
-              )
-            }
-            onSubmitEditing={() => inputRefs["lastName"].current.focus()}
-            onChangeText={(firstName) => changeHandler("firstName", firstName)}
-            blurOnSubmit={false}
-          /> */}
         {state.fullnameError && (
           <Text
             style={[
@@ -414,7 +392,7 @@ const UpdateProfiles = () => {
       <Button
         onPress={profileSetting}
         text="Update profile"
-        btnStyle={{ ...GernalStyle.btn, marginBottom: getHeight(8) }}
+        btnStyle={{ ...GernalStyle.btn, marginBottom: getHeight(9) }}
         btnTextStyle={GernalStyle.btnText}
       />
     </View>

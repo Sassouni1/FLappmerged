@@ -15,6 +15,7 @@ import { ApiCall } from '../../Services/Apis';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLoader } from '../../Redux/actions/GernalActions';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import HeaderBottom from '../../Components/HeaderBottom';
 
 
 const ContactUs = () => {
@@ -101,18 +102,18 @@ const ContactUs = () => {
         backgroundColor={colors.primary}
         translucent={true}
       />
-      <Header
+      <HeaderBottom
       title={'Contact us'}
       LeftIcon={
-        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons
             style={{alignSelf: 'center', marginRight: getWidth(2)}}
             name={'arrow-back'}
             size={25}
             color={'#ffff'}
+            onPress={() => navigation.goBack()}
           />
-        </TouchableOpacity>
       }
+      RightIcon={<View/>}
     />
       <KeyboardAwareScrollView showsVerticalScrollIndicator={false} >
         <TextInput
@@ -138,7 +139,7 @@ const ContactUs = () => {
         {state.fullnameError && (
           <Text
             style={[
-              GernalStyle.inputError,
+              GernalStyle.InputError,
               {width: getWidth(90), alignSelf: 'center'},
             ]}>
             {state.fullnameError}
@@ -165,7 +166,7 @@ const ContactUs = () => {
         {state.emailError && (
           <Text
             style={[
-              GernalStyle.inputError,
+              GernalStyle.InputError,
               {width: getWidth(90), alignSelf: 'center'},
             ]}>
             {state.emailError}
@@ -230,7 +231,7 @@ const ContactUs = () => {
         {state.questionError && (
           <Text
             style={[
-              GernalStyle.inputError,
+              GernalStyle.InputError,
               {width: getWidth(90), alignSelf: 'center'},
             ]}>
             {state.questionError}

@@ -10,6 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import { styles } from './styles';
 import Header from '../../Components/Header';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import HeaderBottom from '../../Components/HeaderBottom';
 
 
 const Help = () => {
@@ -22,18 +23,18 @@ const Help = () => {
         backgroundColor={colors.primary}
         translucent={true}
       />
-       <Header
+       <HeaderBottom
       title={'Help'}
       LeftIcon={
-        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons
             style={{alignSelf: 'center', marginRight: getWidth(2)}}
             name={'arrow-back'}
             size={25}
             color={'#ffff'}
+            onPress={() => navigation.goBack()}
           />
-        </TouchableOpacity>
       }
+      RightIcon={<View/>}
     />
       {/* <AppHeader heading={'Help'} onPress={() => navigation.goBack()} /> */}
       <KeyboardAwareScrollView >
