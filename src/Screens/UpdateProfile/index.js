@@ -4,7 +4,7 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  TextInput,
+  Keyboard,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { GernalStyle } from "../../constants/GernalStyle";
@@ -37,6 +37,7 @@ import ImagePickerModal from "../../Components/ImagePickerModal";
 import ImagePicker from "react-native-image-crop-picker";
 import ImageModal from "react-native-image-modal";
 import axios from "axios";
+import { TextInput } from "react-native-paper";
 
 const UpdateProfiles = () => {
   const navigation = useNavigation();
@@ -217,7 +218,7 @@ const UpdateProfiles = () => {
             size={25}
             color={"#ffff"}
             onPress={() => {
-              navigation.openDrawer();
+              navigation.goBack();
             }}
           />
         }
@@ -233,7 +234,7 @@ const UpdateProfiles = () => {
       />
       <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
         <View style={{ marginTop: getHeight(2), alignSelf: "center" }}>
-          <Image
+          <ImageModal
             style={{
               width: 140,
               height: 130,
@@ -244,6 +245,7 @@ const UpdateProfiles = () => {
               alignSelf: "center",
             }}
             resizeMode={"cover"}
+            modalImageResizeMode="contain"
             source={
               imageSave
                 ? { uri: imageSave }
@@ -290,11 +292,13 @@ const UpdateProfiles = () => {
 
         <TextInput
           mode="outlined"
-          placeholder="Full name"
-          placeholderTextColor={colors.graytext4}
-          label={<Text style={GernalStyle.inputLabelStyle}>Full Name</Text>}
-          theme={{ roundness: 15 }}
-          style={{ ...GernalStyle.textinput, marginTop: getHeight(4.5) }}
+          label={<Text style={GernalStyle.inputLabelStyle}>Full name</Text>}
+          theme={{ roundness: getFontSize(0.5) }}
+          outlineColor="#BDC3C4"
+          activeUnderlineColor="#BDC3C4"
+          activeOutlineColor="#BDC3C4"
+          textColor="white"
+          style={{ ...GernalStyle.input, marginTop: getHeight(2) }}
           ref={inputRefs.fullname}
           value={state.fullname}
           returnKeyType={"send"}
@@ -320,19 +324,25 @@ const UpdateProfiles = () => {
           </Text>
         )}
         <TextInput
+          mode="outlined"
           editable={false}
-          placeholder={user?.email}
-          placeholderTextColor={colors.white}
-          style={{
-            ...GernalStyle.textinput,
-            backgroundColor: colors.gray3,
-            marginTop: getHeight(1.3),
-          }}
+          label={<Text style={GernalStyle.inputLabelStyle}>{user?.email}</Text>}
+          theme={{ roundness: getFontSize(0.5) }}
+          outlineColor="#BDC3C4"
+          activeUnderlineColor="#BDC3C4"
+          activeOutlineColor="#BDC3C4"
+          textColor="white"
+          style={{ ...GernalStyle.input, marginTop: getHeight(2) }}
         />
         <TextInput
-          placeholder="Weight"
-          placeholderTextColor={colors.graytext4}
-          style={{ ...GernalStyle.textinput, marginTop: getHeight(1.3) }}
+           mode="outlined"
+           label={<Text style={GernalStyle.inputLabelStyle}>Weight</Text>}
+           theme={{ roundness: getFontSize(0.5) }}
+           outlineColor="#BDC3C4"
+           activeUnderlineColor="#BDC3C4"
+           activeOutlineColor="#BDC3C4"
+           textColor="white"
+           style={{ ...GernalStyle.input, marginTop: getHeight(2) }}
           ref={inputRefs.weight}
           value={state.weight}
           returnKeyType={"send"}
@@ -358,9 +368,14 @@ const UpdateProfiles = () => {
           </Text>
         )}
         <TextInput
-          placeholder="Height"
-          placeholderTextColor={colors.graytext4}
-          style={{ ...GernalStyle.textinput, marginTop: getHeight(1.3) }}
+          mode="outlined"
+          label={<Text style={GernalStyle.inputLabelStyle}>Height</Text>}
+          theme={{ roundness: getFontSize(0.5) }}
+          outlineColor="#BDC3C4"
+          activeUnderlineColor="#BDC3C4"
+          activeOutlineColor="#BDC3C4"
+          textColor="white"
+          style={{ ...GernalStyle.input, marginTop: getHeight(2) }}
           ref={inputRefs.height}
           value={state.height}
           returnKeyType={"send"}

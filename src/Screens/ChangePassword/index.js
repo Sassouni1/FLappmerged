@@ -24,6 +24,9 @@ import Header from "../../Components/Header";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { colors } from "../../constants/colors";
 import HeaderBottom from "../../Components/HeaderBottom";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { useFocusEffect } from "@react-navigation/native";
+
 const ChangePassword = ({ navigation }) => {
   const dispatch = useDispatch();
   const inputRefs = {
@@ -39,6 +42,18 @@ const ChangePassword = ({ navigation }) => {
     cnfrPassword: "",
     cnfrPasswordError: "",
   });
+  useFocusEffect(
+    React.useCallback(() => {
+      setState({
+        oldPassword: "",
+    oldPasswordError: "",
+    newPassword: "",
+    newPasswordError: "",
+    cnfrPassword: "",
+    cnfrPasswordError: "",
+      });
+    }, [])
+  );
   const [hidePass, setHidePass] = useState(true);
   const [hideNewPass, setHideNewPass] = useState(true);
   const [hideCnfPass, setHideCnfPass] = useState(true);
@@ -56,8 +71,9 @@ const ChangePassword = ({ navigation }) => {
     ) {
       dispatch(setLoader(true));
       const data = {
-        newPassword: newPassword,
-        oldPassword: oldPassword,
+        new_password: newPassword,
+        old_password: oldPassword,
+        confirm_password : cnfrPassword
       };
       update(data);
     } else {
@@ -77,10 +93,10 @@ const ChangePassword = ({ navigation }) => {
   const update = async (param) => {
     try {
       const res = await ApiCall({
-        route: "auth/update-profile",
+        route: "auth/change_password",
         token: token,
         params: param,
-        verb: "patch",
+        verb: "put",
       });
       if (res?.status == "200") {
         navigation.goBack();
@@ -97,6 +113,11 @@ const ChangePassword = ({ navigation }) => {
     }
   };
   const changeHandler = (type, value) => setState({ ...state, [type]: value });
+
+  const eye = <FontAwesome name="eye" size={20} color={"white"} />;
+
+  const eyeSlash = <FontAwesome name="eye-slash" size={20} color={"white"} />;
+
   return (
     <View style={styles.contaner}>
       <GeneralStatusBar
@@ -114,7 +135,7 @@ const ChangePassword = ({ navigation }) => {
               name={"arrow-back"}
               size={25}
               color={"#ffff"}
-              onPress={() => navigation.openDrawer()}
+              onPress={() => navigation.goBack()}
             />
           }
           RightIcon={<View />}
@@ -133,7 +154,6 @@ const ChangePassword = ({ navigation }) => {
         <View>
           <TextInput
             mode="outlined"
-            // label="Old password"
             label={
               <Text style={GernalStyle.inputLabelStyle}>Old password</Text>
             }
@@ -141,22 +161,32 @@ const ChangePassword = ({ navigation }) => {
             outlineColor="#BDC3C4"
             activeUnderlineColor="#BDC3C4"
             activeOutlineColor="#BDC3C4"
+            textColor="white"
             style={GernalStyle.input}
             ref={inputRefs.oldPassword}
             value={state.oldPassword}
             returnKeyType={"send"}
             secureTextEntry={hidePass ? true : false}
+            // right={
+            //   <TextInput.Icon
+            //     name={() => (
+            //       <MaterialCommunityIcons
+            //         name={hidePass ? "eye-off-outline" : "eye-outline"}
+            //         size={getFontSize(2.5)}
+            //         color={"#BDC3C4"}
+            //         style={styles.icon}
+            //         onPress={() => setHidePass(!hidePass)}
+            //       />
+            //     )}
+            //   />
+            // }
             right={
               <TextInput.Icon
-                name={() => (
-                  <MaterialCommunityIcons
-                    name={hidePass ? "eye-off-outline" : "eye-outline"}
-                    size={getFontSize(2.5)}
-                    color={"#BDC3C4"}
-                    style={styles.icon}
-                    onPress={() => setHidePass(!hidePass)}
-                  />
-                )}
+                name={hidePass ? eye : eyeSlash}
+                size={getFontSize(2.5)}
+                color={"blue"}
+                style={styles.icon}
+                onPress={() => setHidePass(!hidePass)}
               />
             }
             onFocus={() => setState({ ...state, oldpasswordError: "" })}
@@ -182,26 +212,36 @@ const ChangePassword = ({ navigation }) => {
             label={
               <Text style={GernalStyle.inputLabelStyle}>New password</Text>
             }
-            theme={{ roundness:  getFontSize(0.5) }}
+            theme={{ roundness: getFontSize(0.5) }}
             outlineColor="#BDC3C4"
             activeUnderlineColor="#BDC3C4"
             activeOutlineColor="#BDC3C4"
+            textColor="white"
             style={GernalStyle.input}
             ref={inputRefs.newPassword}
             value={state.newPassword}
             returnKeyType={"send"}
             secureTextEntry={hideNewPass ? true : false}
+            // right={
+            //   <TextInput.Icon
+            //     name={() => (
+            //       <MaterialCommunityIcons
+            //         name={hideNewPass ? "eye-off-outline" : "eye-outline"}
+            //         size={getFontSize(2.5)}
+            //         color={"#BDC3C4"}
+            //         style={styles.icon}
+            //         onPress={() => setHideNewPass(!hideNewPass)}
+            //       />
+            //     )}
+            //   />
+            // }
             right={
               <TextInput.Icon
-                name={() => (
-                  <MaterialCommunityIcons
-                    name={hideNewPass ? "eye-off-outline" : "eye-outline"}
-                    size={getFontSize(2.5)}
-                    color={"#BDC3C4"}
-                    style={styles.icon}
-                    onPress={() => setHideNewPass(!hideNewPass)}
-                  />
-                )}
+                name={hideNewPass ? eye : eyeSlash}
+                size={getFontSize(2.5)}
+                color={"blue"}
+                style={styles.icon}
+                onPress={() => setHideNewPass(!hideNewPass)}
               />
             }
             onFocus={() => setState({ ...state, newpasswordError: "" })}
@@ -228,26 +268,36 @@ const ChangePassword = ({ navigation }) => {
             label={
               <Text style={GernalStyle.inputLabelStyle}>Confirm password</Text>
             }
-            theme={{ roundness:  getFontSize(0.5) }}
+            theme={{ roundness: getFontSize(0.5) }}
             outlineColor="#BDC3C4"
             activeUnderlineColor="#BDC3C4"
             activeOutlineColor="#BDC3C4"
+            textColor="white"
             style={GernalStyle.input}
             ref={inputRefs.cnfrPassword}
             value={state.cnfrPassword}
             returnKeyType={"send"}
             secureTextEntry={hideCnfPass ? true : false}
+            // right={
+            //   <TextInput.Icon
+            //     name={() => (
+            //       <MaterialCommunityIcons
+            //         name={hideCnfPass ? "eye-off-outline" : "eye-outline"}
+            //         size={getFontSize(3)}
+            //         color={"#BDC3C4"}
+            //         style={styles.icon}
+            //         onPress={() => setHideCnfPass(!hideCnfPass)}
+            //       />
+            //     )}
+            //   />
+            // }
             right={
               <TextInput.Icon
-                name={() => (
-                  <MaterialCommunityIcons
-                    name={hideCnfPass ? "eye-off-outline" : "eye-outline"}
-                    size={getFontSize(3)}
-                    color={"#BDC3C4"}
-                    style={styles.icon}
-                    onPress={() => setHideCnfPass(!hideCnfPass)}
-                  />
-                )}
+                name={hideCnfPass ? eye : eyeSlash}
+                size={getFontSize(2.5)}
+                color={"blue"}
+                style={styles.icon}
+                onPress={() => setHideCnfPass(!hideCnfPass)}
               />
             }
             onFocus={() => setState({ ...state, cnfrPasswordError: "" })}
@@ -281,9 +331,9 @@ const ChangePassword = ({ navigation }) => {
             text="Update Password"
             btnStyle={{
               ...GernalStyle.btn,
-              backgroundColor:colors.buttonColor,
+              backgroundColor: colors.buttonColor,
               position: "absolute",
-              top: getHeight(5), 
+              top: getHeight(3.5),
             }}
             btnTextStyle={GernalStyle.btnText}
           />

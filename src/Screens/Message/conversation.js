@@ -9,6 +9,7 @@ import {
   Linking,
   SafeAreaView,
   StatusBar,
+  Platform,
 } from "react-native";
 import DocumentPicker from "react-native-document-picker";
 import { Bubble, GiftedChat } from "react-native-gifted-chat";
@@ -371,9 +372,14 @@ const ConversationScreen = ({ navigation, route }) => {
   }, [messagesAll]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#333333" }}>
-      <StatusBar barStyle="light-content" hidden={false} translucent={true} />
-      <View style={{ backgroundColor: "#333333" }}>
+    <SafeAreaView style={Platform.OS==='android'?{ flex: 1, backgroundColor: "#333333",marginTop:getFontSize(3)}:{flex: 1, backgroundColor: "#333333"}}>
+      {/* <StatusBar barStyle="light-content" hidden={false} translucent={true}/> */}
+      {/* <GeneralStatusBar
+        barStyle="light-content"
+        hidden={false}
+        backgroundColor={colors.primary}
+        translucent={true}
+      /> */}
         <HeaderBottom
           title={channelName}
           LeftIcon={
@@ -397,7 +403,6 @@ const ConversationScreen = ({ navigation, route }) => {
             alignSelf: "center",
           }}
         />
-      </View>
       <ImagePickerModal
         visible={pickerModalVisibile}
         hideVisible={() => setPickerModalVisibile(false)}
@@ -749,7 +754,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: getWidth(2),
     alignSelf: "center",
     width: getWidth(95),
-    height: getHeight(8),
+    height: getHeight(7),
     flexDirection: "row",
     alignItems: "center",
   },

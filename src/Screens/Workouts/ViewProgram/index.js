@@ -23,6 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../../Redux/actions/GernalActions";
 import { ApiCall } from "../../../Services/Apis";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import HeaderBottom from "../../../Components/HeaderBottom";
 
 const ViewProgram = ({ route }) => {
   const navigation = useNavigation();
@@ -74,7 +75,7 @@ const ViewProgram = ({ route }) => {
         backgroundColor={colors.primary}
         translucent={true}
       />
-      <Header
+      <HeaderBottom
         //backAngel={true}
         title={"View Program"}
         //  onPress={() => navigation.goBack()}
@@ -83,6 +84,7 @@ const ViewProgram = ({ route }) => {
             <AntDesign name={"left"} size={30} color="#ffff" />
           </TouchableOpacity>
         }
+        RightIcon={<View/>}
       />
       {/* <View style={styles.spacebet}>
         <Text style={styles.chest}>Chest & Shoulders</Text>

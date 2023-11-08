@@ -37,7 +37,7 @@ const Help = () => {
             name={"arrow-back"}
             size={25}
             color={"#ffff"}
-            onPress={() => navigation.openDrawer()}
+            onPress={() => navigation.goBack()}
           />
         }
         RightIcon={<View />}

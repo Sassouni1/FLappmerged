@@ -12,7 +12,7 @@ import { GernalStyle } from "../../constants/GernalStyle";
 import GeneralStatusBar from "../../Components/GeneralStatusBar";
 // import AppHeader from '../../Components/AppHeader';
 import Entypo from "react-native-vector-icons/Entypo";
-import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
+import { getFontSize, getHeight, getWidth, timeSince } from "../../../utils/ResponsiveFun";
 import { ChatUser1, ChatUserBtn } from "../../assets/images";
 import Userb from "../../assets/images/userb.svg";
 import { useNavigation } from "@react-navigation/native";
@@ -136,9 +136,9 @@ const Messages = () => {
                 <Text style={styles.username}>{item?.admin?.full_name}</Text>
                 <Text style={styles.time}>
                   {item?.messages.length > 0
-                    ? new Date(
+                    ? timeSince(new Date(
                         item?.messages[item?.messages.length - 1].date
-                      ).toLocaleTimeString()
+                      ))
                     : null}
                 </Text>
               </View>
@@ -197,7 +197,7 @@ const Messages = () => {
                 <Text style={styles.username}>{"App Comunity"}</Text>
                 <Text style={styles.time}>
                   {item?.messages
-                    ? new Date(item?.last_message?.date).toLocaleTimeString()
+                    ? timeSince(new Date(item?.last_message?.date))
                     : null}
                 </Text>
               </View>
@@ -284,9 +284,9 @@ const Messages = () => {
                       </Text>
                       <Text style={styles.time}>
                         {item?.messages.length > 0
-                          ? new Date(
+                          ? timeSince( new Date(
                               item?.messages[item?.messages.length - 1].date
-                            ).toLocaleTimeString()
+                            ))
                           : null}
                       </Text>
                     </View>
