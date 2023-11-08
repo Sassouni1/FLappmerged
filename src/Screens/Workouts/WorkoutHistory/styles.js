@@ -20,6 +20,14 @@ export const styles = StyleSheet.create({
       justifyContent: 'space-between',
       marginTop: getHeight(3),
     },
+    thumbnail: {
+      backgroundColor: colors.white,
+      justifyContent: 'center',
+      height:65,
+      width: 85,
+      borderRadius: 10,
+      alignItems: 'center',
+    },
     chest: {
       color: colors.white,
       fontSize: getFontSize(2.8),

@@ -23,9 +23,9 @@ export const styles = StyleSheet.create({
     thumbnail: {
       backgroundColor: colors.white,
       justifyContent: 'center',
-      height: 80,
-      width: 80,
-      borderRadius: getFontSize(1),
+      height:65,
+      width: 85,
+      borderRadius: 10,
       alignItems: 'center',
     },
     date: {
@@ -134,12 +134,9 @@ export const styles = StyleSheet.create({
       fontFamily: fonts.Re,
     },
     total: {
-      //   fontSize: getFontSize(1.5),
-      fontSize: getFontSize(1.3),
-  
+      fontSize: getFontSize(1.7),
       color: colors.graytext5,
       fontFamily: fonts.Re,
-      width: getWidth(70),
     },
     heading: {
       fontSize: getFontSize(2.2),

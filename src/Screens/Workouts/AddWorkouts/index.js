@@ -42,6 +42,8 @@ const AddWorkouts = ({ data }) => {
 
   const token = useSelector((state) => state.auth.userToken);
   const user = useSelector((state) => state.auth.userData);
+const loader=useSelector((state)=>state.gernal.loader)
+
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const [assigWorkout, setAssigWorkout] = useState([]);
@@ -52,7 +54,7 @@ const AddWorkouts = ({ data }) => {
 
   const handleDateChange = (selectedDate) => {
     setSelectedDate(selectedDate);
-
+dispatch(setLoader(true))
     getSingleExcercise(selectedDate);
   };
 
@@ -73,15 +75,28 @@ const AddWorkouts = ({ data }) => {
         dispatch(setLoader(false));
         setAssigWorkout([]);
         console.log("errorrrr in calenders");
-        alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        // alert(res?.response?.message, [
+        //   { text: "OK", onPress: () => console.log("OK Pressed") },
+        // ]);
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
     }
   };
-
+  const getUnit = (set) => {
+    console.log('set',set)
+    if (set.weight) {
+      return `${set.weight} kg`;
+    } else if (set.seconds) {
+      return `${set.seconds} seconds`;
+    } else if (set.distance) {
+      return `${set.distance} meters`;
+    }else if (set.reps) {
+      return `${set.reps} reps ${set.lebs} lebs`;
+    } else {
+      return "N/A"; // You can change this to a default value if needed
+    }
+  };
   useEffect(() => {
     dispatch(setLoader(true));
     getSingleExcercise(selectedDate);
@@ -115,8 +130,7 @@ const AddWorkouts = ({ data }) => {
         dateNameStyle={{ color: colors.white }}
         iconContainer={{ flex: 0.1 }}
       />
-
-      <FlatList
+<FlatList
         data={assigWorkout?.innerWorkout}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
@@ -131,9 +145,9 @@ const AddWorkouts = ({ data }) => {
               height: getHeight(50),
             }}
           >
-            <Text style={{ fontSize: getFontSize(2), color: colors.graytext5 }}>
+            {loader?null:<Text style={{ fontSize: getFontSize(2), color: colors.graytext5 }}>
               No workout found on selected date
-            </Text>
+            </Text>}
           </View>
         )}
         refreshing={false}
@@ -149,6 +163,7 @@ const AddWorkouts = ({ data }) => {
                       justifyContent: "space-between",
                       paddingHorizontal: getWidth(3),
                       marginBottom: getHeight(1),
+                      marginTop:getHeight(1.8)
                     }}
                   >
                     <Text
@@ -181,7 +196,7 @@ const AddWorkouts = ({ data }) => {
                   {item.exercise.map((ex) => (
                     <TouchableOpacity
                       onPress={() =>
-                        navigation.navigate("StartWorkout", {
+                        navigation.navigate("WorkoutSet", {
                           workoutId: assigWorkout?._id,
                           innerWorkoutId: item?._id,
                           exerciseId: ex?._id,
@@ -205,19 +220,30 @@ const AddWorkouts = ({ data }) => {
                         source={require("../../../assets/images/wheelStrech.png")}
                       /> */}
                        <View style={styles.thumbnail}>
-                      <PlayerSvg height={20} width={20} />
+                      <PlayerSvg height={30} width={30} />
                     </View>
                       {/* {console.log('ex',ex)} */}
                       <View style={{ marginLeft: getWidth(2) }}>
                         <Text style={styles.heading}>{ex?.exercise_name}</Text>
-                        <Text
-                          style={{
-                            ...styles.total,
-                            marginTop: getHeight(0.6),
-                          }}
-                        >
-                          {ex?.description}
-                        </Text>
+                        
+                        <View style={{flexDirection:"row",marginTop:getFontSize(0.5)}}>
+                    <Text style={{ ...styles.total, fontSize: getFontSize(1.5) }}>
+                      {ex?.no_of_sets} sets
+                    </Text>
+                   
+                    {ex?.sets.map((set, index) => (
+                      <Text
+                        style={{
+                          // ...styles.text,
+                          fontSize: getFontSize(1.5),
+                          color: colors.graytext5,
+                        }}
+                        key={index}
+                      >
+                        {` `}|{` `}{getUnit(set)}
+                      </Text>
+                    ))}
+                    </View>
                       </View>
                     </TouchableOpacity>
                   ))}
@@ -226,7 +252,7 @@ const AddWorkouts = ({ data }) => {
           );
         }}
       />
-      <Button
+      {assigWorkout?.innerWorkout&&assigWorkout?.innerWorkout.length>0?<Button
         text={"Start workout"}
         onPress={() =>
           navigation.navigate("StartWorkout", {
@@ -241,7 +267,7 @@ const AddWorkouts = ({ data }) => {
           bottom: getHeight(2),
         }}
         btnTextStyle={GernalStyle.btnText}
-      />
+      />:null }
     </View>
   );
 };

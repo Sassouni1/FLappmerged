@@ -16,11 +16,16 @@ import Excercises from '../../Screens/Excersises';
 import Skills from '../../Screens/Skills';
 import Messages from '../../Screens/Messages';
 import Workouts from '../../Screens/Workouts';
+import { useSelector } from 'react-redux';
+import AddWorkouts from '../../Screens/Workouts/AddWorkouts';
+import WorkoutHistory from '../../Screens/Workouts/WorkoutHistory';
 
 
 const Tab = createBottomTabNavigator();
 
 export default function BottomTab() {
+  const user=useSelector((state)=>state.auth.userData)
+  console.log('user',user)
   return (
     <Tab.Navigator
 
@@ -58,7 +63,7 @@ export default function BottomTab() {
       />
       <Tab.Screen
         name="Workouts"
-        component={Workouts}
+        component={user?.plan_id?WorkoutHistory:Workouts}
         options={{
           headerShown: false,
 
