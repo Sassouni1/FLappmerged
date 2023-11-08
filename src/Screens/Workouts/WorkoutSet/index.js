@@ -189,7 +189,7 @@ const WorkoutSet = ({ route }) => {
           style={{ marginTop: getHeight(3) }}
         /> */}
         <View style={{ paddingHorizontal: getWidth(3) }}>
-          <View style={styles.repsCon}>
+          {/* <View style={styles.repsCon}>
             <Text style={styles.count}>1</Text>
             <View style={styles.whiteCon}>
               <View>
@@ -211,8 +211,40 @@ const WorkoutSet = ({ route }) => {
             <View style={styles.btng}>
               <View style={styles.btnhor}></View>
             </View>
+          </View> */}
+
+
+          {exercise?.sets?.map((set, index) => (
+          <View key={index} style={{ paddingHorizontal: getWidth(3) }}>
+            <View style={styles.repsCon}>
+              <Text style={styles.count}>{index + 1}</Text>
+              <View style={styles.whiteCon}>
+                <View>
+                  <Text style={styles.numbr}>{set.reps}</Text>
+                  <Text style={styles.reps}>{set.parameter}</Text>
+                </View>
+                <View style={styles.horizental}></View>
+                <View>
+                  <Text style={styles.dashes}>{set.weight}</Text>
+                  <Text style={styles.lbs}>LBS</Text>
+                </View>
+              </View>
+              <View style={styles.tickCon}>
+                <RightIcon height={15} width={15} />
+              </View>
+            </View>
+            <View style={styles.spacebet}>
+              <Text style={styles.rest}>{set.rest_time} rest</Text>
+              <View style={styles.btng}>
+                <View style={styles.btnhor}></View>
+              </View>
+            </View>
           </View>
-          <View style={styles.repsCon}>
+        ))}
+
+
+
+          {/* <View style={styles.repsCon}>
             <Text style={styles.count}>2</Text>
             <View style={styles.whiteCon}>
               <View>
@@ -228,11 +260,11 @@ const WorkoutSet = ({ route }) => {
             <View style={styles.tickCon}>
               <RightIcon height={15} width={15} />
             </View>
-          </View>
-          <View style={styles.spabet}>
+          </View> */}
+          {/* <View style={styles.spabet}>
             <Text style={styles.rest2}>60s rest</Text>
             <View style={styles.betww}></View>
-          </View>
+          </View> */}
         </View>
         <View style={{ height: getHeight(15) }}></View>
       </ScrollView>
