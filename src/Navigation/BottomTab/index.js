@@ -32,13 +32,24 @@ export default function BottomTab() {
       tabBarOptions={{
         activeTintColor: '#F79300',
         inactiveTintColor: 'white',
+       
+
         
      }}
       screenOptions={{
+        
         tabBarStyle: {
           headerShown: false,
           backgroundColor:'#0B0B0D',
+          // marginBottom:getHeight(1)
+          height:getFontSize(9),
+          // alignItems:'flex-start',
+          // justifyContent:'space-evenly'
+       
+          paddingBottom:getFontSize(2.5),
+          paddingTop:getFontSize(0.5)
         },
+        
       }}
       options={{headerShown: false}}
    

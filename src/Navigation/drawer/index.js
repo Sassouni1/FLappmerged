@@ -110,8 +110,8 @@ function CustomDrawerContent(props) {
   const user = useSelector((state) => state.auth.userData);
   const { height } = useWindowDimensions();
   const dispatch = useDispatch();
-  const marginTop = Platform.OS === "android" ? getHeight(-1) : 0;
-  const margin = Platform.OS === "android" ? getHeight(-0.5) : height * 0.03;
+  const marginTop = Platform.OS === "android" ? getHeight(-2) : 0;
+  const margin = Platform.OS === "android" ? getHeight(1.9) : height * 0.026;
  // const marginBo = Platform.OS === "android" ? getHeight(-0.5) : height * 0.03;
 
   return (
@@ -145,7 +145,7 @@ function CustomDrawerContent(props) {
         />
 
         <DrawerItem
-        style={{marginTop: getHeight(-0.7)}}
+        style={{marginTop: getHeight(-1)}}
           label={"Term of Use"}
           labelStyle={{ fontFamily: "Ubuntu-Bold" }}
           onPress={() => navigation.navigate("TermOfUse")}
@@ -156,7 +156,7 @@ function CustomDrawerContent(props) {
         />
 
         <DrawerItem
-        style={{marginTop: getHeight(-0.7),marginBottom:getHeight(2)}}
+        style={{marginTop: getHeight(-1),marginBottom:getHeight(2)}}
           label={"About this app"}
           labelStyle={{ fontFamily: "Ubuntu-Bold" }}
           onPress={() => navigation.navigate("About")}

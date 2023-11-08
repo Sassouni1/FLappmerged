@@ -198,7 +198,7 @@ const ContactUs = () => {
           activeUnderlineColor="#BDC3C4"
           activeOutlineColor="#BDC3C4"
           textColor="white"
-          style={{...GernalStyle.input,marginTop:getHeight(2)}}
+          style={{...GernalStyle.input,marginTop:getHeight(1)}}
           ref={inputRefs.email}
           returnKeyType={"next"}
           onChangeText={(email) => changeHandler("email", email.trim())}
@@ -265,7 +265,7 @@ const ContactUs = () => {
           activeUnderlineColor="#BDC3C4"
           activeOutlineColor="#BDC3C4"
           textColor="white"
-          style={{...GernalStyle.input,marginTop: getHeight(1.5),height:getHeight(15)}}
+          style={{...GernalStyle.input,marginTop: getHeight(1),height:getHeight(15)}}
           ref={inputRefs.question}
           value={state.question}
           returnKeyType={"send"}
