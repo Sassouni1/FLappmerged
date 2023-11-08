@@ -48,6 +48,7 @@ import PrivacyPolicy from '../../Screens/PrivacyPolicy';
 import AllMember from '../../Screens/Messages/AppCommunity/AllMember';
 import TermOfUse from '../../Screens/TermOfUse';
 import About from '../../Screens/About';
+import CompleteWorkout from '../../Screens/Workouts/CompleteWorkout';
 
 const stack = createNativeStackNavigator();
 const HomeStack = () => {
@@ -265,6 +266,13 @@ const HomeStack = () => {
         }}
         name="WorkoutSet"
         component={WorkoutSet}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="CompleteWorkout"
+        component={CompleteWorkout}
       />
        <stack.Screen
         options={{
