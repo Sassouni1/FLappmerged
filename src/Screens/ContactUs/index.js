@@ -245,11 +245,23 @@ const ContactUs = () => {
           A member of our support staff will respond as soon as possible.
         </Text>
       </KeyboardAwareScrollView>
-      <Button
+      {/* <Button
         text={'Submit'}
         btnStyle={{position: 'absolute', bottom: getHeight(4),width:getWidth(90),height:getHeight(6),justifyContent:"center",alignItems:"center",margin:getFontSize(2)}}
         onPress={()=>ContectToUser()}
-      />
+      /> */}
+       <Button
+            onPress={()=>ContectToUser()}
+            text="Submit"
+            btnStyle={{
+              ...GernalStyle.btn,
+              backgroundColor:colors.buttonColor,
+             // marginBottom:getFontSize(10) 
+             position: "absolute",
+             bottom: getHeight(5),
+            }}
+            btnTextStyle={GernalStyle.btnText}
+          />
     </View>
   );
 };

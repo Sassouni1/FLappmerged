@@ -281,6 +281,9 @@ const ChangePassword = ({ navigation }) => {
             text="Update Password"
             btnStyle={{
               ...GernalStyle.btn,
+              backgroundColor:colors.buttonColor,
+              position: "absolute",
+              top: getHeight(5), 
             }}
             btnTextStyle={GernalStyle.btnText}
           />

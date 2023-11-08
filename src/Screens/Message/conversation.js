@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect, useRef} from 'react';
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,286 +9,279 @@ import {
   Linking,
   SafeAreaView,
   StatusBar,
-} from 'react-native';
-import DocumentPicker from 'react-native-document-picker';
-import {Bubble, GiftedChat} from 'react-native-gifted-chat';
-import GeneralStatusBar from '../../Components/GeneralStatusBar';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {getFontSize, getHeight, getWidth} from '../../../utils/ResponsiveFun';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import {ApiCall} from '../../Services/Apis';
-import {useDispatch, useSelector} from 'react-redux';
-import Feather from 'react-native-vector-icons/Feather';
-import ImageModal from 'react-native-image-modal';
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import {SvgUri} from 'react-native-svg';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+} from "react-native";
+import DocumentPicker from "react-native-document-picker";
+import { Bubble, GiftedChat } from "react-native-gifted-chat";
+import GeneralStatusBar from "../../Components/GeneralStatusBar";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import { ApiCall } from "../../Services/Apis";
+import { useDispatch, useSelector } from "react-redux";
+import Feather from "react-native-vector-icons/Feather";
+import ImageModal from "react-native-image-modal";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { SvgUri } from "react-native-svg";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 
-import fs from 'react-native-fs';
+import fs from "react-native-fs";
 import {
   getChats,
   setAllSms,
   setLoader,
-} from '../../Redux/actions/GernalActions';
-import {IMAGE_URL, SOCKET_URL} from '../../Services/Constants';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Header from '../../Components/Header';
-import {Divider} from 'react-native-paper';
-import {GernalStyle} from '../../constants/GernalStyle';
-import { colors } from '../../constants/colors';
-import { CameraIcon, PdfIcon, SendIcon } from '../../assets/images';
-import { fonts } from '../../constants/fonts';
-import ImagePickerModal from '../../Components/ImagePickerModal';
-import { captureImage, chooseImageGallery } from '../../../utils/ImageAndCamera';
+} from "../../Redux/actions/GernalActions";
+import { IMAGE_URL, SOCKET_URL } from "../../Services/Constants";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Header from "../../Components/Header";
+import { Divider } from "react-native-paper";
+import { GernalStyle } from "../../constants/GernalStyle";
+import { colors } from "../../constants/colors";
+import { CameraIcon, PdfIcon, SendIcon } from "../../assets/images";
+import { fonts } from "../../constants/fonts";
+import ImagePickerModal from "../../Components/ImagePickerModal";
+import {
+  captureImage,
+  chooseImageGallery,
+} from "../../../utils/ImageAndCamera";
+import HeaderBottom from "../../Components/HeaderBottom";
 
-const {io} = require('socket.io-client');
+const { io } = require("socket.io-client");
 const socket = io(SOCKET_URL);
 
-const ConversationScreen = ({navigation, route}) => {
-  const {channelId, channelName, reciver, sender, chatRoomType} =
+const ConversationScreen = ({ navigation, route }) => {
+  const { channelId, channelName, reciver, sender, chatRoomType } =
     route.params;
 
   const dispatch = useDispatch();
-  const messagesAll = useSelector(state => state.gernal.allSms);
+  const messagesAll = useSelector((state) => state.gernal.allSms);
   const [pickerModalVisibile, setPickerModalVisibile] = useState(false);
 
   const [messages, setMessages] = useState([]);
-  const token = useSelector(state => state.auth.userToken);
-  const user = useSelector(state => state.auth.userData);
-  const [sms, setSms] = useState('');
+  const token = useSelector((state) => state.auth.userToken);
+  const user = useSelector((state) => state.auth.userData);
+  const [sms, setSms] = useState("");
 
+  const sendChat = async (sms) => {
+    console.log("socket emit sms", sms);
+    const date = new Date();
+    if (chatRoomType == "groupChat") {
+      socket.emit("group-chat", {
+        text: sms,
+        groupChatId: channelId,
+        senderId: sender?._id,
+        date: date,
+      });
+    } else if (chatRoomType == "chat") {
+      socket.emit("chat", {
+        text: sms,
+        chatroomId: channelId,
+        senderId: sender?._id,
+        date: date,
+      });
+    }
 
-  const sendChat = async sms => {
-    console.log('socket emit sms', sms);
-   const date=new Date()
-   if(chatRoomType=='groupChat'){
-    socket.emit('group-chat', {
-      text: sms,
-      groupChatId: channelId,
-      senderId: sender?._id,
-      date: date,
-    });
-  }else if(chatRoomType=='chat'){
-    
-    socket.emit('chat', {
-      text: sms,
-      chatroomId: channelId,
-      senderId: sender?._id,
-      date: date,
-    });
-  }
-  
-    setSms('');
+    setSms("");
   };
 
+  const UploadFile = async () => {
+    try {
+      const res = await DocumentPicker.pickSingle({
+        type: [DocumentPicker.types.pdf],
+      });
+      const uri =
+        Platform.OS === "ios" ? res.uri.replace("file://", "") : res.uri;
+      const Base64 = await fs.readFile(uri, "base64");
 
+      if (chatRoomType == "groupChat") {
+        socket.emit(
+          "mob-upload-groupchat",
+          Base64,
+          res?.name,
+          res?.type,
+          sender?._id,
+          channelId,
+          (status) => {
+            console.log("file...", status);
+          }
+        );
+      } else if (chatRoomType == "chat") {
+        socket.emit(
+          "mob-upload",
+          Base64,
+          res?.name,
+          res?.type,
+          sender?._id,
+          channelId,
+          (status) => {
+            console.log("file...", status);
+          }
+        );
+      }
+    } catch (err) {
+      console.log("ERROR is ", err);
+      if (DocumentPicker.isCancel(err)) {
+      } else {
+        throw err;
+      }
+    }
+  };
 
-
-const UploadFile = async () => {
-  try {
-    const res = await DocumentPicker.pickSingle({
-      type: [DocumentPicker.types.pdf],
-    });
+  const uploadFromCamera = async () => {
+    const res = await captureImage();
+    if (res.status == false) {
+      SimpleToast.show(res.error);
+      return;
+    }
     const uri =
-      Platform.OS === 'ios' ? res.uri.replace('file://', '') : res.uri;
-    const Base64 = await fs.readFile(uri, 'base64');
+      Platform.OS === "ios"
+        ? res?.data?.uri.replace("file://", "")
+        : res?.data?.uri;
+    const Base64 = await fs.readFile(uri, "base64");
 
-    if(chatRoomType=='groupChat'){
+    const imageObject = {
+      uri: res.data.uri,
+      type: res.data.type,
+      name: res.data.name,
+    };
+
+    setPickerModalVisibile(false);
+    if (chatRoomType == "groupChat") {
       socket.emit(
-        'mob-upload-groupchat',
+        "mob-upload-groupchat",
         Base64,
-        res?.name,
-        res?.type,
+        imageObject?.name,
+        imageObject?.type,
         sender?._id,
         channelId,
-        status => {
-          console.log('file...', status);
-        },
+        (status) => {
+          console.log("image", status);
+        }
       );
-    }else if(chatRoomType=='chat'){
+    } else if (chatRoomType == "chat") {
       socket.emit(
-        'mob-upload',
+        "mob-upload",
         Base64,
-        res?.name,
-        res?.type,
+        imageObject?.name,
+        imageObject?.type,
         sender?._id,
         channelId,
-        status => {
-          console.log('file...', status);
-        },
+        (status) => {
+          console.log("image", status);
+        }
       );
     }
-   
-  } catch (err) {
-    console.log('ERROR is ', err);
-    if (DocumentPicker.isCancel(err)) {
-    } else {
-      throw err;
+  };
+
+  // upload from gallery
+  const uploadFromGallry = async () => {
+    const res = await chooseImageGallery();
+
+    if (res.status == false) {
+      SimpleToast.show(res.error);
+      return;
     }
-  }
-};
+    console.log("image response", res);
+    const uri =
+      Platform.OS === "ios"
+        ? res?.data?.uri.replace("file://", "")
+        : res?.data?.uri;
+    const Base64 = await fs.readFile(uri, "base64");
+    const imageObject = {
+      uri: res.data.uri,
+      type: res.data.type,
+      name: res.data.name,
+    };
+    console.log("imageObject", imageObject);
 
-const uploadFromCamera = async () => {
-  const res = await captureImage();
-  if (res.status == false) {
-    SimpleToast.show(res.error);
-    return;
-  }
-  const uri =
-    Platform.OS === 'ios'
-      ? res?.data?.uri.replace('file://', '')
-      : res?.data?.uri;
-  const Base64 = await fs.readFile(uri, 'base64');
+    setPickerModalVisibile(false);
+    console.log("started");
+    if (chatRoomType == "groupChat") {
+      socket.emit(
+        "mob-upload-groupchat",
+        Base64,
+        //imageObject?.uri,
+        imageObject?.name,
+        imageObject?.type,
+        sender?._id,
+        channelId,
+        (status) => {
+          console.log("image", status);
+        }
+      );
+    } else if (chatRoomType == "chat") {
+      socket.emit(
+        "mob-upload",
+        Base64,
+        //imageObject?.uri,
+        imageObject?.name,
+        imageObject?.type,
+        sender?._id,
+        channelId,
+        (status) => {
+          console.log("image", status);
+        }
+      );
+    }
 
-  const imageObject = {
-    uri: res.data.uri,
-    type: res.data.type,
-    name: res.data.name,
+    console.log("image end");
   };
 
-  setPickerModalVisibile(false);
-  if(chatRoomType=='groupChat'){
-    socket.emit(
-      'mob-upload-groupchat',
-      Base64,
-      imageObject?.name,
-      imageObject?.type,
-      sender?._id,
-      channelId,
-      status => {
-        console.log('image', status);
-      },
-    );
-  }else if(chatRoomType=='chat'){
-    socket.emit(
-      'mob-upload',
-      Base64,
-      imageObject?.name,
-      imageObject?.type,
-      sender?._id,
-      channelId,
-      status => {
-        console.log('image', status);
-      },
-    );
-  }
-  
-};
-
-// upload from gallery
-const uploadFromGallry = async () => {
-  const res = await chooseImageGallery();
- 
-  if (res.status == false) {
-    SimpleToast.show(res.error);
-    return;
-  }
-  console.log('image response', res);
-  const uri =
-    Platform.OS === 'ios'
-      ? res?.data?.uri.replace('file://', '')
-      : res?.data?.uri;
-  const Base64 = await fs.readFile(uri, 'base64');
-  const imageObject = {
-    uri: res.data.uri,
-    type: res.data.type,
-    name: res.data.name,
-  };
-  console.log('imageObject', imageObject);
- 
-  setPickerModalVisibile(false);
-  console.log('started');
-  if(chatRoomType=='groupChat'){
-    socket.emit(
-      'mob-upload-groupchat',
-      Base64,
-      //imageObject?.uri,
-      imageObject?.name,
-      imageObject?.type,
-      sender?._id,
-      channelId,
-      status => {
-        console.log('image', status);
-      },
-    );
-  }else if(chatRoomType=='chat'){
-    socket.emit(
-      'mob-upload',
-      Base64,
-      //imageObject?.uri,
-      imageObject?.name,
-      imageObject?.type,
-      sender?._id,
-      channelId,
-      status => {
-        console.log('image', status);
-      },
-    );
-  }
- 
-  console.log('image end');
-};
-
-  const getAllSms = async item => {
+  const getAllSms = async (item) => {
     try {
       dispatch(setLoader(true));
-let res=null;
-      if(chatRoomType=='groupChat'){
-         res = await ApiCall({
+      let res = null;
+      if (chatRoomType == "groupChat") {
+        res = await ApiCall({
           route: `groupChat/group_chat_detail/${channelId}`,
-          verb: 'get',
+          verb: "get",
           token: token,
         });
-      
-      }else if(chatRoomType=='chat'){
-         res = await ApiCall({
-      
+      } else if (chatRoomType == "chat") {
+        res = await ApiCall({
           route: `chat/chat_detail/${channelId}`,
-          verb: 'get',
+          verb: "get",
           token: token,
         });
       }
 
-     
-      if (res?.status == '200') {
+      if (res?.status == "200") {
         dispatch(setLoader(false));
-        console.log('item', res);
+        console.log("item", res);
 
         const newArrayOfObj = res?.response?.chat?.messages.map(
-          ({sender: user, message: text, ...rest}) => ({
+          ({ sender: user, message: text, ...rest }) => ({
             user,
             text,
             ...rest,
-          }),
+          })
         );
         dispatch(setAllSms(newArrayOfObj));
       } else {
-        console.log('error', res);
+        console.log("error", res);
         dispatch(setLoader(false));
       }
     } catch (e) {
       dispatch(setLoader(false));
 
-      console.log('saga error -- ', e.toString());
+      console.log("saga error -- ", e.toString());
     }
   };
   useEffect(() => {
     getAllSms();
   }, []);
   useEffect(() => {
-    socket.emit('join', {
+    socket.emit("join", {
       senderId: sender?._id,
       chatroomId: channelId,
     });
-    if(chatRoomType=='groupChat'){
-     
-      socket.on('group-chat', payload => {
-        console.log('payload there', payload);
-  
-        const newArray = [payload].map(item =>
+    if (chatRoomType == "groupChat") {
+      socket.on("group-chat", (payload) => {
+        console.log("payload there", payload);
+
+        const newArray = [payload].map((item) =>
           item?.sender == sender?._id
             ? {
-                PdfFile: IMAGE_URL  + item?.file?.url,
+                PdfFile: IMAGE_URL + item?.file?.url,
                 fileType: item?.file?.file_type,
                 user: sender,
                 reciver: reciver,
@@ -297,51 +290,49 @@ let res=null;
                 _id: item?._id,
               }
             : {
-                PdfFile: IMAGE_URL  + item?.file?.url,
+                PdfFile: IMAGE_URL + item?.file?.url,
                 fileType: item?.file?.file_type,
                 user: reciver,
                 reciver: sender,
                 text: item?.message,
                 createdAt: item?.date,
                 _id: item?._id,
-              },
+              }
         );
-        setMessages(previousMessages =>
-          GiftedChat.append(previousMessages, newArray),
+        setMessages((previousMessages) =>
+          GiftedChat.append(previousMessages, newArray)
         );
       });
-   
-   }else if(chatRoomType=='chat'){
-    socket.on('chat', payload => {
-      console.log('payload there', payload);
+    } else if (chatRoomType == "chat") {
+      socket.on("chat", (payload) => {
+        console.log("payload there", payload);
 
-      const newArray = [payload].map(item =>
-        item?.sender == sender?._id
-          ? {
-              PdfFile: IMAGE_URL  + item?.file?.url,
-              fileType: item?.file?.file_type,
-              user: sender,
-              reciver: reciver,
-              text: item?.message,
-              createdAt: item?.date,
-              _id: item?._id,
-            }
-          : {
-              PdfFile: IMAGE_URL  + item?.file?.url,
-              fileType: item?.file?.file_type,
-              user: reciver,
-              reciver: sender,
-              text: item?.message,
-              createdAt: item?.date,
-              _id: item?._id,
-            },
-      );
-      setMessages(previousMessages =>
-        GiftedChat.append(previousMessages, newArray),
-      );
-    });
-   }
-    
+        const newArray = [payload].map((item) =>
+          item?.sender == sender?._id
+            ? {
+                PdfFile: IMAGE_URL + item?.file?.url,
+                fileType: item?.file?.file_type,
+                user: sender,
+                reciver: reciver,
+                text: item?.message,
+                createdAt: item?.date,
+                _id: item?._id,
+              }
+            : {
+                PdfFile: IMAGE_URL + item?.file?.url,
+                fileType: item?.file?.file_type,
+                user: reciver,
+                reciver: sender,
+                text: item?.message,
+                createdAt: item?.date,
+                _id: item?._id,
+              }
+        );
+        setMessages((previousMessages) =>
+          GiftedChat.append(previousMessages, newArray)
+        );
+      });
+    }
 
     return () => {
       dispatch(setAllSms([]));
@@ -351,14 +342,13 @@ let res=null;
   }, []);
   useEffect(() => {
     const sorted = messagesAll.sort(function (a, b) {
-
       return b.date.localeCompare(a.date);
     });
 
-    const newArray = sorted.map(item =>
+    const newArray = sorted.map((item) =>
       item?.user == sender?._id
         ? {
-            PdfFile: IMAGE_URL  + item?.file?.url,
+            PdfFile: IMAGE_URL + item?.file?.url,
             fileType: item?.file?.file_type,
             user: sender,
             reciver: reciver,
@@ -367,44 +357,44 @@ let res=null;
             _id: item?._id,
           }
         : {
-            PdfFile: IMAGE_URL+ item?.file?.url,
+            PdfFile: IMAGE_URL + item?.file?.url,
             fileType: item?.file?.file_type,
             user: reciver,
             reciver: sender,
             text: item?.text,
             createdAt: item?.date,
             _id: item?._id,
-          },
+          }
     );
 
     setMessages(newArray);
   }, [messagesAll]);
 
   return (
-    <SafeAreaView style={{flex: 1,backgroundColor:'#333333'}}>
-      <StatusBar
-   
-        barStyle="light-content"
-        hidden={false}
-        translucent={true}
-      />
-      <View style={{backgroundColor: '#333333'}}>
-        <Header
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#333333" }}>
+      <StatusBar barStyle="light-content" hidden={false} translucent={true} />
+      <View style={{ backgroundColor: "#333333" }}>
+        <HeaderBottom
           title={channelName}
-          
           LeftIcon={
-            <AntDesign onPress={()=>navigation.goBack()} name='left' style={{alignSelf:'center',marginRight:getWidth(4)}} color="white" size={20}/>
+            <AntDesign
+              onPress={() => navigation.goBack()}
+              name="left"
+              style={{ alignSelf: "center", marginRight: getWidth(4) }}
+              color="white"
+              size={20}
+            />
           }
-          RightIcon={<View/>}
+          RightIcon={<View />}
         />
         <Divider
           style={{
             height: 1,
-            backgroundColor: '#333333',
+            backgroundColor: "#333333",
             borderRadius: 10,
-            width: '100%',
+            width: "100%",
             marginTop: 15,
-            alignSelf: 'center',
+            alignSelf: "center",
           }}
         />
       </View>
@@ -412,17 +402,17 @@ let res=null;
         visible={pickerModalVisibile}
         hideVisible={() => setPickerModalVisibile(false)}
         galleryImage={() => uploadFromGallry()}
-        cameraImage={() => uploadFromCamera('image')}
+        cameraImage={() => uploadFromCamera("image")}
       />
-      <View style={{flex:1,bottom:getFontSize(1.5)}}>
-      <GiftedChat
-          renderBubble={props => {
+      <View style={{ flex: 1, bottom: getFontSize(1.5) }}>
+        <GiftedChat
+          renderBubble={(props) => {
             return (
               <Bubble
                 {...props}
                 wrapperStyle={{
                   right: {
-                    backgroundColor: 'orange',
+                    backgroundColor: "orange",
                     borderRadius: 5,
                   },
                   left: {
@@ -445,50 +435,55 @@ let res=null;
               />
             );
           }}
-          renderCustomView={props => {
+          renderCustomView={(props) => {
             //console.log('propssssss', props?.currentMessage);
             return (
               <View>
-                {props.currentMessage?.fileType == 'application/pdf' ? (
+                {props.currentMessage?.fileType == "application/pdf" ? (
                   <TouchableOpacity
                     style={props.containerStyle}
                     onPress={() => {
                       Linking.openURL(`${props.currentMessage?.PdfFile}`);
-                    }}>
-                    <View style={{width: getWidth(36)}}>
+                    }}
+                  >
+                    <View style={{ width: getWidth(36) }}>
                       <FontAwesome
                         name="file-pdf-o"
                         size={getFontSize(5)}
                         color={colors.white}
-                        style={{marginTop: getFontSize(1.5),marginLeft: getFontSize(1.5)}}
+                        style={{
+                          marginTop: getFontSize(1.5),
+                          marginLeft: getFontSize(1.5),
+                        }}
                       />
                       <Text
                         style={{
                           color: colors.white,
                           fontSize: getFontSize(1.5),
-                          fontWeight:"600",
-                          padding:getFontSize(1.5)
-                        }}>
+                          fontWeight: "600",
+                          padding: getFontSize(1.5),
+                        }}
+                      >
                         {props.currentMessage?.file?.name}
                       </Text>
                     </View>
                   </TouchableOpacity>
                 ) : null}
-                {props.currentMessage?.fileType == 'image/jpeg' ||
-                props.currentMessage?.fileType == 'image/png' ||
-                props.currentMessage?.fileType == 'image/jpg' ? (
+                {props.currentMessage?.fileType == "image/jpeg" ||
+                props.currentMessage?.fileType == "image/png" ||
+                props.currentMessage?.fileType == "image/jpg" ? (
                   <ImageModal
                     style={[styles.image, props.imageStyle]}
-                    resizeMode={'cover'}
+                    resizeMode={"cover"}
                     modalImageResizeMode="contain"
-                    source={{uri: props.currentMessage?.PdfFile}}
+                    source={{ uri: props.currentMessage?.PdfFile }}
                   />
                 ) : null}
-                {props.currentMessage?.fileType == 'image/svg+xml' ? (
+                {props.currentMessage?.fileType == "image/svg+xml" ? (
                   <SvgUri
                     height={100}
                     width={100}
-                    color={'red'}
+                    color={"red"}
                     style={[styles.image, props.imageStyle]}
                     uri={props.currentMessage?.PdfFile}
                   />
@@ -499,50 +494,52 @@ let res=null;
           renderInputToolbar={() => {
             return (
               // null
-              <View style={{...styles.inputCon}}>
+              <View style={{ ...styles.inputCon }}>
                 <View style={styles.textinputCon}>
                   <TextInput
                     style={{
-                      ...GernalStyle.textinput,
+                      ...GernalStyle.textInputMessage,
                       width: getWidth(60),
                       marginTop: 0,
                       paddingLeft: getWidth(3),
                     }}
                     value={sms}
-                    onChangeText={e => setSms(e)}
+                    onChangeText={(e) => setSms(e)}
                     onSubmitEditing={() => sendChat(sms)}
                     placeholder="Message to coach..."
                     placeholderTextColor={colors.graytext4}
                   />
                   <TouchableOpacity
-                    onPress={() => setPickerModalVisibile(true)}>
+                    onPress={() => setPickerModalVisibile(true)}
+                  >
                     <CameraIcon height={20} width={20} />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => UploadFile()}>
                     <PdfIcon
                       height={25}
                       width={25}
-                      style={{marginLeft: getWidth(2.5)}}
+                      style={{ marginLeft: getWidth(2.5) }}
                     />
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity
                   onPress={() => sendChat(sms)}
-                  style={styles.sendBtn}>
-                  <SendIcon height={25} width={25} />
+                  style={styles.sendBtn}
+                >
+                  <SendIcon height={25} width={25}/>
                 </TouchableOpacity>
               </View>
             );
           }}
           renderAvatarOnTop={true}
           // messagesContainerStyle={{marginTop: -getHeight(4)}}
-          keyboardShouldPersistTaps={'handled'}
+          keyboardShouldPersistTaps={"handled"}
           renderUsernameOnMessage
           showAvatarForEveryMessage={true}
           isKeyboardInternallyHandled
           showScrollIndicator={false}
           messages={messages}
-          onSend={messages => sendChat(messages)}
+          onSend={(messages) => sendChat(messages)}
           user={{
             _id: user?._id,
           }}
@@ -555,17 +552,17 @@ let res=null;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   headview: {
     height: getHeight(8),
 
-    flexDirection: 'row',
-    backgroundColor: '#182d4a',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    backgroundColor: "#182d4a",
+    justifyContent: "space-between",
     padding: 10,
-    alignItems: 'center',
-    shadowColor: '#126BB7',
+    alignItems: "center",
+    shadowColor: "#126BB7",
     shadowOffset: {
       width: 0,
       height: 20,
@@ -577,78 +574,78 @@ const styles = StyleSheet.create({
   },
   titletext: {
     fontSize: getFontSize(2.5),
-    fontFamily: 'Rubik-Medium',
-    color: '#182d4a',
+    fontFamily: "Rubik-Medium",
+    color: "#182d4a",
   },
   viewstyle: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: getWidth(5),
-    justifyContent: 'center',
+    justifyContent: "center",
     minHeight: getHeight(9),
     maxHeight: getHeight(9),
   },
   imageview2: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
   messagetext: {
     fontSize: getFontSize(2.2),
     width: getWidth(90),
-    fontFamily: 'Ubuntu-Bold',
+    fontFamily: "Ubuntu-Bold",
     marginLeft: getWidth(2),
-    color: 'white',
+    color: "white",
   },
-  selfimage: {width: 30, height: 30, marginRight: 10, borderRadius: 15},
+  selfimage: { width: 30, height: 30, marginRight: 10, borderRadius: 15 },
   imageviewstyle: {
     width: 40,
     borderRadius: 20,
     height: 40,
-    position: 'absolute',
+    position: "absolute",
     left: -50,
   },
   list: {
     paddingHorizontal: 17,
   },
   footer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     //height: getFontSize(20),
-    backgroundColor: '#4F4F4F',
+    backgroundColor: "#4F4F4F",
     paddingHorizontal: 15,
     padding: getFontSize(1),
     //marginTop: getFontSize(-1),
   },
   btnSend: {
-    backgroundColor: '#182d4a',
+    backgroundColor: "#182d4a",
     width: 50,
     height: 40,
     borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   iconSend: {
     width: 20,
     height: 20,
 
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   inputContainer: {
-    borderColor: 'black',
-    backgroundColor: '#4F4F4F',
+    borderColor: "black",
+    backgroundColor: "#4F4F4F",
     borderRadius: 10,
     borderWidth: 1,
     height: getFontSize(5),
     marginBottom: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
     marginRight: 10,
   },
   inputs: {
     height: 40,
     marginLeft: 16,
-    borderBottomColor: '#F6F6F6',
+    borderBottomColor: "#F6F6F6",
     flex: 1,
   },
   balloon: {
@@ -663,24 +660,24 @@ const styles = StyleSheet.create({
     margin: 3,
   },
   itemIn: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     marginLeft: 40,
   },
   itemOut: {
-    alignSelf: 'flex-end',
-    backgroundColor: '#EBF3F5',
+    alignSelf: "flex-end",
+    backgroundColor: "#EBF3F5",
   },
   time: {
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     margin: 15,
     fontSize: 12,
-    color: '#808080',
+    color: "#808080",
   },
   item: {
     marginVertical: 8,
     flex: 1,
-    flexDirection: 'row',
-    backgroundColor: '#eeeeee',
+    flexDirection: "row",
+    backgroundColor: "#eeeeee",
     borderRadius: 30,
     padding: 5,
   },
@@ -692,13 +689,13 @@ const styles = StyleSheet.create({
   seprator: {
     marginTop: getHeight(0.5),
     width: getWidth(95),
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   timText: {
     fontSize: getFontSize(2),
     color: colors.gray3,
     fontFamily: fonts.UMe,
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     marginBottom: getHeight(1),
     marginRight: getWidth(3),
   },
@@ -717,13 +714,13 @@ const styles = StyleSheet.create({
   },
   headerCon: {
     height: getHeight(10),
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   today: {
     fontSize: getFontSize(2),
     color: colors.graytext5,
-    alignSelf: 'center',
+    alignSelf: "center",
     fontFamily: fonts.UMe,
     marginTop: getHeight(2),
   },
@@ -731,34 +728,36 @@ const styles = StyleSheet.create({
     width: getWidth(15),
     backgroundColor: colors.greenlight,
     height: getHeight(7),
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginLeft: getWidth(1),
     borderRadius: 5,
+    marginBottom:getFontSize(2)
   },
   textinputCon: {
     width: getWidth(77),
     height: getHeight(7),
     backgroundColor: colors.secondary,
     borderRadius: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom:getFontSize(2)
   },
   inputCon: {
     // position: 'absolute',
     // bottom: getHeight(1.5),
     paddingHorizontal: getWidth(2),
-    alignSelf: 'center',
+    alignSelf: "center",
     width: getWidth(95),
     height: getHeight(8),
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   sendMsgCon: {
-    flexDirection: 'row-reverse',
-    alignItems: 'flex-end',
+    flexDirection: "row-reverse",
+    alignItems: "flex-end",
     width: getWidth(96),
-    alignSelf: 'center',
+    alignSelf: "center",
     marginTop: getHeight(1),
   },
   rightIconCon: {
@@ -767,8 +766,8 @@ const styles = StyleSheet.create({
     width: getWidth(8),
     borderRadius: 25,
     backgroundColor: colors.secondary,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   chaTcon: {
@@ -779,8 +778,8 @@ const styles = StyleSheet.create({
     marginLeft: getWidth(1),
   },
   insideCon: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     height: getHeight(12),
     paddingHorizontal: getWidth(5),
   },
@@ -793,15 +792,15 @@ const styles = StyleSheet.create({
     fontSize: getFontSize(2),
     color: colors.gray3,
     fontFamily: fonts.UMe,
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     marginBottom: getHeight(1),
     marginRight: getWidth(3),
   },
   recievedCon: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
+    flexDirection: "row",
+    alignItems: "flex-end",
     width: getWidth(96),
-    alignSelf: 'center',
+    alignSelf: "center",
     marginTop: getHeight(1),
   },
   image: {
@@ -809,7 +808,7 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 13,
     margin: 3,
-  },  
+  },
 });
 
 export default ConversationScreen;

@@ -57,4 +57,16 @@ export const GernalStyle = StyleSheet.create({
     fontSize:getFontSize(1.9),
     color:colors.graytext4
   },
+  textInputMessage:{
+    marginTop: getHeight(2.5),
+    backgroundColor: colors.secondary,
+    width: getWidth(93),
+    height:getHeight(7),
+    borderRadius:5,
+    paddingLeft:getHeight(2.5),
+    alignSelf:"center",
+    fontFamily:fonts.URe,
+    fontSize:getFontSize(1.9),
+    color:colors.graytext4,
+  },
 });

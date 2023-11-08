@@ -36,7 +36,7 @@ console.log('route?.params?.data',route?.params?.data);
 
   const [routes] = useState([
     {key: 'tab1', title: 'S&C Programs'},
-    {key: 'tab2', title: 'My calender'},
+    {key: 'tab2', title: 'My Calender'},
   ]);
 
   const renderScene = SceneMap({

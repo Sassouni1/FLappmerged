@@ -119,7 +119,7 @@ const UpdateProfiles = () => {
         formData.append("height", height);
         formData.append("weight", weight);
         formData.append("profile_image", imageObject);
-        console.log('Form Data',formData)
+        console.log("Form Data", formData);
 
         const res = await ApiCall({
           params: formData,
@@ -234,13 +234,15 @@ const UpdateProfiles = () => {
       <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
         <View style={{ marginTop: getHeight(2), alignSelf: "center" }}>
           <Image
-            style={{  width: 140,
+            style={{
+              width: 140,
               height: 130,
               marginTop: getHeight(3),
               borderRadius: 10,
-              alignItems: 'center',
-              justifyContent: 'center',
-              alignSelf: 'center'}}
+              alignItems: "center",
+              justifyContent: "center",
+              alignSelf: "center",
+            }}
             resizeMode={"cover"}
             source={
               imageSave
@@ -392,7 +394,12 @@ const UpdateProfiles = () => {
       <Button
         onPress={profileSetting}
         text="Update profile"
-        btnStyle={{ ...GernalStyle.btn, marginBottom: getHeight(9) }}
+        btnStyle={{
+          ...GernalStyle.btn,
+          backgroundColor: colors.buttonColor,
+          position: "absolute",
+          bottom: getHeight(5),
+        }}
         btnTextStyle={GernalStyle.btnText}
       />
     </View>
