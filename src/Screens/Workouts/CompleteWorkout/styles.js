@@ -38,7 +38,8 @@ export const styles = StyleSheet.create({
     color: colors.graytext4,
     fontFamily: fonts.URe,
     marginTop: getHeight(0.5),
-    textAlign:"center"
+    textAlign: "center",
+    //right:getFontSize(1.5)
   },
   dashes: {
     fontSize: getFontSize(2),
@@ -55,13 +56,13 @@ export const styles = StyleSheet.create({
     color: colors.graytext4,
     fontFamily: fonts.URe,
     marginTop: getHeight(0.5),
-    textAlign:"center"
+    textAlign: "center",
   },
   numbr: {
     fontSize: getFontSize(2),
     fontFamily: fonts.URe,
     color: colors.darktext,
-    marginLeft: getWidth(2),
+   // marginLeft: getWidth(-3),
   },
   count: {
     fontSize: getFontSize(2.2),
@@ -96,21 +97,34 @@ export const styles = StyleSheet.create({
   },
   videobtn: {
     width: getWidth(25),
-    height: getHeight(4),
+    //height: getHeight(4),
     borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
-   // backgroundColor: colors.primary,
-    position: "absolute",
-    bottom: getHeight(2.5),
-    left: getWidth(3),
+    // backgroundColor: colors.primary,
+    //position: "absolute",
+    //bottom: getHeight(2.5),
+    //left: getWidth(3),
+  },
+  overlayContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   flatchest: {
-    fontSize: 19,
+    fontSize: getFontSize(3),
     color: colors.white,
     fontFamily: fonts.UBo,
     position: "absolute",
     bottom: getHeight(7),
+    left: getWidth(3),
+  },
+  flatchest1: {
+    fontSize: getFontSize(2.5),
+    color: colors.white,
+    fontFamily: fonts.UBo,
+    position: "absolute",
+    bottom: getHeight(4),
     left: getWidth(3),
   },
   videotext: { fontSize: 10, fontFamily: fonts.UBo, color: colors.white },
@@ -176,9 +190,12 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.graytext5,
     backgroundColor: colors.white,
-    justifyContent: "space-around",
-    alignItems: "center",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
     flexDirection: "row",
+    paddingLeft: getFontSize(3),
+    paddingTop: getFontSize(0.5),
+    paddingBottom: getFontSize(0.5),
   },
   heading: {
     height: getHeight(3.5),
@@ -200,7 +217,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     height: getHeight(3),
     marginTop: getHeight(2.5),
-    marginLeft:getFontSize(2)
+    marginLeft: getFontSize(2),
   },
   rest: {
     fontFamily: fonts.UBo,
@@ -215,5 +232,22 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.secondary,
     flexDirection: "row",
     alignItems: "center",
+  },
+  playerbtn: {
+    height: getHeight(7),
+    width: getHeight(7),
+    borderRadius: getHeight(7) / 2,
+    backgroundColor: "rgba(255,255,255,0.4)",
+    //opacity: 0.5,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  rowDirection: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    width: "100%",
+   // marginTop:getFontSize(1),
+    right:getFontSize(2)
   },
 });

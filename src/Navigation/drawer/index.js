@@ -198,10 +198,10 @@ export default function MyDrawer() {
           drawerActiveTintColor: "#333333",
           drawerActiveBackgroundColor: "white",
           drawerIcon: ({ color, size, focuced }) => (
-            <Fontisto name={"home"} size={14} color={color} />
+            <Fontisto name={"home"} size={16} color={color} />
           ),
+          drawerLabelStyle:{ fontFamily: "Ubuntu-Bold", fontSize: getFontSize(1.7) , marginLeft:getFontSize(0.1)}
         }}
-        style={{ fontFamily: "Ubuntu-Bold", fontSize: 12 , marginRight:getFontSize(1.5)}}
         name="Home"
         component={BottomTab}
       />
@@ -212,10 +212,10 @@ export default function MyDrawer() {
           drawerActiveTintColor: "#333333",
           drawerActiveBackgroundColor: "white",
           drawerIcon: ({ color, size, focuced }) => (
-            <FontAwesome6 name="user-gear" size={18} color={"white"} style={{marginLeft:getFontSize(-0.3)}}/>
+            <FontAwesome6 name="user-gear" size={18} color={"white"} style={{marginLeft:getFontSize(-0.2)}}/>
           ),
+          drawerLabelStyle:{ fontFamily: "Ubuntu-Bold", fontSize: getFontSize(1.7), marginLeft:getFontSize(-0.3)}
         }}
-        style={{ fontFamily: "Ubuntu-Bold", fontSize: 12 }}
         name="Profile Settings"
         component={UpdateProfiles}
       />
@@ -228,8 +228,8 @@ export default function MyDrawer() {
           drawerIcon: ({ color, size, focuced }) => (
             <MaterialIcons name="lock-reset" size={30} color={"white"} style={{marginLeft:getFontSize(-1)}}/>
           ),
+          drawerLabelStyle:{ fontFamily: "Ubuntu-Bold", fontSize: getFontSize(1.7), marginLeft:getFontSize(-0.5)}
         }}
-        style={{ fontFamily: "Ubuntu-Bold", fontSize: 12 }}
         name="Change Password"
         component={ChangePassword}
       />
@@ -243,8 +243,8 @@ export default function MyDrawer() {
           drawerIcon: ({ color, size, focuced }) => (
             <Ionicons name="information-circle" size={25} color={"white"} style={{marginLeft:getFontSize(-0.5)}}/>
           ),
+          drawerLabelStyle:{ fontFamily: "Ubuntu-Bold", fontSize: getFontSize(1.7), marginLeft:getFontSize(-0.3)}
         }}
-        style={{ fontFamily: "Ubuntu-Bold", fontSize: 12 }}
         name="Help"
         component={Help}
       />

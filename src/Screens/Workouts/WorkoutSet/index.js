@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   ScrollView,
+  Image,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { GernalStyle } from "../../../constants/GernalStyle";
@@ -24,6 +25,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../../Redux/actions/GernalActions";
 import { ApiCall } from "../../../Services/Apis";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 
 const WorkoutSet = ({ route }) => {
   const navigation = useNavigation();
@@ -95,7 +98,7 @@ const WorkoutSet = ({ route }) => {
 
       if (res?.status == "200") {
         // setAssigWorkout(res?.response?.Workout[0]);
-        console.log("workout api response", res?.response);
+        console.log("workout api response", res?.response?.Exercise);
         setExercise(res?.response?.Exercise);
         dispatch(setLoader(false));
       } else {
@@ -109,6 +112,7 @@ const WorkoutSet = ({ route }) => {
   };
 
   useEffect(() => {
+    dispatch(setLoader(true));
     getSingleExcercise();
   }, []);
 
@@ -134,7 +138,7 @@ const WorkoutSet = ({ route }) => {
             ...styles.angel,
             justifyContent: "space-between",
             alignSelf: "center",
-            marginRight: getWidth(3),
+            //marginRight: getWidth(1),
             backgroundColor: "#000",
           }}
         >
@@ -162,13 +166,13 @@ const WorkoutSet = ({ route }) => {
             style={{ ...styles.togle, marginRight: getWidth(2) }}
             onPress={toggleTimer}
           >
-            {isRunning ? (
-              <PlayerSvg height={20} width={20} />
-            ) : (
-              <StopSvg height={20} width={20} />
-            )}
+             {isRunning ? (
+            <FontAwesome6 name={"pause"} size={20} color={'white'}/>
+          ) : (
+            <AntDesign name={"caretright"} size={22} color={'white'}/>
+          )}
 
-            <Text style={styles.start}>{isRunning ? "Start" : "Pause"}</Text>
+            <Text style={styles.start}>{isRunning ? "Pause" : "Start"}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -178,7 +182,13 @@ const WorkoutSet = ({ route }) => {
           style={styles.imgb}
           source={require("../../../assets/images/reps.png")}
         >
-          <Text style={styles.flatchest}>{exercise?.exercise_name}</Text>
+          {/* <View style={styles.playerbtn}>
+            <Image
+              resizeMode="center"
+              style={{ height: getHeight(3), width: getWidth(4) }}
+              source={require("../../../assets/images/player.png")}
+            />
+          </View> */}
           {/* <TouchableOpacity
             onPress={() =>
               navigation.navigate("VideoSkills", {
@@ -188,18 +198,24 @@ const WorkoutSet = ({ route }) => {
             }
             style={styles.videobtn}
           > */}
-          <AntDesign
-            name="youtube"
-            size={getFontSize(5)}
-            color={colors.white}
-            onPress={() =>
-              navigation.navigate("VideoSkills", {
-                video: exercise?.video,
-                name: exercise?.exercise_name,
-              })
-            }
-            style={styles.videobtn}
-          />
+          <View style={styles.overlayContainer}>
+            <FontAwesome
+              name="play-circle"
+              size={getFontSize(9)}
+              color="rgba(255,255,255,0.5)"
+              onPress={() =>
+                navigation.navigate("VideoSkills", {
+                  video: exercise?.video,
+                  name: exercise?.exercise_name,
+                })
+              }
+              style={styles.videobtn}
+            />
+          </View>
+          <View style={{height:getHeight(1)}}>
+          <Text style={styles.flatchest}>{exercise?.exercise_name}</Text>
+          <Text style={styles.flatchest1}>sets: {exercise?.no_of_sets}</Text>
+          </View>
           {/* </TouchableOpacity> */}
         </ImageBackground>
         {/* <HeadingText
@@ -215,28 +231,45 @@ const WorkoutSet = ({ route }) => {
                   {set?.parameter == "reps lebs" ||
                   set?.parameter == "reps" ||
                   set?.parameter == "lebs" ? (
-                    <View>
-                      <Text style={styles.numbr}>
-                        {set.reps} reps {set.lebs} lebs
-                      </Text>
-                      <Text style={styles.lbs}>{set.parameter}</Text>
+                    <View style={styles.rowDirection}>
+                      <View>
+                        <Text style={styles.numbr}>
+                          {set.reps} reps
+                          {/* {set.lebs} lebs */}
+                        </Text>
+                        <Text style={styles.lbs}>reps</Text>
+                      </View>
+                      <View style={styles.horizental}></View>
+
+                      <View>
+                        <Text style={styles.numbr}>
+                          {set.lebs} lebs
+                          {/* {set.lebs} lebs */}
+                        </Text>
+                        <Text style={styles.lbs}>lebs</Text>
+                      </View>
                     </View>
                   ) : set?.parameter == "weight" ? (
-                    <View>
+                    <View style={{...styles.rowDirection,marginTop:getFontSize(1),}}>
                       <Text style={styles.numbr}>{set.weight}kg</Text>
                       <Text style={styles.lbs}>{set.parameter}</Text>
                     </View>
                   ) : set?.parameter == "seconds" ? (
-                    <View>
+                    <View style={{...styles.rowDirection,marginTop:getFontSize(1),}}>
                       <Text style={styles.numbr}>{set.seconds}sec</Text>
                       <Text style={styles.lbs}>{set.parameter}</Text>
                     </View>
+                  ) : set?.parameter == "distance" ? (
+                    <View style={{...styles.rowDirection,marginTop:getFontSize(1),}}>
+                      <Text style={styles.numbr}>{set.distance}miles</Text>
+                      <Text style={styles.lbs}>{set.parameter}</Text>
+                    </View>
                   ) : null}
-                  <View style={styles.horizental}></View>
-                  <View>
+                  {/* <View style={styles.horizental}></View> */}
+                  {/* <View>
                     <Text style={styles.dashes}> ---</Text>
                     <Text style={styles.lbs}>LBS</Text>
-                  </View>
+                  </View> */}
                 </View>
                 <View style={styles.tickCon}>
                   <RightIcon height={15} width={15} />

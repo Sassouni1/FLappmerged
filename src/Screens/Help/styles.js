@@ -24,10 +24,11 @@ export const styles = StyleSheet.create({
     fontSize: getFontSize(2.3),
     fontFamily: fonts.Re,
     color: colors.white,
+    fontWeight:"700"
   },
   btnCon: {
     height: getHeight(7),
-    backgroundColor: colors.black2,
+    //backgroundColor: colors.black2,
     marginTop: getHeight(3),
     justifyContent: "center",
     alignItems: "center",

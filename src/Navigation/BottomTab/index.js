@@ -143,15 +143,14 @@ export default function BottomTab() {
       <Tab.Screen
         name="Activity"
         component={Activity}
-        tabBarOptions={{}}
         options={{
           headerShown: false,
           title: 'Activity',
           tabBarIcon: ({focused, color, size}) => (
             <MaterialIcons
             name="bar-chart"
-            size={22}
-            style={{marginTop:getFontSize(1)}}
+            size={27}
+            style={{marginTop:getFontSize(1),right:getFontSize(0.2)}}
             color={focused ? '#F79300' : 'white'}
           />
           ),

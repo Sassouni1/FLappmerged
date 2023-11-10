@@ -122,7 +122,7 @@ const Skills = () => {
       >
         <SearchSvg height={20} width={20} style={{ marginLeft: getWidth(6) }} />
         <TextInput
-          placeholder="Search a skill"
+          placeholder="Search an skill"
           placeholderTextColor={colors.graytext4}
           style={{
             ...GernalStyle.textinput,
@@ -165,9 +165,10 @@ const Skills = () => {
               />
             }
             showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => {
+            renderItem={({ item ,index}) => {
               return (
                 <View>
+                   {index > 0 && <Seprator />}
                   <TouchableOpacity
                     onPress={() =>
                       navigation.navigate("VideoSkills", {
@@ -189,7 +190,6 @@ const Skills = () => {
                       </Text>
                     </View>
                   </TouchableOpacity>
-                  <Seprator />
                 </View>
               );
             }}

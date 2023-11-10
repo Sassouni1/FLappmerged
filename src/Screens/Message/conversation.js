@@ -12,7 +12,7 @@ import {
   Platform,
 } from "react-native";
 import DocumentPicker from "react-native-document-picker";
-import { Bubble, GiftedChat } from "react-native-gifted-chat";
+import { Bubble, GiftedChat, Avatar } from "react-native-gifted-chat";
 import GeneralStatusBar from "../../Components/GeneralStatusBar";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
@@ -24,6 +24,7 @@ import ImageModal from "react-native-image-modal";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { SvgUri } from "react-native-svg";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import SimpleToast from "react-native-simple-toast";
 
 import fs from "react-native-fs";
 import {
@@ -247,7 +248,7 @@ const ConversationScreen = ({ navigation, route }) => {
 
       if (res?.status == "200") {
         dispatch(setLoader(false));
-        console.log("item", res);
+        console.log("responses of message", res?.response);
 
         const newArrayOfObj = res?.response?.chat?.messages.map(
           ({ sender: user, message: text, ...rest }) => ({
@@ -371,8 +372,55 @@ const ConversationScreen = ({ navigation, route }) => {
     setMessages(newArray);
   }, [messagesAll]);
 
+  const renderAvatar = (props) => {
+    const { currentMessage } = props;
+    //console.log("currentMessage", currentMessage);
+    const user = currentMessage.user;
+    const profileImage = user && user.profile_image;
+
+    return (
+      // <Avatar
+      //   {...props}
+      //   source={{ uri: profileImage }}
+      //   imageStyle={{
+      //     left: { backgroundColor: 'blue' ,}, // Style for left (receiver) avatar
+      //     right: { backgroundColor: 'green' }, // Style for right (sender) avatar
+      //   }}
+      // />
+      <>
+        {profileImage !== "" ? (
+          <Image
+            source={{ uri: profileImage }}
+            resizeMode="cover"
+            style={{
+              width: getWidth(10),
+              height: getHeight(4.5),
+              borderRadius: getWidth(5),
+            }}
+          />
+        ) : (
+          <Image
+            resizeMode="cover"
+            style={{
+              width: getWidth(10),
+              height: getHeight(4.5),
+              borderRadius: getWidth(5),
+            }}
+            source={require("../../assets/images/Pimg.jpeg")}
+          />
+        )}
+      </>
+    );
+  };
+
   return (
-    <SafeAreaView style={Platform.OS==='android'?{ flex: 1, backgroundColor: "#333333",marginTop:getFontSize(3)}:{flex: 1, backgroundColor: "#333333"}}>
+    <SafeAreaView
+      style={
+        Platform.OS === "android"
+          ? { flex: 1, backgroundColor: "#333333", marginTop: getFontSize(3) }
+          : { flex: 1, backgroundColor: "#333333" }
+      }
+    >
       {/* <StatusBar barStyle="light-content" hidden={false} translucent={true}/> */}
       {/* <GeneralStatusBar
         barStyle="light-content"
@@ -380,29 +428,29 @@ const ConversationScreen = ({ navigation, route }) => {
         backgroundColor={colors.primary}
         translucent={true}
       /> */}
-        <HeaderBottom
-          title={channelName}
-          LeftIcon={
-            <AntDesign
-              onPress={() => navigation.goBack()}
-              name="left"
-              style={{ alignSelf: "center", marginRight: getWidth(4) }}
-              color="white"
-              size={20}
-            />
-          }
-          RightIcon={<View />}
-        />
-        <Divider
-          style={{
-            height: 1,
-            backgroundColor: "#333333",
-            borderRadius: 10,
-            width: "100%",
-            marginTop: 15,
-            alignSelf: "center",
-          }}
-        />
+      <HeaderBottom
+        title={channelName}
+        LeftIcon={
+          <AntDesign
+            onPress={() => navigation.goBack()}
+            name="left"
+            style={{ alignSelf: "center", marginRight: getWidth(4) }}
+            color="white"
+            size={20}
+          />
+        }
+        RightIcon={<View style={{ marginLeft: getFontSize(4) }} />}
+      />
+      <Divider
+        style={{
+          height: 1,
+          backgroundColor: "#333333",
+          borderRadius: 10,
+          width: "100%",
+          marginTop: 15,
+          alignSelf: "center",
+        }}
+      />
       <ImagePickerModal
         visible={pickerModalVisibile}
         hideVisible={() => setPickerModalVisibile(false)}
@@ -411,6 +459,7 @@ const ConversationScreen = ({ navigation, route }) => {
       />
       <View style={{ flex: 1, bottom: getFontSize(1.5) }}>
         <GiftedChat
+          renderAvatar={renderAvatar}
           renderBubble={(props) => {
             return (
               <Bubble
@@ -511,7 +560,7 @@ const ConversationScreen = ({ navigation, route }) => {
                     value={sms}
                     onChangeText={(e) => setSms(e)}
                     onSubmitEditing={() => sendChat(sms)}
-                    placeholder="Message to coach..."
+                    placeholder="Type a message..."
                     placeholderTextColor={colors.graytext4}
                   />
                   <TouchableOpacity
@@ -528,10 +577,12 @@ const ConversationScreen = ({ navigation, route }) => {
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity
-                  onPress={() => sendChat(sms)}
+                  onPress={() => {
+                    sms == "" ? null : sendChat(sms);
+                  }}
                   style={styles.sendBtn}
                 >
-                  <SendIcon height={25} width={25}/>
+                  <SendIcon height={25} width={25} />
                 </TouchableOpacity>
               </View>
             );
@@ -737,7 +788,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginLeft: getWidth(1),
     borderRadius: 5,
-    marginBottom:getFontSize(2)
+    marginBottom: getFontSize(2),
   },
   textinputCon: {
     width: getWidth(77),
@@ -746,7 +797,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     flexDirection: "row",
     alignItems: "center",
-    marginBottom:getFontSize(2)
+    marginBottom: getFontSize(2),
   },
   inputCon: {
     // position: 'absolute',

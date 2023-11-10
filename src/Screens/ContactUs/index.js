@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../Redux/actions/GernalActions";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import HeaderBottom from "../../Components/HeaderBottom";
-import Toast from "react-native-simple-toast";
+import SimpleToast from "react-native-simple-toast";
 import { useFocusEffect } from "@react-navigation/native";
 import { TextInput } from "react-native-paper";
 
@@ -75,7 +75,7 @@ const ContactUs = () => {
           console.log("res,", res);
 
           dispatch(setLoader(false));
-          Toast.show(res?.response?.message);
+          SimpleToast.show('A member of our support staff will respond as soon as possible.');
           navigation.goBack();
           setState({
             email: "",
@@ -133,34 +133,13 @@ const ContactUs = () => {
             onPress={() => navigation.goBack()}
           />
         }
-        RightIcon={<View />}
+        RightIcon={<View style={{marginLeft:getFontSize(4)}}/>}
       />
       <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
-        {/* <TextInput
-          placeholder="Full Name"
-          placeholderTextColor={colors.graytext4}
-          style={{ ...GernalStyle.textinput, marginTop: getHeight(4) }}
-          ref={inputRefs.fullname}
-          value={state.fullname}
-          returnKeyType={"send"}
-          keyboardType={"default"}
-          onFocus={() => setState({ ...state, fullnameError: "" })}
-          onBlur={() =>
-            validateFields(state.fullname, "fullname", (error) =>
-              setState({ ...state, fullnameError: error })
-            )
-          }
-          onSubmitEditing={() => {
-            inputRefs?.email?.current?.focus();
-          }}
-          onChangeText={(fullname) => changeHandler("fullname", fullname)}
-          blurOnSubmit={false}
-        /> */}
-
         <View style={{ marginTop: getFontSize(3) }}></View>
         <TextInput
           mode="outlined"
-          label={<Text style={GernalStyle.inputLabelStyle}>Full Name</Text>}
+          label={<Text style={GernalStyle.inputLabelStyle}>Full name</Text>}
           theme={{ roundness: getFontSize(0.5) }}
           outlineColor="#BDC3C4"
           activeUnderlineColor="#BDC3C4"
@@ -290,9 +269,9 @@ const ContactUs = () => {
             {state.questionError}
           </Text>
         )}
-        <Text style={styles.textcontect}>
+        {/* <Text style={styles.textcontect}>
           A member of our support staff will respond as soon as possible.
-        </Text>
+        </Text> */}
       </KeyboardAwareScrollView>
       {/* <Button
         text={'Submit'}

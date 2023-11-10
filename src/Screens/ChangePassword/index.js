@@ -46,11 +46,11 @@ const ChangePassword = ({ navigation }) => {
     React.useCallback(() => {
       setState({
         oldPassword: "",
-    oldPasswordError: "",
-    newPassword: "",
-    newPasswordError: "",
-    cnfrPassword: "",
-    cnfrPasswordError: "",
+        oldPasswordError: "",
+        newPassword: "",
+        newPasswordError: "",
+        cnfrPassword: "",
+        cnfrPasswordError: "",
       });
     }, [])
   );
@@ -62,7 +62,7 @@ const ChangePassword = ({ navigation }) => {
     const { oldPassword, newPassword, cnfrPassword } = state;
     const cnfrPasswordError = await validator("passwordC", cnfrPassword);
     const newPasswordError = await validator("passwordN", newPassword);
-    const oldPasswordError = await validator("password", oldPassword);
+    const oldPasswordError = await validator("passwordO", oldPassword);
     if (
       !cnfrPasswordError &&
       !newPasswordError &&
@@ -73,7 +73,7 @@ const ChangePassword = ({ navigation }) => {
       const data = {
         new_password: newPassword,
         old_password: oldPassword,
-        confirm_password : cnfrPassword
+        confirm_password: cnfrPassword,
       };
       update(data);
     } else {
@@ -167,19 +167,6 @@ const ChangePassword = ({ navigation }) => {
             value={state.oldPassword}
             returnKeyType={"send"}
             secureTextEntry={hidePass ? true : false}
-            // right={
-            //   <TextInput.Icon
-            //     name={() => (
-            //       <MaterialCommunityIcons
-            //         name={hidePass ? "eye-off-outline" : "eye-outline"}
-            //         size={getFontSize(2.5)}
-            //         color={"#BDC3C4"}
-            //         style={styles.icon}
-            //         onPress={() => setHidePass(!hidePass)}
-            //       />
-            //     )}
-            //   />
-            // }
             right={
               <TextInput.Icon
                 name={hidePass ? eye : eyeSlash}
@@ -191,7 +178,7 @@ const ChangePassword = ({ navigation }) => {
             }
             onFocus={() => setState({ ...state, oldpasswordError: "" })}
             onBlur={() =>
-              validateFields(state.oldPassword, "password", (error) =>
+              validateFields(state.oldPassword, "passwordO", (error) =>
                 setState({ ...state, oldpasswordError: error })
               )
             }
@@ -222,19 +209,6 @@ const ChangePassword = ({ navigation }) => {
             value={state.newPassword}
             returnKeyType={"send"}
             secureTextEntry={hideNewPass ? true : false}
-            // right={
-            //   <TextInput.Icon
-            //     name={() => (
-            //       <MaterialCommunityIcons
-            //         name={hideNewPass ? "eye-off-outline" : "eye-outline"}
-            //         size={getFontSize(2.5)}
-            //         color={"#BDC3C4"}
-            //         style={styles.icon}
-            //         onPress={() => setHideNewPass(!hideNewPass)}
-            //       />
-            //     )}
-            //   />
-            // }
             right={
               <TextInput.Icon
                 name={hideNewPass ? eye : eyeSlash}

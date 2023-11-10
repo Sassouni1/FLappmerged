@@ -26,6 +26,7 @@ import { setLoader } from '../../../Redux/actions/GernalActions';
 import { ApiCall } from '../../../Services/Apis';
 import { fonts } from '../../../constants/fonts';
 import ReactNativeCalendarStrip from 'react-native-calendar-strip';
+import HeaderBottom from '../../../Components/HeaderBottom';
 
 
 const WorkoutHistory = () => {
@@ -97,7 +98,7 @@ dispatch(setLoader(true))
         translucent={true}
       />
 
-      <Header
+      <HeaderBottom
         title={moment(date).format("dd, MMM Do")}
         RightIcon={<TouchableOpacity style={{marginLeft: getWidth(3),alignSelf:'center'}} onPress={()=>setIsTime(!isTime)}>
         {isTime?<AngelUp height={15} width={15}  />:<AngelDown height={15} width={15}  />}
@@ -150,20 +151,31 @@ dispatch(setLoader(true))
           <View style={{ height: getHeight(10) }}></View>
         )}
         ListEmptyComponent={() => (
+          <>{isTime ?
           <View
             style={{
               justifyContent: "center",
               alignItems: "center",
-              height: getHeight(50),
+              height:getFontSize(65)
             }}
           >
             {loader?null:<Text style={{ fontSize: getFontSize(2), color: colors.graytext5 }}>
               No workout found on selected date
             </Text>}
-          </View>
+          </View>: <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              height:getFontSize(85)
+            }}
+          >
+            {loader?null:<Text style={{ fontSize: getFontSize(2), color: colors.graytext5 }}>
+              No workout found on selected date
+            </Text>}
+          </View>}</>
         )}
         refreshing={false}
-        onRefresh={() => getSingleExcercise(selectedDate)}
+        onRefresh={() => getSingleExcercise(date)}
         renderItem={({ item }) => {
           return (
           
@@ -221,16 +233,6 @@ dispatch(setLoader(true))
                         marginTop:getHeight(2)
                       }}
                     >
-                      {/* {console.log("ex===:",ex)} */}
-                      {/* <Image
-                        style={{
-                          height: 80,
-                          width: 80,
-                          borderRadius: 5,
-                          marginTop: getHeight(1),
-                        }}
-                        source={require("../../../assets/images/wheelStrech.png")}
-                      /> */}
                        <View style={styles.thumbnail}>
                       <PlayerSvg height={30} width={30} />
                     </View>

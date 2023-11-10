@@ -37,6 +37,7 @@ import DocumentPicker from 'react-native-document-picker';
 import ImagePickerModal from '../../../../../Components/ImageModal';
 import { SvgUri } from 'react-native-svg';
 import ImageModal from 'react-native-image-modal';
+import SimpleToast from "react-native-simple-toast";
 
 
 const ChatRoom = ({route}) => {

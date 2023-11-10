@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Keyboard,
+  Platform,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { GernalStyle } from "../../constants/GernalStyle";
@@ -12,7 +13,7 @@ import { colors } from "../../constants/colors";
 import { fonts } from "../../constants/fonts";
 import HeaderBottom from "../../Components/HeaderBottom";
 import GeneralStatusBar from "../../Components/GeneralStatusBar";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { getWidth, getFontSize, getHeight } from "../../../utils/ResponsiveFun";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import validator from "../../../utils/validation/validator";
@@ -34,7 +35,7 @@ import {
 } from "../../../utils/ImageAndCamera";
 import { BASE_URL, IMAGE_URL } from "../../Services/Constants";
 import ImagePickerModal from "../../Components/ImagePickerModal";
-import ImagePicker from "react-native-image-crop-picker";
+import ImagePicker, { openCropper } from "react-native-image-crop-picker";
 import ImageModal from "react-native-image-modal";
 import axios from "axios";
 import { TextInput } from "react-native-paper";
@@ -49,6 +50,8 @@ const UpdateProfiles = () => {
 
   const [imageObject, setImageObject] = useState();
   const [imageSave, setImageSave] = useState(null);
+  
+
 
   const handleImagePress = () => {
     setPickerModalVisibile(true);
@@ -72,6 +75,11 @@ const UpdateProfiles = () => {
     };
     setImageObject(imageObject);
     setPickerModalVisibile(false);
+    setImageToUpload(imageObject?.uri);
+    setTimeout(function () {
+      cropimage(imageObject?.uri);
+      dispatch(setLoader(false));
+    }, 3000);
   };
   const uploadFromGallry = async () => {
     const res = await chooseImageGallery("", 1, false);
@@ -87,7 +95,28 @@ const UpdateProfiles = () => {
       name: res?.data?.name,
     };
     setImageObject(imageObject);
+    setImageToUpload(imageObject?.uri);
+    setTimeout(function () {
+      cropimage(imageObject?.uri);
+      dispatch(setLoader(false));
+    }, 3000);
     setPickerModalVisibile(false);
+  };
+
+  const cropimage = uri => {
+    ImagePicker,openCropper({
+      path: Platform.OS === 'android' ? 'file://' + uri : uri,
+    }).then(image => {
+      setImageToUpload(image?.path);
+      const MyObject = {
+        uri: image?.path,
+        type: image?.mime,
+        name: 'profileImage' + user?._id,
+      };
+      setImageObject(MyObject);
+      setPickerModalVisibile(false);
+      profileSetting(MyObject);
+    });
   };
 
   const inputRefs = {
@@ -103,10 +132,24 @@ const UpdateProfiles = () => {
     height: user?.height,
     heightError: "",
   });
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setState({
+        fullname: user?.full_name,
+        fullnameError: "",
+        weight: user?.weight,
+        weightError: "",
+        height: user?.height,
+        heightError: "",
+      });
+    }, [user])
+  );
+
   const dispatch = useDispatch();
   const changeHandler = (type, value) => setState({ ...state, [type]: value });
 
-  const profileSetting = async () => {
+  const profileSetting = async (MyObject) => {
     const { fullname, weight, height } = state;
     const fullnameError = await validator("fullname", fullname);
     const weightError = await validator("weight", weight);
@@ -119,7 +162,7 @@ const UpdateProfiles = () => {
         formData.append("full_name", fullname);
         formData.append("height", height);
         formData.append("weight", weight);
-        formData.append("profile_image", imageObject);
+        formData.append("profile_image", MyObject);
         console.log("Form Data", formData);
 
         const res = await ApiCall({
@@ -146,7 +189,7 @@ const UpdateProfiles = () => {
         console.log("profile update error -- ", e.toString());
       }
     } else {
-      setState({ ...state, emailError, weightError, heightError });
+      setState({ ...state, fullnameError, weightError, heightError });
     }
   };
 
@@ -301,7 +344,7 @@ const UpdateProfiles = () => {
           style={{ ...GernalStyle.input, marginTop: getHeight(2) }}
           ref={inputRefs.fullname}
           value={state.fullname}
-          returnKeyType={"send"}
+          returnKeyType={"done"}
           keyboardType={"default"}
           onFocus={() => setState({ ...state, fullnameError: "" })}
           onBlur={() =>
@@ -335,18 +378,18 @@ const UpdateProfiles = () => {
           style={{ ...GernalStyle.input, marginTop: getHeight(2) }}
         />
         <TextInput
-           mode="outlined"
-           label={<Text style={GernalStyle.inputLabelStyle}>Weight</Text>}
-           theme={{ roundness: getFontSize(0.5) }}
-           outlineColor="#BDC3C4"
-           activeUnderlineColor="#BDC3C4"
-           activeOutlineColor="#BDC3C4"
-           textColor="white"
-           style={{ ...GernalStyle.input, marginTop: getHeight(2) }}
+          mode="outlined"
+          label={<Text style={GernalStyle.inputLabelStyle}>Weight</Text>}
+          theme={{ roundness: getFontSize(0.5) }}
+          outlineColor="#BDC3C4"
+          activeUnderlineColor="#BDC3C4"
+          activeOutlineColor="#BDC3C4"
+          textColor="white"
+          style={{ ...GernalStyle.input, marginTop: getHeight(2), }}
           ref={inputRefs.weight}
           value={state.weight}
-          returnKeyType={"send"}
-          keyboardType={"default"}
+          returnKeyType={"done"}
+          keyboardType={"numeric"}
           onFocus={() => setState({ ...state, weightError: "" })}
           onBlur={() =>
             validateFields(state.weight, "weight", (error) =>
@@ -375,11 +418,11 @@ const UpdateProfiles = () => {
           activeUnderlineColor="#BDC3C4"
           activeOutlineColor="#BDC3C4"
           textColor="white"
-          style={{ ...GernalStyle.input, marginTop: getHeight(2) }}
+          style={{ ...GernalStyle.input, marginTop: getHeight(2),marginBottom:getFontSize(2) }}
           ref={inputRefs.height}
           value={state.height}
-          returnKeyType={"send"}
-          keyboardType={"default"}
+          returnKeyType={"done"}
+          keyboardType={"numeric"}
           onFocus={() => setState({ ...state, heightError: "" })}
           onBlur={() =>
             validateFields(state.height, "height", (error) =>

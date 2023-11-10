@@ -54,7 +54,7 @@ export const styles = StyleSheet.create({
   descriptionText: {
     color: colors.white,
     fontSize: getFontSize(1.5),
-    fontFamily: fonts.UBo,
+    fontFamily: fonts.Re,
     marginLeft: getWidth(5),
     width:getWidth(70),
     marginTop:getHeight(0.5)

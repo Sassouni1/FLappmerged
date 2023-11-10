@@ -40,30 +40,35 @@ const Help = () => {
             onPress={() => navigation.goBack()}
           />
         }
-        RightIcon={<View />}
+        RightIcon={<View style={{marginLeft:getFontSize(4)}}/>}
       />
       {/* <AppHeader heading={'Help'} onPress={() => navigation.goBack()} /> */}
       <KeyboardAwareScrollView>
-        <View style={{ paddingHorizontal: getWidth(4),marginTop:getFontSize(5) }}>
+        <View
+          style={{ paddingHorizontal: getWidth(4), marginTop: getFontSize(2) }}
+        >
           <View style={styles.btnCon}>
             <Text style={styles.text}>How to use app?</Text>
           </View>
           <ImageBackground
             resizeMode="stretch"
-            blurRadius={10}
+            blurRadius={1}
             source={require("../../assets/images/home1.png")}
             style={styles.img}
-            borderBottomLeftRadius={getFontSize(1)}
-            borderBottomRightRadius={getFontSize(1)}
+            borderRadius={getFontSize(2)}
           >
-            {/* <View style={styles.playerbtn}>
-                <PlayerSvg height={20} width={20} />
-              </View> */}
             <View style={styles.playerbtn}>
-              <Image
-                resizeMode="center"
-                style={{ height: getHeight(3), width: getWidth(4) }}
-                source={require("../../assets/images/player.png")}
+              <Ionicons
+                style={{ alignSelf: "center", marginRight: getWidth(2) }}
+                name={"play"}
+                size={35}
+                color={"#ffff"}
+                onPress={() =>
+                  navigation.navigate("VideoSkills", {
+                    video: "https://www.youtube.com/watch?v=5JFDAwfF01E",
+                    name: "How to use App",
+                  })
+                }
               />
             </View>
           </ImageBackground>
@@ -73,21 +78,27 @@ const Help = () => {
             <Text style={styles.text}>Important FAQs</Text>
           </View>
           <ImageBackground
-            blurRadius={6}
+            blurRadius={1}
             resizeMode="stretch"
             source={require("../../assets/images/home1.png")}
             style={styles.img}
-            borderBottomLeftRadius={getFontSize(1)}
-            borderBottomRightRadius={getFontSize(1)}
+            borderRadius={getFontSize(2)}
           >
             {/* <View style={styles.playerbtn}>
                 <PlayerSvg height={20} width={20} />
               </View> */}
             <View style={styles.playerbtn}>
-              <Image
-                resizeMode="center"
-                style={{ height: getHeight(3), width: getWidth(4) }}
-                source={require("../../assets/images/player.png")}
+            <Ionicons
+                style={{ alignSelf: "center", marginRight: getWidth(2) }}
+                name={"play"}
+                size={35}
+                color={"#ffff"}
+                onPress={() =>
+                  navigation.navigate("VideoSkills", {
+                    video: "https://www.youtube.com/watch?v=5JFDAwfF01E",
+                    name: "Important FAQ",
+                  })
+                }
               />
             </View>
           </ImageBackground>

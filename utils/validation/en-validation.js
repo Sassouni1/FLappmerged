@@ -97,6 +97,24 @@ presence:{
       message: '^Your password must be at least 6 characters',
     },
   },
+  passwordO: {
+    presence: {
+      message: '^Please enter an old password',
+    },
+    length: {
+      minimum: 6,
+      message: '^Your password must be at least 6 characters',
+    },
+  },
+  oldPassword: {
+    presence: {
+      message: '^Please enter an old password',
+    },
+    length: {
+      minimum: 6,
+      message: '^Your password must be at least 6 characters',
+    },
+  },
   newPassword: {
     presence: {
       message: '^Please enter New Password',
@@ -109,6 +127,15 @@ presence:{
   passwordC: {
     presence: {
       message: '^Please Re-enter New Password',
+    },
+    length: {
+      minimum: 6,
+      message: '^Your Password must be at least 6 characters',
+    },
+  },
+  passwordN: {
+    presence: {
+      message: '^Please enter New Password',
     },
     length: {
       minimum: 6,

@@ -172,16 +172,16 @@ const AllMember = () => {
                 }}
               >
                 <Image
-                  resizeMode="contain"
+                  resizeMode="cover"
                   style={{
-                    width: getWidth(12),
+                    width: getWidth(13.5),
                     height: getHeight(6),
                     borderRadius: 30,
                     marginLeft: getWidth(4),
                   }}
                   source={
                     item?.profile_image === ""
-                      ? require("../../../assets/images/user.png")
+                      ? require("../../../assets/images/Pimg.jpeg")
                       : { uri: item?.profile_image }
                   }
                 />

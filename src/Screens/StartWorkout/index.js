@@ -24,12 +24,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../Redux/actions/GernalActions";
 import { GernalStyle } from "../../constants/GernalStyle";
 import { ApiCall } from "../../Services/Apis";
+import { PlayerSvg } from "../../assets/images";
+import { fonts } from "../../constants/fonts";
 
 const StartWorkout = ({ route }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.userToken);
   const user = useSelector((state) => state.auth.userData);
+  const loader = useSelector((state) => state.gernal.loader);
+
   const planId = user?.plan_id;
   const customSeparator = {
     // marginLeft: getWidth(5),
@@ -38,33 +42,7 @@ const StartWorkout = ({ route }) => {
 
   const workoutId = route?.params?.workoutId;
   const [data, setData] = useState([]);
-
-  // const data1 = [
-  //   {
-  //     text: 'Stretch\n3 mins | 1 set | 15 reps',
-  //     img: require('../../../assets/Images/wheelStrech.png'),
-  //   },
-  //   {
-  //     text: 'Full Crunches\n5 mins | 2 set | 25 reps',
-  //     img: require('../../../assets/Images/fullCrunches.png'),
-  //   },
-  //   {
-  //     text: 'Wheel Stretch\n3 mins | 1 set | 15 reps',
-  //     img: require('../../../assets/Images/wheelStrech.png'),
-  //   },
-  //   {
-  //     text: 'Full Crunches\n5 mins | 2 set | 25 reps',
-  //     img: require('../../../assets/Images/fullCrunches.png'),
-  //   },
-  //   {
-  //     text: 'Wheel Stretch\n3 mins | 1 set | 15 reps',
-  //     img: require('../../../assets/Images/wheelStrech.png'),
-  //   },
-  //   {
-  //     text: 'Full Crunches\n5 mins | 2 set | 25 reps',
-  //     img: require('../../../assets/Images/fullCrunches.png'),
-  //   },
-  // ];
+  const [id, setId] = useState("");
 
   const getUnit = (set) => {
     if (set.weight) {
@@ -73,7 +51,7 @@ const StartWorkout = ({ route }) => {
       return `${set.seconds} seconds`;
     } else if (set.distance) {
       return `${set.distance} meters`;
-    }else if (set.reps) {
+    } else if (set.reps) {
       return `${set.reps} reps ${set.lebs} lebs`;
     } else {
       return "N/A"; // You can change this to a default value if needed
@@ -87,7 +65,6 @@ const StartWorkout = ({ route }) => {
       const res = await ApiCall({
         params: {
           workout_objId: workoutId,
-          
         },
         route: `assignProgram/view_workout/${planId}`,
         verb: "post",
@@ -95,9 +72,13 @@ const StartWorkout = ({ route }) => {
       });
 
       if (res?.status == "200") {
-        // console.log('single___-pp',res?.response)
-        console.log("single___-excercise", res?.response?.Workout?.innerWorkout);
-        setData(res?.response?.Workout?.innerWorkout[0]);  
+        console.log("single___-workout", res?.response?.Workout);
+        console.log(
+          "single___-innerworkout",
+          res?.response?.Workout?.innerWorkout
+        );
+        setData(res?.response?.Workout);
+        setId(res?.response);
         // setAssigWorkout(res?.response?.Workout);
         // setData(res?.response?.detail)
 
@@ -142,16 +123,16 @@ const StartWorkout = ({ route }) => {
         showsVerticalScrollIndicator={false}
         style={styles.scrollContainer}
       >
-        <View style={styles.contentContainer}>
+        {/* <View style={styles.contentContainer}>
           <View style={styles.section}>
             <Text style={styles.title}>{data?.workoutName}</Text>
             <Text style={{ color: "#ffff",alignSelf:'center' }}>{data?.exercise&&data?.exercise.length} total exercises</Text>
           </View>
 
           <Seprator style={customSeparator} />
-        </View>
+        </View> */}
 
-        <View style={{ margin: getHeight(1) }}>
+        {/* <View style={{ margin: getHeight(1) }}>
 
           <FlatList
             data={data?.exercise?data?.exercise:[]}
@@ -198,9 +179,133 @@ const StartWorkout = ({ route }) => {
               );
             }}
           />
-        </View>
+        </View> */}
+        <FlatList
+          data={data?.innerWorkout}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          ListFooterComponent={() => (
+            <View style={{ height: getHeight(10) }}></View>
+          )}
+          ListEmptyComponent={() => (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                height: getHeight(50),
+              }}
+            >
+              {loader ? null : (
+                <Text
+                  style={{ fontSize: getFontSize(2), color: colors.graytext5 }}
+                >
+                  No workout found on selected date
+                </Text>
+              )}
+            </View>
+          )}
+          // refreshing={false}
+          //onRefresh={() => getSingleExcercise(selectedDate)}
+          renderItem={({ item }) => {
+            return (
+              <View style={{ marginLeft: getWidth(2) }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    paddingHorizontal: getWidth(3),
+                    marginBottom: getHeight(1),
+                    marginTop: getHeight(1.8),
+                  }}
+                >
+                  <Text
+                    style={{
+                      ...styles.chest,
+                      fontSize: getFontSize(2.5),
+                      marginTop: getHeight(0.5),
+                    }}
+                  >
+                    {item?.workoutName}
+                  </Text>
+                  <Text
+                    style={{
+                      color: colors.graytext5,
+                      fontFamily: fonts.URe,
+                      fontSize: 10,
+                    }}
+                  >
+                    {item?.exercise.length} exercises
+                  </Text>
+                </View>
+                <Seprator
+                  style={{
+                    width: getWidth(95),
+                    alignSelf: "center",
+                    marginTop: getHeight(1),
+                  }}
+                />
+
+                {item.exercise.map((ex) => (
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate("WorkoutSet", {
+                        workoutId: data?._id,
+                        innerWorkoutId: item?._id,
+                        exerciseId: ex?._id,
+                      })
+                    }
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginLeft: getWidth(3),
+                      marginTop: getHeight(2),
+                    }}
+                  >
+                    <View style={styles.thumbnail}>
+                      <PlayerSvg height={30} width={30} />
+                    </View>
+                    {/* {console.log('ex',ex)} */}
+                    <View style={{ marginLeft: getWidth(2) }}>
+                      <Text style={styles.heading}>{ex?.exercise_name}</Text>
+
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          marginTop: getFontSize(0.5),
+                        }}
+                      >
+                        <Text
+                          style={{
+                            ...styles.total,
+                            fontSize: getFontSize(1.5),
+                          }}
+                        >
+                          {ex?.no_of_sets} sets
+                        </Text>
+                        {ex?.sets.map((set, index) => (
+                          <Text
+                            style={{
+                              //...styles.text,
+                              fontSize: getFontSize(1.5),
+                              color: colors.graytext5,
+                            }}
+                            key={index}
+                          >
+                            {` `}|{` `}
+                            {getUnit(set)}
+                          </Text>
+                        ))}
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            );
+          }}
+        />
       </ScrollView>
-      <Button
+      {/* <Button
         onPress={() => navigation.navigate("WorkoutSet")}
         text={"Complete workout"}
         btnStyle={{
@@ -208,10 +313,9 @@ const StartWorkout = ({ route }) => {
           backgroundColor: colors.buttonColor,
           position: "absolute",
           bottom: getHeight(2),
-        
         }}
-        btnTextStyle={{...GernalStyle.btnText,color:colors.white}}
-      />
+        btnTextStyle={{ ...GernalStyle.btnText, color: colors.white }}
+      /> */}
       {/* <TouchableOpacity onPress={()=>navigation.navigate('WorkoutSet')} style={{height:getHeight(7),backgroundColor:colors.buttonColor,width:getWidth(60),borderRadius:5,alignSelf:"center",position:"absolute",bottom:getHeight(1),justifyContent:"center",alignItems:"center"}}>
   <Text style={{fontSize:14,fontFamily:fonts.UBo,color:colors.white}}>Complete workout</Text>
 </TouchableOpacity> */}

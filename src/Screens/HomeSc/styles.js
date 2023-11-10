@@ -22,17 +22,15 @@ export const styles = StyleSheet.create({
     height: getHeight(7),
     width: getHeight(7),
     borderRadius: getHeight(7) / 2,
-    backgroundColor: colors.graytext5,
+    backgroundColor: 'rgba(255, 255, 255,0.4)',
     opacity: 0.5,
     justifyContent: 'center',
     alignItems: 'center',
   },
   welcome:{
- 
     color: colors.white,
- 
     fontSize: getFontSize(3.2),
-    fontFamily: fonts.Re,
+    fontFamily: fonts.UBo,
   },
   header: {
     height: getHeight(8),
@@ -65,7 +63,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   image: {height: getHeight(8), width: getWidth(16)},
-  elite: {fontSize: getFontSize(2), fontFamily: fonts.Re, color: colors.white},
+  elite: {fontSize: getFontSize(2), fontFamily: fonts.UBo, color: colors.white},
   custom: {
     fontSize: getFontSize(1.3),
     fontFamily: fonts.UMe,

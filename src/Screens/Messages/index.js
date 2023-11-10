@@ -12,7 +12,14 @@ import { GernalStyle } from "../../constants/GernalStyle";
 import GeneralStatusBar from "../../Components/GeneralStatusBar";
 // import AppHeader from '../../Components/AppHeader';
 import Entypo from "react-native-vector-icons/Entypo";
-import { getFontSize, getHeight, getWidth, timeSince } from "../../../utils/ResponsiveFun";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+
+import {
+  getFontSize,
+  getHeight,
+  getWidth,
+  timeSince,
+} from "../../../utils/ResponsiveFun";
 import { ChatUser1, ChatUserBtn } from "../../assets/images";
 import Userb from "../../assets/images/userb.svg";
 import { useNavigation } from "@react-navigation/native";
@@ -21,6 +28,7 @@ import { setLoader } from "../../Redux/actions/GernalActions";
 import { useDispatch, useSelector } from "react-redux";
 import { ApiCall } from "../../Services/Apis";
 import HeaderBottom from "../../Components/HeaderBottom";
+import Seprator from "../../Components/Seprator";
 
 const Messages = () => {
   const navigation = useNavigation();
@@ -31,6 +39,7 @@ const Messages = () => {
 
   const token = useSelector((state) => state.auth.userToken);
   const user = useSelector((state) => state.auth.userData);
+  const loader = useSelector((state) => state.gernal.loader);
 
   const ChatroomUser = async () => {
     try {
@@ -45,6 +54,7 @@ const Messages = () => {
         console.log("chat Romms", res?.response?.chatrooms?.community);
 
         setAllUser(res?.response?.chatrooms?.member);
+        console.log("all user images", res?.response?.chatrooms?.member);
         setAdmin(res?.response?.chatrooms?.admin);
         setCommunity(res?.response?.chatrooms?.community);
         dispatch(setLoader(false));
@@ -71,7 +81,7 @@ const Messages = () => {
       </View>
     );
   };
-  
+
   return (
     <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
       <GeneralStatusBar
@@ -91,223 +101,265 @@ const Messages = () => {
         }
         RightIcon={<View />}
       />
-      <HeadingText buttontext={"App"} />
-      {console.log("admin", admin)}
-      {admin.map((item) => (
-        <View
-          style={{
-            width: getWidth(95),
-            alignSelf: "center",
-            alignItems: "center",
-          }}
-        >
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("ConversationScreen", {
-                channelId: item._id,
-                channelName: item?.admin?.full_name,
-                reciver: item?.admin,
-                sender: item?.customer,
-                chatRoomType: "chat",
-              })
-            }
-            style={{ ...styles.row, marginTop: 5 }}
-          >
+      {loader ? null : (
+        <>
+          <HeadingText buttontext={"App"} />
+          {console.log("admin", admin)}
+          {admin.map((item) => (
             <View
               style={{
-                ...styles.logoCon,
-                marginLeft: getWidth(5),
-                marginTop: 5,
-                backgroundColor: colors.gray8,
+                width: getWidth(95),
+                alignSelf: "center",
+                alignItems: "center",
               }}
             >
-              {item?.admin?.profile_image == "" ? (
-                <Userb height={50} width={50} />
-              ) : (
-                <Image
-                  resizeMode="contain"
-                  style={{ height: 50, width: 50, borderRadius: 30 }}
-                  source={{ uri: item?.admin?.profile_image }}
-                />
-              )}
-            </View>
-            <View>
-              <View style={styles.userCon}>
-                <Text style={styles.username}>{item?.admin?.full_name}</Text>
-                <Text style={styles.time}>
-                  {item?.messages.length > 0
-                    ? timeSince(new Date(
-                        item?.messages[item?.messages.length - 1].date
-                      ))
-                    : null}
-                </Text>
-              </View>
-              <Text style={styles.lastmsg}>
-                {item?.messages.length > 0
-                  ? item?.messages[item?.messages.length - 1].sender ==
-                    user?._id
-                    ? "you:" + item?.messages[item?.messages.length - 1].message
-                    : item?.customer?.full_name +
-                      ":" +
-                      item?.messages[item?.messages.length - 1].message
-                  : "Tap there and start conversation"}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      ))}
-
-      <HeadingText
-        buttontext={"Community"}
-        style={{ marginTop: getHeight(1) }}
-      />
-
-      {community?.map((item) => (
-        <View
-          style={{
-            width: getWidth(95),
-            alignSelf: "center",
-            alignItems: "center",
-          }}
-        >
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("ConversationScreen", {
-                channelId: item._id,
-                channelName: "App Comunity",
-                reciver: {},
-                sender: user,
-                chatRoomType: "groupChat",
-              })
-            }
-            style={{ ...styles.row, marginTop: 5 }}
-          >
-            <View
-              style={{
-                ...styles.logoCon,
-                marginLeft: getWidth(5),
-                marginTop: 5,
-                backgroundColor: colors.gray8,
-              }}
-            >
-              <ChatUser1 height={30} width={30} />
-            </View>
-            <View>
-              <View style={styles.userCon}>
-                <Text style={styles.username}>{"App Comunity"}</Text>
-                <Text style={styles.time}>
-                  {item?.messages
-                    ? timeSince(new Date(item?.last_message?.date))
-                    : null}
-                </Text>
-              </View>
-              <Text style={styles.lastmsg}>
-                {item?.last_message
-                  ? item?.last_message?.sender == user?._id
-                    ? "you:" + item?.last_message.message
-                    : "Other:" + item?.last_message.message
-                  : "Tap there and start conversation"}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      ))}
-      <HeadingText buttontext={"Members"} style={{ marginTop: getHeight(1) }} />
-      <View style={{ alignSelf: "center", flex: 1 }}>
-        <FlatList
-          data={users}
-          showsVerticalScrollIndicator={false}
-          refreshing={false}
-          onRefresh={() => ChatroomUser()}
-          ListFooterComponent={() => <View style={{ height: getHeight(10) }} />}
-          ItemSeparatorComponent={() => (
-            <View style={{ height: getHeight(0.5) }} />
-          )}
-          renderItem={({ item }) => {
-            return (
-              <View
-                style={{
-                  width: getWidth(95),
-                  alignSelf: "center",
-                  alignItems: "center",
-                }}
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("ConversationScreen", {
+                    channelId: item._id,
+                    channelName: item?.admin?.full_name,
+                    reciver: item?.admin,
+                    sender: item?.customer,
+                    chatRoomType: "chat",
+                  })
+                }
+                style={{ ...styles.row, marginTop: 5 }}
               >
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("ConversationScreen", {
-                      channelId: item._id,
-                      channelName:
-                        user?._id == item?.user?._id
-                          ? item?.customer?.full_name
-                          : item?.user?.full_name,
-                      reciver:
-                        user?._id == item?.user?._id
-                          ? item?.customer
-                          : item?.user,
-                      sender:
-                        user?._id == item?.user?._id
-                          ? item?.user
-                          : item?.customer,
-                      chatRoomType: "chat",
-                    })
-                  }
-                  style={{ ...styles.row, marginTop: 5 }}
+                <View
+                  style={{
+                    ...styles.logoCon,
+                    marginLeft: getWidth(5),
+                    marginTop: 5,
+                    backgroundColor: colors.gray8,
+                  }}
                 >
-                  <View
-                    style={{
-                      //  ...styles.logoCon,
-                      marginLeft: getWidth(5),
-                      marginTop: getFontSize(1),
-                      //   backgroundColor: colors.gray8,
-                    }}
-                  >
-                    {item?.customer?.profile_image == "" ? (
-                      <Userb height={50} width={50} />
-                    ) : (
-                      <Image
-                        resizeMode="cover"
-                        style={{
-                          height: getFontSize(7),
-                          width: getFontSize(7),
-                          borderRadius: getFontSize(0.5),
-                        }}
-                        source={{ uri: item?.customer?.profile_image }}
-                      />
-                    )}
-                  </View>
-                  <View>
-                    <View style={styles.userCon}>
-                      <Text style={styles.username}>
-                        {user?._id == item?.user?._id
-                          ? item?.customer?.full_name
-                          : item?.user?.full_name}
-                      </Text>
-                      <Text style={styles.time}>
-                        {item?.messages.length > 0
-                          ? timeSince( new Date(
-                              item?.messages[item?.messages.length - 1].date
-                            ))
-                          : null}
-                      </Text>
-                    </View>
-                    <Text style={styles.lastmsg}>
+                  {item?.admin?.profile_image == "" ? (
+                    <Userb height={getFontSize(7)} width={getFontSize(7)} />
+                  ) : (
+                    <Image
+                      resizeMode="cover"
+                      style={{
+                        height: getFontSize(7),
+                        width: getFontSize(7),
+                        borderRadius: getFontSize(0.5),
+                      }}
+                      source={{ uri: item?.admin?.profile_image }}
+                    />
+                  )}
+                </View>
+                <View>
+                  <View style={styles.userCon}>
+                    <Text style={styles.username}>
+                      {item?.admin?.full_name}
+                    </Text>
+                    <Text style={styles.time}>
                       {item?.messages.length > 0
-                        ? item?.messages[item?.messages.length - 1].sender ==
-                          user?._id
-                          ? "you:" +
-                            item?.messages[item?.messages.length - 1].message
-                          : item?.customer?.full_name +
-                            ":" +
-                            item?.messages[item?.messages.length - 1].message
-                        : "Tap there and start conversation"}
+                        ? timeSince(
+                            new Date(
+                              item?.messages[item?.messages.length - 1].date
+                            )
+                          )
+                        : null}
                     </Text>
                   </View>
-                </TouchableOpacity>
-              </View>
-            );
-          }}
-        />
-      </View>
+                  <Text style={styles.lastmsg}>
+                    {item?.messages.length > 0
+                      ? item?.messages[item?.messages.length - 1].sender ==
+                        user?._id
+                        ? "You:" +
+                          item?.messages[item?.messages.length - 1].message
+                        : item?.customer?.full_name +
+                          ":" +
+                          item?.messages[item?.messages.length - 1].message
+                      : "Tap there and start conversation"}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </>
+      )}
+
+      {loader ? null : (
+        <>
+          <HeadingText
+            buttontext={"Community"}
+            style={{ marginTop: getHeight(1) }}
+          />
+
+          {community?.map((item) => (
+            <View
+              style={{
+                width: getWidth(95),
+                alignSelf: "center",
+                alignItems: "center",
+              }}
+            >
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("ConversationScreen", {
+                    channelId: item._id,
+                    channelName: "App Community",
+                    reciver: {},
+                    sender: user,
+                    chatRoomType: "groupChat",
+                  })
+                }
+                style={{ ...styles.row, marginTop: 5 }}
+              >
+                <View
+                  style={{
+                    ...styles.logoCon,
+                    marginLeft: getWidth(5),
+                    marginTop: 5,
+                    backgroundColor: colors.gray8,
+                  }}
+                >
+                  <ChatUser1 height={30} width={30} />
+                </View>
+                <View>
+                  <View style={styles.userCon}>
+                    <Text style={styles.username}>{"App Community"}</Text>
+                    <Text style={styles.time}>
+                      {item?.messages
+                        ? timeSince(new Date(item?.last_message?.date))
+                        : null}
+                    </Text>
+                  </View>
+                  <Text style={styles.lastmsg}>
+                    {item?.last_message
+                      ? item?.last_message?.sender == user?._id
+                        ? "You:" + item?.last_message.message
+                        : "Other:" + item?.last_message.message
+                      : "Tap there and start conversation"}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </>
+      )}
+
+      {loader ? null : (
+        <>
+          <HeadingText
+            buttontext={"Members"}
+            style={{ marginTop: getHeight(1) }}
+          />
+          <View style={{ alignSelf: "center", flex: 1 }}>
+            <FlatList
+              data={users}
+              showsVerticalScrollIndicator={false}
+              refreshing={false}
+              onRefresh={() => ChatroomUser()}
+              ListFooterComponent={() => (
+                <View style={{ height: getHeight(10) }} />
+              )}
+              ItemSeparatorComponent={() => (
+                <View style={{ height: getHeight(0.5) }} />
+              )}
+              renderItem={({ item, index }) => {
+                return (
+                  <View
+                    style={{
+                      width: getWidth(95),
+                      alignSelf: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    {index > 0 && <Seprator />}
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate("ConversationScreen", {
+                          channelId: item._id,
+                          channelName:
+                            user?._id == item?.user?._id
+                              ? item?.customer?.full_name
+                              : item?.user?.full_name,
+                          reciver:
+                            user?._id == item?.user?._id
+                              ? item?.customer
+                              : item?.user,
+                          sender:
+                            user?._id == item?.user?._id
+                              ? item?.user
+                              : item?.customer,
+                          chatRoomType: "chat",
+                        })
+                      }
+                      style={{ ...styles.row, marginTop: 5,marginBottom:5 }}
+                    >
+                      <View
+                        style={{
+                          ...styles.logoCon,
+                          marginLeft: getWidth(5),
+                          marginTop: getFontSize(1),
+                          //   backgroundColor: colors.gray8,
+                        }}
+                      >
+                        {item?.user?.profile_image == "" ? (
+                          <Image
+                            resizeMode="cover"
+                            style={{
+                              height: getFontSize(7),
+                              width: getFontSize(7),
+                              borderRadius: getFontSize(0.5),
+                            }}
+                            source={require("../../assets/images/Pimg.jpeg")}
+                          />
+                        ) : (
+                          <Image
+                            resizeMode="cover"
+                            style={{
+                              height: getFontSize(7),
+                              width: getFontSize(7),
+                              borderRadius: getFontSize(0.5),
+                            }}
+                            source={{ uri: item?.user?.profile_image }}
+                          />
+                        )}
+                      </View>
+                      <View>
+                        <View style={styles.userCon}>
+                          <Text style={styles.username}>
+                            {user?._id == item?.user?._id
+                              ? item?.customer?.full_name
+                              : item?.user?.full_name}
+                          </Text>
+                          <Text style={styles.time}>
+                            {item?.messages.length > 0
+                              ? timeSince(
+                                  new Date(
+                                    item?.messages[
+                                      item?.messages.length - 1
+                                    ].date
+                                  )
+                                )
+                              : null}
+                          </Text>
+                        </View>
+                        <Text style={styles.lastmsg}>
+                          {item?.messages.length > 0
+                            ? item?.messages[item?.messages.length - 1]
+                                .sender == user?._id
+                              ? "You:" +
+                                item?.messages[item?.messages.length - 1]
+                                  .message
+                              : item?.customer?.full_name +
+                                ":" +
+                                item?.messages[item?.messages.length - 1]
+                                  .message
+                            : "Tap there and start conversation"}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                );
+              }}
+            />
+          </View>
+        </>
+      )}
       <TouchableOpacity
         onPress={() => navigation.navigate("AllMember")}
         style={{

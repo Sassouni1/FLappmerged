@@ -32,6 +32,7 @@ import Waight from "../../assets/images/Waight.svg";
 import Man from "../../assets/images/Man.svg";
 import HeaderBottom from "../../Components/HeaderBottom";
 import { colors } from "../../constants/colors";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const HomeSc = ({ navigation, route }) => {
   const user = useSelector((state) => state.auth.userData);
@@ -100,18 +101,37 @@ const HomeSc = ({ navigation, route }) => {
                 color={"white"}
                 onPress={() => navigation.openDrawer()}
                 name="menu"
+                style={{ marginLeft: getFontSize(-0.7) }}
               />
             }
             RightIcon={<View />}
           />
+          <View style={{flex:1,justifyContent:"center",marginBottom:getFontSize(5)}}>
           <View style={styles.playerbtn}>
-            <Image
-              resizeMode="center"
-              style={{ height: getHeight(3), width: getWidth(4) }}
-              source={require("../../assets/images/player.png")}
+            <Ionicons
+              style={{ alignSelf: "center" }}
+              name={"play"}
+              size={35}
+              color={"#ffff"}
+              onPress={() =>
+                navigation.navigate("VideoSkills", {
+                  video: "https://www.youtube.com/watch?v=5JFDAwfF01E",
+                  name: "DaruStrong",
+                })
+              }
             />
           </View>
-          <Text style={styles.welcome}>Welcome to DaruStrong</Text>
+          </View>
+          <View
+            style={{
+              flex:1,
+              position: "absolute",
+              bottom: getHeight(3),
+              left: getWidth(5),
+            }}
+          >
+            <Text style={styles.welcome}>Welcome to DaruStrong</Text>
+          </View>
         </ImageBackground>
         <View
           style={{
