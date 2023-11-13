@@ -62,7 +62,7 @@ export const styles = StyleSheet.create({
     fontSize: getFontSize(2),
     fontFamily: fonts.URe,
     color: colors.darktext,
-   // marginLeft: getWidth(-3),
+    // marginLeft: getWidth(-3),
   },
   count: {
     fontSize: getFontSize(2.2),
@@ -247,7 +247,12 @@ export const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     width: "100%",
-   // marginTop:getFontSize(1),
-    right:getFontSize(2)
+    // marginTop:getFontSize(1),
+    right: getFontSize(2),
+  },
+  parameterCtn: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

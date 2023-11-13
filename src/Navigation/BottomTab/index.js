@@ -74,7 +74,9 @@ export default function BottomTab() {
       />
       <Tab.Screen
         name="Workouts"
-        component={user?.plan_id?WorkoutHistory:Workouts}
+        // component={user?.plan_id?WorkoutHistory:Workouts}
+        component={user?.plan_id? Workouts:Workouts}
+        initialParams={user?.plan_id ? { data: "tab2" } : { data: "tab1" }}
         options={{
           headerShown: false,
 

@@ -26,6 +26,7 @@ import { GernalStyle } from "../../constants/GernalStyle";
 import { ApiCall } from "../../Services/Apis";
 import { PlayerSvg } from "../../assets/images";
 import { fonts } from "../../constants/fonts";
+import Toast from "react-native-simple-toast";
 
 const StartWorkout = ({ route }) => {
   const navigation = useNavigation();
@@ -248,13 +249,24 @@ const StartWorkout = ({ route }) => {
 
                 {item.exercise.map((ex) => (
                   <TouchableOpacity
-                    onPress={() =>
-                      navigation.navigate("WorkoutSet", {
-                        workoutId: data?._id,
-                        innerWorkoutId: item?._id,
-                        exerciseId: ex?._id,
-                      })
-                    }
+                    // onPress={() =>
+                    //   navigation.navigate("WorkoutSet", {
+                    //     workoutId: data?._id,
+                    //     innerWorkoutId: item?._id,
+                    //     exerciseId: ex?._id,
+                    //   })
+                    // }
+                    onPress={() => {
+                      if (ex?.complete == "true") {
+                        Toast.show("You have already completed this exercise.");
+                      } else {
+                        navigation.navigate("WorkoutSet", {
+                          workoutId: data?._id,
+                          innerWorkoutId: item?._id,
+                          exerciseId: ex?._id,
+                        });
+                      }
+                    }}
                     style={{
                       flexDirection: "row",
                       alignItems: "center",
@@ -297,6 +309,19 @@ const StartWorkout = ({ route }) => {
                           </Text>
                         ))}
                       </View>
+                      {ex?.complete == "true" ? (
+                        <View>
+                          <Image
+                            resizeMode="contain"
+                            source={require("../../assets/images/completed.png")}
+                            style={{
+                              height: getFontSize(2),
+                              width: getWidth(30),
+                              marginTop: getFontSize(0.2),
+                            }}
+                          />
+                        </View>
+                      ) : null}
                     </View>
                   </TouchableOpacity>
                 ))}

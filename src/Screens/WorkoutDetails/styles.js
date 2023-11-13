@@ -51,4 +51,25 @@ export const styles = StyleSheet.create({
       // justifyContent:"flex-start",
       alignItems: 'flex-start',
     },
+    modalContainer1: {
+      backgroundColor: "white",
+      padding: 20,
+      borderRadius: 10,
+      width: 300,
+      alignItems: "center",
+    },
+    modalButton: {
+      backgroundColor: "green",
+      padding: 10,
+      borderRadius: 5,
+      margin: 10,
+    },
+    cancelButton: {
+      backgroundColor: "red",
+    },
+    buttonText: {
+      color: "white",
+      fontSize: 16,
+      fontWeight: "bold",
+    },
   });

@@ -241,7 +241,8 @@ const CompleteWorkout = ({ route }) => {
           res?.response?.Exercise?.submitted_sets
         );
         toast.show("Exercise successfully completed");
-        navigation.navigate("WorkoutHistory");
+        //navigation.navigate("AddWorkouts");
+        navigation.navigate("Workouts", { data: "tab2" })
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -360,44 +361,22 @@ const CompleteWorkout = ({ route }) => {
             <Text style={styles.flatchest1}>sets: {exercise?.no_of_sets}</Text>
           </View>
         </ImageBackground>
-        {/* <HeadingText
-            buttontext={"2 warm up sets"}
-            style={{ marginTop: getHeight(3) }}
-          /> */}
         <View style={{ paddingHorizontal: getWidth(3) }}>
           {exercise?.sets?.map((set, index) => (
             <View key={index} style={{ paddingHorizontal: getWidth(3) }}>
               <View style={styles.repsCon}>
                 <Text style={styles.count}>{index + 1}</Text>
                 <View style={styles.whiteCon}>
-                  {/* {set?.parameter == "reps lebs" ||
-                    set?.parameter == "reps" ||
-                    set?.parameter == "lebs" ? (
-                      <View>
-                        <Text style={styles.numbr}>
-                          {set.reps} reps {set.lebs} lebs
-                        </Text>
-                        <Text style={styles.lbs}>{set.parameter}</Text>
-                      </View>
-                    ) : set?.parameter == "weight" ? (
-                      <View>
-                        <Text style={styles.numbr}>{set.weight}kg</Text>
-                        <Text style={styles.lbs}>{set.parameter}</Text>
-                      </View>
-                    ) : set?.parameter == "seconds" ? (
-                      <View>
-                        <Text style={styles.numbr}>{set.seconds}sec</Text>
-                        <Text style={styles.lbs}>{set.parameter}</Text>
-                      </View>
-                    ) : null} */}
                   {set?.parameter == "reps lebs" ||
                   set?.parameter == "reps" ||
                   set?.parameter == "lebs" ? (
                     <View style={styles.rowDirection}>
-                      <View>
-                        {/* <Text style={styles.numbr}>
-                          {set.reps} reps
-                        </Text> */}
+                      <View
+                        style={{
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
                         <TextInput
                           placeholder="reps"
                           placeholderTextColor={"black"}
@@ -414,14 +393,22 @@ const CompleteWorkout = ({ route }) => {
                             );
                           }}
                         />
-                        <Text style={styles.lbs}>reps</Text>
+                        <View style={styles.parameterCtn}>
+                          <Text style={styles.lbs}>
+                            {set?.reps}
+                            {`  `}
+                          </Text>
+                          <Text style={styles.lbs}>reps</Text>
+                        </View>
                       </View>
                       <View style={styles.horizental}></View>
 
-                      <View>
-                        {/* <Text style={styles.numbr}>
-                          {set.reps} reps
-                        </Text> */}
+                      <View
+                        style={{
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
                         <TextInput
                           placeholder="lebs"
                           placeholderTextColor={"black"}
@@ -438,7 +425,13 @@ const CompleteWorkout = ({ route }) => {
                             );
                           }}
                         />
-                        <Text style={styles.lbs}>lebs</Text>
+                        <View style={styles.parameterCtn}>
+                          <Text style={styles.lbs}>
+                            {set?.lebs}
+                            {`  `}
+                          </Text>
+                          <Text style={styles.lbs}>lebs</Text>
+                        </View>
                       </View>
                     </View>
                   ) : set?.parameter == "weight" ? (
@@ -448,7 +441,6 @@ const CompleteWorkout = ({ route }) => {
                         marginTop: getFontSize(1),
                       }}
                     >
-                      {/* <Text style={styles.numbr}>{set.weight}kg</Text> */}
                       <TextInput
                         placeholder="kg"
                         placeholderTextColor={"black"}
@@ -457,7 +449,13 @@ const CompleteWorkout = ({ route }) => {
                           updateSubmittedSets(index, "", "", text, "", "", "");
                         }}
                       />
-                      <Text style={styles.lbs}>{set.parameter}</Text>
+                      <View style={styles.parameterCtn}>
+                        <Text style={styles.lbs}>
+                          {set.weight}
+                          {`  `}
+                        </Text>
+                        <Text style={styles.lbs}>{set.parameter}</Text>
+                      </View>
                     </View>
                   ) : set?.parameter == "seconds" ? (
                     <View
@@ -466,7 +464,6 @@ const CompleteWorkout = ({ route }) => {
                         marginTop: getFontSize(1),
                       }}
                     >
-                      {/* <Text style={styles.numbr}>{set.seconds}sec</Text> */}
                       <TextInput
                         placeholder="sec"
                         placeholderTextColor={"black"}
@@ -475,7 +472,13 @@ const CompleteWorkout = ({ route }) => {
                           updateSubmittedSets(index, "", "", "", text, "", "");
                         }}
                       />
-                      <Text style={styles.lbs}>{set.parameter}</Text>
+                      <View style={styles.parameterCtn}>
+                        <Text style={styles.lbs}>
+                          {set.seconds}
+                          {`  `}
+                        </Text>
+                        <Text style={styles.lbs}>{set.parameter}</Text>
+                      </View>
                     </View>
                   ) : set?.parameter == "distance" ? (
                     <View
@@ -492,19 +495,15 @@ const CompleteWorkout = ({ route }) => {
                           updateSubmittedSets(index, "", "", "", "", text, "");
                         }}
                       />
-                      <Text style={styles.lbs}>{set.parameter}</Text>
+                      <View style={styles.parameterCtn}>
+                        <Text style={styles.lbs}>
+                          {set.distance}
+                          {`  `}
+                        </Text>
+                        <Text style={styles.lbs}>{set.parameter}</Text>
+                      </View>
                     </View>
                   ) : null}
-                  {/* <View style={styles.horizental}></View> */}
-                  {/* <View>
-                      <Text style={styles.dashes}> ---</Text>
-                      <TextInput
-                      placeholder="sets"
-                      placeholderTextColor={'black'}>
-
-                      </TextInput>
-                      <Text style={styles.lbs}>LBS</Text>
-                    </View> */}
                 </View>
                 <View style={styles.tickCon}>
                   <RightIcon height={15} width={15} />
@@ -512,7 +511,6 @@ const CompleteWorkout = ({ route }) => {
               </View>
               {set?.rest_time != 0 ? (
                 <View style={styles.spacebet}>
-                  {/* <Text style={styles.rest}>{set.rest_time} rest</Text> */}
                   <TextInput
                     placeholder="Rest Time"
                     placeholderTextColor={colors.white}
@@ -534,7 +532,7 @@ const CompleteWorkout = ({ route }) => {
       </ScrollView>
       <TouchableOpacity
         // onPress={()=>navigation.navigate('Workouts')}
-        onPress={() => singleExerciseComplete() }   
+        onPress={() => singleExerciseComplete()}
         style={styles.buttonMark}
       >
         <Text style={styles.markas}>Complete Exercise</Text>
