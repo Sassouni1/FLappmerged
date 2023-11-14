@@ -49,6 +49,7 @@ import AllMember from '../../Screens/Messages/AppCommunity/AllMember';
 import TermOfUse from '../../Screens/TermOfUse';
 import About from '../../Screens/About';
 import CompleteWorkout from '../../Screens/Workouts/CompleteWorkout';
+import SubmittedWorkouts from '../../Screens/Workouts/SubmittedWorkouts';
 
 const stack = createNativeStackNavigator();
 const HomeStack = () => {
@@ -259,6 +260,13 @@ const HomeStack = () => {
         }}
         name="WorkoutHistory"
         component={WorkoutHistory}
+      />
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="SubmittedWorkouts"
+        component={SubmittedWorkouts}
       />
        <stack.Screen
         options={{

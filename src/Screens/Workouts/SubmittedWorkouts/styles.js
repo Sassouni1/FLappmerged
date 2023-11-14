@@ -168,7 +168,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     height: getHeight(8),
-    marginTop: getHeight(3),
+    //marginTop: getHeight(3),
   },
   headerTime: {
     //flex:1,
@@ -218,6 +218,7 @@ export const styles = StyleSheet.create({
     height: getHeight(3),
     marginTop: getHeight(2.5),
     marginLeft: getFontSize(2),
+    marginBottom:getHeight(1)
   },
   rest: {
     fontFamily: fonts.UBo,
@@ -252,8 +253,12 @@ export const styles = StyleSheet.create({
   },
   note: {
     color: colors.white,
-   // marginBottom: getFontSize(1),
+    // marginBottom: getFontSize(1),
     marginTop: getFontSize(2),
+    fontSize: getFontSize(2),
+  },
+  set: {
+    color: colors.white,
     fontSize: getFontSize(2),
   },
 });

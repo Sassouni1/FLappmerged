@@ -359,7 +359,7 @@ const AddWorkouts = () => {
       console.log("respone of add workouts", res);
       if (res?.status == "200") {
         setAssigWorkout(res?.response?.Workout[0]);
-        console.log("workouts details", res?.response?.Workout[0].progress);
+        console.log("workouts details", res?.response?.Workout[0]?.innerWorkout[0]?.exercise[0]);
 
         dispatch(setLoader(false));
       } else {
@@ -406,7 +406,7 @@ const AddWorkouts = () => {
         translucent={true}
       /> */}
 
-      <HeaderBottom
+      {/* <HeaderBottom
         title={moment(date).format("dd, MMM Do")}
         RightIcon={
           <TouchableOpacity
@@ -428,10 +428,10 @@ const AddWorkouts = () => {
         //     <FontAwesome name="bars" size={25} color={colors.white} />
         //   </TouchableOpacity>
         // }
-        LeftIcon={<View />}
-      />
+        LeftIcon={<View />} */}
+      {/* /> */}
 
-      {isTime && (
+      {/* {isTime && ( */}
         <ReactNativeCalendarStrip
           showMonth={false}
           selectedDate={date}
@@ -495,7 +495,7 @@ const AddWorkouts = () => {
             );
           }}
         />
-      )}
+      {/* )} */}
 
       <FlatList
         data={assigWorkout?.innerWorkout}
@@ -511,7 +511,7 @@ const AddWorkouts = () => {
                 style={{
                   justifyContent: "center",
                   alignItems: "center",
-                  height: getFontSize(65),
+                  height: getFontSize(55),
                 }}
               >
                 {loader ? null : (
@@ -530,7 +530,7 @@ const AddWorkouts = () => {
                 style={{
                   justifyContent: "center",
                   alignItems: "center",
-                  height: getFontSize(85),
+                  height: getFontSize(55),
                 }}
               >
                 {loader ? null : (
@@ -600,7 +600,11 @@ const AddWorkouts = () => {
                   // }
                   onPress={() => {
                     if (ex?.complete == "true") {
-                      Toast.show("You have already completed this exercise.");
+                      navigation.navigate("SubmittedWorkouts", {
+                        workoutId: assigWorkout?._id,
+                        innerWorkoutId: item?._id,
+                        exerciseId: ex?._id,
+                      });
                     } else {
                       navigation.navigate("WorkoutSet", {
                         workoutId: assigWorkout?._id,

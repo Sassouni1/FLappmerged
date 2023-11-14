@@ -37,7 +37,9 @@ const WorkoutSucessfully = () => {
           Workout has been added to your calendar
         </Text>
       </View>
-      <View
+      
+      <TouchableOpacity
+          onPress={() => navigation.navigate("WorkoutHistory")}
         style={{
           position: "absolute",
           bottom: getHeight(3),
@@ -52,14 +54,12 @@ const WorkoutSucessfully = () => {
           margin: getFontSize(2),
         }}
       >
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Workouts", { data: "tab2" })}
-        >
+        
           <Text style={{ color: colors.buttonColor, fontSize: getFontSize(2) }}>
             Okay
           </Text>
-        </TouchableOpacity>
-      </View>
+      
+      </TouchableOpacity>
     </View>
   );
 };

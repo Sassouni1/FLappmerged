@@ -17,7 +17,7 @@ import {
   getHeight,
 } from "../../../../utils/ResponsiveFun";
 import Feather from "react-native-vector-icons/Feather";
-import { fonts } from "../../../../constants/fonts";
+import { fonts } from "../../../constants/fonts";
 import { PlayerSvg, RightIcon, StopSvg } from "../../../assets/images";
 import { useNavigation } from "@react-navigation/native";
 import { styles } from "./styles";
@@ -49,6 +49,8 @@ const CompleteWorkout = ({ route }) => {
 
   // State variables for text inputs
   const [submittedSets, setSubmittedSets] = useState([]);
+
+  const [submittedNotes, setSubmittedNotes] = useState('');
 
   // Function to update the submittedSets state for a specific set
   // const updateSubmittedSets = (index, reps, lebs, weight, seconds) => {
@@ -233,6 +235,7 @@ const CompleteWorkout = ({ route }) => {
           exercise_objId: exerciseId,
           inner_objId: innerWorkoutId,
           submitted_sets: JSON.stringify(submittedSets),
+          submitted_notes: submittedNotes
         },
       });
       if (res?.status == "200") {
@@ -242,7 +245,7 @@ const CompleteWorkout = ({ route }) => {
         );
         toast.show("Exercise successfully completed");
         //navigation.navigate("AddWorkouts");
-        navigation.navigate("Workouts", { data: "tab2" })
+        navigation.navigate("Workouts", { data: "tab2" });
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -527,6 +530,72 @@ const CompleteWorkout = ({ route }) => {
               ) : null}
             </View>
           ))}
+          {exercise?.notes && exercise?.notes.length > 0 ? (
+            // <View style={{ marginLeft: getWidth(7) }}>
+            //   <Text style={styles.note}>Notes:</Text>
+            //   <View style={{ ...styles.repsCon, marginTop: getHeight(2) }}>
+            //     <View style={{ ...styles.whiteCon, height: getHeight(10) }}>
+            //       {/* <Text>{exercise?.notes}</Text> */}
+            //       <TextInput
+            //         placeholder="Notes"
+            //         placeholderTextColor={colors.black}
+            //         keyboardType="default"
+            //         style={styles.rest}
+            //         onChangeText={(text) => {setSubmittedNotes(text);
+            //         }}
+            //       />
+            //     </View>
+            //     {/* <View style={styles.tickCon}>
+            //       <RightIcon height={15} width={15} />
+            //     </View> */}
+            //     {/* <View style={styles.btng}>
+            //         <View style={styles.btnhor}></View>
+            //       </View> */}
+            //   </View>
+            // </View>
+            <View
+              style={{
+                width: getWidth(75),
+                //height: getHeight(6),
+                borderRadius: 5,
+                borderWidth: 1,
+                borderColor: colors.graytext5,
+                backgroundColor: colors.white,
+                justifyContent: "flex-start",
+                alignItems: "flex-start",
+                flexDirection: "row",
+                paddingLeft: getFontSize(3),
+                paddingTop: getFontSize(0.5),
+                paddingBottom: getFontSize(0.5),
+                marginLeft: getWidth(7),
+                marginTop: getHeight(2),
+                height: getHeight(10),
+              }}
+            >
+              <View>
+                <TextInput
+                  multiline
+                  numberOfLines={3}
+                  placeholder="Notes"
+                  placeholderTextColor={colors.primary}
+                  keyboardType="default"
+                  style={{
+                    fontFamily: fonts.UBo,
+                    color: colors.primary,
+                    fontSize: getFontSize(1.5),
+                    marginRight: getWidth(2),
+                    marginBottom: getWidth(2),
+                  }}
+                  onChangeText={(text) => {
+                    setSubmittedNotes(text);
+                  }}
+                />
+                {/* <View style={styles.tickCon}>
+                  <RightIcon height={15} width={15} />
+                </View> */}
+              </View>
+            </View>
+          ) : null}
         </View>
         <View style={{ height: getHeight(15) }}></View>
       </ScrollView>

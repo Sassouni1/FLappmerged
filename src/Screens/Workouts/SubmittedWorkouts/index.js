@@ -28,7 +28,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 
-const WorkoutSet = ({ route }) => {
+const SubmittedWorkouts = ({ route }) => {
   const navigation = useNavigation();
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
@@ -183,21 +183,21 @@ const WorkoutSet = ({ route }) => {
           source={require("../../../assets/images/reps.png")}
         >
           {/* <View style={styles.playerbtn}>
-            <Image
-              resizeMode="center"
-              style={{ height: getHeight(3), width: getWidth(4) }}
-              source={require("../../../assets/images/player.png")}
-            />
-          </View> */}
+              <Image
+                resizeMode="center"
+                style={{ height: getHeight(3), width: getWidth(4) }}
+                source={require("../../../assets/images/player.png")}
+              />
+            </View> */}
           {/* <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("VideoSkills", {
-                video: exercise?.video,
-                name: exercise?.exercise_name,
-              })
-            }
-            style={styles.videobtn}
-          > */}
+              onPress={() =>
+                navigation.navigate("VideoSkills", {
+                  video: exercise?.video,
+                  name: exercise?.exercise_name,
+                })
+              }
+              style={styles.videobtn}
+            > */}
           <View style={styles.overlayContainer}>
             <FontAwesome
               name="play-circle"
@@ -219,10 +219,13 @@ const WorkoutSet = ({ route }) => {
           {/* </TouchableOpacity> */}
         </ImageBackground>
         {/* <HeadingText
-          buttontext={"2 warm up sets"}
-          style={{ marginTop: getHeight(3) }}
-        /> */}
+            buttontext={"2 warm up sets"}
+            style={{ marginTop: getHeight(3) }}
+          /> */}
         <View style={{ paddingHorizontal: getWidth(3) }}>
+        <View style={{ marginTop: getHeight(3) }}>
+                <Text style={styles.set}>Assigned Set</Text>
+              </View>
           {exercise?.sets?.map((set, index) => (
             <View key={index} style={{ paddingHorizontal: getWidth(3) }}>
               <View style={styles.repsCon}>
@@ -282,9 +285,9 @@ const WorkoutSet = ({ route }) => {
                   ) : null}
                   {/* <View style={styles.horizental}></View> */}
                   {/* <View>
-                    <Text style={styles.dashes}> ---</Text>
-                    <Text style={styles.lbs}>LBS</Text>
-                  </View> */}
+                      <Text style={styles.dashes}> ---</Text>
+                      <Text style={styles.lbs}>LBS</Text>
+                    </View> */}
                 </View>
                 <View style={styles.tickCon}>
                   <RightIcon height={15} width={15} />
@@ -314,23 +317,120 @@ const WorkoutSet = ({ route }) => {
             </View>
           ) : null}
         </View>
+
+        <View style={{ paddingHorizontal: getWidth(3) }}>
+          <Text style={{ ...styles.set, marginTop: getHeight(3) }}>
+            Submitted Set
+          </Text>
+          {exercise?.submitted_sets?.map((set, index) => (
+            <View key={index} style={{ paddingHorizontal: getWidth(3) }}>
+              <View style={{ marginTop: getHeight(0.1) }}></View>
+              <View style={styles.repsCon}>
+                <Text style={styles.count}>{index + 1}</Text>
+                <View style={styles.whiteCon}>
+                  {set?.parameter == "reps lebs" ||
+                  set?.parameter == "reps" ||
+                  set?.parameter == "lebs" ? (
+                    <View style={styles.rowDirection}>
+                      <View>
+                        <Text style={styles.numbr}>
+                          {set.reps} reps
+                          {/* {set.lebs} lebs */}
+                        </Text>
+                        <Text style={styles.lbs}>reps</Text>
+                      </View>
+                      <View style={styles.horizental}></View>
+
+                      <View>
+                        <Text style={styles.numbr}>
+                          {set.lebs} lebs
+                          {/* {set.lebs} lebs */}
+                        </Text>
+                        <Text style={styles.lbs}>lebs</Text>
+                      </View>
+                    </View>
+                  ) : set?.parameter == "weight" ? (
+                    <View
+                      style={{
+                        ...styles.rowDirection,
+                        marginTop: getFontSize(1),
+                      }}
+                    >
+                      <Text style={styles.numbr}>{set.weight}kg</Text>
+                      <Text style={styles.lbs}>{set.parameter}</Text>
+                    </View>
+                  ) : set?.parameter == "seconds" ? (
+                    <View
+                      style={{
+                        ...styles.rowDirection,
+                        marginTop: getFontSize(1),
+                      }}
+                    >
+                      <Text style={styles.numbr}>{set.seconds}sec</Text>
+                      <Text style={styles.lbs}>{set.parameter}</Text>
+                    </View>
+                  ) : set?.parameter == "distance" ? (
+                    <View
+                      style={{
+                        ...styles.rowDirection,
+                        marginTop: getFontSize(1),
+                      }}
+                    >
+                      <Text style={styles.numbr}>{set.distance}miles</Text>
+                      <Text style={styles.lbs}>{set.parameter}</Text>
+                    </View>
+                  ) : null}
+                  {/* <View style={styles.horizental}></View> */}
+                  {/* <View>
+                      <Text style={styles.dashes}> ---</Text>
+                      <Text style={styles.lbs}>LBS</Text>
+                    </View> */}
+                </View>
+                <View style={styles.tickCon}>
+                  <RightIcon height={15} width={15} />
+                </View>
+              </View>
+              {/* {set?.rest_time != 0 ? (
+                <View style={styles.spacebet}>
+                  <Text style={styles.rest}>{set.rest_time} rest</Text>
+                  <View style={styles.btng}>
+                    <View style={styles.btnhor}></View>
+                  </View>
+                </View>
+              ) : null} */}
+            </View>
+          ))}
+          {exercise?.submitted_notes && exercise?.submitted_notes.length > 0 ? (
+            <View style={{ marginLeft: getWidth(7) }}>
+              <Text style={styles.note}>Notes:</Text>
+              <View style={{ ...styles.repsCon, marginTop: getHeight(2) }}>
+                <View style={{ ...styles.whiteCon, height: getHeight(10) }}>
+                  <Text>{exercise?.submitted_notes}</Text>
+                </View>
+                <View style={styles.tickCon}>
+                  <RightIcon height={15} width={15} />
+                </View>
+              </View>
+            </View>
+          ) : null}
+        </View>
         <View style={{ height: getHeight(15) }}></View>
       </ScrollView>
-      <TouchableOpacity
-        // onPress={()=>navigation.navigate('Workouts')}
-        onPress={() =>
-          navigation.navigate("CompleteWorkout", {
-            workoutId: workoutId,
-            innerWorkoutId: innerWorkoutId,
-            exerciseId: exerciseId,
-          })
-        }
-        style={styles.buttonMark}
-      >
-        <Text style={styles.markas}>Proceed</Text>
-      </TouchableOpacity>
+      {/* <TouchableOpacity
+          // onPress={()=>navigation.navigate('Workouts')}
+          onPress={() =>
+            navigation.navigate("CompleteWorkout", {
+              workoutId: workoutId,
+              innerWorkoutId: innerWorkoutId,
+              exerciseId: exerciseId,
+            })
+          }
+          style={styles.buttonMark}
+        >
+          <Text style={styles.markas}>Process</Text>
+        </TouchableOpacity> */}
     </View>
   );
 };
 
-export default WorkoutSet;
+export default SubmittedWorkouts;

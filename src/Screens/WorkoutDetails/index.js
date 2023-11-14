@@ -200,13 +200,13 @@ const WorkoutDetails = () => {
 
   const handleAddToCalendar = () => {
     if (user?.isAssigned === true) {
-      Alert.alert('Add new program', ' Do you want to add a new program and remove the previous one?', [
+      Alert.alert('', ' Do you want to switch to new program?', [
         {
           text: 'Cancel',
           onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
+          style:"destructive"
         },
-        {text: 'OK', onPress: () => toggleModal()},
+        {text: 'Continue', onPress: () => toggleModal(), style:"default"},
       ]);
     }
     else{

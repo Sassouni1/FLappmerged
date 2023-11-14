@@ -140,9 +140,9 @@ const WorkoutHistory = () => {
         LeftIcon={
           <TouchableOpacity
             style={{ alignSelf: "center", marginRight: getWidth(4) }}
-            onPress={() => navigation.openDrawer()}
+            onPress={() => navigation.navigate("HomeSc")}
           >
-            <FontAwesome name="bars" size={25} color={colors.white} />
+            <Ionicons name={"arrow-back"} size={25} color={"#ffff"} />
           </TouchableOpacity>
         }
       />
@@ -316,7 +316,11 @@ const WorkoutHistory = () => {
                   // }
                   onPress={() => {
                     if (ex?.complete == "true") {
-                      Toast.show("You have already completed this exercise.");
+                      navigation.navigate("SubmittedWorkouts", {
+                        workoutId: assigWorkout?._id,
+                        innerWorkoutId: item?._id,
+                        exerciseId: ex?._id,
+                      });
                     } else {
                       navigation.navigate("WorkoutSet", {
                         workoutId: assigWorkout?._id,

@@ -55,7 +55,7 @@ export default function BottomTab() {
    
       >
         <Tab.Screen
-        name="Home"
+        name="HomeSc"
         
         component={HomeSc}
         options={{
@@ -75,8 +75,8 @@ export default function BottomTab() {
       <Tab.Screen
         name="Workouts"
         // component={user?.plan_id?WorkoutHistory:Workouts}
-        component={user?.plan_id? Workouts:Workouts}
-        initialParams={user?.plan_id ? { data: "tab2" } : { data: "tab1" }}
+        component={user?.isAssigned === true? Workouts:Workouts}
+        initialParams={user?.isAssigned === true ? { data: "tab2" } : { data: "tab1" }}
         options={{
           headerShown: false,
 

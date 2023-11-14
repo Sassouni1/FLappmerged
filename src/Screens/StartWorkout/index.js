@@ -258,7 +258,11 @@ const StartWorkout = ({ route }) => {
                     // }
                     onPress={() => {
                       if (ex?.complete == "true") {
-                        Toast.show("You have already completed this exercise.");
+                        navigation.navigate("SubmittedWorkouts", {
+                          workoutId: data?._id,
+                          innerWorkoutId: item?._id,
+                          exerciseId: ex?._id,
+                        });
                       } else {
                         navigation.navigate("WorkoutSet", {
                           workoutId: data?._id,

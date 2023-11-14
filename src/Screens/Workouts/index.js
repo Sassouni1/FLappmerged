@@ -45,8 +45,10 @@ console.log('route?.params?.data',route?.params?.data);
   });
   useEffect(() => {
     if (route?.params?.data === 'tab2') {
+      console.log('Setting index to 1 for "My Calendar" tab');
       setIndex(1);
     } else {
+      console.log('Setting index to 0 for "S&C Programs" tab');
       setIndex(0);
     }
   }, [route?.params?.data]);
