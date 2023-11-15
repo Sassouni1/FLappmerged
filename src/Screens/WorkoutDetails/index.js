@@ -38,6 +38,7 @@ const WorkoutDetails = () => {
   const [count, setCount] = useState(0);
   const token = useSelector((state) => state.auth.userToken);
   const user = useSelector((state) => state.auth.userData);
+  console.log('selected id',selectedItemId)
 
   const dispatch = useDispatch();
   const toggleModal = () => {
@@ -278,6 +279,7 @@ const WorkoutDetails = () => {
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.list}
       />
+      { selectedItemId !== user?.program_id ?
       <TouchableOpacity
         onPress={() => {
           handleAddToCalendar()
@@ -307,6 +309,7 @@ const WorkoutDetails = () => {
           Add Workout to my Calendar
         </Text>
       </TouchableOpacity>
+:null}
 
       <Modal
         isVisible={isModalVisible}

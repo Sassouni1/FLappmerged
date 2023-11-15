@@ -50,7 +50,7 @@ export const styles = StyleSheet.create({
       justifyContent: 'space-between',
     },
     textDay:{
-      fontSize: 10,
+      fontSize: getFontSize(1.5),
       color: colors.white,
       fontFamily: fonts.UMe,
       marginLeft: getWidth(2),
@@ -58,7 +58,7 @@ export const styles = StyleSheet.create({
     graphCon:{
       paddingHorizontal: getWidth(3),
       marginBottom: getHeight(3),
-      marginTop: getHeight(1.5),
+      marginTop: getHeight(2.5),
     },
     dayconn: {
       width: getWidth(13),
@@ -90,5 +90,30 @@ export const styles = StyleSheet.create({
       // paddingHorizontal: getWidth(3),
       flexDirection: 'row',
       alignItems: 'center',
+    },
+    calendarContainer: {
+      marginTop: 20, // Adjust the margin as needed
+      width: '80%', // Adjust the calendar container width as needed
+      backgroundColor: 'white', // Customize calendar container background color
+      borderRadius: 5,
+      elevation: 4, // Add shadow or elevation as desired
+    },
+    modalContainer: {
+      backgroundColor: 'white', // Customize modal background color
+      borderRadius: 5,
+      padding: 20,
+    },
+    closeButton: {
+      // justifyContent:"flex-start",
+      alignItems: 'flex-start',
+    }, donebtn: {
+      height: getHeight(6),
+      borderRadius: 5,
+      width: getWidth(25),
+      backgroundColor: colors.bluebtn,
+      alignSelf: 'center',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: getHeight(1),
     },
   });

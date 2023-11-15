@@ -10,29 +10,15 @@ import {
   ImageBackground,
   StatusBar,
 } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
 import Entypo from "react-native-vector-icons/Entypo";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import CalendarPicker from "react-native-calendar-picker";
-import { Avatar } from "react-native-paper";
 import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
-import GeneralStatusBar from "../../Components/GeneralStatusBar";
-import { ApiCall } from "../../Services/Apis";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { Divider } from "react-native-paper";
 import { styles } from "./styles";
 import Header from "../../Components/Header";
 import { useDispatch, useSelector } from "react-redux";
-import { getSingleUser } from "../../Redux/actions/AuthActions";
-import { setLoader } from "../../Redux/actions/GernalActions";
-import { SceneMap, TabView } from "react-native-tab-view";
-import UpComing from "../../Components/Upcoming";
-import Past from "../../Components/Past";
-import Waight from "../../assets/images/Waight.svg";
-import Man from "../../assets/images/Man.svg";
 import HeaderBottom from "../../Components/HeaderBottom";
 import { colors } from "../../constants/colors";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import Video from "react-native-video";
 
 const HomeSc = ({ navigation, route }) => {
   const user = useSelector((state) => state.auth.userData);
@@ -88,25 +74,58 @@ const HomeSc = ({ navigation, route }) => {
           translucent={true}
         />
 
-        <ImageBackground
+        {/* <ImageBackground
           resizeMode="cover"
           source={require("../../assets/images/home1.png")}
           style={styles.img}
-        >
-          <HeaderBottom
-            title={""}
-            LeftIcon={
-              <Entypo
-                size={30}
-                color={"white"}
-                onPress={() => navigation.openDrawer()}
-                name="menu"
-                style={{ marginLeft: getFontSize(-0.7) }}
-              />
-            }
-            RightIcon={<View />}
+        > */}
+        <View style={{ flex: 1 }}>
+          <Video
+            source={require("../../assets/images/background.mp4")}
+            resizeMode="cover"
+            repeat={true}
+            style={styles.img}
           />
-          <View style={{flex:1,justifyContent:"center",marginBottom:getFontSize(5)}}>
+          {/* <HeaderBottom
+          title={""}
+          LeftIcon={
+            <Entypo
+              size={30}
+              color={"white"}
+              onPress={() => navigation.openDrawer()}
+              name="menu"
+              style={{ marginLeft: getFontSize(-0.7) }}
+            />
+          }
+          RightIcon={<View />}
+        /> */}
+
+          <View
+            style={{
+              flex: 1,
+              position: "absolute",
+              bottom: getFontSize(30),
+              left: getWidth(5),
+            }}
+          >
+            <Entypo
+              size={30}
+              color={"white"}
+              onPress={() => navigation.openDrawer()}
+              name="menu"
+              style={{ marginLeft: getFontSize(-0.7) }}
+            />
+          </View>
+
+          {/* } */}
+
+          {/* <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            marginBottom: getFontSize(5),
+          }}
+        >
           <View style={styles.playerbtn}>
             <Ionicons
               style={{ alignSelf: "center" }}
@@ -121,18 +140,19 @@ const HomeSc = ({ navigation, route }) => {
               }
             />
           </View>
-          </View>
+        </View> */}
           <View
             style={{
-              flex:1,
+              flex: 1,
               position: "absolute",
-              bottom: getHeight(3),
-              left: getWidth(5),
+              bottom: getHeight(2),
+              left: getWidth(4),
             }}
           >
             <Text style={styles.welcome}>Welcome to DaruStrong</Text>
           </View>
-        </ImageBackground>
+        </View>
+        {/* </ImageBackground> */}
         <View
           style={{
             ...styles.eliteCon,

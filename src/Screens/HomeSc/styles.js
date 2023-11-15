@@ -127,4 +127,37 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  video: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  menuIcon: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    padding: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    borderRadius: 5,
+  },
+  iconText: {
+    color: "white",
+    fontSize: 16,
+  },
+  welcomeContainer: {
+    position: "absolute",
+    bottom: 100,
+    paddingHorizontal: 20,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    borderRadius: 10,
+  },
+  welcomeText: {
+    color: "white",
+    fontSize: 24,
+    textAlign: "center",
+    padding: 10,
+  },
 });
