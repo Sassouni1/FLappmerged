@@ -28,7 +28,7 @@ const WorkoutDetails = () => {
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split("T")[0]
+    new Date()
   );
   const [data, setData] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -111,7 +111,7 @@ const WorkoutDetails = () => {
         dispatch(Assprogram(res?.response?.Assigned_Program));
         dispatch(getSingleUser(token));
         dispatch(setLoader(false));
-        navigation.navigate("WorkoutSucessfully");
+        navigation.navigate("WorkoutSucessfully",{selectDate: selectedDate});
       } else {
         dispatch(setLoader(false));
 
@@ -145,7 +145,7 @@ const WorkoutDetails = () => {
         dispatch(Assprogram(res?.response?.Assigned_Program));
         dispatch(getSingleUser(token));
         dispatch(setLoader(false));
-        navigation.navigate("WorkoutSucessfully");
+        navigation.navigate("WorkoutSucessfully",{selectDate: selectedDate});
       } else {
         dispatch(setLoader(false));
 

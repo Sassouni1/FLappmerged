@@ -14,8 +14,9 @@ import { styles } from "./styles";
 import Button from "../../../Components/Button";
 import { Image } from "react-native";
 
-const WorkoutSucessfully = () => {
+const WorkoutSucessfully = ({route}) => {
   const navigation = useNavigation();
+  const selectDate = route?.params
   return (
     <View
       style={{ ...GernalStyle.continer, backgroundColor: colors.homeColor }}
@@ -39,7 +40,7 @@ const WorkoutSucessfully = () => {
       </View>
       
       <TouchableOpacity
-          onPress={() => navigation.navigate("WorkoutHistory")}
+          onPress={() => navigation.navigate("WorkoutHistory",{selectDate: selectDate})}
         style={{
           position: "absolute",
           bottom: getHeight(3),

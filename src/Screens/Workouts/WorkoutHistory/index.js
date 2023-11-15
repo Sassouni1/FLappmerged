@@ -42,11 +42,13 @@ import ReactNativeCalendarStrip from "react-native-calendar-strip";
 import HeaderBottom from "../../../Components/HeaderBottom";
 import Toast from "react-native-simple-toast";
 
-const WorkoutHistory = () => {
+const WorkoutHistory = ({route}) => {
   const navigation = useNavigation();
+  const selectDate = route?.params;
+  console.log('selected date',selectDate?.selectDate?.selectDate)
   const [isTime, setIsTime] = useState(false);
   const dispatch = useDispatch();
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(selectDate?.selectDate?.selectDate);
   const [assigWorkout, setAssigWorkout] = useState([]);
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
@@ -75,7 +77,7 @@ const WorkoutHistory = () => {
       const res = await ApiCall({
         route: `assignProgram/given-date-workouts/${
           user?.plan_id
-        }&${selectedDate.toISOString()}`,
+        }&${selectedDate}`,
         verb: "get",
         token: token,
       });
