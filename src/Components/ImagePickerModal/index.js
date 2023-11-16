@@ -4,7 +4,9 @@ import {View} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import {StyleSheet} from 'react-native';
 import Modal from 'react-native-modal';
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
 // import { getWidth } from '../../../utils/ResponsiveFun';
 import {getFontSize, getHeight, getWidth} from '../../../utils/ResponsiveFun';
 
@@ -22,7 +24,7 @@ const ImagePickerModal = props => {
         <View style={styles.headLine} />
         <View style={styles.container}>
           <TouchableOpacity style={styles.boxes} onPress={props.galleryImage}>
-            <Icon name="photo-video" size={35} color="#182d4a" />
+            <FontAwesome6 name="photo-film" size={40} color="#182d4a" style={{marginTop:getFontSize(2)}}/>
             <Text
               style={{
                 width: '53%',
@@ -36,7 +38,7 @@ const ImagePickerModal = props => {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.boxes} onPress={props.cameraImage}>
-            <Icon name="camera-retro" size={35} color="#182d4a" />
+            <MaterialIcons name="photo-camera" size={45} color="#182d4a" />
             <Text
               style={{
                 width: '50%',

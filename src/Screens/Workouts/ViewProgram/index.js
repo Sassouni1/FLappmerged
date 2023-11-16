@@ -84,7 +84,7 @@ const ViewProgram = ({ route }) => {
             <AntDesign name={"left"} size={30} color="#ffff" />
           </TouchableOpacity>
         }
-        RightIcon={<View/>}
+        RightIcon={<View style={{marginRight:getFontSize(4.5)}}/>}
       />
       {/* <View style={styles.spacebet}>
         <Text style={styles.chest}>Chest & Shoulders</Text>

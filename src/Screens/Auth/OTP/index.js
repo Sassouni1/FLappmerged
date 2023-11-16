@@ -51,30 +51,30 @@ const OTPverify = ({ route }) => {
 
     if (!codeError) {
       dispatch(setLoader(true));
-      const params = {
-        email: email,
-        OTP: code,
-      };
+      // const params = {
+      //   email: email,
+      //   OTP: code,
+      // };
       try {
-        const res = await ApiCall({
-          route: "auth/email_verification",
-          verb: "put",
-          params: params,
-        });
+        dispatch(setLoader(true));
 
-        if (res?.status == "200") {
-          console.log("res", res?.response);
-          navigation.navigate("ResetPassword", { email: email });
-          // setCategory(res.response.data);
+        const res = await ApiCall({
+          params: {email:email,verification_code:code},
+          route: 'auth/code_verification',
+          verb: 'post',
+        });
+    
+        if (res?.status == '200') {
+          navigation.navigate('ResetPassword',{email:email})
+        
           dispatch(setLoader(false));
         } else {
-          console.log("error", res.response);
-          alert(
-            res?.response?.message
-              ? res?.response?.message
-              : res?.response?.error
-          );
+          console.log('error', res.response);
           dispatch(setLoader(false));
+    
+          alert(res?.response?.message, [
+            {text: 'OK', onPress: () => console.log('OK Pressed')},
+          ]);
         }
       } catch (e) {
         console.log("saga get language error -- ", e.toString());
@@ -112,7 +112,7 @@ const OTPverify = ({ route }) => {
             />
           </TouchableOpacity>
         }
-        RightIcon={<View />}
+        RightIcon={<View style={{marginRight:getFontSize(4.5)}}/>}
       />
 
       <KeyboardAwareScrollView
@@ -129,12 +129,12 @@ const OTPverify = ({ route }) => {
           keyboardAppearance="default"
           editable={true}
           style={{
-            width: "80%",
+            width: "90%",
             height: 90,
             justifyContent: "center",
             alignSelf: "center",
           }}
-          pinCount={4}
+          pinCount={6}
           code={state.code} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
           onCodeChanged={(code) => {
             setState({ code });

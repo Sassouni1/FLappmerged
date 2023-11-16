@@ -62,7 +62,7 @@ const VideoSkills = ({ route }) => {
             <Ionicons name={"arrow-back"} size={25} color={"white"} />
           </TouchableOpacity>
         }
-        RightIcon={<View />}
+        RightIcon={<View style={{marginRight:getFontSize(2.5)}}/>}
       />
       <View style={styles.mainCon}>
         {isYouTubeUrl ? (

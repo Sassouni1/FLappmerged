@@ -97,9 +97,12 @@ const Messages = () => {
             color={"white"}
             onPress={() => navigation.openDrawer()}
             name="menu"
+            style={{ alignSelf: "flex-start",
+            //marginLeft:getFontSize(-1.5) 
+          }}
           />
         }
-        RightIcon={<View />}
+        RightIcon={<View style={{marginRight:getFontSize(3.5)}}/>}
       />
       {loader ? null : (
         <>

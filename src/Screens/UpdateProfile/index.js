@@ -265,7 +265,7 @@ const UpdateProfiles = () => {
             }}
           />
         }
-        RightIcon={<View />}
+        RightIcon={<View style={{marginRight:getFontSize(2.5)}}/>}
       />
       <ImagePickerModal
         visible={pickerModalVisibile}

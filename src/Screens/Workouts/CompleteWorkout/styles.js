@@ -226,7 +226,7 @@ export const styles = StyleSheet.create({
     marginRight: getWidth(2),
   },
   btng: {
-    width: getFontSize(25),
+    width: getFontSize(22),
     height: getHeight(3.5),
     borderRadius: 5,
     backgroundColor: colors.secondary,

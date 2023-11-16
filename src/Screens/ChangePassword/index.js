@@ -119,9 +119,9 @@ const ChangePassword = ({ navigation }) => {
   const eyeSlash = <FontAwesome name="eye-slash" size={20} color={"white"} />;
 
   return (
-    <View style={styles.contaner}>
+    <View  style={{ ...GernalStyle.continer, backgroundColor: colors.homeColor }}>
       <GeneralStatusBar
-        barStyle="dark-content"
+        barStyle="light-content"
         hidden={false}
         backgroundColor={colors.primary}
         translucent={true}
@@ -138,7 +138,7 @@ const ChangePassword = ({ navigation }) => {
               onPress={() => navigation.goBack()}
             />
           }
-          RightIcon={<View />}
+          RightIcon={<View style={{marginRight:getFontSize(4)}}/>}
         />
         <Divider style={styles.headerDivider} />
       </View>

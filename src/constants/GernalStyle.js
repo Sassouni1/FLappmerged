@@ -26,7 +26,7 @@ export const GernalStyle = StyleSheet.create({
   },
   inputLabelStyle: {
     fontSize: 12,
-    fontFamily: "Ubuntu-Regular",
+    fontFamily: "Ubuntu-Light",
     color: "rgba(189, 189, 189, 1)",
     backgroundColor: "rgba(79, 79, 79, 0.1)",
   },

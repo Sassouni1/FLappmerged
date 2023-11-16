@@ -104,8 +104,8 @@ const HomeSc = ({ navigation, route }) => {
             style={{
               flex: 1,
               position: "absolute",
-              bottom: getFontSize(30),
-              left: getWidth(5),
+              bottom: getFontSize(28.5),//27.7
+              left: getWidth(3.5),
             }}
           >
             <Entypo
@@ -146,7 +146,7 @@ const HomeSc = ({ navigation, route }) => {
               flex: 1,
               position: "absolute",
               bottom: getHeight(2),
-              left: getWidth(4),
+              left: getWidth(2.5),
             }}
           >
             <Text style={styles.welcome}>Welcome to DaruStrong</Text>

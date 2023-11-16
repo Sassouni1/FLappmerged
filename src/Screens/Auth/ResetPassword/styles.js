@@ -95,7 +95,7 @@ export const styles = StyleSheet.create({
     color: 'white',
     marginTop:getHeight(3),
     marginLeft:getWidth(5),
-    fontSize: 12,
+    fontSize: getFontSize(1.7),
     // textAlign: 'justify',
     lineHeight: 19,
     marginBottom:getHeight(0.5),

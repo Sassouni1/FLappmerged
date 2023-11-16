@@ -381,7 +381,7 @@ const CompleteWorkout = ({ route }) => {
                         }}
                       >
                         <TextInput
-                          placeholder="reps"
+                          placeholder="Enter reps"
                           placeholderTextColor={"black"}
                           keyboardType="number-pad"
                           onChangeText={(text) => {
@@ -413,7 +413,7 @@ const CompleteWorkout = ({ route }) => {
                         }}
                       >
                         <TextInput
-                          placeholder="lebs"
+                          placeholder="Enter lebs"
                           placeholderTextColor={"black"}
                           keyboardType="number-pad"
                           onChangeText={(text) => {
@@ -445,12 +445,13 @@ const CompleteWorkout = ({ route }) => {
                       }}
                     >
                       <TextInput
-                        placeholder="kg"
+                        placeholder="Enter weight"
                         placeholderTextColor={"black"}
                         keyboardType="number-pad"
                         onChangeText={(text) => {
                           updateSubmittedSets(index, "", "", text, "", "", "");
                         }}
+                        style={{paddingTop:getFontSize(0.6)}}
                       />
                       <View style={styles.parameterCtn}>
                         <Text style={styles.lbs}>
@@ -468,12 +469,13 @@ const CompleteWorkout = ({ route }) => {
                       }}
                     >
                       <TextInput
-                        placeholder="sec"
+                        placeholder="Enter seconds"
                         placeholderTextColor={"black"}
                         keyboardType="number-pad"
                         onChangeText={(text) => {
                           updateSubmittedSets(index, "", "", "", text, "", "");
                         }}
+                        style={{paddingTop:getFontSize(0.6)}}
                       />
                       <View style={styles.parameterCtn}>
                         <Text style={styles.lbs}>
@@ -491,12 +493,13 @@ const CompleteWorkout = ({ route }) => {
                       }}
                     >
                       <TextInput
-                        placeholder="miles"
+                        placeholder="Enter distance"
                         placeholderTextColor={"black"}
                         keyboardType="number-pad"
                         onChangeText={(text) => {
                           updateSubmittedSets(index, "", "", "", "", text, "");
                         }}
+                        style={{paddingTop:getFontSize(0.6)}}
                       />
                       <View style={styles.parameterCtn}>
                         <Text style={styles.lbs}>
@@ -515,7 +518,7 @@ const CompleteWorkout = ({ route }) => {
               {set?.rest_time != 0 ? (
                 <View style={styles.spacebet}>
                   <TextInput
-                    placeholder="Rest Time"
+                    placeholder="Enter Rest Time"
                     placeholderTextColor={colors.white}
                     keyboardType="number-pad"
                     style={styles.rest}
@@ -572,7 +575,6 @@ const CompleteWorkout = ({ route }) => {
                 height: getHeight(10),
               }}
             >
-              <View>
                 <TextInput
                   multiline
                   numberOfLines={3}
@@ -585,6 +587,16 @@ const CompleteWorkout = ({ route }) => {
                     fontSize: getFontSize(1.5),
                     marginRight: getWidth(2),
                     marginBottom: getWidth(2),
+                    // height: getHeight(6),
+                    // width: getWidth(90),
+                    // backgroundColor: "rgba(79, 79, 79, 1)",
+                    // color: "white",
+                    // justifyContent: "center",
+                    // fontSize: getFontSize(1.6),
+                    // // lineHeight:20,
+                    // fontFamily: "Ubuntu-Regular",
+                    // alignSelf: "center",
+                    // paddingLeft: 5,
                   }}
                   onChangeText={(text) => {
                     setSubmittedNotes(text);
@@ -593,7 +605,7 @@ const CompleteWorkout = ({ route }) => {
                 {/* <View style={styles.tickCon}>
                   <RightIcon height={15} width={15} />
                 </View> */}
-              </View>
+              
             </View>
           ) : null}
         </View>

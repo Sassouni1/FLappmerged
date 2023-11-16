@@ -116,7 +116,7 @@ const AllMember = () => {
             onPress={() => navigation.goBack()}
           />
         }
-        RightIcon={<View />}
+        RightIcon={<View style={{marginRight:getFontSize(3)}}/>}
       />
       <View
         style={{

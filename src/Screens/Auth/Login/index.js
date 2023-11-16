@@ -51,7 +51,11 @@ const Login = ({ navigation }) => {
         backgroundColor="rgba(51, 51, 51, 1)"
         translucent={true}
       />
+ <KeyboardAwareScrollView
+          // contentContainerStyle={{height: getHeight(40)}}
 
+          showsVerticalScrollIndicator={false}
+        >
       <Text style={styles.txt}>DaruStrong</Text>
 
       <View style={styles.mainview}>
@@ -62,11 +66,7 @@ const Login = ({ navigation }) => {
           </Text>
         </Text>
 
-        <KeyboardAwareScrollView
-          // contentContainerStyle={{height: getHeight(40)}}
-
-          showsVerticalScrollIndicator={false}
-        >
+       
           <TextInput
             mode="outlined"
             // label="Email address"
@@ -169,8 +169,9 @@ const Login = ({ navigation }) => {
 <Text>Login</Text>
             </TouchableOpacity>
           </View> */}
-        </KeyboardAwareScrollView>
       </View>
+      </KeyboardAwareScrollView>
+
     </View>
   );
 };

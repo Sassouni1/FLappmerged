@@ -264,7 +264,12 @@ const StartWorkout = ({ route }) => {
                           exerciseId: ex?._id,
                         });
                       } else {
-                        navigation.navigate("WorkoutSet", {
+                        // navigation.navigate("WorkoutSet", {
+                        //   workoutId: data?._id,
+                        //   innerWorkoutId: item?._id,
+                        //   exerciseId: ex?._id,
+                        // });
+                        navigation.navigate("CompleteWorkout", {
                           workoutId: data?._id,
                           innerWorkoutId: item?._id,
                           exerciseId: ex?._id,

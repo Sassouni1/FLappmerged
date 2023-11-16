@@ -32,6 +32,8 @@ import SimpleToast from "react-native-simple-toast";
 import GeneralStatusBar from "../../../Components/GeneralStatusBar";
 import HeaderBottom from "../../../Components/HeaderBottom";
 import { colors } from "../../../constants/colors";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+
 const ForgotPassword = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -104,6 +106,11 @@ const ForgotPassword = () => {
         }
         RightIcon={<View />}
       />
+      <KeyboardAwareScrollView
+          // contentContainerStyle={{height: getHeight(40)}}
+
+          showsVerticalScrollIndicator={false}
+        >
       <View style={styles.contaner}>
         <Text style={styles.stxt}>
           Enter your email address. We will send a verification email.
@@ -164,6 +171,7 @@ const ForgotPassword = () => {
           </View>
         </View>
       </View>
+      </KeyboardAwareScrollView>
       <Button
         onPress={() => forgot()}
         text="Reset password"

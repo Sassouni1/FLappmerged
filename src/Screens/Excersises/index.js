@@ -23,6 +23,7 @@ import { ApiCall } from "../../Services/Apis";
 import { RefreshControl } from "react-native";
 import HeaderBottom from "../../Components/HeaderBottom";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const Excercises = () => {
   const navigation = useNavigation();
@@ -88,7 +89,7 @@ const Excercises = () => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
+    <KeyboardAwareScrollView style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
       <GeneralStatusBar
         barStyle="light-content"
         hidden={false}
@@ -102,15 +103,18 @@ const Excercises = () => {
             color={"white"}
             onPress={() => navigation.openDrawer()}
             name="menu"
+            style={{ alignSelf: "flex-start",
+            //marginLeft:getFontSize(-1.5) 
+          }}
           />
         }
-        RightIcon={<View />}
+        RightIcon={<View style={{marginRight:getFontSize(3.5)}}/>}
       />
       <View
         style={{
           flexDirection: "row",
           alignItems: "center",
-          width: getWidth(96),
+          width: getWidth(95),
           height: getHeight(7),
           marginVertical: getHeight(1),
           marginTop: getHeight(2.5),
@@ -200,7 +204,7 @@ const Excercises = () => {
           />
         )}
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 

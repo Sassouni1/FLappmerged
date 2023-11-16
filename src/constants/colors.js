@@ -11,6 +11,7 @@ export const colors={
    gray3:'#828282',
    homeColor:'#333333',
    homeConColor:'#272727',
+   calendar:'#454444',
    btncolor:'#7B7A7A',
    textgray6:'#898989',
    black2:"#170F02",

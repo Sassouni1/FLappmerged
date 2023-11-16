@@ -15,13 +15,13 @@ const About = () => {
   const navigation = useNavigation();
 
   return (
-    <View style={{flex:1,backgroundColor:colors.primary}}>
-      <GeneralStatusBar
-        barStyle="dark-content"
-        hidden={false}
-        backgroundColor={colors.primary}
-        translucent={true}
-      />
+    <View  style={{ ...GernalStyle.continer, backgroundColor: colors.homeColor }}>
+    <GeneralStatusBar
+      barStyle="light-content"
+      hidden={false}
+      backgroundColor={colors.primary}
+      translucent={true}
+    />
       <HeaderBottom
         title={"About This App"}
         LeftIcon={
@@ -33,7 +33,7 @@ const About = () => {
               onPress={() => navigation.goBack()}
             />
         }
-        RightIcon={<View/>}
+        RightIcon={<View style={{marginRight:getFontSize(3)}}/>}
       />
       <View
         style={{

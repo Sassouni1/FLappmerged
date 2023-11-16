@@ -114,7 +114,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: getWidth(2.5),
   },
   eliteCon: {
-    width: getWidth(94),
+    width: getWidth(96),
     backgroundColor: colors.homeConColor,
     alignSelf: 'center',
     borderRadius: 7,

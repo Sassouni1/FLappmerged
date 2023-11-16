@@ -1,279 +1,3 @@
-// import React, { useEffect, useState } from "react";
-// import {
-//   View,
-//   Text,
-//   FlatList,
-//   StyleSheet,
-//   ScrollView,
-//   ImageBackground,
-//   Image,
-// } from "react-native";
-// //import { ScrollView } from 'react-native-gesture-handler';
-// import {
-//   getHeight,
-//   getWidth,
-//   getFontSize,
-// } from "../../../../utils/ResponsiveFun";
-// import { colors } from "../../../constants/colors";
-// import Seprator from "../../../Components/Seprator";
-// import { fonts } from "../../../constants/fonts";
-// import { TouchableOpacity } from "react-native-gesture-handler";
-// import { useNavigation } from "@react-navigation/native";
-// import GeneralStatusBar from "../../../Components/GeneralStatusBar";
-// import {
-//   AgreeIcon,
-//   DelIcon,
-//   IconWhite,
-//   RemoveIcon,
-// } from "../../../../assets/Images";
-// import { styles } from "./styles";
-// import { useDispatch, useSelector } from "react-redux";
-// import { ApiCall } from "../../../Services/Apis";
-// import { setLoader } from "../../../Redux/actions/GernalActions";
-// import CalendarStrip from "react-native-calendar-strip";
-// import AntDesign from "react-native-vector-icons/AntDesign";
-// import Button from "../../../Components/Button";
-// import { GernalStyle } from "../../../constants/GernalStyle";
-// import { PlayerSvg } from "../../../assets/images";
-
-// const AddWorkouts = ({ data }) => {
-//   const navigation = useNavigation();
-//   const dispatch = useDispatch();
-
-//   const token = useSelector((state) => state.auth.userToken);
-//   const user = useSelector((state) => state.auth.userData);
-// const loader=useSelector((state)=>state.gernal.loader)
-
-//   const [selectedDate, setSelectedDate] = useState(new Date());
-
-//   const [assigWorkout, setAssigWorkout] = useState([]);
-
-//   const planId = user?.plan_id;
-
-//   const currentDate = new Date().toISOString();
-
-//   const handleDateChange = (selectedDate) => {
-//     setSelectedDate(selectedDate);
-// dispatch(setLoader(true))
-//     getSingleExcercise(selectedDate);
-//   };
-
-//   const getSingleExcercise = async (selectedDate) => {
-//     try {
-//       const res = await ApiCall({
-//         params: { category_name: "skill" },
-//         route: `assignProgram/given-date-workouts/${planId}&${selectedDate.toISOString()}`,
-//         verb: "get",
-//         token: token,
-//       });
-//       console.log("assignProgram started", res);
-//       if (res?.status == "200") {
-//         setAssigWorkout(res?.response?.Workout[0]);
-
-//         dispatch(setLoader(false));
-//       } else {
-//         dispatch(setLoader(false));
-//         setAssigWorkout([]);
-//         console.log("errorrrr in calenders");
-//         // alert(res?.response?.message, [
-//         //   { text: "OK", onPress: () => console.log("OK Pressed") },
-//         // ]);
-//       }
-//     } catch (e) {
-//       console.log("api get skill error -- ", e.toString());
-//     }
-//   };
-//   const getUnit = (set) => {
-//     console.log('set',set)
-//     if (set.weight) {
-//       return `${set.weight} kg`;
-//     } else if (set.seconds) {
-//       return `${set.seconds} seconds`;
-//     } else if (set.distance) {
-//       return `${set.distance} meters`;
-//     }else if (set.reps) {
-//       return `${set.reps} reps ${set.lebs} lebs`;
-//     } else {
-//       return "N/A"; // You can change this to a default value if needed
-//     }
-//   };
-//   useEffect(() => {
-//     dispatch(setLoader(true));
-//     getSingleExcercise(selectedDate);
-//   }, []);
-
-//   return (
-//     <View style={{ flex: 1 }}>
-//       <CalendarStrip
-//         showMonth={false}
-//         selectedDate={currentDate}
-//         onDateSelected={handleDateChange}
-//         calendarAnimation={{ type: "sequence", duration: 30 }}
-//         daySelectionAnimation={{
-//           type: "border",
-//           duration: 200,
-//           borderWidth: 1,
-//           borderHighlightColor: colors.buttonColor,
-//         }}
-//         iconLeft={require("../../../assets/images/leftp.png")}
-//         highlightDateNumberStyle={{ color: colors.buttonColor }}
-//         highlightDateNameStyle={{ color: colors.buttonColor }}
-//         iconRight={require("../../../assets/images/rightp.png")}
-//         style={{
-//           height: getHeight(8),
-//           marginTop: getHeight(1),
-//           paddingHorizontal: 5,
-//         }}
-//         // calendarHeaderStyle={{color: colors.white}}
-//         calendarColor={colors.primary}
-//         dateNumberStyle={{ color: colors.white }}
-//         dateNameStyle={{ color: colors.white }}
-//         iconContainer={{ flex: 0.1 }}
-//       />
-// <FlatList
-//         data={assigWorkout?.innerWorkout}
-//         showsHorizontalScrollIndicator={false}
-//         showsVerticalScrollIndicator={false}
-//         ListFooterComponent={() => (
-//           <View style={{ height: getHeight(10) }}></View>
-//         )}
-//         ListEmptyComponent={() => (
-//           <View
-//             style={{
-//               justifyContent: "center",
-//               alignItems: "center",
-//               height: getHeight(50),
-//             }}
-//           >
-//             {loader?null:<Text style={{ fontSize: getFontSize(2), color: colors.graytext5 }}>
-//               No workout found on selected date
-//             </Text>}
-//           </View>
-//         )}
-//         refreshing={false}
-//         onRefresh={() => getSingleExcercise(selectedDate)}
-//         renderItem={({ item }) => {
-//           return (
-
-//                 <View style={{ marginLeft: getWidth(2) }}>
-//                   <View
-//                     style={{
-//                       flexDirection: "row",
-//                       alignItems: "center",
-//                       justifyContent: "space-between",
-//                       paddingHorizontal: getWidth(3),
-//                       marginBottom: getHeight(1),
-//                       marginTop:getHeight(1.8)
-//                     }}
-//                   >
-//                     <Text
-//                       style={{
-//                         ...styles.chest,
-//                         fontSize: getFontSize(2.5),
-//                         marginTop: getHeight(0.5),
-//                       }}
-//                     >
-//                       {item?.workoutName}
-//                     </Text>
-//                     <Text
-//                       style={{
-//                         color: colors.graytext5,
-//                         fontFamily: fonts.URe,
-//                         fontSize: 10,
-//                       }}
-//                     >
-//                       {item?.exercise.length} exercises
-//                     </Text>
-//                   </View>
-//                   <Seprator
-//                     style={{
-//                       width: getWidth(95),
-//                       alignSelf: "center",
-//                       marginTop: getHeight(1),
-//                     }}
-//                   />
-
-//                   {item.exercise.map((ex) => (
-//                     <TouchableOpacity
-//                       onPress={() =>
-//                         navigation.navigate("WorkoutSet", {
-//                           workoutId: assigWorkout?._id,
-//                           innerWorkoutId: item?._id,
-//                           exerciseId: ex?._id,
-//                         })
-//                       }
-//                       style={{
-//                         flexDirection: "row",
-//                         alignItems: "center",
-//                         marginLeft: getWidth(3),
-//                         marginTop:getHeight(2)
-//                       }}
-//                     >
-//                       {/* {console.log("ex===:",ex)} */}
-//                       {/* <Image
-//                         style={{
-//                           height: 80,
-//                           width: 80,
-//                           borderRadius: 5,
-//                           marginTop: getHeight(1),
-//                         }}
-//                         source={require("../../../assets/images/wheelStrech.png")}
-//                       /> */}
-//                        <View style={styles.thumbnail}>
-//                       <PlayerSvg height={30} width={30} />
-//                     </View>
-//                       {/* {console.log('ex',ex)} */}
-//                       <View style={{ marginLeft: getWidth(2) }}>
-//                         <Text style={styles.heading}>{ex?.exercise_name}</Text>
-
-//                         <View style={{flexDirection:"row",marginTop:getFontSize(0.5)}}>
-//                     <Text style={{ ...styles.total, fontSize: getFontSize(1.5) }}>
-//                       {ex?.no_of_sets} sets
-//                     </Text>
-
-//                     {ex?.sets.map((set, index) => (
-//                       <Text
-//                         style={{
-//                           // ...styles.text,
-//                           fontSize: getFontSize(1.5),
-//                           color: colors.graytext5,
-//                         }}
-//                         key={index}
-//                       >
-//                         {` `}|{` `}{getUnit(set)}
-//                       </Text>
-//                     ))}
-//                     </View>
-//                       </View>
-//                     </TouchableOpacity>
-//                   ))}
-//                 </View>
-
-//           );
-//         }}
-//       />
-//       {assigWorkout?.innerWorkout&&assigWorkout?.innerWorkout.length>0?<Button
-//         text={"Start workout"}
-//         onPress={() =>
-//           navigation.navigate("StartWorkout", {
-//             workoutId: assigWorkout?._id,
-//           })
-//         }
-//         btnStyle={{
-//          ...GernalStyle.btn,
-//           width: getWidth(60),
-//           backgroundColor: colors.greenlight,
-//           position: "absolute",
-//           bottom: getHeight(2),
-//         }}
-//         btnTextStyle={GernalStyle.btnText}
-//       />:null }
-//     </View>
-//   );
-// };
-
-// export default AddWorkouts;
-
 import {
   View,
   Text,
@@ -327,12 +51,14 @@ const AddWorkouts = () => {
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
   const loader = useSelector((state) => state.gernal.loader);
-  console.log('user plaid',user)
+  const [weekDataProgress, setWeekDataProgress] = useState({});
+  console.log("user plaid", user);
 
   const handleDateChange = (selectedDate) => {
     setDate(selectedDate);
     dispatch(setLoader(true));
     getSingleExcercise(selectedDate);
+    exerciseProgress(selectedDate);
   };
   const getUnit = (set) => {
     if (set.weight) {
@@ -359,7 +85,10 @@ const AddWorkouts = () => {
       console.log("respone of add workouts", res);
       if (res?.status == "200") {
         setAssigWorkout(res?.response?.Workout[0]);
-        console.log("workouts details", res?.response?.Workout[0]?.innerWorkout[0]?.exercise[0]);
+        console.log(
+          "workouts details",
+          res?.response?.Workout[0]?.innerWorkout[0]?.exercise[0]
+        );
 
         dispatch(setLoader(false));
       } else {
@@ -375,20 +104,191 @@ const AddWorkouts = () => {
     }
   };
 
+  const exerciseProgress = async (selectedDate) => {
+    try {
+      const res = await ApiCall({
+        route: `assignProgram/user_status/${user?.user_id}`,
+        verb: "post",
+        token: token,
+        params: {
+          givenDate: selectedDate,
+        },
+      });
+
+      if (res?.status == "200") {
+        console.log(
+          "workouts progress response",
+          res?.response?.weeklyProgress
+        );
+        // setWeeklyProgress(res?.response?.weeklyProgress);
+        setWeekDataProgress(res?.response?.weeklyProgress);
+        dispatch(setLoader(false));
+      } else {
+        dispatch(setLoader(false));
+        console.log("errorrrr in calenders progress");
+      }
+    } catch (e) {
+      console.log("api get skill error -- ", e.toString());
+    }
+  };
+
   useEffect(() => {
     dispatch(setLoader(true));
     getSingleExcercise(date);
+     exerciseProgress(date)
   }, []);
-  let highlightDateNumberStyle;
+ 
+  let weekProgress = {
+    Monday: weekDataProgress?.Monday,
+    Tuesday: weekDataProgress?.Tuesday,
+    Wednesday: weekDataProgress?.Wednesday,
+    Thursday: weekDataProgress?.Thursday,
+    Friday: weekDataProgress?.Friday,
+    Saturday: weekDataProgress?.Saturday,
+    Sunday: weekDataProgress?.Sunday,
+  };
+  console.log("weeeeek", weekProgress);
 
-  if (assigWorkout?.progress >= 99.5) {
-    highlightDateNumberStyle = { color: colors.greenlight };
-  } else if (assigWorkout?.progress > 0) {
-    highlightDateNumberStyle = { color: colors.buttonColor };
-  } else if (assigWorkout?.progress <= 0) {
-    highlightDateNumberStyle = { color: colors.redtime };
+  let customDatesStyles = [];
+  const startDate = new Date(date);
+  const endDate = new Date(date);
+  console.log(date);
+  // const diff = startDate.getDay() - 1; // Sunday = 0, Monday = 1, ..., Saturday = 6
+  // startDate.setDate(startDate.getDate() - diff);
+  // endDate.setDate(startDate.getDate() + 6);
+  if (startDate.getDay() === 0) {
+    startDate.setDate(startDate.getDate() - 6);
   } else {
-    highlightDateNumberStyle = { color: colors.gray1 };
+    const diff = startDate.getDay() - 1;
+    startDate.setDate(startDate.getDate() - diff);
+  }
+  endDate.setDate(startDate.getDate() + 6);
+  console.log(endDate);
+
+  const dayOfWeekMap = {
+    // 0: "Monday",
+    // 1: "Tuesday",
+    // 2: "Wednesday",
+    // 3: "Thursday",
+    // 4: "Friday",
+    // 5: "Saturday",
+    // 6: "Sunday",
+    0: "Sunday",
+  1: "Monday",
+  2: "Tuesday",
+  3: "Wednesday",
+  4: "Thursday",
+  5: "Friday",
+  6: "Saturday"
+  };
+
+  for (let i = 0; i < 7; i++) {
+    const currentDate = new Date(startDate);
+    currentDate.setDate(startDate.getDate() + i);
+    const dayOfWeek = currentDate.getDay();
+    const dayName = dayOfWeekMap[dayOfWeek];
+    console.log(dayName)
+
+    switch (weekProgress[dayName]) {
+      case "coming soon":
+        customDatesStyles.push({
+          startDate: currentDate,
+          dateNameStyle: { color: colors.white },
+          dateNumberStyle: { color: colors.white },
+          dateContainerStyle: {
+            height:getHeight(8),
+            backgroundColor: colors.calendar,
+            borderWidth: 0,
+            width: getWidth(11),
+            borderRadius: getFontSize(0.5),
+          },
+        });
+        break
+      case "partially complete":
+        customDatesStyles.push({
+          startDate: currentDate,
+          dateNameStyle: { color: colors.buttonColor },
+          dateNumberStyle: { color: colors.buttonColor },
+          dateContainerStyle: {
+            height:getHeight(8),
+            backgroundColor: colors.calendar,
+            borderWidth: 0,
+            width: getWidth(11),
+            borderRadius: getFontSize(0.5),
+          },
+        });
+        break
+      case "not assigned":
+        customDatesStyles.push({
+          startDate: currentDate,
+          dateNameStyle: { color: colors.white },
+          dateNumberStyle: { color: colors.white },
+          dateContainerStyle: {
+            height:getHeight(8),
+            backgroundColor: colors.calendar,
+            borderWidth: 0,
+            width: getWidth(11),
+            borderRadius: getFontSize(0.5),
+          },
+        });
+        break
+        case "assigned":
+          customDatesStyles.push({
+            startDate: currentDate,
+            dateNameStyle: { color: colors.white },
+            dateNumberStyle: { color: colors.white },
+            dateContainerStyle: {
+              height:getHeight(8),
+              backgroundColor: colors.calendar,
+              borderWidth: 0,
+              width: getWidth(11),
+              borderRadius: getFontSize(0.5),
+            },
+          });
+          break
+        case "complete":
+        customDatesStyles.push({
+          startDate: currentDate,
+          dateNameStyle: { color: colors.greenlight },
+          dateNumberStyle: { color: colors.greenlight },
+          dateContainerStyle: {
+            height:getHeight(8),
+            backgroundColor: colors.calendar,
+            borderWidth: 0,
+            width: getWidth(11),
+            borderRadius: getFontSize(0.5),
+          },
+        });
+        break
+        case "missed":
+          customDatesStyles.push({
+            startDate: currentDate,
+            dateNameStyle: { color: colors.redtime },
+            dateNumberStyle: { color: colors.redtime },
+            dateContainerStyle: {
+              backgroundColor: colors.calendar,
+              height:getHeight(8),
+              borderWidth: 0,
+              width: getWidth(11),
+              borderRadius: getFontSize(0.5),
+            },
+          });
+          break
+        default:
+          customDatesStyles.push({
+            startDate: currentDate,
+            dateNameStyle: { color: colors.white },
+            dateNumberStyle: { color: colors.white },
+            dateContainerStyle: {
+              height:getHeight(8),
+              backgroundColor: colors.calendar,
+              borderWidth: 0,
+              width: getWidth(11),
+              borderRadius: getFontSize(0.5),
+            },
+          });
+          break
+    }
   }
 
   return (
@@ -396,106 +296,64 @@ const AddWorkouts = () => {
       style={{
         flex: 1,
         backgroundColor: colors.homeColor,
-        marginTop: getFontSize(2),
+        marginTop: getFontSize(1),
       }}
     >
-      {/* <GeneralStatusBar
-        barStyle="light-content"
-        hidden={false}
-        backgroundColor={colors.primary}
-        translucent={true}
-      /> */}
-
-      {/* <HeaderBottom
-        title={moment(date).format("dd, MMM Do")}
-        RightIcon={
-          <TouchableOpacity
-            style={{ marginLeft: getWidth(3), alignSelf: "center" }}
-            onPress={() => setIsTime(!isTime)}
-          >
-            {isTime ? (
-              <AngelUp height={15} width={15} />
-            ) : (
-              <AngelDown height={15} width={15} />
-            )}
-          </TouchableOpacity>
-        }
-        // LeftIcon={
-        //   <TouchableOpacity
-        //     style={{ alignSelf: "center", marginRight: getWidth(4) }}
-        //     onPress={() => navigation.openDrawer()}
-        //   >
-        //     <FontAwesome name="bars" size={25} color={colors.white} />
-        //   </TouchableOpacity>
-        // }
-        LeftIcon={<View />} */}
-      {/* /> */}
-
       {/* {isTime && ( */}
-        <ReactNativeCalendarStrip
-          showMonth={false}
-          selectedDate={date}
-          onDateSelected={handleDateChange}
-          calendarAnimation={{ type: "sequence", duration: 30 }}
-          daySelectionAnimation={{
-            type: "border",
-            duration: 200,
-            borderWidth: 2,
-            borderHighlightColor:
-              assigWorkout?.progress == 100
-                ? { color: colors.greenlight }
-                : assigWorkout?.progress < 100 && assigWorkout?.progress > 0
-                ? { color: colors.buttonColor }
-                : assigWorkout?.progress == 0
-                ? { color: colors.redtime }
-                : { color: colors.gray1 },
-          }}
-          iconLeft={require("../../../assets/images/leftp.png")}
-          highlightDateNumberStyle={
-            assigWorkout?.progress == 100
-              ? { color: colors.greenlight }
-              : assigWorkout?.progress < 100 && assigWorkout?.progress > 0
-              ? { color: colors.buttonColor }
-              : assigWorkout?.progress == 0
-              ? { color: colors.redtime }
-              : { color: colors.gray1 }
-          }
-          highlightDateNameStyle={
-            assigWorkout?.progress == 100
-              ? { color: colors.greenlight }
-              : assigWorkout?.progress < 100 && assigWorkout?.progress > 0
-              ? { color: colors.buttonColor }
-              : assigWorkout?.progress == 0
-              ? { color: colors.redtime }
-              : { color: colors.gray1 }
-          }
-          iconRight={require("../../../assets/images/rightp.png")}
-          style={{
-            height: getHeight(8),
-            marginTop: getHeight(1),
-            paddingHorizontal: 5,
-          }}
-          // calendarHeaderStyle={{color: colors.white}}
-          calendarColor={colors.primary}
-          dateNumberStyle={{ color: colors.white }}
-          dateNameStyle={{ color: colors.white }}
-        //  iconContainer={{ flex: 0.1 }}
-          iconContainer={({ date, iconStyle }) => {
-            return (
-              <View style={{ flex: 0.1 }}>
-                {assigWorkout?.innerWorkout[0].progress === 100 && (
-                  <Ionicons
-                    name="checkmark-circle-outline"
-                    size={20}
-                    color={colors.greenlight}
-                    style={iconStyle}
-                  />
-                )}
-              </View>
-            );
-          }}
-        />
-      {/* )} */}
+      <ReactNativeCalendarStrip
+        showMonth={false}
+        selectedDate={date}
+        onDateSelected={handleDateChange}
+        calendarAnimation={{ type: "sequence", duration: 30 }}
+        // dayContainerStyle={styles.calenderStyle}
+        customDatesStyles={customDatesStyles}
+        // daySelectionAnimation={{
+        //   type: "border",
+        //   duration: 200,
+        //   borderWidth: 2,
+        //   borderHighlightColor:
+        //     assigWorkout?.progress == 100
+        //       ? { color: colors.greenlight }
+        //       : assigWorkout?.progress < 100 && assigWorkout?.progress > 0
+        //       ? { color: colors.buttonColor }
+        //       : assigWorkout?.progress == 0
+        //       ? { color: colors.redtime }
+        //       : { color: colors.gray1 },
+        // }}
+        iconLeft={require("../../../assets/images/leftp.png")}
+        //renderCalendarDayStyle={(date) => renderCalendarDayStyle(date)}
+        //   highlightDateNumberStyle=
+        // {assigWorkout?.progress == 100
+        //       ? { color: colors.greenlight }
+        //       : assigWorkout?.progress < 100 && assigWorkout?.progress > 0
+        //       ? { color: colors.buttonColor }
+        //       : assigWorkout?.progress == 0
+        //       ? { color: colors.redtime }
+        //       : { color: colors.gray1 }
+        // }
+
+        // highlightDateNameStyle={
+        //   assigWorkout?.progress == 100
+        //     ? { color: colors.greenlight }
+        //     : assigWorkout?.progress < 100 && assigWorkout?.progress > 0
+        //     ? { color: colors.buttonColor }
+        //     : assigWorkout?.progress == 0
+        //     ? { color: colors.redtime }
+        //     : { color: colors.gray1 }
+        // }
+        iconRight={require("../../../assets/images/rightp.png")}
+        style={{
+          height: getHeight(8),
+          marginTop: getHeight(1),
+          paddingHorizontal: 5,
+        }}
+        // calendarHeaderStyle={{color: colors.white}}
+        //calendarHeaderContainerStyle={{height:getHeight(10)}}
+        calendarColor={colors.primary}
+        //dateNumberStyle={{ color: colors.white }}
+        //dateNameStyle={{ color: colors.white }}
+        iconContainer={{ flex: 0.05, }}
+      />
 
       <FlatList
         data={assigWorkout?.innerWorkout}
@@ -606,7 +464,12 @@ const AddWorkouts = () => {
                         exerciseId: ex?._id,
                       });
                     } else {
-                      navigation.navigate("WorkoutSet", {
+                      // navigation.navigate("WorkoutSet", {
+                      //   workoutId: assigWorkout?._id,
+                      //   innerWorkoutId: item?._id,
+                      //   exerciseId: ex?._id,
+                      // });
+                      navigation.navigate("CompleteWorkout", {
                         workoutId: assigWorkout?._id,
                         innerWorkoutId: item?._id,
                         exerciseId: ex?._id,

@@ -3,8 +3,8 @@ import {getFontSize, getHeight, getWidth} from '../../../utils/ResponsiveFun';
 
 export const styles = StyleSheet.create({
   headerview: {
-    width: getWidth(90),
-    marginTop:getHeight(1),
+    width: getWidth(96),
+    marginTop:getHeight(0.5),
     // height: getHeight(4.5),
     flexDirection: 'row',
     justifyContent: 'space-between',

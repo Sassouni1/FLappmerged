@@ -53,11 +53,14 @@ const WorkoutHistory = ({route}) => {
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
   const loader = useSelector((state) => state.gernal.loader);
+  const [weekDataProgress, setWeekDataProgress] = useState({});
+
 
   const handleDateChange = (selectedDate) => {
     setDate(selectedDate);
     dispatch(setLoader(true));
     getSingleExcercise(selectedDate);
+    exerciseWeekProgress(selectedDate);    
   };
   const getUnit = (set) => {
     if (set.weight) {
@@ -100,20 +103,173 @@ const WorkoutHistory = ({route}) => {
     }
   };
 
+  const exerciseWeekProgress = async (selectedDate) => {
+    try {
+      const res = await ApiCall({
+        route: `assignProgram/user_status/${user?.user_id}`,
+        verb: "post",
+        token: token,
+        params: {
+          givenDate: selectedDate,
+        },
+      });
+
+      if (res?.status == "200") {
+        console.log(
+          "workouts progress response",
+          res?.response?.weeklyProgress
+        );
+        // setWeeklyProgress(res?.response?.weeklyProgress);
+        setWeekDataProgress(res?.response?.weeklyProgress);
+        dispatch(setLoader(false));
+      } else {
+        dispatch(setLoader(false));
+        console.log("errorrrr in calenders progress");
+      }
+    } catch (e) {
+      console.log("api get skill error -- ", e.toString());
+    }
+  };
+
   useEffect(() => {
     dispatch(setLoader(true));
     getSingleExcercise(date);
+    exerciseWeekProgress(date);
   }, []);
-  let highlightDateNumberStyle;
 
-  if (assigWorkout?.progress >= 99.5) {
-    highlightDateNumberStyle = { color: colors.greenlight };
-  } else if (assigWorkout?.progress > 0) {
-    highlightDateNumberStyle = { color: colors.buttonColor };
-  } else if (assigWorkout?.progress <= 0) {
-    highlightDateNumberStyle = { color: colors.redtime };
+
+  let weekProgress = {
+    Monday: weekDataProgress?.Monday,
+    Tuesday: weekDataProgress?.Tuesday,
+    Wednesday: weekDataProgress?.Wednesday,
+    Thursday: weekDataProgress?.Thursday,
+    Friday: weekDataProgress?.Friday,
+    Saturday: weekDataProgress?.Saturday,
+    Sunday: weekDataProgress?.Sunday,
+  };
+
+  let customDatesStyles = [];
+  const startDate = new Date(date);
+  const endDate = new Date(date);
+  // const diff = startDate.getDay() - 1; // Sunday = 0, Monday = 1, ..., Saturday = 6
+  // startDate.setDate(startDate.getDate() - diff);
+  // endDate.setDate(startDate.getDate() + 6);
+  if (startDate.getDay() === 0) {
+    startDate.setDate(startDate.getDate() - 6);
   } else {
-    highlightDateNumberStyle = { color: colors.gray1 };
+    const diff = startDate.getDay() - 1;
+    startDate.setDate(startDate.getDate() - diff);
+  }
+  endDate.setDate(startDate.getDate() + 6);
+
+  const dayOfWeekMap = {
+    // 0: "Monday",
+    // 1: "Tuesday",
+    // 2: "Wednesday",
+    // 3: "Thursday",
+    // 4: "Friday",
+    // 5: "Saturday",
+    // 6: "Sunday",
+    0: "Sunday",
+  1: "Monday",
+  2: "Tuesday",
+  3: "Wednesday",
+  4: "Thursday",
+  5: "Friday",
+  6: "Saturday"
+  };
+
+  for (let i = 0; i < 7; i++) {
+    const currentDate = new Date(startDate);
+    currentDate.setDate(startDate.getDate() + i);
+    const dayOfWeek = currentDate.getDay();
+    const dayName = dayOfWeekMap[dayOfWeek];
+
+    switch (weekProgress[dayName]) {
+      case "coming soon":
+        customDatesStyles.push({
+          startDate: currentDate,
+          dateNameStyle: { color: colors.white },
+          dateNumberStyle: { color: colors.white },
+          dateContainerStyle: {
+            height:getHeight(8),
+            backgroundColor: colors.calendar,
+            borderWidth: 0,
+            width: getWidth(11),
+            borderRadius: getFontSize(0.5),
+          },
+        });
+        break
+      case "partially complete":
+        customDatesStyles.push({
+          startDate: currentDate,
+          dateNameStyle: { color: colors.buttonColor },
+          dateNumberStyle: { color: colors.buttonColor },
+          dateContainerStyle: {
+            height:getHeight(8),
+            backgroundColor: colors.calendar,
+            borderWidth: 0,
+            width: getWidth(11),
+            borderRadius: getFontSize(0.5),
+          },
+        });
+        break
+      case "not assigned":
+        customDatesStyles.push({
+          startDate: currentDate,
+          dateNameStyle: { color: colors.white },
+          dateNumberStyle: { color: colors.white },
+          dateContainerStyle: {
+            height:getHeight(8),
+            backgroundColor: colors.calendar,
+            borderWidth: 0,
+            width: getWidth(11),
+            borderRadius: getFontSize(0.5),
+          },
+        });
+        break
+        case "complete":
+        customDatesStyles.push({
+          startDate: currentDate,
+          dateNameStyle: { color: colors.greenlight },
+          dateNumberStyle: { color: colors.greenlight },
+          dateContainerStyle: {
+            height:getHeight(8),
+            backgroundColor: colors.calendar,
+            borderWidth: 0,
+            width: getWidth(11),
+            borderRadius: getFontSize(0.5),
+          },
+        });
+        break
+        case "missed":
+          customDatesStyles.push({
+            startDate: currentDate,
+            dateNameStyle: { color: colors.redtime },
+            dateNumberStyle: { color: colors.redtime },
+            dateContainerStyle: {
+              height:getHeight(8),
+              backgroundColor: colors.calendar,
+              borderWidth: 0,
+              width: getWidth(11),
+              borderRadius: getFontSize(0.5),
+            },
+          });
+        default:
+          customDatesStyles.push({
+            startDate: currentDate,
+            dateNameStyle: { color: colors.white },
+            dateNumberStyle: { color: colors.white },
+            dateContainerStyle: {
+              height:getHeight(8),
+              backgroundColor: colors.calendar,
+              borderWidth: 0,
+              width: getWidth(10),
+              borderRadius: getFontSize(0.5),
+            },
+          });
+          break
+    }
   }
 
   return (
@@ -155,38 +311,7 @@ const WorkoutHistory = ({route}) => {
           selectedDate={date}
           onDateSelected={handleDateChange}
           calendarAnimation={{ type: "sequence", duration: 30 }}
-          daySelectionAnimation={{
-            type: "border",
-            duration: 200,
-            borderWidth: 2,
-            borderHighlightColor:
-              assigWorkout?.progress == 100
-                ? { color: colors.greenlight }
-                : assigWorkout?.progress < 100 && assigWorkout?.progress > 0
-                ? { color: colors.buttonColor }
-                : assigWorkout?.progress == 0
-                ? { color: colors.redtime }
-                : { color: colors.gray1 },
-          }}
           iconLeft={require("../../../assets/images/leftp.png")}
-          highlightDateNumberStyle={
-            assigWorkout?.progress == 100
-              ? { color: colors.greenlight }
-              : assigWorkout?.progress < 100 && assigWorkout?.progress > 0
-              ? { color: colors.buttonColor }
-              : assigWorkout?.progress == 0
-              ? { color: colors.redtime }
-              : { color: colors.gray1 }
-          }
-          highlightDateNameStyle={
-            assigWorkout?.progress == 100
-              ? { color: colors.greenlight }
-              : assigWorkout?.progress < 100 && assigWorkout?.progress > 0
-              ? { color: colors.buttonColor }
-              : assigWorkout?.progress == 0
-              ? { color: colors.redtime }
-              : { color: colors.gray1 }
-          }
           iconRight={require("../../../assets/images/rightp.png")}
           style={{
             height: getHeight(8),
@@ -195,23 +320,7 @@ const WorkoutHistory = ({route}) => {
           }}
           // calendarHeaderStyle={{color: colors.white}}
           calendarColor={colors.primary}
-          dateNumberStyle={{ color: colors.white }}
-          dateNameStyle={{ color: colors.white }}
-          //iconContainer={{ flex: 0.1 }}
-          iconContainer={({ date, iconStyle }) => {
-            return (
-              <View style={{ flex: 0.1 }}>
-                {assigWorkout?.innerWorkout[0].progress === 100 && (
-                  <Ionicons
-                    name="checkmark-circle-outline"
-                    size={20}
-                    color={colors.greenlight}
-                    style={iconStyle}
-                  />
-                )}
-              </View>
-            );
-          }}
+          iconContainer={{ flex: 0.05 }}
         />
       )}
 
@@ -324,7 +433,12 @@ const WorkoutHistory = ({route}) => {
                         exerciseId: ex?._id,
                       });
                     } else {
-                      navigation.navigate("WorkoutSet", {
+                      // navigation.navigate("WorkoutSet", {
+                      //   workoutId: assigWorkout?._id,
+                      //   innerWorkoutId: item?._id,
+                      //   exerciseId: ex?._id,
+                      // });
+                      navigation.navigate("CompleteWorkout", {
                         workoutId: assigWorkout?._id,
                         innerWorkoutId: item?._id,
                         exerciseId: ex?._id,
