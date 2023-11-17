@@ -1,51 +1,49 @@
-import React, {Component, useState, useEffect, useRef} from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  FlatList,
-  Alert,
-} from 'react-native';
-import moment from 'moment';
-import Modal from 'react-native-modal';
-import {Colors, Divider, RadioButton} from 'react-native-paper';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import React, { Component, useState, useEffect, useRef } from "react";
+import { View, Text, TouchableOpacity, FlatList, Alert } from "react-native";
+import moment from "moment";
+import Modal from "react-native-modal";
+import { Colors, Divider, RadioButton } from "react-native-paper";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import AntDesign from "react-native-vector-icons/AntDesign";
 
-import styles from './styles';
+import styles from "./styles";
 
-import Button from '../../Components/Button';
-import Header from '../../Components/Header';
-import {getFontSize, getHeight, getWidth} from '../../../utils/ResponsiveFun';
-import {ApiCall, GetApiCallWithHeader} from '../../Services/Apis';
-import {useDispatch, useSelector} from 'react-redux';
-import GeneralStatusBar from '../../Components/GeneralStatusBar';
-import {setLoader} from '../../Redux/actions/GernalActions';
+import Button from "../../Components/Button";
+import Header from "../../Components/Header";
+import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
+import { ApiCall, GetApiCallWithHeader } from "../../Services/Apis";
+import { useDispatch, useSelector } from "react-redux";
+import GeneralStatusBar from "../../Components/GeneralStatusBar";
+import { setLoader } from "../../Redux/actions/GernalActions";
+import { GernalStyle } from "../../constants/GernalStyle";
+import { colors } from "../../constants/colors";
+import HeaderBottom from "../../Components/HeaderBottom";
 // create a component
-const Notification = ({navigation}) => {
+const Notification = ({ navigation }) => {
   const dispatch = useDispatch();
   const [DATA, SetDATA] = useState([]);
-  const token = useSelector(state => state.auth.userToken);
+  const user = useSelector((state) => state.auth.userData);
+  const token = useSelector((state) => state.auth.userToken);
 
   const getAllNotification = async () => {
     try {
       const res = await ApiCall({
-        route: 'notifications/my-notifications',
+        route: `notifications/all-notifications/${user?.user_id}`,
         token: token,
-        verb: 'get',
+        verb: "get",
       });
 
-      if (res?.status == '200') {
-        console.log('res payment', res?.response);
-        SetDATA(res?.response?.data);
+      if (res?.status == "200") {
+        //console.log("notifications data", res?.response);
+        SetDATA(res?.response?.list);
         dispatch(setLoader(false));
       } else {
-        console.log('error', res.response);
+        console.log("error", res.response);
         dispatch(setLoader(false));
       }
     } catch (e) {
-      console.log('saga get notfication error -- ', e.toString());
+      console.log("saga get notfication error -- ", e.toString());
     }
   };
   useEffect(() => {
@@ -54,46 +52,36 @@ const Notification = ({navigation}) => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{ ...GernalStyle.continer, backgroundColor: colors.homeColor }}
+    >
       <GeneralStatusBar
-        backgroundColor="white"
-        barStyle="dark-content"
+        barStyle="light-content"
         hidden={false}
+        backgroundColor={colors.primary}
         translucent={true}
       />
+      <HeaderBottom
+        title={"Notifications"}
+        LeftIcon={
+          <Ionicons
+            //  style={{ alignSelf: "center", marginRight: getWidth(2) }}
+            name={"arrow-back"}
+            size={25}
+            color={"#ffff"}
+            onPress={() => navigation.goBack()}
+          />
+        }
+        RightIcon={<View style={{ marginRight: getFontSize(3) }} />}
+      />
+
       <View
         style={{
-          flexDirection: 'row',
-          width: getWidth(60),
-          justifyContent: 'space-around',
-        }}>
-        <Ionicons
-          onPress={() => navigation.goBack()}
-          name={'chevron-back'}
-          size={27}
-          color={'#006D65'}
-          style={{
-            marginTop: getHeight(2),
-          }}
-        />
-
-        <Text
-          style={{
-            color: '#006D65',
-            // fontFamily: 'Poppins-Bold',
-            fontWeight: '700',
-            marginLeft: getWidth(20),
-            fontSize: 16,
-            lineHeight: 36,
-            marginTop: getHeight(1),
-
-            alignSelf: 'center',
-          }}>
-          Notification
-        </Text>
-      </View>
-
-      <View>
+          ...GernalStyle.continer,
+          backgroundColor: colors.homeColor,
+          marginTop: getFontSize(1),
+        }}
+      >
         <FlatList
           showsVerticalScrollIndicator={false}
           useFlatList={true}
@@ -104,24 +92,25 @@ const Notification = ({navigation}) => {
               style={{
                 height: getHeight(70),
                 width: getWidth(100),
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Text>You have no any Notification Now</Text>
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{color:colors.white,fontSize:getFontSize(2)}}>You have no any Notification Now</Text>
             </View>
           )}
           ItemSeparatorComponent={() => <Divider />}
-          ListHeaderComponent={() => <View style={{height: getHeight(2)}} />}
-          ListFooterComponent={() => <View style={{margin: getHeight(12)}} />}
-          renderItem={({item, index}) => (
+          ListHeaderComponent={() => <View style={{ height: getHeight(2) }} />}
+          ListFooterComponent={() => <View style={{ margin: getHeight(12) }} />}
+          renderItem={({ item, index }) => (
             <TouchableOpacity activeOpacity={1}>
               <View style={styles.card}>
                 <View style={styles.RowView}>
                   <View style={styles.Iconbg}>
                     <MaterialCommunityIcons
-                      name={'bell-ring-outline'}
+                      name={"bell-ring-outline"}
                       size={30}
-                      color={'#006D65'}
+                      color={colors.buttonColor}
                     />
                   </View>
                   <View>
@@ -132,7 +121,7 @@ const Notification = ({navigation}) => {
                       {item?.notification}
                     </Text>
                     <Text style={styles.Time}>
-                      {moment(item?.createdAt).format('YYYY-MM-DD')}
+                      {moment(item?.createdAt).format("YYYY-MM-DD")}
                     </Text>
                   </View>
                   <View style={styles.active} />

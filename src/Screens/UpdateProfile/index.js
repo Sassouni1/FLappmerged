@@ -47,6 +47,7 @@ const UpdateProfiles = () => {
   const token = useSelector((state) => state.auth.userToken);
   const [imageToUpload, setImageToUpload] = useState("");
   const [pickerModalVisibile, setPickerModalVisibile] = useState(false);
+  const [imageCrop,setImageCrop] = useState('');
 
   const [imageObject, setImageObject] = useState();
   const [imageSave, setImageSave] = useState(null);
@@ -115,7 +116,8 @@ const UpdateProfiles = () => {
       };
       setImageObject(MyObject);
       setPickerModalVisibile(false);
-      profileSetting(MyObject);
+      setImageCrop(MyObject)
+      //profileSetting(MyObject);
     });
   };
 
@@ -149,7 +151,7 @@ const UpdateProfiles = () => {
   const dispatch = useDispatch();
   const changeHandler = (type, value) => setState({ ...state, [type]: value });
 
-  const profileSetting = async (MyObject) => {
+  const profileSetting = async () => {
     const { fullname, weight, height } = state;
     const fullnameError = await validator("fullname", fullname);
     const weightError = await validator("weight", weight);
@@ -162,7 +164,7 @@ const UpdateProfiles = () => {
         formData.append("full_name", fullname);
         formData.append("height", height);
         formData.append("weight", weight);
-        formData.append("profile_image", MyObject);
+        formData.append("profile_image", imageCrop);
         console.log("Form Data", formData);
 
         const res = await ApiCall({
@@ -178,7 +180,7 @@ const UpdateProfiles = () => {
           toast.show(res?.response?.message);
           dispatch(setLoader(false));
         } else {
-          console.log("error", res.response);
+          console.log("error of api", res);
           dispatch(setLoader(false));
 
           alert(res?.response?.message, [
@@ -387,7 +389,7 @@ const UpdateProfiles = () => {
           textColor="white"
           style={{ ...GernalStyle.input, marginTop: getHeight(2), }}
           ref={inputRefs.weight}
-          value={state.weight}
+          value={state.weight.toString()}
           returnKeyType={"done"}
           keyboardType={"numeric"}
           onFocus={() => setState({ ...state, weightError: "" })}
@@ -420,7 +422,7 @@ const UpdateProfiles = () => {
           textColor="white"
           style={{ ...GernalStyle.input, marginTop: getHeight(2),marginBottom:getFontSize(2) }}
           ref={inputRefs.height}
-          value={state.height}
+          value={state.height.toString()}
           returnKeyType={"done"}
           keyboardType={"numeric"}
           onFocus={() => setState({ ...state, heightError: "" })}

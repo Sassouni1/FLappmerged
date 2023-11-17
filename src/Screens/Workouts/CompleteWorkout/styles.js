@@ -130,7 +130,7 @@ export const styles = StyleSheet.create({
   videotext: { fontSize: 10, fontFamily: fonts.UBo, color: colors.white },
   start: {
     color: colors.white,
-    fontSize: 12,
+    fontSize: getFontSize(1.7),
     fontFamily: fonts.UBo,
     marginLeft: getWidth(1),
   },

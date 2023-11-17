@@ -27,6 +27,7 @@ import { ApiCall } from "../../../Services/Apis";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import { updateTimer } from "../../../Redux/actions/AuthActions";
 
 const SubmittedWorkouts = ({ route }) => {
   const navigation = useNavigation();
@@ -41,10 +42,12 @@ const SubmittedWorkouts = ({ route }) => {
 
   const { workoutId, innerWorkoutId, exerciseId } = route?.params;
   console.log("ids", workoutId, innerWorkoutId, exerciseId);
+  const defaultTimer = { hours: 0, minutes: 0, seconds: 0 };
 
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
   const loader = useSelector((state) => state.gernal.loader);
+  const timer = useSelector((state)=> state.auth.exerciseTimers[exerciseId]) || defaultTimer;
 
   useEffect(() => {
     let interval;
@@ -137,7 +140,7 @@ const SubmittedWorkouts = ({ route }) => {
           style={{
             ...styles.angel,
             justifyContent: "space-between",
-            alignSelf: "center",
+           // alignSelf: "center",
             //marginRight: getWidth(1),
             backgroundColor: "#000",
           }}
@@ -152,17 +155,17 @@ const SubmittedWorkouts = ({ route }) => {
           <View style={{ ...styles.header }}>
             <View style={styles.headerTime}>
               <Text style={styles.text}>
-                {hours.toString().padStart(2, "0")}:
+                {timer.hours.toString().padStart(2, "0")}:
               </Text>
               <Text style={styles.text}>
-                {minutes.toString().padStart(2, "0")}:
+                {timer.minutes.toString().padStart(2, "0")}:
               </Text>
               <Text style={styles.text}>
-                {seconds.toString().padStart(2, "0")}
+                {timer.seconds.toString().padStart(2, "0")}
               </Text>
             </View>
           </View>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={{ ...styles.togle, marginRight: getWidth(2) }}
             onPress={toggleTimer}
           >
@@ -173,7 +176,7 @@ const SubmittedWorkouts = ({ route }) => {
             )}
 
             <Text style={styles.start}>{isRunning ? "Pause" : "Start"}</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>

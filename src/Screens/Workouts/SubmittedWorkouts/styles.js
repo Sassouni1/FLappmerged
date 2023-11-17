@@ -135,7 +135,7 @@ export const styles = StyleSheet.create({
     marginLeft: getWidth(1),
   },
   togle: {
-    backgroundColor: colors.whiteOp20,
+    backgroundColor: colors.black,
     height: getHeight(5),
     borderRadius: 5,
     width: getWidth(20),
@@ -162,7 +162,7 @@ export const styles = StyleSheet.create({
     //flex:1,
     flexDirection: "column",
     alignItems: "center",
-    marginRight: 38,
+    marginRight: getFontSize(1),
   },
   repsCon: {
     flexDirection: "row",

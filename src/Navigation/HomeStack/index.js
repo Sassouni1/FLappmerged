@@ -50,6 +50,7 @@ import TermOfUse from '../../Screens/TermOfUse';
 import About from '../../Screens/About';
 import CompleteWorkout from '../../Screens/Workouts/CompleteWorkout';
 import SubmittedWorkouts from '../../Screens/Workouts/SubmittedWorkouts';
+import Notification from '../../Screens/Notifications';
 
 const stack = createNativeStackNavigator();
 const HomeStack = () => {
@@ -358,6 +359,13 @@ const HomeStack = () => {
         }}
         name="PrivacyPolicy"
         component={PrivacyPolicy}
+      />
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="Notification"
+        component={Notification}
       />
       <stack.Screen
         options={{

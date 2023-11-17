@@ -12,7 +12,7 @@ import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
 import BottomTab from "../BottomTab";
 import { useDispatch, useSelector } from "react-redux";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import Foundation from "react-native-vector-icons/Foundation";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Divider } from "react-native-paper";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -28,13 +28,14 @@ import UpdateProfiles from "../../Screens/UpdateProfile";
 import ContactUs from "../../Screens/ContactUs";
 import Help from "../../Screens/Help";
 import ImageModal from "react-native-image-modal";
-import { useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import Notification from "../../Screens/Notifications";
+import { colors } from "../../constants/colors";
 
 const Drawer = createDrawerNavigator();
 function NavHeader(props) {
   const user = useSelector((state) => state.auth.userData);
-  console.log("user data", user);
   const token = useSelector((state) => state.auth.userToken);
   const navigation = useNavigation();
   return (
@@ -112,7 +113,7 @@ function CustomDrawerContent(props) {
   const dispatch = useDispatch();
   const marginTop = Platform.OS === "android" ? getHeight(-2) : 0;
   const margin = Platform.OS === "android" ? getHeight(1.9) : height * 0.026;
- // const marginBo = Platform.OS === "android" ? getHeight(-0.5) : height * 0.03;
+  // const marginBo = Platform.OS === "android" ? getHeight(-0.5) : height * 0.03;
 
   return (
     <DrawerContentScrollView
@@ -133,8 +134,18 @@ function CustomDrawerContent(props) {
 
       <DrawerItemList {...props} />
 
-      <View style={{ flex: 1, justifyContent: "flex-end",bottom: margin }}>
+      <View style={{ flex: 1, justifyContent: "flex-end", bottom: margin }}>
+        {/* <DrawerItem
+          label={"Notifications"}
+          labelStyle={{ fontFamily: "Ubuntu-Bold" }}
+          onPress={() => navigation.navigate("Notification")}
+          inactiveTintColor={"#7B7A7A"}
+          activeTintColor={"#7B7A7A"}
+          labelStyle={{ color: "#7B7A7A" }}
+          activeBackgroundColor={"#7B7A7A"}
+        /> */}
         <DrawerItem
+          //style={{ marginTop: getHeight(-1) }}
           label={"Privacy Policy"}
           labelStyle={{ fontFamily: "Ubuntu-Bold" }}
           onPress={() => navigation.navigate("PrivacyPolicy")}
@@ -145,7 +156,7 @@ function CustomDrawerContent(props) {
         />
 
         <DrawerItem
-        style={{marginTop: getHeight(-1)}}
+          style={{ marginTop: getHeight(-1) }}
           label={"Term of Use"}
           labelStyle={{ fontFamily: "Ubuntu-Bold" }}
           onPress={() => navigation.navigate("TermOfUse")}
@@ -156,7 +167,7 @@ function CustomDrawerContent(props) {
         />
 
         <DrawerItem
-        style={{marginTop: getHeight(-1),marginBottom:getHeight(2)}}
+          style={{ marginTop: getHeight(-1), marginBottom: getHeight(2) }}
           label={"About this app"}
           labelStyle={{ fontFamily: "Ubuntu-Bold" }}
           onPress={() => navigation.navigate("About")}
@@ -165,8 +176,8 @@ function CustomDrawerContent(props) {
           labelStyle={{ color: "#7B7A7A" }}
           activeBackgroundColor={"#7B7A7A"}
         />
-        <View style={{height:marginTop}}>
-        <Divider style={{marginBottom:marginTop}}/>
+        <View style={{ height: marginTop }}>
+          <Divider style={{ marginBottom: marginTop }} />
         </View>
         <DrawerItem
           label={"Logout"}
@@ -200,7 +211,11 @@ export default function MyDrawer() {
           drawerIcon: ({ color, size, focuced }) => (
             <Fontisto name={"home"} size={16} color={color} />
           ),
-          drawerLabelStyle:{ fontFamily: "Ubuntu-Bold", fontSize: getFontSize(1.7) , marginLeft:getFontSize(0.1)}
+          drawerLabelStyle: {
+            fontFamily: "Ubuntu-Bold",
+            fontSize: getFontSize(1.7),
+            marginLeft: getFontSize(0.1),
+          },
         }}
         name="Home"
         component={BottomTab}
@@ -212,9 +227,18 @@ export default function MyDrawer() {
           drawerActiveTintColor: "#333333",
           drawerActiveBackgroundColor: "white",
           drawerIcon: ({ color, size, focuced }) => (
-            <FontAwesome6 name="user-gear" size={18} color={"white"} style={{marginLeft:getFontSize(-0.2)}}/>
+            <FontAwesome6
+              name="user-gear"
+              size={18}
+              color={"white"}
+              style={{ marginLeft: getFontSize(-0.2) }}
+            />
           ),
-          drawerLabelStyle:{ fontFamily: "Ubuntu-Bold", fontSize: getFontSize(1.7), marginLeft:getFontSize(-0.3)}
+          drawerLabelStyle: {
+            fontFamily: "Ubuntu-Bold",
+            fontSize: getFontSize(1.7),
+            marginLeft: getFontSize(-0.3),
+          },
         }}
         name="Profile Settings"
         component={UpdateProfiles}
@@ -226,9 +250,18 @@ export default function MyDrawer() {
           drawerActiveTintColor: "#333333",
           drawerActiveBackgroundColor: "white",
           drawerIcon: ({ color, size, focuced }) => (
-            <MaterialIcons name="lock-reset" size={30} color={"white"} style={{marginLeft:getFontSize(-1)}}/>
+            <MaterialIcons
+              name="lock-reset"
+              size={30}
+              color={"white"}
+              style={{ marginLeft: getFontSize(-1) }}
+            />
           ),
-          drawerLabelStyle:{ fontFamily: "Ubuntu-Bold", fontSize: getFontSize(1.7), marginLeft:getFontSize(-0.5)}
+          drawerLabelStyle: {
+            fontFamily: "Ubuntu-Bold",
+            fontSize: getFontSize(1.7),
+            marginLeft: getFontSize(-0.5),
+          },
         }}
         name="Change Password"
         component={ChangePassword}
@@ -241,9 +274,18 @@ export default function MyDrawer() {
           drawerActiveTintColor: "#333333",
           drawerActiveBackgroundColor: "white",
           drawerIcon: ({ color, size, focuced }) => (
-            <Ionicons name="information-circle" size={25} color={"white"} style={{marginLeft:getFontSize(-0.5)}}/>
+            <Ionicons
+              name="information-circle"
+              size={25}
+              color={"white"}
+              style={{ marginLeft: getFontSize(-0.5) }}
+            />
           ),
-          drawerLabelStyle:{ fontFamily: "Ubuntu-Bold", fontSize: getFontSize(1.7), marginLeft:getFontSize(-0.3)}
+          drawerLabelStyle: {
+            fontFamily: "Ubuntu-Bold",
+            fontSize: getFontSize(1.7),
+            marginLeft: getFontSize(-0.3),
+          },
         }}
         name="Help"
         component={Help}
@@ -262,6 +304,25 @@ export default function MyDrawer() {
         style={{ fontFamily: "Ubuntu-Bold", fontSize: 12 }}
         name="Contact Us"
         component={ContactUs}
+      />
+
+      <Drawer.Screen
+        options={{
+          headerShown: false,
+          drawerInactiveTintColor: "white",
+          drawerActiveTintColor: "#333333",
+          drawerActiveBackgroundColor: "white",
+          drawerIcon: ({ color, size, focuced }) => (
+            <MaterialCommunityIcons
+              name={"bell-ring-outline"}
+              size={20}
+              color={colors.white}
+            />
+          ),
+        }}
+        style={{ fontFamily: "Ubuntu-Bold", fontSize: 12 }}
+        name="Notifications"
+        component={Notification}
       />
     </Drawer.Navigator>
   );

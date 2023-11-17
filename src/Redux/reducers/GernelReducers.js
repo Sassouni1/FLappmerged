@@ -1,10 +1,11 @@
-import {ACTIONS} from '../action-types';
+import { ACTIONS } from "../action-types";
 
 const initialState = {
   loader: false,
   chats: [],
   allSms: [],
-  counts: {consultations: 0, paid: 0},
+  counts: { consultations: 0, paid: 0 },
+  // timer: { hours: 0, minutes: 0, seconds: 0 },
 };
 
 const GernelReducers = (state = initialState, action) => {
@@ -30,6 +31,11 @@ const GernelReducers = (state = initialState, action) => {
         ...state,
         counts: action.data,
       };
+    // case ACTIONS.UPDATE_TIMER:
+    //   return {
+    //     ...state,
+    //     timer: action.payload,
+    //   };
 
     default:
       return state;

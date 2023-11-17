@@ -19,6 +19,7 @@ import HeaderBottom from "../../Components/HeaderBottom";
 import { colors } from "../../constants/colors";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Video from "react-native-video";
+import Notification from "../Notifications";
 
 const HomeSc = ({ navigation, route }) => {
   const user = useSelector((state) => state.auth.userData);

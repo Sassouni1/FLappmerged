@@ -12,7 +12,7 @@ import React, { useEffect, useState } from "react";
 import { colors } from "../../../constants/colors";
 import GeneralStatusBar from "../../../Components/GeneralStatusBar";
 import { GernalStyle } from "../../../constants/GernalStyle";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import {
   getFontSize,
@@ -132,12 +132,19 @@ const AddWorkouts = () => {
     }
   };
 
-  useEffect(() => {
-    dispatch(setLoader(true));
-    getSingleExcercise(date);
-     exerciseProgress(date)
-  }, []);
- 
+  // useEffect(() => {
+  //   dispatch(setLoader(true));
+  //   getSingleExcercise(date);
+  //    exerciseProgress(date)
+  // }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(setLoader(true));
+      getSingleExcercise(date);
+      exerciseProgress(date);
+    }, [date])
+  );
+
   let weekProgress = {
     Monday: weekDataProgress?.Monday,
     Tuesday: weekDataProgress?.Tuesday,
@@ -152,7 +159,7 @@ const AddWorkouts = () => {
   let customDatesStyles = [];
   const startDate = new Date(date);
   const endDate = new Date(date);
-  console.log(date);
+  //console.log(date);
   // const diff = startDate.getDay() - 1; // Sunday = 0, Monday = 1, ..., Saturday = 6
   // startDate.setDate(startDate.getDate() - diff);
   // endDate.setDate(startDate.getDate() + 6);
@@ -163,23 +170,17 @@ const AddWorkouts = () => {
     startDate.setDate(startDate.getDate() - diff);
   }
   endDate.setDate(startDate.getDate() + 6);
+  console.log(startDate);
   console.log(endDate);
 
   const dayOfWeekMap = {
-    // 0: "Monday",
-    // 1: "Tuesday",
-    // 2: "Wednesday",
-    // 3: "Thursday",
-    // 4: "Friday",
-    // 5: "Saturday",
-    // 6: "Sunday",
     0: "Sunday",
-  1: "Monday",
-  2: "Tuesday",
-  3: "Wednesday",
-  4: "Thursday",
-  5: "Friday",
-  6: "Saturday"
+    1: "Monday",
+    2: "Tuesday",
+    3: "Wednesday",
+    4: "Thursday",
+    5: "Friday",
+    6: "Saturday",
   };
 
   for (let i = 0; i < 7; i++) {
@@ -187,7 +188,7 @@ const AddWorkouts = () => {
     currentDate.setDate(startDate.getDate() + i);
     const dayOfWeek = currentDate.getDay();
     const dayName = dayOfWeekMap[dayOfWeek];
-    console.log(dayName)
+    console.log(dayName);
 
     switch (weekProgress[dayName]) {
       case "coming soon":
@@ -196,98 +197,98 @@ const AddWorkouts = () => {
           dateNameStyle: { color: colors.white },
           dateNumberStyle: { color: colors.white },
           dateContainerStyle: {
-            height:getHeight(8),
+            height: getHeight(8),
             backgroundColor: colors.calendar,
             borderWidth: 0,
             width: getWidth(11),
             borderRadius: getFontSize(0.5),
           },
         });
-        break
+        break;
       case "partially complete":
         customDatesStyles.push({
           startDate: currentDate,
           dateNameStyle: { color: colors.buttonColor },
           dateNumberStyle: { color: colors.buttonColor },
           dateContainerStyle: {
-            height:getHeight(8),
+            height: getHeight(8),
             backgroundColor: colors.calendar,
             borderWidth: 0,
             width: getWidth(11),
             borderRadius: getFontSize(0.5),
           },
         });
-        break
+        break;
       case "not assigned":
         customDatesStyles.push({
           startDate: currentDate,
           dateNameStyle: { color: colors.white },
           dateNumberStyle: { color: colors.white },
           dateContainerStyle: {
-            height:getHeight(8),
+            height: getHeight(8),
             backgroundColor: colors.calendar,
             borderWidth: 0,
             width: getWidth(11),
             borderRadius: getFontSize(0.5),
           },
         });
-        break
-        case "assigned":
-          customDatesStyles.push({
-            startDate: currentDate,
-            dateNameStyle: { color: colors.white },
-            dateNumberStyle: { color: colors.white },
-            dateContainerStyle: {
-              height:getHeight(8),
-              backgroundColor: colors.calendar,
-              borderWidth: 0,
-              width: getWidth(11),
-              borderRadius: getFontSize(0.5),
-            },
-          });
-          break
-        case "complete":
+        break;
+      case "assigned":
+        customDatesStyles.push({
+          startDate: currentDate,
+          dateNameStyle: { color: colors.white },
+          dateNumberStyle: { color: colors.white },
+          dateContainerStyle: {
+            height: getHeight(8),
+            backgroundColor: colors.calendar,
+            borderWidth: 0,
+            width: getWidth(11),
+            borderRadius: getFontSize(0.5),
+          },
+        });
+        break;
+      case "complete":
         customDatesStyles.push({
           startDate: currentDate,
           dateNameStyle: { color: colors.greenlight },
           dateNumberStyle: { color: colors.greenlight },
           dateContainerStyle: {
-            height:getHeight(8),
+            height: getHeight(8),
             backgroundColor: colors.calendar,
             borderWidth: 0,
             width: getWidth(11),
             borderRadius: getFontSize(0.5),
           },
         });
-        break
-        case "missed":
-          customDatesStyles.push({
-            startDate: currentDate,
-            dateNameStyle: { color: colors.redtime },
-            dateNumberStyle: { color: colors.redtime },
-            dateContainerStyle: {
-              backgroundColor: colors.calendar,
-              height:getHeight(8),
-              borderWidth: 0,
-              width: getWidth(11),
-              borderRadius: getFontSize(0.5),
-            },
-          });
-          break
-        default:
-          customDatesStyles.push({
-            startDate: currentDate,
-            dateNameStyle: { color: colors.white },
-            dateNumberStyle: { color: colors.white },
-            dateContainerStyle: {
-              height:getHeight(8),
-              backgroundColor: colors.calendar,
-              borderWidth: 0,
-              width: getWidth(11),
-              borderRadius: getFontSize(0.5),
-            },
-          });
-          break
+        break;
+      case "missed":
+        customDatesStyles.push({
+          startDate: currentDate,
+          dateNameStyle: { color: colors.redtime },
+          dateNumberStyle: { color: colors.redtime },
+          dateContainerStyle: {
+            backgroundColor: colors.calendar,
+            height: getHeight(8),
+            borderWidth: 0,
+            width: getWidth(11),
+            borderRadius: getFontSize(0.5),
+          },
+        });
+        break;
+      default:
+        customDatesStyles.push({
+          startDate: currentDate,
+          dateNameStyle: { color: colors.white },
+          dateNumberStyle: { color: colors.white },
+          dateContainerStyle: {
+            height: getHeight(8),
+            backgroundColor: colors.calendar,
+            borderWidth: 0,
+            width: getWidth(11),
+            borderRadius: getFontSize(0.5),
+          },
+        });
+        break;
     }
   }
 
@@ -352,7 +353,7 @@ const AddWorkouts = () => {
         calendarColor={colors.primary}
         //dateNumberStyle={{ color: colors.white }}
         //dateNameStyle={{ color: colors.white }}
-        iconContainer={{ flex: 0.05, }}
+        iconContainer={{ flex: 0.05 }}
       />
 
       <FlatList

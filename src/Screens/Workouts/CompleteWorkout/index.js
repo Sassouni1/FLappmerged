@@ -6,6 +6,8 @@ import {
   ImageBackground,
   ScrollView,
   TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { GernalStyle } from "../../../constants/GernalStyle";
@@ -26,91 +28,41 @@ import { setLoader } from "../../../Redux/actions/GernalActions";
 import { ApiCall } from "../../../Services/Apis";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Entypo from "react-native-vector-icons/Entypo";
 import toast from "react-native-simple-toast";
+import { updateTimer } from "../../../Redux/actions/AuthActions";
 
 const CompleteWorkout = ({ route }) => {
   const navigation = useNavigation();
-  const [hours, setHours] = useState(0);
-  const [minutes, setMinutes] = useState(0);
-  const [seconds, setSeconds] = useState(0);
+  const { workoutId, innerWorkoutId, exerciseId } = route?.params;
+//console.log('execise id',exerciseId)
+  const defaultTimer = { hours: 0, minutes: 0, seconds: 0 };
+  //const timer = useSelector((state)=> state.auth.timer) || defaultTimer;
+  const timer = useSelector((state) => state.auth.exerciseTimers[exerciseId]) || defaultTimer;
+  //console.log(timer)
+
+  
+
+  const [hours, setHours] = useState(timer.hours);
+  const [minutes, setMinutes] = useState(timer.minutes);
+  const [seconds, setSeconds] = useState(timer.seconds);
   const [isRunning, setIsRunning] = useState(false); // Track timer state
+
   const dispatch = useDispatch();
 
   const [exercise, setExercise] = useState("");
   const [video, setVideo] = useState("");
 
-  const { workoutId, innerWorkoutId, exerciseId } = route?.params;
-  console.log("ids", workoutId, innerWorkoutId, exerciseId);
 
   const user = useSelector((state) => state.auth.userData);
-  console.log("user plan ", user?.plan_id);
   const token = useSelector((state) => state.auth.userToken);
   const loader = useSelector((state) => state.gernal.loader);
+  //console.log('timer',timer)
 
   // State variables for text inputs
   const [submittedSets, setSubmittedSets] = useState([]);
+  const [submittedNotes, setSubmittedNotes] = useState("");
 
-  const [submittedNotes, setSubmittedNotes] = useState('');
-
-  // Function to update the submittedSets state for a specific set
-  // const updateSubmittedSets = (index, reps, lebs, weight, seconds) => {
-  //   const updatedSets = [...submittedSets];
-
-  //   // If lebs is present, assume reps is also present
-  //   if (lebs !== "") {
-  //     updatedSets[index] = { reps, lebs, weight, seconds };
-  //   } else {
-  //     updatedSets[index] = { reps: "", lebs: "", weight, seconds };
-  //   }
-
-  //   setSubmittedSets(updatedSets);
-  // };
-  // const updateSubmittedSets = (
-  //   index,
-  //   reps,
-  //   lebs,
-  //   weight,
-  //   seconds,
-  //   distance,
-  //   rest_time
-  // ) => {
-  //   const updatedSets = [...submittedSets];
-
-  //   if (lebs !== "" || reps !== "" || rest_time!== "" ) {
-  //     updatedSets[index] = {
-  //       reps: reps?.trim() !== "" ? reps : updatedSets[index]?.reps,
-  //       lebs: lebs?.trim() !== "" ? lebs : updatedSets[index]?.lebs,
-  //       parameter: "reps",
-  //       rest_time:
-  //         rest_time?.trim() !== "" ? rest_time : updatedSets[index]?.rest_time,
-  //     };
-  //   } else if (weight !== "" || rest_time!== "") {
-  //     updatedSets[index] = {
-  //       weight,
-  //       parameter: "weight",
-  //       rest_time:
-  //         rest_time?.trim() !== "" ? rest_time : updatedSets[index]?.rest_time,
-  //     };
-  //   } else if (seconds !== "" || rest_time!== "") {
-  //     updatedSets[index] = {
-  //       seconds,
-  //       parameter: "seconds",
-  //       rest_time:
-  //         rest_time?.trim() !== "" ? rest_time : updatedSets[index]?.rest_time,
-  //     };
-  //   } else if (distance !== "" || rest_time!== "") {
-  //     updatedSets[index] = {
-  //       distance,
-  //       parameter: "distance",
-  //       rest_time:
-  //         rest_time?.trim() !== "" ? rest_time : updatedSets[index]?.rest_time,
-  //     };
-  //   } else {
-  //     updatedSets[index] = { reps: "", lebs: "", weight: "", seconds: "" };
-  //   }
-
-  //   setSubmittedSets(updatedSets);
-  // };
   const updateSubmittedSets = (
     index,
     reps,
@@ -235,7 +187,8 @@ const CompleteWorkout = ({ route }) => {
           exercise_objId: exerciseId,
           inner_objId: innerWorkoutId,
           submitted_sets: JSON.stringify(submittedSets),
-          submitted_notes: submittedNotes
+          submitted_notes: submittedNotes,
+          submitted_time :`${hours}:${minutes}:${seconds}`
         },
       });
       if (res?.status == "200") {
@@ -255,6 +208,13 @@ const CompleteWorkout = ({ route }) => {
       console.log("api get skill error -- ", e.toString());
     }
   };
+
+  // useEffect(() => {
+  //   dispatch(updateTimer(hours, minutes, seconds));
+  // }, [hours, minutes, seconds]);
+  useEffect(() => {
+    dispatch(updateTimer(exerciseId, { hours, minutes, seconds }));
+  }, [hours, minutes, seconds, exerciseId]);
 
   return (
     <View
@@ -306,23 +266,32 @@ const CompleteWorkout = ({ route }) => {
             style={{ ...styles.togle, marginRight: getWidth(2) }}
             onPress={toggleTimer}
           >
-            {isRunning ? (
-              <PlayerSvg height={20} width={20} />
+            {!isRunning ? (
+              // <PlayerSvg height={20} width={20} style={{color:'white'}}/>
+              <Entypo name="controller-play" size={25} color="#ffff" />
             ) : (
-              <StopSvg height={20} width={20} />
+              <StopSvg height={15} width={15} />
             )}
 
-            <Text style={styles.start}>{isRunning ? "Start" : "Pause"}</Text>
+            <Text style={styles.start}>{!isRunning ? "Start" : "Pause"}</Text>
           </TouchableOpacity>
         </View>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <ImageBackground
-          resizeMode="contain"
-          style={styles.imgb}
-          source={require("../../../assets/images/reps.png")}
+      <KeyboardAvoidingView
+        showsVerticalScrollIndicator={false}
+        behavior={Platform.OS === "ios" ? "padding" : getFontSize(1)}
+        style={{ flex: 1 }}
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
         >
-          {/* <Text style={styles.flatchest}>{exercise?.exercise_name}</Text>
+          <ImageBackground
+            resizeMode="contain"
+            style={styles.imgb}
+            source={require("../../../assets/images/reps.png")}
+          >
+            {/* <Text style={styles.flatchest}>{exercise?.exercise_name}</Text>
             {/* <TouchableOpacity
               onPress={() =>
                 navigation.navigate("VideoSkills", {
@@ -332,7 +301,7 @@ const CompleteWorkout = ({ route }) => {
               }
               style={styles.videobtn}
             > */}
-          {/* <AntDesign
+            {/* <AntDesign
                 name="youtube"
                 size={getFontSize(5)}
                 color={colors.white}
@@ -344,237 +313,263 @@ const CompleteWorkout = ({ route }) => {
                 }
                 style={styles.videobtn}
               />  */}
-          {/* </TouchableOpacity> */}
-          <View style={styles.overlayContainer}>
-            <FontAwesome
-              name="play-circle"
-              size={getFontSize(9)}
-              color="rgba(255,255,255,0.5)"
-              onPress={() =>
-                navigation.navigate("VideoSkills", {
-                  video: exercise?.video,
-                  name: exercise?.exercise_name,
-                })
-              }
-              style={styles.videobtn}
-            />
-          </View>
-          <View style={{ height: getHeight(1) }}>
-            <Text style={styles.flatchest}>{exercise?.exercise_name}</Text>
-            <Text style={styles.flatchest1}>sets: {exercise?.no_of_sets}</Text>
-          </View>
-        </ImageBackground>
-        <View style={{ paddingHorizontal: getWidth(3) }}>
-          {exercise?.sets?.map((set, index) => (
-            <View key={index} style={{ paddingHorizontal: getWidth(3) }}>
-              <View style={styles.repsCon}>
-                <Text style={styles.count}>{index + 1}</Text>
-                <View style={styles.whiteCon}>
-                  {set?.parameter == "reps lebs" ||
-                  set?.parameter == "reps" ||
-                  set?.parameter == "lebs" ? (
-                    <View style={styles.rowDirection}>
-                      <View
-                        style={{
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <TextInput
-                          placeholder="Enter reps"
-                          placeholderTextColor={"black"}
-                          keyboardType="number-pad"
-                          onChangeText={(text) => {
-                            updateSubmittedSets(
-                              index,
-                              text,
-                              "",
-                              "",
-                              "",
-                              "",
-                              ""
-                            );
+            {/* </TouchableOpacity> */}
+            <View style={styles.overlayContainer}>
+              <FontAwesome
+                name="play-circle"
+                size={getFontSize(9)}
+                color="rgba(255,255,255,0.5)"
+                onPress={() =>
+                  navigation.navigate("VideoSkills", {
+                    video: exercise?.video,
+                    name: exercise?.exercise_name,
+                  })
+                }
+                style={styles.videobtn}
+              />
+            </View>
+            <View style={{ height: getHeight(1) }}>
+              <Text style={styles.flatchest}>{exercise?.exercise_name}</Text>
+              <Text style={styles.flatchest1}>
+                sets: {exercise?.no_of_sets}
+              </Text>
+            </View>
+          </ImageBackground>
+          <View style={{ paddingHorizontal: getWidth(3) }}>
+            {exercise?.sets?.map((set, index) => (
+              <View key={index} style={{ paddingHorizontal: getWidth(3) }}>
+                <View style={styles.repsCon}>
+                  <Text style={styles.count}>{index + 1}</Text>
+                  <View style={styles.whiteCon}>
+                    {set?.parameter == "reps lebs" ||
+                    set?.parameter == "reps" ||
+                    set?.parameter == "lebs" ? (
+                      <View style={styles.rowDirection}>
+                        <View
+                          style={{
+                            justifyContent: "center",
+                            alignItems: "center",
                           }}
-                        />
-                        <View style={styles.parameterCtn}>
-                          <Text style={styles.lbs}>
-                            {set?.reps}
-                            {`  `}
-                          </Text>
-                          <Text style={styles.lbs}>reps</Text>
+                        >
+                          <TextInput
+                            placeholder="Enter reps"
+                            placeholderTextColor={"black"}
+                            keyboardType="number-pad"
+                            onChangeText={(text) => {
+                              updateSubmittedSets(
+                                index,
+                                text,
+                                "",
+                                "",
+                                "",
+                                "",
+                                ""
+                              );
+                            }}
+                          />
+                          <View style={styles.parameterCtn}>
+                            <Text style={styles.lbs}>
+                              {set?.reps}
+                              {`  `}
+                            </Text>
+                            <Text style={styles.lbs}>reps</Text>
+                          </View>
                         </View>
-                      </View>
-                      <View style={styles.horizental}></View>
+                        <View style={styles.horizental}></View>
 
+                        <View
+                          style={{
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <TextInput
+                            placeholder="Enter lebs"
+                            placeholderTextColor={"black"}
+                            keyboardType="number-pad"
+                            onChangeText={(text) => {
+                              updateSubmittedSets(
+                                index,
+                                "",
+                                text,
+                                "",
+                                "",
+                                "",
+                                ""
+                              );
+                            }}
+                          />
+                          <View style={styles.parameterCtn}>
+                            <Text style={styles.lbs}>
+                              {set?.lebs}
+                              {`  `}
+                            </Text>
+                            <Text style={styles.lbs}>lebs</Text>
+                          </View>
+                        </View>
+                      </View>
+                    ) : set?.parameter == "weight" ? (
                       <View
                         style={{
-                          justifyContent: "center",
-                          alignItems: "center",
+                          ...styles.rowDirection,
+                          marginTop: getFontSize(1),
                         }}
                       >
                         <TextInput
-                          placeholder="Enter lebs"
+                          placeholder="Enter weight"
                           placeholderTextColor={"black"}
                           keyboardType="number-pad"
                           onChangeText={(text) => {
                             updateSubmittedSets(
                               index,
                               "",
-                              text,
                               "",
+                              text,
                               "",
                               "",
                               ""
                             );
                           }}
+                          style={{ paddingTop: getFontSize(0.6) }}
                         />
                         <View style={styles.parameterCtn}>
                           <Text style={styles.lbs}>
-                            {set?.lebs}
+                            {set.weight}
                             {`  `}
                           </Text>
-                          <Text style={styles.lbs}>lebs</Text>
+                          <Text style={styles.lbs}>{set.parameter}</Text>
                         </View>
                       </View>
-                    </View>
-                  ) : set?.parameter == "weight" ? (
-                    <View
-                      style={{
-                        ...styles.rowDirection,
-                        marginTop: getFontSize(1),
-                      }}
-                    >
-                      <TextInput
-                        placeholder="Enter weight"
-                        placeholderTextColor={"black"}
-                        keyboardType="number-pad"
-                        onChangeText={(text) => {
-                          updateSubmittedSets(index, "", "", text, "", "", "");
+                    ) : set?.parameter == "seconds" ? (
+                      <View
+                        style={{
+                          ...styles.rowDirection,
+                          marginTop: getFontSize(1),
                         }}
-                        style={{paddingTop:getFontSize(0.6)}}
-                      />
-                      <View style={styles.parameterCtn}>
-                        <Text style={styles.lbs}>
-                          {set.weight}
-                          {`  `}
-                        </Text>
-                        <Text style={styles.lbs}>{set.parameter}</Text>
+                      >
+                        <TextInput
+                          placeholder="Enter seconds"
+                          placeholderTextColor={"black"}
+                          keyboardType="number-pad"
+                          onChangeText={(text) => {
+                            updateSubmittedSets(
+                              index,
+                              "",
+                              "",
+                              "",
+                              text,
+                              "",
+                              ""
+                            );
+                          }}
+                          style={{ paddingTop: getFontSize(0.6) }}
+                        />
+                        <View style={styles.parameterCtn}>
+                          <Text style={styles.lbs}>
+                            {set.seconds}
+                            {`  `}
+                          </Text>
+                          <Text style={styles.lbs}>{set.parameter}</Text>
+                        </View>
                       </View>
-                    </View>
-                  ) : set?.parameter == "seconds" ? (
-                    <View
-                      style={{
-                        ...styles.rowDirection,
-                        marginTop: getFontSize(1),
-                      }}
-                    >
-                      <TextInput
-                        placeholder="Enter seconds"
-                        placeholderTextColor={"black"}
-                        keyboardType="number-pad"
-                        onChangeText={(text) => {
-                          updateSubmittedSets(index, "", "", "", text, "", "");
+                    ) : set?.parameter == "distance" ? (
+                      <View
+                        style={{
+                          ...styles.rowDirection,
+                          marginTop: getFontSize(1),
                         }}
-                        style={{paddingTop:getFontSize(0.6)}}
-                      />
-                      <View style={styles.parameterCtn}>
-                        <Text style={styles.lbs}>
-                          {set.seconds}
-                          {`  `}
-                        </Text>
-                        <Text style={styles.lbs}>{set.parameter}</Text>
+                      >
+                        <TextInput
+                          placeholder="Enter distance"
+                          placeholderTextColor={"black"}
+                          keyboardType="number-pad"
+                          onChangeText={(text) => {
+                            updateSubmittedSets(
+                              index,
+                              "",
+                              "",
+                              "",
+                              "",
+                              text,
+                              ""
+                            );
+                          }}
+                          style={{ paddingTop: getFontSize(0.6) }}
+                        />
+                        <View style={styles.parameterCtn}>
+                          <Text style={styles.lbs}>
+                            {set.distance}
+                            {`  `}
+                          </Text>
+                          <Text style={styles.lbs}>{set.parameter}</Text>
+                        </View>
                       </View>
-                    </View>
-                  ) : set?.parameter == "distance" ? (
-                    <View
-                      style={{
-                        ...styles.rowDirection,
-                        marginTop: getFontSize(1),
-                      }}
-                    >
-                      <TextInput
-                        placeholder="Enter distance"
-                        placeholderTextColor={"black"}
-                        keyboardType="number-pad"
-                        onChangeText={(text) => {
-                          updateSubmittedSets(index, "", "", "", "", text, "");
-                        }}
-                        style={{paddingTop:getFontSize(0.6)}}
-                      />
-                      <View style={styles.parameterCtn}>
-                        <Text style={styles.lbs}>
-                          {set.distance}
-                          {`  `}
-                        </Text>
-                        <Text style={styles.lbs}>{set.parameter}</Text>
-                      </View>
-                    </View>
-                  ) : null}
-                </View>
-                <View style={styles.tickCon}>
-                  <RightIcon height={15} width={15} />
-                </View>
-              </View>
-              {set?.rest_time != 0 ? (
-                <View style={styles.spacebet}>
-                  <TextInput
-                    placeholder="Enter Rest Time"
-                    placeholderTextColor={colors.white}
-                    keyboardType="number-pad"
-                    style={styles.rest}
-                    onChangeText={(text) => {
-                      updateSubmittedSets(index, "", "", "", "", "", text);
-                    }}
-                  />
-                  <View style={styles.btng}>
-                    <View style={styles.btnhor}></View>
+                    ) : null}
+                  </View>
+                  <View style={styles.tickCon}>
+                    <RightIcon height={15} width={15} />
                   </View>
                 </View>
-              ) : null}
-            </View>
-          ))}
-          {exercise?.notes && exercise?.notes.length > 0 ? (
-            // <View style={{ marginLeft: getWidth(7) }}>
-            //   <Text style={styles.note}>Notes:</Text>
-            //   <View style={{ ...styles.repsCon, marginTop: getHeight(2) }}>
-            //     <View style={{ ...styles.whiteCon, height: getHeight(10) }}>
-            //       {/* <Text>{exercise?.notes}</Text> */}
-            //       <TextInput
-            //         placeholder="Notes"
-            //         placeholderTextColor={colors.black}
-            //         keyboardType="default"
-            //         style={styles.rest}
-            //         onChangeText={(text) => {setSubmittedNotes(text);
-            //         }}
-            //       />
-            //     </View>
-            //     {/* <View style={styles.tickCon}>
-            //       <RightIcon height={15} width={15} />
-            //     </View> */}
-            //     {/* <View style={styles.btng}>
-            //         <View style={styles.btnhor}></View>
-            //       </View> */}
-            //   </View>
-            // </View>
-            <View
-              style={{
-                width: getWidth(75),
-                //height: getHeight(6),
-                borderRadius: 5,
-                borderWidth: 1,
-                borderColor: colors.graytext5,
-                backgroundColor: colors.white,
-                justifyContent: "flex-start",
-                alignItems: "flex-start",
-                flexDirection: "row",
-                paddingLeft: getFontSize(3),
-                paddingTop: getFontSize(0.5),
-                paddingBottom: getFontSize(0.5),
-                marginLeft: getWidth(7),
-                marginTop: getHeight(2),
-                height: getHeight(10),
-              }}
-            >
+                {set?.rest_time != 0 ? (
+                  <View style={styles.spacebet}>
+                    <TextInput
+                      placeholder="Enter Rest Time"
+                      placeholderTextColor={colors.white}
+                      keyboardType="number-pad"
+                      style={styles.rest}
+                      onChangeText={(text) => {
+                        updateSubmittedSets(index, "", "", "", "", "", text);
+                      }}
+                    />
+                    <View style={styles.btng}>
+                      <View style={styles.btnhor}></View>
+                    </View>
+                  </View>
+                ) : null}
+              </View>
+            ))}
+            {exercise?.notes && exercise?.notes.length > 0 ? (
+              // <View style={{ marginLeft: getWidth(7) }}>
+              //   <Text style={styles.note}>Notes:</Text>
+              //   <View style={{ ...styles.repsCon, marginTop: getHeight(2) }}>
+              //     <View style={{ ...styles.whiteCon, height: getHeight(10) }}>
+              //       {/* <Text>{exercise?.notes}</Text> */}
+              //       <TextInput
+              //         placeholder="Notes"
+              //         placeholderTextColor={colors.black}
+              //         keyboardType="default"
+              //         style={styles.rest}
+              //         onChangeText={(text) => {setSubmittedNotes(text);
+              //         }}
+              //       />
+              //     </View>
+              //     {/* <View style={styles.tickCon}>
+              //       <RightIcon height={15} width={15} />
+              //     </View> */}
+              //     {/* <View style={styles.btng}>
+              //         <View style={styles.btnhor}></View>
+              //       </View> */}
+              //   </View>
+              // </View>
+              <View
+                style={{
+                  width: getWidth(75),
+                  //height: getHeight(6),
+                  borderRadius: 5,
+                  borderWidth: 1,
+                  borderColor: colors.graytext5,
+                  backgroundColor: colors.white,
+                  justifyContent: "flex-start",
+                  alignItems: "flex-start",
+                  flexDirection: "row",
+                  paddingLeft: getFontSize(3),
+                  paddingTop: getFontSize(0.5),
+                  paddingBottom: getFontSize(0.5),
+                  marginLeft: getWidth(7),
+                  marginTop: getHeight(2),
+                  height: getHeight(10),
+                }}
+              >
                 <TextInput
                   multiline
                   numberOfLines={3}
@@ -605,12 +600,12 @@ const CompleteWorkout = ({ route }) => {
                 {/* <View style={styles.tickCon}>
                   <RightIcon height={15} width={15} />
                 </View> */}
-              
-            </View>
-          ) : null}
-        </View>
-        <View style={{ height: getHeight(15) }}></View>
-      </ScrollView>
+              </View>
+            ) : null}
+          </View>
+          <View style={{ height: getHeight(15) }}></View>
+        </ScrollView>
+      </KeyboardAvoidingView>
       <TouchableOpacity
         // onPress={()=>navigation.navigate('Workouts')}
         onPress={() => singleExerciseComplete()}

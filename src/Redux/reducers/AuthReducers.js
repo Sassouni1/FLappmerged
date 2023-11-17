@@ -1,10 +1,12 @@
-import {ACTIONS} from '../action-types';
+import { ACTIONS } from "../action-types";
 
 const initialState = {
   userToken: null,
   FirstTime: true,
   userData: null,
-  assprogram: null
+  assprogram: null,
+  //timer: { hours: 0, minutes: 0, seconds: 0 },
+  exerciseTimers: {},
 };
 
 const authReducer = (state = initialState, action) => {
@@ -34,16 +36,30 @@ const authReducer = (state = initialState, action) => {
         userData: action.data,
       };
     case ACTIONS.BORDING_SETUP:
-     
       return {
         ...state,
         FirstTime: false,
       };
-      case ACTIONS.ASSIGNED_PROGRAM:
-        return{
-          ...state,
-          assprogram:action.data,
-        }
+    case ACTIONS.ASSIGNED_PROGRAM:
+      return {
+        ...state,
+        assprogram: action.data,
+      };
+    // case ACTIONS.UPDATE_TIMER:
+    //   return {
+    //     ...state,
+    //     timer: action.payload,
+    //   };
+
+    case ACTIONS.UPDATE_TIMER:
+      const { exerciseId, timer } = action.payload;
+      return {
+        ...state,
+        exerciseTimers: {
+          ...state.exerciseTimers,
+          [exerciseId]: timer,
+        },
+      };
     default:
       return state;
   }
