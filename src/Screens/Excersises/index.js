@@ -89,7 +89,7 @@ const Excercises = () => {
   };
 
   return (
-    <KeyboardAwareScrollView style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
+     <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
       <GeneralStatusBar
         barStyle="light-content"
         hidden={false}
@@ -110,6 +110,8 @@ const Excercises = () => {
         }
         RightIcon={<View style={{marginRight:getFontSize(3.5)}}/>}
       />
+          <KeyboardAwareScrollView style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
+
       <View
         style={{
           flexDirection: "row",
@@ -205,6 +207,7 @@ const Excercises = () => {
         )}
       </View>
     </KeyboardAwareScrollView>
+    </View>
   );
 };
 

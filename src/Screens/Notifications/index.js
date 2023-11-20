@@ -19,7 +19,63 @@ import { setLoader } from "../../Redux/actions/GernalActions";
 import { GernalStyle } from "../../constants/GernalStyle";
 import { colors } from "../../constants/colors";
 import HeaderBottom from "../../Components/HeaderBottom";
+import messaging from '@react-native-firebase/messaging';
+
 // create a component
+
+
+// export const requestUserPermission = async token => {
+//   const authStatus = await messaging().requestPermission();
+//   const enabled =
+//     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+//     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+//   if (enabled) {
+//     getFcmToken(token);
+//   }
+// };
+// export const getFcmToken = async token => {
+//   try {
+//     // if (fcmToken == null) {
+//     const fcmtoken = await messaging().getToken();
+//     sendFcm(token, fcmtoken);
+//     console.log('fcmToken is genrated', fcmtoken);
+
+//     // }
+//   } catch (error) {
+//     console.log('error in featchin fcmToken', error?.message);
+//     alert(error?.message);
+//   }
+// };
+export const requestUserPermission = async token => {
+  try {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      await messaging().registerDeviceForRemoteMessages(); // Register for remote messages
+      await getFcmToken(token);
+    }
+  } catch (error) {
+    console.log('Error requesting permission:', error?.message);
+    Alert.alert('Error requesting permission:', error?.message);
+  }
+};
+
+export const getFcmToken = async token => {
+  try {
+    const fcmtoken = await messaging().getToken();
+   // sendFcm(token, fcmtoken);
+    console.log('fcmToken is generated', fcmtoken);
+  } catch (error) {
+    console.log('Error fetching fcmToken:', error);
+    Alert.alert('Error fetching fcmToken:', error?.message);
+  }
+};
+
+
 const Notification = ({ navigation }) => {
   const dispatch = useDispatch();
   const [DATA, SetDATA] = useState([]);
@@ -46,9 +102,13 @@ const Notification = ({ navigation }) => {
       console.log("saga get notfication error -- ", e.toString());
     }
   };
-  useEffect(() => {
+  const getall=()=>{
     dispatch(setLoader(true));
+    requestUserPermission(token); 
     getAllNotification();
+  }
+  useEffect(() => {
+    getall()
   }, []);
 
   return (
@@ -84,7 +144,9 @@ const Notification = ({ navigation }) => {
       >
         <FlatList
           showsVerticalScrollIndicator={false}
-          useFlatList={true}
+       refreshing={false}
+       onRefresh={()=>getall()}
+
           data={DATA}
           keyExtractor={(item, index) => index}
           ListEmptyComponent={() => (

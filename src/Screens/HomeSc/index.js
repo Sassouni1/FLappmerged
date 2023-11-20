@@ -101,22 +101,7 @@ const HomeSc = ({ navigation, route }) => {
           RightIcon={<View />}
         /> */}
 
-          <View
-            style={{
-              flex: 1,
-              position: "absolute",
-              bottom: getFontSize(28.5),//27.7
-              left: getWidth(3.5),
-            }}
-          >
-            <Entypo
-              size={30}
-              color={"white"}
-              onPress={() => navigation.openDrawer()}
-              name="menu"
-              style={{ marginLeft: getFontSize(-0.7) }}
-            />
-          </View>
+        
 
           {/* } */}
 
@@ -204,6 +189,22 @@ const HomeSc = ({ navigation, route }) => {
           }
         />
       </ScrollView>
+      <View
+            style={{
+              flex: 1,
+              position: "absolute",
+              top: getFontSize(5.5),//27.7
+              left: getWidth(3.5),
+            }}
+          >
+            <Entypo
+              size={30}
+              color={"white"}
+              onPress={() => navigation.openDrawer()}
+              name="menu"
+              style={{ marginLeft: getFontSize(-0.7) }}
+            />
+          </View>
     </View>
   );
 };

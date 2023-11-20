@@ -118,7 +118,7 @@ const AddWorkouts = () => {
       if (res?.status == "200") {
         console.log(
           "workouts progress response",
-          res?.response?.weeklyProgress
+          res?.response?.weeklyProgress,selectedDate
         );
         // setWeeklyProgress(res?.response?.weeklyProgress);
         setWeekDataProgress(res?.response?.weeklyProgress);

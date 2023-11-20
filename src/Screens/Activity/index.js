@@ -62,8 +62,8 @@ const Activity = () => {
     setDate(selectedDate);
     dispatch(setLoader(true));
     getSingleExcercise(selectedDate);
-    exerciseProgress(selectedDate)
-    exerciseWeekProgress(selectedDate)
+    exerciseProgress(selectedDate);
+    exerciseWeekProgress(selectedDate);
   };
 
   const generateDateRange = (selectedDate) => {
@@ -87,7 +87,7 @@ const Activity = () => {
   const handleDayPress = (day) => {
     setSelectedDate(day.dateString);
     dispatch(setLoader(true));
-    exerciseProgress(day.dateString)
+    exerciseProgress(day.dateString);
   };
   const toggleModal = () => {
     console.log("Opening modal");
@@ -180,11 +180,10 @@ const Activity = () => {
     }
   };
 
-
   useEffect(() => {
     dispatch(setLoader(true));
     getSingleExcercise(date);
-    exerciseWeekProgress(date)
+    exerciseWeekProgress(date);
     //exerciseProgress(selectedDate);
   }, []);
 
@@ -193,7 +192,6 @@ const Activity = () => {
     exerciseProgress(selectedDate);
   }, []);
 
-  
   let weekProgress = {
     Monday: weekDataProgress?.Monday,
     Tuesday: weekDataProgress?.Tuesday,
@@ -227,12 +225,12 @@ const Activity = () => {
     // 5: "Saturday",
     // 6: "Sunday",
     0: "Sunday",
-  1: "Monday",
-  2: "Tuesday",
-  3: "Wednesday",
-  4: "Thursday",
-  5: "Friday",
-  6: "Saturday"
+    1: "Monday",
+    2: "Tuesday",
+    3: "Wednesday",
+    4: "Thursday",
+    5: "Friday",
+    6: "Saturday",
   };
 
   for (let i = 0; i < 7; i++) {
@@ -248,83 +246,83 @@ const Activity = () => {
           dateNameStyle: { color: colors.white },
           dateNumberStyle: { color: colors.white },
           dateContainerStyle: {
-            height:getHeight(8),
+            height: getHeight(8),
             backgroundColor: colors.calendar,
             borderWidth: 0,
             width: getWidth(11),
             borderRadius: getFontSize(0.5),
           },
         });
-        break
+        break;
       case "partially complete":
         customDatesStyles.push({
           startDate: currentDate,
           dateNameStyle: { color: colors.buttonColor },
           dateNumberStyle: { color: colors.buttonColor },
           dateContainerStyle: {
-            height:getHeight(8),
+            height: getHeight(8),
             backgroundColor: colors.calendar,
             borderWidth: 0,
             width: getWidth(11),
             borderRadius: getFontSize(0.5),
           },
         });
-        break
+        break;
       case "not assigned":
         customDatesStyles.push({
           startDate: currentDate,
           dateNameStyle: { color: colors.white },
           dateNumberStyle: { color: colors.white },
           dateContainerStyle: {
-            height:getHeight(8),
+            height: getHeight(8),
             backgroundColor: colors.calendar,
             borderWidth: 0,
             width: getWidth(11),
             borderRadius: getFontSize(0.5),
           },
         });
-        break
-        case "complete":
+        break;
+      case "complete":
         customDatesStyles.push({
           startDate: currentDate,
           dateNameStyle: { color: colors.greenlight },
           dateNumberStyle: { color: colors.greenlight },
           dateContainerStyle: {
-            height:getHeight(8),
+            height: getHeight(8),
             backgroundColor: colors.calendar,
             borderWidth: 0,
             width: getWidth(11),
             borderRadius: getFontSize(0.5),
           },
         });
-        break
-        case "missed":
-          customDatesStyles.push({
-            startDate: currentDate,
-            dateNameStyle: { color: colors.redtime },
-            dateNumberStyle: { color: colors.redtime },
-            dateContainerStyle: {
-              height:getHeight(8),
-              backgroundColor: colors.calendar,
-              borderWidth: 0,
-              width: getWidth(11),
-              borderRadius: getFontSize(0.5),
-            },
-          });
-        default:
-          customDatesStyles.push({
-            startDate: currentDate,
-            dateNameStyle: { color: colors.white },
-            dateNumberStyle: { color: colors.white },
-            dateContainerStyle: {
-              height:getHeight(8),
-              backgroundColor: colors.calendar,
-              borderWidth: 0,
-              width: getWidth(11),
-              borderRadius: getFontSize(0.5),
-            },
-          });
-          break
+        break;
+      case "missed":
+        customDatesStyles.push({
+          startDate: currentDate,
+          dateNameStyle: { color: colors.redtime },
+          dateNumberStyle: { color: colors.redtime },
+          dateContainerStyle: {
+            height: getHeight(8),
+            backgroundColor: colors.calendar,
+            borderWidth: 0,
+            width: getWidth(11),
+            borderRadius: getFontSize(0.5),
+          },
+        });
+      default:
+        customDatesStyles.push({
+          startDate: currentDate,
+          dateNameStyle: { color: colors.white },
+          dateNumberStyle: { color: colors.white },
+          dateContainerStyle: {
+            height: getHeight(8),
+            backgroundColor: colors.calendar,
+            borderWidth: 0,
+            width: getWidth(11),
+            borderRadius: getFontSize(0.5),
+          },
+        });
+        break;
     }
   }
   return (
@@ -347,9 +345,10 @@ const Activity = () => {
         LeftIcon={
           <Entypo
             size={30}
-            style={{ alignSelf: "flex-start",
-            //marginLeft:getFontSize(-1.5) 
-          }}
+            style={{
+              alignSelf: "flex-start",
+              //marginLeft:getFontSize(-1.5)
+            }}
             color={"white"}
             onPress={() => navigation.openDrawer()}
             name="menu"
@@ -357,175 +356,176 @@ const Activity = () => {
         }
         RightIcon={<View style={{ marginRight: getFontSize(3.5) }} />}
       />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <Text style={styles.progress}>Your Progress</Text>
 
-      <Text style={styles.progress}>Your Progress</Text>
+        <ReactNativeCalendarStrip
+          showMonth={false}
+          selectedDate={date}
+          onDateSelected={handleDateChange}
+          calendarAnimation={{ type: "sequence", duration: 30 }}
+          customDatesStyles={customDatesStyles}
+          iconLeft={require("../../assets/images/leftp.png")}
+          iconRight={require("../../assets/images/rightp.png")}
+          style={{
+            height: getHeight(8),
+            marginTop: getHeight(1),
+            paddingHorizontal: 5,
+          }}
+          calendarColor={colors.primary}
+          iconContainer={{ flex: 0.05 }}
+        />
 
-      <ReactNativeCalendarStrip
-        showMonth={false}
-        selectedDate={date}
-        onDateSelected={handleDateChange}
-        calendarAnimation={{ type: "sequence", duration: 30 }}
-        customDatesStyles={customDatesStyles}
-        iconLeft={require("../../assets/images/leftp.png")}
-        iconRight={require("../../assets/images/rightp.png")}
-        style={{
-          height: getHeight(8),
-          marginTop: getHeight(1),
-          paddingHorizontal: 5,
-        }}
-        calendarColor={colors.primary}
-        iconContainer={{ flex: 0.05 }}
-      />
-
-      <View
-        style={{
-          justifyContent: "center",
-          marginVertical: getHeight(2),
-          alignItems: "center",
-        }}
-      >
-        <Ellipse height={getHeight(21)} width={getWidth(58)} />
-        {assigWorkout?.progress ? (
-          <Text style={styles.fourtyper}>
-            {(assigWorkout?.progress).toFixed(0)}%
-          </Text>
-        ) : (
-          <Text style={styles.fourtyper}>0%</Text>
-        )}
-        <Text style={styles.todayt}>Today’s progress</Text>
-      </View>
-      <View style={styles.spaceBet}>
-        <Text style={styles.activty}>Activity</Text>
-        <View style={styles.activityCon}>
-          {/* <AngelLeft height={15} width={15} /> */}
-          <TouchableOpacity
-            onPress={() => toggleModal()}
-            style={{ flexDirection: "row" }}
-          >
-            {/* <CalenderSvg
+        <View
+          style={{
+            justifyContent: "center",
+            marginVertical: getHeight(2),
+            alignItems: "center",
+          }}
+        >
+          <Ellipse height={getHeight(21)} width={getWidth(58)} />
+          {assigWorkout?.progress ? (
+            <Text style={styles.fourtyper}>
+              {(assigWorkout?.progress).toFixed(0)}%
+            </Text>
+          ) : (
+            <Text style={styles.fourtyper}>0%</Text>
+          )}
+          <Text style={styles.todayt}>Today’s progress</Text>
+        </View>
+        <View style={styles.spaceBet}>
+          <Text style={styles.activty}>Activity</Text>
+          <View style={styles.activityCon}>
+            {/* <AngelLeft height={15} width={15} /> */}
+            <TouchableOpacity
+              onPress={() => toggleModal()}
+              style={{ flexDirection: "row" }}
+            >
+              {/* <CalenderSvg
             height={15}
             width={15}
             style={{ marginLeft: getWidth(2) }}
           /> */}
-            <Entypo
-              size={20}
-              style={{ marginLeft: getWidth(2) }}
-              color={"white"}
-              name="calendar"
-            />
-            <Text
-              style={{
-                ...styles.textDay,
-                marginRight: getFontSize(2),
-                marginTop: getHeight(0.35),
-              }}
-            >
-              {generateDateRange(selectedDate)}
-            </Text>
-          </TouchableOpacity>
-          {/* <AngelRight
+              <Entypo
+                size={20}
+                style={{ marginLeft: getWidth(2) }}
+                color={"white"}
+                name="calendar"
+              />
+              <Text
+                style={{
+                  ...styles.textDay,
+                  marginRight: getFontSize(2),
+                  marginTop: getHeight(0.35),
+                }}
+              >
+                {generateDateRange(selectedDate)}
+              </Text>
+            </TouchableOpacity>
+            {/* <AngelRight
             height={15}
             width={15}
             style={{ marginLeft: getWidth(1) }}
           /> */}
+          </View>
         </View>
-      </View>
-      <View style={styles.graphCon}>
-        {/* <GraphActivity
+        <View style={styles.graphCon}>
+          {/* <GraphActivity
           height={getHeight(30)}
           width={getWidth(100)}
           style={{ alignSelf: "center" }}
         /> */}
-        <LineChart
-          data={{
-            labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-            datasets: [
-              {
-                data: [
-                  weeklyProgress.Monday,
-                  weeklyProgress.Tuesday,
-                  weeklyProgress.Wednesday,
-                  weeklyProgress.Thursday,
-                  weeklyProgress.Friday,
-                  weeklyProgress.Saturday,
-                  weeklyProgress.Sunday,
-                ],
+          <LineChart
+            data={{
+              labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+              datasets: [
+                {
+                  data: [
+                    weeklyProgress.Monday,
+                    weeklyProgress.Tuesday,
+                    weeklyProgress.Wednesday,
+                    weeklyProgress.Thursday,
+                    weeklyProgress.Friday,
+                    weeklyProgress.Saturday,
+                    weeklyProgress.Sunday,
+                  ],
+                },
+              ],
+            }}
+            width={getWidth(95)} // from react-native
+            height={getHeight(25)}
+            yAxisSuffix="%"
+            withHorizontalLines={false}
+            withVerticalLines={false}
+            chartConfig={{
+              backgroundColor: "#ffffff",
+              backgroundGradientFrom: "#ffffff",
+              backgroundGradientTo: "#ffffff",
+              decimalPlaces: 0, // round to decimal places
+              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              style: {
+                borderRadius: 16,
               },
-            ],
-          }}
-          width={getWidth(95)} // from react-native
-          height={getHeight(25)}
-          yAxisSuffix="%"
-          withHorizontalLines={false}
-          withVerticalLines={false}
-          chartConfig={{
-            backgroundColor: "#ffffff",
-            backgroundGradientFrom: "#ffffff",
-            backgroundGradientTo: "#ffffff",
-            decimalPlaces: 0, // round to decimal places
-            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            style: {
-              borderRadius: 16,
-            },
-            propsForDots: {
-              r: "6",
-              strokeWidth: "2",
-              stroke: "#ffa726",
-            },
-            yAxis: {
-              min: 0,
-              max: 100,
-            },
-          }}
-          bezier // smooth lines
-          style={{
-            marginVertical: 8,
-            borderRadius: getFontSize(2),
-          }}
-        />
-      </View>
-
-      <Modal
-        isVisible={isModalVisible}
-        onBackdropPress={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <TouchableOpacity
-            onPress={() => setModalVisible(false)}
-            style={styles.closeButton}
-          >
-            <Text style={{ color: "red" }}>Close</Text>
-          </TouchableOpacity>
-
-          <Calendar
-            onDayPress={handleDayPress}
-            markedDates={{
-              [selectedDate]: {
-                selected: true,
-                selectedColor: colors.buttonColor,
+              propsForDots: {
+                r: "6",
+                strokeWidth: "2",
+                stroke: "#ffa726",
               },
+              yAxis: {
+                min: 0,
+                max: 100,
+              },
+            }}
+            bezier // smooth lines
+            style={{
+              marginVertical: 8,
+              borderRadius: getFontSize(2),
             }}
           />
-          <TouchableOpacity
-            onPress={() => {
-              setModalVisible(false);
-              //exerciseProgress(selectedDate);
-            }}
-            style={styles.donebtn}
-          >
-            <Text
-              style={{
-                fontSize: 14,
-                color: colors.white,
-                fontFamily: fonts.UBo,
-              }}
-            >
-              Done
-            </Text>
-          </TouchableOpacity>
         </View>
-      </Modal>
+
+        <Modal
+          isVisible={isModalVisible}
+          onBackdropPress={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={styles.closeButton}
+            >
+              <Text style={{ color: "red" }}>Close</Text>
+            </TouchableOpacity>
+
+            <Calendar
+              onDayPress={handleDayPress}
+              markedDates={{
+                [selectedDate]: {
+                  selected: true,
+                  selectedColor: colors.buttonColor,
+                },
+              }}
+            />
+            <TouchableOpacity
+              onPress={() => {
+                setModalVisible(false);
+                //exerciseProgress(selectedDate);
+              }}
+              style={styles.donebtn}
+            >
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: colors.white,
+                  fontFamily: fonts.UBo,
+                }}
+              >
+                Done
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      </ScrollView>
     </View>
   );
 };

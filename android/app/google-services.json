@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "619452518242",
+    "project_id": "darustrong-cfd74",
+    "storage_bucket": "darustrong-cfd74.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:619452518242:android:f6c9f045f60f349451a63b",
+        "android_client_info": {
+          "package_name": "com.darustrong"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByYeJ3Dva1ZWwnxU36YbWJ5XInt5tSi2k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
