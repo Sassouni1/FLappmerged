@@ -42,10 +42,10 @@ import ReactNativeCalendarStrip from "react-native-calendar-strip";
 import HeaderBottom from "../../../Components/HeaderBottom";
 import Toast from "react-native-simple-toast";
 
-const WorkoutHistory = ({route}) => {
+const WorkoutHistory = ({ route }) => {
   const navigation = useNavigation();
   const selectDate = route?.params;
-  console.log('selected date',selectDate?.selectDate?.selectDate)
+  console.log("selected date", selectDate?.selectDate?.selectDate);
   const [isTime, setIsTime] = useState(false);
   const dispatch = useDispatch();
   const [date, setDate] = useState(selectDate?.selectDate?.selectDate);
@@ -55,12 +55,11 @@ const WorkoutHistory = ({route}) => {
   const loader = useSelector((state) => state.gernal.loader);
   const [weekDataProgress, setWeekDataProgress] = useState({});
 
-
   const handleDateChange = (selectedDate) => {
     setDate(selectedDate);
     dispatch(setLoader(true));
     getSingleExcercise(selectedDate);
-    exerciseWeekProgress(selectedDate);    
+    exerciseWeekProgress(selectedDate);
   };
   const getUnit = (set) => {
     if (set.weight) {
@@ -78,9 +77,7 @@ const WorkoutHistory = ({route}) => {
   const getSingleExcercise = async (selectedDate) => {
     try {
       const res = await ApiCall({
-        route: `assignProgram/given-date-workouts/${
-          user?.plan_id
-        }&${selectedDate}`,
+        route: `assignProgram/given-date-workouts/${user?.plan_id}&${selectedDate}`,
         verb: "get",
         token: token,
       });
@@ -137,7 +134,6 @@ const WorkoutHistory = ({route}) => {
     exerciseWeekProgress(date);
   }, []);
 
-
   let weekProgress = {
     Monday: weekDataProgress?.Monday,
     Tuesday: weekDataProgress?.Tuesday,
@@ -171,13 +167,16 @@ const WorkoutHistory = ({route}) => {
     // 5: "Saturday",
     // 6: "Sunday",
     0: "Sunday",
-  1: "Monday",
-  2: "Tuesday",
-  3: "Wednesday",
-  4: "Thursday",
-  5: "Friday",
-  6: "Saturday"
+    1: "Monday",
+    2: "Tuesday",
+    3: "Wednesday",
+    4: "Thursday",
+    5: "Friday",
+    6: "Saturday",
   };
+
+  const selectedDayOfWeek = new Date(date).getDay();
+  const selectedDayName = dayOfWeekMap[selectedDayOfWeek];
 
   for (let i = 0; i < 7; i++) {
     const currentDate = new Date(startDate);
@@ -185,70 +184,84 @@ const WorkoutHistory = ({route}) => {
     const dayOfWeek = currentDate.getDay();
     const dayName = dayOfWeekMap[dayOfWeek];
 
-    switch (weekProgress[dayName]) {
-      case "coming soon":
-        customDatesStyles.push({
-          startDate: currentDate,
-          dateNameStyle: { color: colors.white },
-          dateNumberStyle: { color: colors.white },
-          dateContainerStyle: {
-            height:getHeight(8),
-            backgroundColor: colors.calendar,
-            borderWidth: 0,
-            width: getWidth(11),
-            borderRadius: getFontSize(0.5),
-          },
-        });
-        break
-      case "partially complete":
-        customDatesStyles.push({
-          startDate: currentDate,
-          dateNameStyle: { color: colors.buttonColor },
-          dateNumberStyle: { color: colors.buttonColor },
-          dateContainerStyle: {
-            height:getHeight(8),
-            backgroundColor: colors.calendar,
-            borderWidth: 0,
-            width: getWidth(11),
-            borderRadius: getFontSize(0.5),
-          },
-        });
-        break
-      case "not assigned":
-        customDatesStyles.push({
-          startDate: currentDate,
-          dateNameStyle: { color: colors.white },
-          dateNumberStyle: { color: colors.white },
-          dateContainerStyle: {
-            height:getHeight(8),
-            backgroundColor: colors.calendar,
-            borderWidth: 0,
-            width: getWidth(11),
-            borderRadius: getFontSize(0.5),
-          },
-        });
-        break
+    if (dayName == selectedDayName) {
+      customDatesStyles.push({
+        startDate: currentDate,
+        dateNameStyle: { color: "white" },
+        dateNumberStyle: { color: "white" },
+        dateContainerStyle: {
+          height: getHeight(8),
+          backgroundColor: "rgba(255,255,255,0.3)",
+          borderWidth: 0,
+          width: getWidth(11),
+          borderRadius: getFontSize(0.5),
+        },
+      });
+    } else {
+      switch (weekProgress[dayName]) {
+        case "coming soon":
+          customDatesStyles.push({
+            startDate: currentDate,
+            dateNameStyle: { color: "lightblue" },
+            dateNumberStyle: { color: "lightblue" },
+            dateContainerStyle: {
+              height: getHeight(8),
+              backgroundColor: colors.calendar,
+              borderWidth: 0,
+              width: getWidth(11),
+              borderRadius: getFontSize(0.5),
+            },
+          });
+          break;
+        case "partially complete":
+          customDatesStyles.push({
+            startDate: currentDate,
+            dateNameStyle: { color: colors.buttonColor },
+            dateNumberStyle: { color: colors.buttonColor },
+            dateContainerStyle: {
+              height: getHeight(8),
+              backgroundColor: colors.calendar,
+              borderWidth: 0,
+              width: getWidth(11),
+              borderRadius: getFontSize(0.5),
+            },
+          });
+          break;
+        case "not assigned":
+          customDatesStyles.push({
+            startDate: currentDate,
+            dateNameStyle: { color: colors.gray1 },
+            dateNumberStyle: { color: colors.gray1 },
+            dateContainerStyle: {
+              height: getHeight(8),
+              backgroundColor: colors.calendar,
+              borderWidth: 0,
+              width: getWidth(11),
+              borderRadius: getFontSize(0.5),
+            },
+          });
+          break;
         case "complete":
-        customDatesStyles.push({
-          startDate: currentDate,
-          dateNameStyle: { color: colors.greenlight },
-          dateNumberStyle: { color: colors.greenlight },
-          dateContainerStyle: {
-            height:getHeight(8),
-            backgroundColor: colors.calendar,
-            borderWidth: 0,
-            width: getWidth(11),
-            borderRadius: getFontSize(0.5),
-          },
-        });
-        break
+          customDatesStyles.push({
+            startDate: currentDate,
+            dateNameStyle: { color: colors.greenlight },
+            dateNumberStyle: { color: colors.greenlight },
+            dateContainerStyle: {
+              height: getHeight(8),
+              backgroundColor: colors.calendar,
+              borderWidth: 0,
+              width: getWidth(11),
+              borderRadius: getFontSize(0.5),
+            },
+          });
+          break;
         case "missed":
           customDatesStyles.push({
             startDate: currentDate,
             dateNameStyle: { color: colors.redtime },
             dateNumberStyle: { color: colors.redtime },
             dateContainerStyle: {
-              height:getHeight(8),
+              height: getHeight(8),
               backgroundColor: colors.calendar,
               borderWidth: 0,
               width: getWidth(11),
@@ -261,14 +274,15 @@ const WorkoutHistory = ({route}) => {
             dateNameStyle: { color: colors.white },
             dateNumberStyle: { color: colors.white },
             dateContainerStyle: {
-              height:getHeight(8),
+              height: getHeight(8),
               backgroundColor: colors.calendar,
               borderWidth: 0,
               width: getWidth(10),
               borderRadius: getFontSize(0.5),
             },
           });
-          break
+          break;
+      }
     }
   }
 

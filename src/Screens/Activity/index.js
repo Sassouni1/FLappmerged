@@ -233,96 +233,114 @@ const Activity = () => {
     6: "Saturday",
   };
 
+  const selectedDayOfWeek = new Date(date).getDay();
+  const selectedDayName = dayOfWeekMap[selectedDayOfWeek];
+
   for (let i = 0; i < 7; i++) {
     const currentDate = new Date(startDate);
     currentDate.setDate(startDate.getDate() + i);
     const dayOfWeek = currentDate.getDay();
     const dayName = dayOfWeekMap[dayOfWeek];
 
-    switch (weekProgress[dayName]) {
-      case "coming soon":
-        customDatesStyles.push({
-          startDate: currentDate,
-          dateNameStyle: { color: colors.white },
-          dateNumberStyle: { color: colors.white },
-          dateContainerStyle: {
-            height: getHeight(8),
-            backgroundColor: colors.calendar,
-            borderWidth: 0,
-            width: getWidth(11),
-            borderRadius: getFontSize(0.5),
-          },
-        });
-        break;
-      case "partially complete":
-        customDatesStyles.push({
-          startDate: currentDate,
-          dateNameStyle: { color: colors.buttonColor },
-          dateNumberStyle: { color: colors.buttonColor },
-          dateContainerStyle: {
-            height: getHeight(8),
-            backgroundColor: colors.calendar,
-            borderWidth: 0,
-            width: getWidth(11),
-            borderRadius: getFontSize(0.5),
-          },
-        });
-        break;
-      case "not assigned":
-        customDatesStyles.push({
-          startDate: currentDate,
-          dateNameStyle: { color: colors.white },
-          dateNumberStyle: { color: colors.white },
-          dateContainerStyle: {
-            height: getHeight(8),
-            backgroundColor: colors.calendar,
-            borderWidth: 0,
-            width: getWidth(11),
-            borderRadius: getFontSize(0.5),
-          },
-        });
-        break;
-      case "complete":
-        customDatesStyles.push({
-          startDate: currentDate,
-          dateNameStyle: { color: colors.greenlight },
-          dateNumberStyle: { color: colors.greenlight },
-          dateContainerStyle: {
-            height: getHeight(8),
-            backgroundColor: colors.calendar,
-            borderWidth: 0,
-            width: getWidth(11),
-            borderRadius: getFontSize(0.5),
-          },
-        });
-        break;
-      case "missed":
-        customDatesStyles.push({
-          startDate: currentDate,
-          dateNameStyle: { color: colors.redtime },
-          dateNumberStyle: { color: colors.redtime },
-          dateContainerStyle: {
-            height: getHeight(8),
-            backgroundColor: colors.calendar,
-            borderWidth: 0,
-            width: getWidth(11),
-            borderRadius: getFontSize(0.5),
-          },
-        });
-      default:
-        customDatesStyles.push({
-          startDate: currentDate,
-          dateNameStyle: { color: colors.white },
-          dateNumberStyle: { color: colors.white },
-          dateContainerStyle: {
-            height: getHeight(8),
-            backgroundColor: colors.calendar,
-            borderWidth: 0,
-            width: getWidth(11),
-            borderRadius: getFontSize(0.5),
-          },
-        });
-        break;
+    if (dayName == selectedDayName) {
+      customDatesStyles.push({
+        startDate: currentDate,
+        dateNameStyle: { color: "white" },
+        dateNumberStyle: { color: "white" },
+        dateContainerStyle: {
+          height: getHeight(8),
+          backgroundColor: "rgba(255,255,255,0.3)",
+          borderWidth: 0,
+          width: getWidth(11),
+          borderRadius: getFontSize(0.5),
+        },
+      });
+    } else {
+      switch (weekProgress[dayName]) {
+        case "coming soon":
+          customDatesStyles.push({
+            startDate: currentDate,
+            dateNameStyle: { color: "#05b7ff" },
+            dateNumberStyle: { color: "#05b7ff" },
+            dateContainerStyle: {
+              height: getHeight(8),
+              backgroundColor: colors.calendar,
+              borderWidth: 0,
+              width: getWidth(11),
+              borderRadius: getFontSize(0.5),
+            },
+          });
+          break;
+        case "partially complete":
+          customDatesStyles.push({
+            startDate: currentDate,
+            dateNameStyle: { color: colors.buttonColor },
+            dateNumberStyle: { color: colors.buttonColor },
+            dateContainerStyle: {
+              height: getHeight(8),
+              backgroundColor: colors.calendar,
+              borderWidth: 0,
+              width: getWidth(11),
+              borderRadius: getFontSize(0.5),
+            },
+          });
+          break;
+        case "not assigned":
+          customDatesStyles.push({
+            startDate: currentDate,
+            dateNameStyle: { color: colors.gray1 },
+            dateNumberStyle: { color: colors.gray1 },
+            dateContainerStyle: {
+              height: getHeight(8),
+              backgroundColor: colors.calendar,
+              borderWidth: 0,
+              width: getWidth(11),
+              borderRadius: getFontSize(0.5),
+            },
+          });
+          break;
+        case "complete":
+          customDatesStyles.push({
+            startDate: currentDate,
+            dateNameStyle: { color: colors.greenlight },
+            dateNumberStyle: { color: colors.greenlight },
+            dateContainerStyle: {
+              height: getHeight(8),
+              backgroundColor: colors.calendar,
+              borderWidth: 0,
+              width: getWidth(11),
+              borderRadius: getFontSize(0.5),
+            },
+          });
+          break;
+        case "missed":
+          customDatesStyles.push({
+            startDate: currentDate,
+            dateNameStyle: { color: colors.redtime },
+            dateNumberStyle: { color: colors.redtime },
+            dateContainerStyle: {
+              height: getHeight(8),
+              backgroundColor: colors.calendar,
+              borderWidth: 0,
+              width: getWidth(11),
+              borderRadius: getFontSize(0.5),
+            },
+          });
+        default:
+          customDatesStyles.push({
+            startDate: currentDate,
+            dateNameStyle: { color: colors.white },
+            dateNumberStyle: { color: colors.white },
+            dateContainerStyle: {
+              height: getHeight(8),
+              backgroundColor: colors.calendar,
+              borderWidth: 0,
+              width: getWidth(11),
+              borderRadius: getFontSize(0.5),
+            },
+          });
+          break;
+      }
     }
   }
   return (

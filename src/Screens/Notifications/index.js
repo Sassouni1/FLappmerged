@@ -19,10 +19,9 @@ import { setLoader } from "../../Redux/actions/GernalActions";
 import { GernalStyle } from "../../constants/GernalStyle";
 import { colors } from "../../constants/colors";
 import HeaderBottom from "../../Components/HeaderBottom";
-import messaging from '@react-native-firebase/messaging';
+import messaging from "@react-native-firebase/messaging";
 
 // create a component
-
 
 // export const requestUserPermission = async token => {
 //   const authStatus = await messaging().requestPermission();
@@ -47,7 +46,7 @@ import messaging from '@react-native-firebase/messaging';
 //     alert(error?.message);
 //   }
 // };
-export const requestUserPermission = async token => {
+export const requestUserPermission = async (token) => {
   try {
     const authStatus = await messaging().requestPermission();
     const enabled =
@@ -59,22 +58,21 @@ export const requestUserPermission = async token => {
       await getFcmToken(token);
     }
   } catch (error) {
-    console.log('Error requesting permission:', error?.message);
-    Alert.alert('Error requesting permission:', error?.message);
+    console.log("Error requesting permission:", error?.message);
+    Alert.alert("Error requesting permission:", error?.message);
   }
 };
 
-export const getFcmToken = async token => {
+export const getFcmToken = async (token) => {
   try {
     const fcmtoken = await messaging().getToken();
-   // sendFcm(token, fcmtoken);
-    console.log('fcmToken is generated', fcmtoken);
+    // sendFcm(token, fcmtoken);
+    console.log("fcmToken is generated", fcmtoken);
   } catch (error) {
-    console.log('Error fetching fcmToken:', error);
-    Alert.alert('Error fetching fcmToken:', error?.message);
+    console.log("Error fetching fcmToken:", error);
+    Alert.alert("Error fetching fcmToken:", error?.message);
   }
 };
-
 
 const Notification = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -102,13 +100,13 @@ const Notification = ({ navigation }) => {
       console.log("saga get notfication error -- ", e.toString());
     }
   };
-  const getall=()=>{
+  const getall = () => {
     dispatch(setLoader(true));
-    requestUserPermission(token); 
+    requestUserPermission(token);
     getAllNotification();
-  }
+  };
   useEffect(() => {
-    getall()
+    getall();
   }, []);
 
   return (
@@ -144,9 +142,8 @@ const Notification = ({ navigation }) => {
       >
         <FlatList
           showsVerticalScrollIndicator={false}
-       refreshing={false}
-       onRefresh={()=>getall()}
-
+          refreshing={false}
+          onRefresh={() => getall()}
           data={DATA}
           keyExtractor={(item, index) => index}
           ListEmptyComponent={() => (
@@ -158,7 +155,9 @@ const Notification = ({ navigation }) => {
                 alignItems: "center",
               }}
             >
-              <Text style={{color:colors.white,fontSize:getFontSize(2)}}>You have no any Notification Now</Text>
+              <Text style={{ color: colors.white, fontSize: getFontSize(2) }}>
+                You have no any Notification Now
+              </Text>
             </View>
           )}
           ItemSeparatorComponent={() => <Divider />}

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   RefreshControl,
+  Image,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { colors } from "../../constants/colors";
@@ -39,30 +40,19 @@ const Skills = () => {
 
   //console.log('filtered data',filteredData)
 
-  useEffect(() => {
-    dispatch(setLoader(true));
-    getSkills();
-  }, []);
+  // useEffect(() => {
+  //   const filtered = data.filter((item) =>
+  //     item.title.toUpperCase().includes(searchQuery.toUpperCase())
+  //   );
+  //   setFilteredData(filtered);
 
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-    getSkills();
-    setIsRefreshing(false);
-  };
-
-  useEffect(() => {
-    const filtered = data.filter((item) =>
-      item.title.toUpperCase().includes(searchQuery.toUpperCase())
-    );
-    setFilteredData(filtered);
-
-    // Check if there are no matching results
-    if (filtered.length === 0 && searchQuery) {
-      setInvalidEntry(true);
-    } else {
-      setInvalidEntry(false);
-    }
-  }, [searchQuery, data]);
+  //   // Check if there are no matching results
+  //   if (filtered.length === 0 && searchQuery) {
+  //     setInvalidEntry(true);
+  //   } else {
+  //     setInvalidEntry(false);
+  //   }
+  // }, [searchQuery, data]);
 
   const getSkills = async () => {
     try {
@@ -88,6 +78,14 @@ const Skills = () => {
       console.log("api get skill error -- ", e.toString());
     }
   };
+  const handleRefresh = () => {
+    dispatch(setLoader(true));
+    getSkills();
+  };
+
+  useEffect(() => {
+    handleRefresh(); // Call handleRefresh to load data initially
+  }, []);
 
   return (
     <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
@@ -105,15 +103,14 @@ const Skills = () => {
             color={"white"}
             onPress={() => navigation.openDrawer()}
             name="menu"
-             style={{ alignSelf: "flex-start",
-             //marginLeft:getFontSize(-1.5) 
+            style={{
+              alignSelf: "flex-start",
+              //marginLeft:getFontSize(-1.5)
             }}
           />
         }
-        RightIcon={<View style={{marginRight:getFontSize(4)}}/>}
+        RightIcon={<View style={{ marginRight: getFontSize(4) }} />}
       />
-          <KeyboardAwareScrollView style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
-
       <View
         style={{
           flexDirection: "row",
@@ -144,66 +141,87 @@ const Skills = () => {
           value={searchQuery}
         />
       </View>
-      <View style={{ flex: 1 }}>
-        {invalidEntry ? (
-          <View
-            style={{ justifyContent: "center", alignItems: "center", flex: 1 }}
-          >
-            <FontAwesome size={getFontSize(10)} color={"white"} name="exclamation-circle" />
-            <Text
+      <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
+        <View style={{ flex: 1 }}>
+          {invalidEntry ? (
+            <View
               style={{
-                fontSize: getFontSize(2),
-                color: colors.white,
-                marginLeft: getFontSize(5),
-                marginRight: getFontSize(5),
-                textAlign: "center",
+                justifyContent: "center",
+                alignItems: "center",
+                flex: 1,
               }}
             >
-              No videos on Skills found.
-            </Text>
-          </View>
-        ) : (
-          <FlatList
-            data={filteredData}
-            refreshControl={
-              <RefreshControl
-                refreshing={isRefreshing}
-                onRefresh={handleRefresh}
+              <FontAwesome
+                size={getFontSize(10)}
+                color={"white"}
+                name="exclamation-circle"
               />
-            }
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item ,index}) => {
-              return (
-                <View>
-                   {index > 0 && <Seprator />}
-                  <TouchableOpacity
-                    onPress={() =>
-                      navigation.navigate("VideoSkills", {
-                        video: item?.video,
-                        name: item?.title,
-                      })
-                    }
-                    style={styles.listCon}
-                  >
-                    <View style={styles.thumbnail}>
-                      <PlayerSvg height={20} width={20} />
-                    </View>
-                    <View style={{ flexDirection: "column" }}>
-                      <Text style={styles.text}>
-                        {(item?.title).toUpperCase()}
-                      </Text>
-                      <Text style={styles.descriptionText} numberOfLines={2}>
-                        {item?.description}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              );
-            }}
-          />
-        )}
+              <Text
+                style={{
+                  fontSize: getFontSize(2),
+                  color: colors.white,
+                  marginLeft: getFontSize(5),
+                  marginRight: getFontSize(5),
+                  textAlign: "center",
+                }}
+              >
+                No videos on Skills found.
+              </Text>
+            </View>
+          ) : (
+            <FlatList
+              data={filteredData}
+              refreshing={false}
+              onRefresh={handleRefresh}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item, index }) => {
+                return (
+                  <View>
+                    {index > 0 && <Seprator />}
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate("VideoSkills", {
+                          video: item?.video,
+                          name: item?.title,
+                        })
+                      }
+                      style={styles.listCon}
+                    >
+                      {/* <View style={styles.thumbnail}>
+                        <PlayerSvg height={20} width={20} />
+                      </View> */}
+                      {item?.video_thumbnail ? (
+                        <View>
+                          <Image
+                            source={{ uri: item?.video_thumbnail }}
+                            style={styles.thumbnail}
+                            resizeMode="cover"
+                          ></Image>
+                        </View>
+                      ) : (
+                        <View style={styles.thumbnail}>
+                          <PlayerSvg height={20} width={20} />
+                        </View>
+                      )}
+                      <View style={{ flexDirection: "column" }}>
+                        <Text style={styles.text}>
+                          {(item?.folder_title
+                            ? item.folder_title.toUpperCase()
+                            : item?.title).toUpperCase() || ""}
+                        </Text>
+
+                        <Text style={styles.descriptionText} numberOfLines={2}>
+                          {item?.folder_description || item?.description}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                );
+              }}
+            />
+          )}
+        </View>
       </View>
-    </KeyboardAwareScrollView>
     </View>
   );
 };
