@@ -19,10 +19,15 @@ import HeaderBottom from "../../Components/HeaderBottom";
 import { colors } from "../../constants/colors";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Video from "react-native-video";
-import Notification from "../Notifications";
+import Notification, { requestUserPermission } from "../Notifications";
 
 const HomeSc = ({ navigation, route }) => {
   const user = useSelector((state) => state.auth.userData);
+  const token = useSelector((state) => state.auth.userToken);
+
+  useEffect(()=>{
+    requestUserPermission(token)
+  },[])
 
   const Workout = ({ paragraphtext, headingText, subheading }) => {
     return (

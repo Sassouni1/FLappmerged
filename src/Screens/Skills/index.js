@@ -42,7 +42,7 @@ const Skills = () => {
 
   // useEffect(() => {
   //   const filtered = data.filter((item) =>
-  //     item.title.toUpperCase().includes(searchQuery.toUpperCase())
+  //     item.folder_title.toUpperCase().includes(searchQuery.toUpperCase())
   //   );
   //   setFilteredData(filtered);
 
@@ -53,6 +53,20 @@ const Skills = () => {
   //     setInvalidEntry(false);
   //   }
   // }, [searchQuery, data]);
+
+  useEffect(() => {
+    const filtered = data.filter((item) => {
+      const title = item.folder_title || ''; 
+      return title.toUpperCase().includes(searchQuery.toUpperCase()) || title.trim() === '';
+    });
+    setFilteredData(filtered);
+  
+    if (filtered.length === 0 && searchQuery) {
+      setInvalidEntry(true);
+    } else {
+      setInvalidEntry(false);
+    }
+  }, [searchQuery, data]);
 
   const getSkills = async () => {
     try {
@@ -149,6 +163,7 @@ const Skills = () => {
                 justifyContent: "center",
                 alignItems: "center",
                 flex: 1,
+                bottom:getFontSize(9)
               }}
             >
               <FontAwesome
@@ -180,9 +195,9 @@ const Skills = () => {
                     {index > 0 && <Seprator />}
                     <TouchableOpacity
                       onPress={() =>
-                        navigation.navigate("VideoSkills", {
-                          video: item?.video,
-                          name: item?.title,
+                        navigation.navigate("FolderVideo", {
+                          folder: item?.videos,
+                          //name: item?.title,
                         })
                       }
                       style={styles.listCon}
@@ -190,7 +205,7 @@ const Skills = () => {
                       {/* <View style={styles.thumbnail}>
                         <PlayerSvg height={20} width={20} />
                       </View> */}
-                      {item?.video_thumbnail ? (
+                      {/* {item?.video_thumbnail ? (
                         <View>
                           <Image
                             source={{ uri: item?.video_thumbnail }}
@@ -198,20 +213,31 @@ const Skills = () => {
                             resizeMode="cover"
                           ></Image>
                         </View>
-                      ) : (
-                        <View style={styles.thumbnail}>
-                          <PlayerSvg height={20} width={20} />
+                      ) : ( */}
+                        <View >
+                          {/* <PlayerSvg height={20} width={20} /> */}
+                          <Entypo
+                            size={45}
+                            color={"white"}
+                            name="folder"
+                            style={{
+                              justifyContent: 'center',
+                              marginLeft:getFontSize(1.5),
+                              marginRight:getFontSize(1.5),
+                              alignItems: 'center',}}
+                          />
                         </View>
-                      )}
+                      {/* )} */}
                       <View style={{ flexDirection: "column" }}>
                         <Text style={styles.text}>
-                          {(item?.folder_title
-                            ? item.folder_title.toUpperCase()
-                            : item?.title).toUpperCase() || ""}
+                          {/* {(item?.folder_title ?*/}
+                             {item.folder_title}
+                            {/* : item?.title */}
+                          {/* ).toUpperCase() || ""} */}
                         </Text>
 
                         <Text style={styles.descriptionText} numberOfLines={2}>
-                          {item?.folder_description || item?.description}
+                          {item?.folder_description}
                         </Text>
                       </View>
                     </TouchableOpacity>

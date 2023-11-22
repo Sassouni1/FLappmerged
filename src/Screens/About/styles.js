@@ -1,6 +1,7 @@
 import {StyleSheet} from 'react-native';
 import {getFontSize, getHeight, getWidth} from '../../../utils/ResponsiveFun';
 import { colors } from '../../constants/colors';
+import { fonts } from '../../constants/fonts';
 
 export const styles = StyleSheet.create({
   contaner: {
@@ -27,7 +28,8 @@ export const styles = StyleSheet.create({
     marginTop: getHeight(2),
   },
   ttext: {
-    fontSize: getFontSize(2),
+    fontSize: getFontSize(1.8),
+    fontFamily: fonts.URe,
     color: colors.white,
     fontWeight: '400',
     width: getWidth(75),

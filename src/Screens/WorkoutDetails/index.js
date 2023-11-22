@@ -331,7 +331,7 @@ const WorkoutDetails = () => {
                 selectedColor: colors.buttonColor,
               },
             }}
-            minDate={new Date()}
+            minDate={new Date().toISOString().split('T')[0]}
           />
           <TouchableOpacity
             onPress={() => {

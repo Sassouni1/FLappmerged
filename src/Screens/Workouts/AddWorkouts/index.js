@@ -81,6 +81,7 @@ const AddWorkouts = () => {
   };
   const getSingleExcercise = async (selectedDate) => {
     try {
+      console.log("started");
       const res = await ApiCall({
         route: `assignProgram/given-date-workouts/${
           user?.plan_id
@@ -88,10 +89,9 @@ const AddWorkouts = () => {
         verb: "get",
         token: token,
       });
-      console.log(
-        "respone of add workoutss",
-        res?.response?.Workout[0]?.innerWorkout[0]
-      );
+      console.log("started");
+
+      console.log("respone of add workoutss", res?.response);
       if (res?.status == "200") {
         setAssigWorkout(res?.response?.Workout[0]);
         dispatch(setLoader(false));
@@ -524,14 +524,23 @@ const AddWorkouts = () => {
                 }}
               >
                 {loader ? null : (
-                  <Text
-                    style={{
-                      fontSize: getFontSize(2),
-                      color: colors.graytext5,
-                    }}
+                  <View
+                    style={{ justifyContent: "center", alignItems: "center" }}
                   >
-                    No workout found on selected date
-                  </Text>
+                    <FontAwesome
+                      size={getFontSize(10)}
+                      color={"white"}
+                      name="exclamation-circle"
+                    />
+                    <Text
+                      style={{
+                        fontSize: getFontSize(2),
+                        color: colors.graytext5,
+                      }}
+                    >
+                      No workout found on selected date
+                    </Text>
+                  </View>
                 )}
               </View>
             ) : (
@@ -543,14 +552,23 @@ const AddWorkouts = () => {
                 }}
               >
                 {loader ? null : (
-                  <Text
-                    style={{
-                      fontSize: getFontSize(2),
-                      color: colors.graytext5,
-                    }}
+                  <View
+                    style={{ justifyContent: "center", alignItems: "center" }}
                   >
-                    No workout found on selected date
-                  </Text>
+                    <FontAwesome
+                      size={getFontSize(10)}
+                      color={"white"}
+                      name="exclamation-circle"
+                    />
+                    <Text
+                      style={{
+                        fontSize: getFontSize(2),
+                        color: colors.graytext5,
+                      }}
+                    >
+                      No workout found on selected date
+                    </Text>
+                  </View>
                 )}
               </View>
             )}

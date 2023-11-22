@@ -181,9 +181,14 @@ const SubmittedWorkouts = ({ route }) => {
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <ImageBackground
-          resizeMode="contain"
+          resizeMode="cover"
           style={styles.imgb}
-          source={require("../../../assets/images/reps.png")}
+          // source={require("../../../assets/images/reps.png")}
+          source={
+            exercise?.video_thumbnail
+              ? { uri: exercise?.video_thumbnail }
+              : require("../../../assets/images/reps.png")
+          }
         >
           {/* <View style={styles.playerbtn}>
               <Image

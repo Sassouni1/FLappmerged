@@ -54,25 +54,48 @@ export const requestUserPermission = async (token) => {
       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
     if (enabled) {
-      await messaging().registerDeviceForRemoteMessages(); // Register for remote messages
       await getFcmToken(token);
+    } else {
+      console.log('Permission denied for notifications');
     }
   } catch (error) {
-    console.log("Error requesting permission:", error?.message);
-    Alert.alert("Error requesting permission:", error?.message);
+    console.log('Error requesting permission:', error?.message);
   }
 };
 
 export const getFcmToken = async (token) => {
   try {
-    const fcmtoken = await messaging().getToken();
-    // sendFcm(token, fcmtoken);
-    console.log("fcmToken is generated", fcmtoken);
+    const apnsToken =  await messaging().setAPNSToken('test');
+    console.log('APNS token:', apnsToken);
+
+    const fcmToken = await messaging().getToken();
+    sendFcm(token, fcmToken);
+    console.log('FCM token:', fcmToken);
+    // Send fcmtoken to your server for sending notifications
   } catch (error) {
-    console.log("Error fetching fcmToken:", error);
-    Alert.alert("Error fetching fcmToken:", error?.message);
+    console.log('Error fetching FCM token:', error?.message);
+    // Handle FCM token retrieval error
   }
 };
+
+const sendFcm = async (token, fcmtoken) => {
+  try {
+    const res = await ApiCall({
+      route: 'auth/update_fcm_token',
+      token: token,
+      params: {fcmToken: fcmtoken},
+      verb: 'put',
+    });
+    if (res?.status == '200') {
+      console.log('fcm res == 200 ... ', res);
+    } else {
+      console.log('error in fcm api', res);
+    }
+  } catch (e) {
+    console.log('saga error -- ', e.toString());
+  }
+};
+
 
 const Notification = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -102,7 +125,7 @@ const Notification = ({ navigation }) => {
   };
   const getall = () => {
     dispatch(setLoader(true));
-    requestUserPermission(token);
+    requestUserPermission();
     getAllNotification();
   };
   useEffect(() => {

@@ -39,21 +39,26 @@ const Excercises = () => {
   const [invalidEntry, setInvalidEntry] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  useEffect(() => {
-    handleRefresh();
-  }, []);
-  const handleRefresh = () => {
-    dispatch(setLoader(true));
-    getSkills();
-  };
+  // useEffect(() => {
+  //   const filtered = data.filter((item) =>
+  //     item.title.toUpperCase().includes(searchQuery.toUpperCase())
+  //   );
+  //   setFilteredData(filtered);
 
+  //   // Check if there are no matching results
+  //   if (filtered.length === 0 && searchQuery) {
+  //     setInvalidEntry(true);
+  //   } else {
+  //     setInvalidEntry(false);
+  //   }
+  // }, [searchQuery, data]);
   useEffect(() => {
-    const filtered = data.filter((item) =>
-      item.title.toUpperCase().includes(searchQuery.toUpperCase())
-    );
+    const filtered = data.filter((item) => {
+      const title = item.folder_title || ''; 
+      return title.toUpperCase().includes(searchQuery.toUpperCase()) || title.trim() === '';
+    });
     setFilteredData(filtered);
-
-    // Check if there are no matching results
+  
     if (filtered.length === 0 && searchQuery) {
       setInvalidEntry(true);
     } else {
@@ -86,137 +91,166 @@ const Excercises = () => {
       console.log("api get skill error -- ", e.toString());
     }
   };
+  const handleRefresh = () => {
+    dispatch(setLoader(true));
+    getSkills();
+  };
 
-  return (
-    <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
-      <GeneralStatusBar
-        barStyle="light-content"
-        hidden={false}
-        backgroundColor="rgba(51, 51, 51, 1)"
-      />
-      <HeaderBottom
-        title={"Exercises"}
-        LeftIcon={
-          <Entypo
-            size={30}
-            color={"white"}
-            onPress={() => navigation.openDrawer()}
-            name="menu"
-            style={{
-              alignSelf: "flex-start",
-              //marginLeft:getFontSize(-1.5)
-            }}
-          />
-        }
-        RightIcon={<View style={{ marginRight: getFontSize(3.5) }} />}
-      />
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          width: getWidth(95),
-          height: getHeight(7),
-          marginVertical: getHeight(1),
-          marginTop: getHeight(2.5),
-          backgroundColor: colors.secondary,
-          borderRadius: 5,
-          alignSelf: "center",
-        }}
-      >
-        <SearchSvg height={20} width={20} style={{ marginLeft: getWidth(6) }} />
-        <TextInput
-          placeholder="Search an exercise"
-          placeholderTextColor={colors.graytext4}
-          style={{
-            ...GernalStyle.textinput,
-            marginTop: getHeight(0),
-            paddingLeft: getWidth(2),
-            width: getWidth(75),
-            fontWeight: "600",
-          }}
-          onChangeText={(text) => {
-            setSearchQuery(text);
-          }}
-          value={searchQuery}
-        />
-      </View>
+  useEffect(() => {
+    handleRefresh(); // Call handleRefresh to load data initially
+  }, []);
+
+    return (
       <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
-        <View style={{ flex: 1 }}>
-          {invalidEntry ? (
-            <View
+        <GeneralStatusBar
+          barStyle="light-content"
+          hidden={false}
+          backgroundColor="rgba(51, 51, 51, 1)"
+          translucent={true}
+        />
+        <HeaderBottom
+          title={"Exercise"}
+          LeftIcon={
+            <Entypo
+              size={30}
+              color={"white"}
+              onPress={() => navigation.openDrawer()}
+              name="menu"
               style={{
-                justifyContent: "center",
-                alignItems: "center",
-                flex: 1,
-              }}
-            >
-              <FontAwesome
-                size={getFontSize(10)}
-                color={"white"}
-                name="exclamation-circle"
-              />
-              <Text
-                style={{
-                  fontSize: getFontSize(2),
-                  color: colors.white,
-                  marginLeft: getFontSize(5),
-                  marginRight: getFontSize(5),
-                  textAlign: "center",
-                }}
-              >
-                No videos on Exercises found.
-              </Text>
-            </View>
-          ) : (
-            <FlatList
-              // data={data}
-              data={filteredData}
-              refreshing={false}
-              onRefresh={handleRefresh}
-              showsVerticalScrollIndicator={false}
-              renderItem={({ item, index }) => {
-                return (
-                  <View>
-                    {index > 0 && <Seprator />}
-                    <TouchableOpacity
-                      onPress={() =>
-                        navigation.navigate("VideoSkills", {
-                          video: item?.video,
-                          name: item?.title,
-                        })
-                      }
-                      style={styles.listCon}
-                    >
-                      {item?.video_thumbnail ? (
-                         <Image
-                         source={{ uri: item?.video_thumbnail }}
-                         style={styles.thumbnail
-                         }
-                         resizeMode="cover"
-                       ></Image>
-                      ) : (
-                        <View style={styles.thumbnail}>
-                          <PlayerSvg height={20} width={20} />
-                        </View>
-                      )}
-                      <View style={{ flexDirection: "column" }}>
-                        <Text style={styles.text}>
-                          {(item?.title).toUpperCase()}
-                        </Text>
-                        <Text style={styles.descriptionText} numberOfLines={2}>
-                          {item?.description}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                );
+                alignSelf: "flex-start",
+                marginLeft:getFontSize(1)
               }}
             />
-          )}
+          }
+          RightIcon={<View style={{ marginRight: getFontSize(4) }} />}
+        />
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            width: getWidth(95),
+            height: getHeight(7),
+            marginVertical: getHeight(1),
+            marginTop: getHeight(2.5),
+            backgroundColor: colors.secondary,
+            borderRadius: 5,
+            alignSelf: "center",
+          }}
+        >
+          <SearchSvg height={20} width={20} style={{ marginLeft: getWidth(6) }} />
+          <TextInput
+            placeholder="Search an exercise"
+            placeholderTextColor={colors.graytext4}
+            style={{
+              ...GernalStyle.textinput,
+              marginTop: getHeight(0),
+              paddingLeft: getWidth(2),
+              width: getWidth(75),
+              fontWeight: "600",
+            }}
+            onChangeText={(text) => {
+              setSearchQuery(text);
+            }}
+            value={searchQuery}
+          />
+        </View>
+        <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
+          <View style={{ flex: 1 }}>
+            {invalidEntry ? (
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flex: 1,
+                  bottom:getFontSize(9)
+                }}
+              >
+                <FontAwesome
+                  size={getFontSize(10)}
+                  color={"white"}
+                  name="exclamation-circle"
+                />
+                <Text
+                  style={{
+                    fontSize: getFontSize(2),
+                    color: colors.white,
+                    marginLeft: getFontSize(5),
+                    marginRight: getFontSize(5),
+                    textAlign: "center",
+                  }}
+                >
+                  No videos on Exercise found.
+                </Text>
+              </View>
+            ) : (
+              <FlatList
+                data={filteredData}
+                refreshing={false}
+                onRefresh={handleRefresh}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item, index }) => {
+                  return (
+                    <View>
+                      {index > 0 && <Seprator />}
+                      <TouchableOpacity
+                        onPress={() =>
+                          navigation.navigate("ExerciseVideo", {
+                            folder: item?.videos,
+                            folderName : item?.folder_title
+                            //name: item?.title,
+                          })
+                        }
+                        style={styles.listCon}
+                      >
+                        {/* <View style={styles.thumbnail}>
+                          <PlayerSvg height={20} width={20} />
+                        </View> */}
+                        {/* {item?.video_thumbnail ? (
+                          <View>
+                            <Image
+                              source={{ uri: item?.video_thumbnail }}
+                              style={styles.thumbnail}
+                              resizeMode="cover"
+                            ></Image>
+                          </View>
+                        ) : ( */}
+                          <View >
+                            {/* <PlayerSvg height={20} width={20} /> */}
+                            <Entypo
+                              size={45}
+                              color={"white"}
+                              name="folder"
+                              style={{
+                                justifyContent: 'center',
+                                marginLeft:getFontSize(1.5),
+                                marginRight:getFontSize(1.5),
+                                alignItems: 'center',}}
+                            />
+                          </View>
+                        {/* )} */}
+                        <View style={{ flexDirection: "column" }}>
+                          <Text style={styles.text}>
+                            {/* {(item?.folder_title ?*/}
+                               {item.folder_title}
+                              {/* : item?.title */}
+                            {/* ).toUpperCase() || ""} */}
+                          </Text>
+  
+                          <Text style={styles.descriptionText} numberOfLines={2}>
+                            {item?.folder_description}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                }}
+              />
+            )}
+          </View>
         </View>
       </View>
-    </View>
-  );
+    );
+
 };
 
 export default Excercises;

@@ -51,6 +51,8 @@ import About from '../../Screens/About';
 import CompleteWorkout from '../../Screens/Workouts/CompleteWorkout';
 import SubmittedWorkouts from '../../Screens/Workouts/SubmittedWorkouts';
 import Notification from '../../Screens/Notifications';
+import FolderVideo from '../../Screens/Skills/FolderVideo';
+import ExerciseVideo from '../../Screens/Excersises/ExerciseVideo';
 
 const stack = createNativeStackNavigator();
 const HomeStack = () => {
@@ -248,6 +250,20 @@ const HomeStack = () => {
         name="WorkoutDetail1"
         component={WorkoutDetail1}
       /> */}
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="FolderVideo"
+        component={FolderVideo}
+      />
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="ExerciseVideo"
+        component={ExerciseVideo}
+      />
       <stack.Screen
         options={{
           headerShown: false,

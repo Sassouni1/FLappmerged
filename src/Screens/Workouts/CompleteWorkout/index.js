@@ -35,13 +35,13 @@ import { updateTimer } from "../../../Redux/actions/AuthActions";
 const CompleteWorkout = ({ route }) => {
   const navigation = useNavigation();
   const { workoutId, innerWorkoutId, exerciseId } = route?.params;
-//console.log('execise id',exerciseId)
+  //console.log('execise id',exerciseId)
   const defaultTimer = { hours: 0, minutes: 0, seconds: 0 };
   //const timer = useSelector((state)=> state.auth.timer) || defaultTimer;
-  const timer = useSelector((state) => state.auth.exerciseTimers[exerciseId]) || defaultTimer;
+  const timer =
+    useSelector((state) => state.auth.exerciseTimers[exerciseId]) ||
+    defaultTimer;
   //console.log(timer)
-
-  
 
   const [hours, setHours] = useState(timer.hours);
   const [minutes, setMinutes] = useState(timer.minutes);
@@ -52,7 +52,6 @@ const CompleteWorkout = ({ route }) => {
 
   const [exercise, setExercise] = useState("");
   const [video, setVideo] = useState("");
-
 
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
@@ -153,7 +152,7 @@ const CompleteWorkout = ({ route }) => {
 
       if (res?.status == "200") {
         // setAssigWorkout(res?.response?.Workout[0]);
-        console.log("workout api response", res?.response?.Exercise?.sets);
+        console.log("workout api response", res?.response?.Exercise);
         setExercise(res?.response?.Exercise);
         dispatch(setLoader(false));
       } else {
@@ -188,14 +187,11 @@ const CompleteWorkout = ({ route }) => {
           inner_objId: innerWorkoutId,
           submitted_sets: JSON.stringify(submittedSets),
           submitted_notes: submittedNotes,
-          submitted_time :`${hours}:${minutes}:${seconds}`
+          submitted_time: `${hours}:${minutes}:${seconds}`,
         },
       });
       if (res?.status == "200") {
-        console.log(
-          "workout api response",
-          res?.response?.Exercise?.submitted_sets
-        );
+        console.log("workout api response", res?.response);
         toast.show("Exercise successfully completed");
         //navigation.navigate("AddWorkouts");
         navigation.navigate("Workouts", { data: "tab2" });
@@ -287,9 +283,13 @@ const CompleteWorkout = ({ route }) => {
           showsVerticalScrollIndicator={false}
         >
           <ImageBackground
-            resizeMode="contain"
+            resizeMode="cover"
             style={styles.imgb}
-            source={require("../../../assets/images/reps.png")}
+            source={
+              exercise?.video_thumbnail
+                ? { uri: exercise?.video_thumbnail }
+                : require("../../../assets/images/reps.png")
+            }
           >
             {/* <Text style={styles.flatchest}>{exercise?.exercise_name}</Text>
             {/* <TouchableOpacity

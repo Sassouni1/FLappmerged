@@ -356,6 +356,14 @@ const WorkoutHistory = ({ route }) => {
                 }}
               >
                 {loader ? null : (
+                   <View
+                   style={{ justifyContent: "center", alignItems: "center" }}
+                 >
+                   <FontAwesome
+                     size={getFontSize(10)}
+                     color={"white"}
+                     name="exclamation-circle"
+                   />
                   <Text
                     style={{
                       fontSize: getFontSize(2),
@@ -364,6 +372,7 @@ const WorkoutHistory = ({ route }) => {
                   >
                     No workout found on selected date
                   </Text>
+                  </View>
                 )}
               </View>
             ) : (
@@ -381,7 +390,7 @@ const WorkoutHistory = ({ route }) => {
                       color: colors.graytext5,
                     }}
                   >
-                    No workout found on selected date
+                    Nfound on selected date
                   </Text>
                 )}
               </View>
