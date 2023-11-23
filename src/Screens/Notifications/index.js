@@ -125,7 +125,7 @@ const Notification = ({ navigation }) => {
   };
   const getall = () => {
     dispatch(setLoader(true));
-    requestUserPermission();
+    //requestUserPermission();
     getAllNotification();
   };
   useEffect(() => {

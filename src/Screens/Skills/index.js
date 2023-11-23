@@ -25,7 +25,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ApiCall } from "../../Services/Apis";
 import Header from "../../Components/Header";
 import HeaderBottom from "../../Components/HeaderBottom";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const Skills = () => {
@@ -157,7 +157,7 @@ const Skills = () => {
       </View>
       <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
         <View style={{ flex: 1 }}>
-          {invalidEntry ? (
+          {invalidEntry || (filteredData.length === 0) ? (
             <View
               style={{
                 justifyContent: "center",
@@ -166,11 +166,11 @@ const Skills = () => {
                 bottom:getFontSize(9)
               }}
             >
-              <FontAwesome
-                size={getFontSize(10)}
-                color={"white"}
-                name="exclamation-circle"
-              />
+               <AntDesign
+                  size={getFontSize(8)}
+                  color={"white"}
+                  name="exclamationcircleo"
+                />
               <Text
                 style={{
                   fontSize: getFontSize(2),
@@ -178,6 +178,7 @@ const Skills = () => {
                   marginLeft: getFontSize(5),
                   marginRight: getFontSize(5),
                   textAlign: "center",
+                  marginTop:getHeight(1)
                 }}
               >
                 No videos on Skills found.

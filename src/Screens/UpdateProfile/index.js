@@ -179,6 +179,7 @@ const UpdateProfiles = () => {
           dispatch(getSingleUser(token));
           toast.show(res?.response?.message);
           dispatch(setLoader(false));
+          Keyboard.dismiss()
         } else {
           console.log("error of api", res);
           dispatch(setLoader(false));

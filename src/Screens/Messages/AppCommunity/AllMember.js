@@ -26,12 +26,16 @@ import { setLoader } from "../../../Redux/actions/GernalActions";
 import HeaderBottom from "../../../Components/HeaderBottom";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-
+import AntDesign from "react-native-vector-icons/AntDesign";
 
 const AllMember = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [allUser, setAllUser] = useState([]);
+  //const [searchQuery, setSearchQuery] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+  const [invalidEntry, setInvalidEntry] = useState(false);
+
   const token = useSelector((state) => state.auth.userToken);
   const [searchText, setSearchText] = useState("");
   const createChatBox = async (item) => {
@@ -96,6 +100,23 @@ const AllMember = () => {
   useEffect(() => {
     getAllUser();
   }, []);
+
+  useEffect(() => {
+    const filtered = allUser.filter((item) => {
+      const title = item.full_name || "";
+      return (
+        title.toUpperCase().includes(searchText.toUpperCase()) ||
+        title.trim() === ""
+      );
+    });
+    setFilteredData(filtered);
+
+    if (filtered.length === 0 && searchText) {
+      setInvalidEntry(true);
+    } else {
+      setInvalidEntry(false);
+    }
+  }, [searchText, allUser]);
   return (
     <View
       style={{ ...GernalStyle.continer, backgroundColor: colors.homeColor }}
@@ -116,7 +137,7 @@ const AllMember = () => {
             onPress={() => navigation.goBack()}
           />
         }
-        RightIcon={<View style={{marginRight:getFontSize(3)}}/>}
+        RightIcon={<View style={{ marginRight: getFontSize(3) }} />}
       />
       <View
         style={{
@@ -131,12 +152,12 @@ const AllMember = () => {
           alignSelf: "center",
         }}
       >
-         <FontAwesome
-            name={"search"}
-            size={25}
-            color={"#ffff"}
-            style={{paddingLeft:getFontSize(2)}}
-          />
+        <FontAwesome
+          name={"search"}
+          size={25}
+          color={"#ffff"}
+          style={{ paddingLeft: getFontSize(2) }}
+        />
         <TextInput
           style={{
             ...GernalStyle.textinput,
@@ -151,57 +172,86 @@ const AllMember = () => {
           onChangeText={setSearchText}
         />
       </View>
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        ListFooterComponent={() => <View style={{ height: getHeight(4) }} />}
-        //data={allUser}
-        data={allUser.filter((user) =>
-          user.full_name.toLowerCase().includes(searchText.toLowerCase())
-        )}
-        renderItem={({ item }) => {
-          return (
-            <View>
-              <Pressable
-                onPress={() => {
-                  createChatBox(item);
-                }}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: getHeight(1.5),
-                }}
-              >
-                <Image
-                  resizeMode="cover"
-                  style={{
-                    width: getWidth(13.5),
-                    height: getHeight(6),
-                    borderRadius: 30,
-                    marginLeft: getWidth(4),
+      {invalidEntry || filteredData.length === 0 ? (
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            flex: 1,
+            bottom: getFontSize(9),
+          }}
+        >
+          <AntDesign
+            size={getFontSize(8)}
+            color={"white"}
+            name="exclamationcircleo"
+          />
+          <Text
+            style={{
+              fontSize: getFontSize(2),
+              color: colors.white,
+              marginLeft: getFontSize(5),
+              marginRight: getFontSize(5),
+              textAlign: "center",
+              marginTop: getHeight(1),
+            }}
+          >
+            User not found.
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          ListFooterComponent={() => <View style={{ height: getHeight(4) }} />}
+          data={filteredData}
+          // data={allUser.filter((user) =>
+          //   user.full_name.toLowerCase().includes(searchText.toLowerCase())
+          // )}
+          renderItem={({ item }) => {
+            return (
+              <View>
+                <Pressable
+                  onPress={() => {
+                    createChatBox(item);
                   }}
-                  source={
-                    item?.profile_image === ""
-                      ? require("../../../assets/images/Pimg.jpeg")
-                      : { uri: item?.profile_image }
-                  }
-                />
-                <View style={{ marginLeft: getWidth(4) }}>
-                  <Text
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginTop: getHeight(1.5),
+                  }}
+                >
+                  <Image
+                    resizeMode="cover"
                     style={{
-                      fontSize: 18,
-                      fontFamily: fonts.URe,
-                      color: colors.white,
+                      width: getWidth(13.5),
+                      height: getHeight(6),
+                      borderRadius: 30,
+                      marginLeft: getWidth(4),
                     }}
-                  >
-                    {item.full_name}
-                  </Text>
-                  {/* <Text style={{fontSize:14,fontFamily:fonts.URe,color:colors.white}}>{item.lastmsg}</Text> */}
-                </View>
-              </Pressable>
-            </View>
-          );
-        }}
-      />
+                    source={
+                      item?.profile_image === ""
+                        ? require("../../../assets/images/Pimg.jpeg")
+                        : { uri: item?.profile_image }
+                    }
+                  />
+                  <View style={{ marginLeft: getWidth(4) }}>
+                    <Text
+                      style={{
+                        fontSize: 18,
+                        fontFamily: fonts.URe,
+                        color: colors.white,
+                      }}
+                    >
+                      {item.full_name}
+                    </Text>
+                    {/* <Text style={{fontSize:14,fontFamily:fonts.URe,color:colors.white}}>{item.lastmsg}</Text> */}
+                  </View>
+                </Pressable>
+              </View>
+            );
+          }}
+        />
+      )}
     </View>
   );
 };

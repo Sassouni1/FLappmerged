@@ -24,6 +24,8 @@ import { ApiCall } from "../../Services/Apis";
 import { RefreshControl } from "react-native";
 import HeaderBottom from "../../Components/HeaderBottom";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import AntDesign from "react-native-vector-icons/AntDesign";
+
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const Excercises = () => {
@@ -74,7 +76,7 @@ const Excercises = () => {
         verb: "get",
         token: token,
       });
-      console.log("res::", res?.response?.video_list);
+      console.log("res::", res?.response);
       if (res?.status == "200") {
         setData(res?.response?.video_list);
         setFilteredData(res?.response?.video_list);
@@ -118,7 +120,7 @@ const Excercises = () => {
               name="menu"
               style={{
                 alignSelf: "flex-start",
-                marginLeft:getFontSize(1)
+                //marginLeft:getFontSize(1)
               }}
             />
           }
@@ -156,7 +158,7 @@ const Excercises = () => {
         </View>
         <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
           <View style={{ flex: 1 }}>
-            {invalidEntry ? (
+            {invalidEntry || (filteredData.length === 0) ? (
               <View
                 style={{
                   justifyContent: "center",
@@ -165,10 +167,10 @@ const Excercises = () => {
                   bottom:getFontSize(9)
                 }}
               >
-                <FontAwesome
-                  size={getFontSize(10)}
+                <AntDesign
+                  size={getFontSize(8)}
                   color={"white"}
-                  name="exclamation-circle"
+                  name="exclamationcircleo"
                 />
                 <Text
                   style={{
@@ -177,6 +179,7 @@ const Excercises = () => {
                     marginLeft: getFontSize(5),
                     marginRight: getFontSize(5),
                     textAlign: "center",
+                    marginTop:getHeight(1)
                   }}
                 >
                   No videos on Exercise found.

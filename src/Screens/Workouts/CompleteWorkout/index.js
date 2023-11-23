@@ -28,6 +28,7 @@ import { setLoader } from "../../../Redux/actions/GernalActions";
 import { ApiCall } from "../../../Services/Apis";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import Entypo from "react-native-vector-icons/Entypo";
 import toast from "react-native-simple-toast";
 import { updateTimer } from "../../../Redux/actions/AuthActions";
@@ -47,6 +48,10 @@ const CompleteWorkout = ({ route }) => {
   const [minutes, setMinutes] = useState(timer.minutes);
   const [seconds, setSeconds] = useState(timer.seconds);
   const [isRunning, setIsRunning] = useState(false); // Track timer state
+  const [selectedInput, setSelectedInput] = useState(null);
+  const [inputContent, setInputContent] = useState(
+    Array(exercise?.sets.length).fill("")
+  ); // State to store input content
 
   const dispatch = useDispatch();
 
@@ -355,7 +360,12 @@ const CompleteWorkout = ({ route }) => {
                             placeholder="Enter reps"
                             placeholderTextColor={"black"}
                             keyboardType="number-pad"
+                            onFocus={() => setSelectedInput(index)}
+                            onBlur={() => setSelectedInput(null)}
                             onChangeText={(text) => {
+                              const updatedContent = [...inputContent];
+                              updatedContent[index] = text;
+                              setInputContent(updatedContent);
                               updateSubmittedSets(
                                 index,
                                 text,
@@ -387,7 +397,12 @@ const CompleteWorkout = ({ route }) => {
                             placeholder="Enter lebs"
                             placeholderTextColor={"black"}
                             keyboardType="number-pad"
+                            onFocus={() => setSelectedInput(index)}
+                            onBlur={() => setSelectedInput(null)}
                             onChangeText={(text) => {
+                              const updatedContent = [...inputContent];
+                              updatedContent[index] = text;
+                              setInputContent(updatedContent);
                               updateSubmittedSets(
                                 index,
                                 "",
@@ -419,7 +434,12 @@ const CompleteWorkout = ({ route }) => {
                           placeholder="Enter weight"
                           placeholderTextColor={"black"}
                           keyboardType="number-pad"
+                          onFocus={() => setSelectedInput(index)}
+                          onBlur={() => setSelectedInput(null)}
                           onChangeText={(text) => {
+                            const updatedContent = [...inputContent];
+                              updatedContent[index] = text;
+                              setInputContent(updatedContent);
                             updateSubmittedSets(
                               index,
                               "",
@@ -430,7 +450,7 @@ const CompleteWorkout = ({ route }) => {
                               ""
                             );
                           }}
-                          style={{ paddingTop: getFontSize(0.6) }}
+                          style={{ paddingTop: getFontSize(0.6),width:getWidth(30) }}
                         />
                         <View style={styles.parameterCtn}>
                           <Text style={styles.lbs}>
@@ -451,7 +471,12 @@ const CompleteWorkout = ({ route }) => {
                           placeholder="Enter seconds"
                           placeholderTextColor={"black"}
                           keyboardType="number-pad"
+                          onFocus={() => setSelectedInput(index)}
+                          onBlur={() => setSelectedInput(null)}
                           onChangeText={(text) => {
+                            const updatedContent = [...inputContent];
+                              updatedContent[index] = text;
+                              setInputContent(updatedContent);
                             updateSubmittedSets(
                               index,
                               "",
@@ -462,7 +487,7 @@ const CompleteWorkout = ({ route }) => {
                               ""
                             );
                           }}
-                          style={{ paddingTop: getFontSize(0.6) }}
+                          style={{ paddingTop: getFontSize(0.6),width:getWidth(30) }}
                         />
                         <View style={styles.parameterCtn}>
                           <Text style={styles.lbs}>
@@ -483,7 +508,12 @@ const CompleteWorkout = ({ route }) => {
                           placeholder="Enter distance"
                           placeholderTextColor={"black"}
                           keyboardType="number-pad"
+                          onFocus={() => setSelectedInput(index)}
+                          onBlur={() => setSelectedInput(null)}
                           onChangeText={(text) => {
+                            const updatedContent = [...inputContent];
+                              updatedContent[index] = text;
+                              setInputContent(updatedContent);
                             updateSubmittedSets(
                               index,
                               "",
@@ -494,7 +524,7 @@ const CompleteWorkout = ({ route }) => {
                               ""
                             );
                           }}
-                          style={{ paddingTop: getFontSize(0.6) }}
+                          style={{ paddingTop: getFontSize(0.6),width:getWidth(30) }}
                         />
                         <View style={styles.parameterCtn}>
                           <Text style={styles.lbs}>
@@ -506,8 +536,25 @@ const CompleteWorkout = ({ route }) => {
                       </View>
                     ) : null}
                   </View>
-                  <View style={styles.tickCon}>
+                  {/* <View style={styles.tickCon}>
                     <RightIcon height={15} width={15} />
+                  </View> */}
+                  <View
+                    style={{
+                      ...styles.tickCon,
+                      backgroundColor:
+                        selectedInput === index || inputContent[index]
+                          ? colors.buttonColor
+                          : colors.whiteOp40,
+                    }}
+                  >
+                    {/* <RightIcon height={15} width={15} /> */}
+                    <Ionicons
+                      name="checkmark-sharp"
+                      size={20}
+                      color={colors.white}
+                      //style={{marginTop: getWidth(2)}}
+                    />
                   </View>
                 </View>
                 {set?.rest_time != 0 ? (
@@ -553,27 +600,13 @@ const CompleteWorkout = ({ route }) => {
               // </View>
               <View
                 style={{
-                  width: getWidth(75),
-                  //height: getHeight(6),
-                  borderRadius: 5,
-                  borderWidth: 1,
-                  borderColor: colors.graytext5,
-                  backgroundColor: colors.white,
-                  justifyContent: "flex-start",
-                  alignItems: "flex-start",
-                  flexDirection: "row",
-                  paddingLeft: getFontSize(3),
-                  paddingTop: getFontSize(0.5),
-                  paddingBottom: getFontSize(0.5),
-                  marginLeft: getWidth(7),
-                  marginTop: getHeight(2),
-                  height: getHeight(10),
+                 
                 }}
               >
                 <TextInput
                   multiline
                   numberOfLines={3}
-                  placeholder="Notes"
+                  placeholder="Enter Notes"
                   placeholderTextColor={colors.primary}
                   keyboardType="default"
                   style={{
@@ -582,16 +615,21 @@ const CompleteWorkout = ({ route }) => {
                     fontSize: getFontSize(1.5),
                     marginRight: getWidth(2),
                     marginBottom: getWidth(2),
-                    // height: getHeight(6),
-                    // width: getWidth(90),
-                    // backgroundColor: "rgba(79, 79, 79, 1)",
-                    // color: "white",
-                    // justifyContent: "center",
-                    // fontSize: getFontSize(1.6),
-                    // // lineHeight:20,
-                    // fontFamily: "Ubuntu-Regular",
-                    // alignSelf: "center",
-                    // paddingLeft: 5,
+                    width: getWidth(75),
+                    //height: getHeight(6),
+                    borderRadius: 5,
+                    borderWidth: 1,
+                    borderColor: colors.graytext5,
+                    backgroundColor: colors.white,
+                    justifyContent: "flex-start",
+                    alignItems: "flex-start",
+                    flexDirection: "row",
+                    paddingLeft: getFontSize(3),
+                    paddingTop: getFontSize(1),
+                    paddingBottom: getFontSize(0.5),
+                    marginLeft: getWidth(7),
+                    marginTop: getHeight(2),
+                    height: getHeight(10),
                   }}
                   onChangeText={(text) => {
                     setSubmittedNotes(text);

@@ -27,7 +27,7 @@ import { ApiCall } from "../../Services/Apis";
 import { PlayerSvg } from "../../assets/images";
 import { fonts } from "../../constants/fonts";
 import Toast from "react-native-simple-toast";
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
+import AntDesign from "react-native-vector-icons/AntDesign";
 
 const StartWorkout = ({ route }) => {
   const navigation = useNavigation();
@@ -201,11 +201,11 @@ const StartWorkout = ({ route }) => {
                 <Text
                   style={{ fontSize: getFontSize(2), color: colors.graytext5 }}
                 >
-                <FontAwesome
-                  size={getFontSize(10)}
-                  color={"white"}
-                  name="exclamation-circle"
-                />
+                  <AntDesign
+                    size={getFontSize(8)}
+                    color={"white"}
+                    name="exclamationcircleo"
+                  />
                   No workout found on selected date
                 </Text>
               )}

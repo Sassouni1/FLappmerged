@@ -26,6 +26,8 @@ import {
   import Header from "../../../Components/Header";
   import HeaderBottom from "../../../Components/HeaderBottom";
   import FontAwesome from "react-native-vector-icons/FontAwesome";
+  import AntDesign from "react-native-vector-icons/AntDesign";
+
   import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
   import Ionicons from "react-native-vector-icons/Ionicons";
 
@@ -129,10 +131,10 @@ import {
                   bottom:getFontSize(9)
                 }}
               >
-                <FontAwesome
-                  size={getFontSize(10)}
+                <AntDesign
+                  size={getFontSize(8)}
                   color={"white"}
-                  name="exclamation-circle"
+                  name="exclamationcircleo"
                 />
                 <Text
                   style={{
@@ -141,6 +143,7 @@ import {
                     marginLeft: getFontSize(5),
                     marginRight: getFontSize(5),
                     textAlign: "center",
+                    marginTop:getHeight(1)
                   }}
                 >
                   No videos on Exercise found.

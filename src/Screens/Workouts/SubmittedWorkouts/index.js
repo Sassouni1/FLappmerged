@@ -297,9 +297,9 @@ const SubmittedWorkouts = ({ route }) => {
                       <Text style={styles.lbs}>LBS</Text>
                     </View> */}
                 </View>
-                <View style={styles.tickCon}>
+                {/* <View style={styles.tickCon}>
                   <RightIcon height={15} width={15} />
-                </View>
+                </View> */}
               </View>
               {set?.rest_time != 0 ? (
                 <View style={styles.spacebet}>
@@ -318,9 +318,9 @@ const SubmittedWorkouts = ({ route }) => {
                 <View style={{ ...styles.whiteCon, height: getHeight(10) }}>
                   <Text>{exercise?.notes}</Text>
                 </View>
-                <View style={styles.tickCon}>
+                {/* <View style={styles.tickCon}>
                   <RightIcon height={15} width={15} />
-                </View>
+                </View> */}
               </View>
             </View>
           ) : null}
@@ -394,9 +394,9 @@ const SubmittedWorkouts = ({ route }) => {
                       <Text style={styles.lbs}>LBS</Text>
                     </View> */}
                 </View>
-                <View style={styles.tickCon}>
+                {/* <View style={styles.tickCon}>
                   <RightIcon height={15} width={15} />
-                </View>
+                </View> */}
               </View>
               {/* {set?.rest_time != 0 ? (
                 <View style={styles.spacebet}>
@@ -415,9 +415,9 @@ const SubmittedWorkouts = ({ route }) => {
                 <View style={{ ...styles.whiteCon, height: getHeight(10) }}>
                   <Text>{exercise?.submitted_notes}</Text>
                 </View>
-                <View style={styles.tickCon}>
+                {/* <View style={styles.tickCon}>
                   <RightIcon height={15} width={15} />
-                </View>
+                </View> */}
               </View>
             </View>
           ) : null}

@@ -13,7 +13,7 @@ import { colors } from "../../../constants/colors";
 import GeneralStatusBar from "../../../Components/GeneralStatusBar";
 import { GernalStyle } from "../../../constants/GernalStyle";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import {
   getFontSize,
   getWidth,
@@ -89,10 +89,11 @@ const AddWorkouts = () => {
         verb: "get",
         token: token,
       });
-      console.log("started");
+      console.log("starteddd",res);
 
-      console.log("respone of add workoutss", res?.response);
+     // console.log("respone of add workoutss", res?.response?.Workout[0].innerWorkout[0]);
       if (res?.status == "200") {
+        console.log("respone of add workoutss", res?.response?.Workout[0].innerWorkout[0]);
         setAssigWorkout(res?.response?.Workout[0]);
         dispatch(setLoader(false));
       } else {
@@ -527,15 +528,16 @@ const AddWorkouts = () => {
                   <View
                     style={{ justifyContent: "center", alignItems: "center" }}
                   >
-                    <FontAwesome
-                      size={getFontSize(10)}
+                    <AntDesign
+                      size={getFontSize(8)}
                       color={"white"}
-                      name="exclamation-circle"
+                      name="exclamationcircleo"
                     />
                     <Text
                       style={{
                         fontSize: getFontSize(2),
                         color: colors.graytext5,
+                        marginTop:getHeight(1)
                       }}
                     >
                       No workout found on selected date
@@ -555,15 +557,16 @@ const AddWorkouts = () => {
                   <View
                     style={{ justifyContent: "center", alignItems: "center" }}
                   >
-                    <FontAwesome
-                      size={getFontSize(10)}
+                    <AntDesign
+                      size={getFontSize(8)}
                       color={"white"}
-                      name="exclamation-circle"
+                      name="exclamationcircleo"
                     />
                     <Text
                       style={{
                         fontSize: getFontSize(2),
                         color: colors.graytext5,
+                        marginTop:getHeight(1)
                       }}
                     >
                       No workout found on selected date

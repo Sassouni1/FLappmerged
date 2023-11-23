@@ -13,7 +13,7 @@ import { colors } from "../../../constants/colors";
 import GeneralStatusBar from "../../../Components/GeneralStatusBar";
 import { GernalStyle } from "../../../constants/GernalStyle";
 import { useNavigation } from "@react-navigation/native";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import {
   getFontSize,
   getWidth,
@@ -359,11 +359,11 @@ const WorkoutHistory = ({ route }) => {
                    <View
                    style={{ justifyContent: "center", alignItems: "center" }}
                  >
-                   <FontAwesome
-                     size={getFontSize(10)}
-                     color={"white"}
-                     name="exclamation-circle"
-                   />
+                   <AntDesign
+                  size={getFontSize(8)}
+                  color={"white"}
+                  name="exclamationcircleo"
+                />
                   <Text
                     style={{
                       fontSize: getFontSize(2),
