@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import {
   getHeight,
   getFontSize,
@@ -37,7 +37,7 @@ export const styles = StyleSheet.create({
     fontSize: getFontSize(2),
     color: colors.graytext4,
     fontFamily: fonts.URe,
-    marginTop: getHeight(0.5),
+    marginTop: Platform.OS ==='ios' ? getHeight(0.5) : getHeight(-0.5),
     textAlign: "center",
     //right:getFontSize(1.5)
   },
@@ -151,9 +151,8 @@ export const styles = StyleSheet.create({
     width: getWidth(100),
   },
   text: {
-    fontSize: 18,
     marginHorizontal: 4,
-    fontSize: getFontSize(5.2),
+    fontSize: Platform.OS ==="ios"? getFontSize(5):getFontSize(4),
     fontFamily: fonts.Re,
     color: colors.white,
     marginLeft: getWidth(2),

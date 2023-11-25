@@ -286,12 +286,23 @@ const StartWorkout = ({ route }) => {
                       flexDirection: "row",
                       alignItems: "center",
                       marginLeft: getWidth(3),
-                      marginTop: getHeight(2),
+                      marginTop: getHeight(2)
                     }}
                   >
-                    <View style={styles.thumbnail}>
+                    {/* <View style={styles.thumbnail}>
                       <PlayerSvg height={30} width={30} />
+                    </View> */}
+                     {ex?.video_thumbnail ? (
+                    <Image
+                      source={{ uri: ex?.video_thumbnail }}
+                      style={styles.thumbnail}
+                      resizeMode="cover"
+                    ></Image>
+                  ) : (
+                    <View style={styles.thumbnail}>
+                      <PlayerSvg height={20} width={20} />
                     </View>
+                  )}
                     {/* {console.log('ex',ex)} */}
                     <View style={{ marginLeft: getWidth(2) }}>
                       <Text style={styles.heading}>{ex?.exercise_name}</Text>

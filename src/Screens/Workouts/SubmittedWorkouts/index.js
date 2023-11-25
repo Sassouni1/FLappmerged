@@ -47,8 +47,11 @@ const SubmittedWorkouts = ({ route }) => {
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
   const loader = useSelector((state) => state.gernal.loader);
-  const timer = useSelector((state)=> state.auth.exerciseTimers[exerciseId]) || defaultTimer;
-
+  const timer =
+    useSelector((state) => state.auth.exerciseTimers[exerciseId]) ||
+    defaultTimer;
+    const submittedTime = exercise?.submitted_time || '0:0:0';
+    const [submittedHours, submittedMinutes, submittedSeconds] = submittedTime.split(':');
   useEffect(() => {
     let interval;
 
@@ -140,7 +143,7 @@ const SubmittedWorkouts = ({ route }) => {
           style={{
             ...styles.angel,
             justifyContent: "space-between",
-           // alignSelf: "center",
+            // alignSelf: "center",
             //marginRight: getWidth(1),
             backgroundColor: "#000",
           }}
@@ -152,7 +155,7 @@ const SubmittedWorkouts = ({ route }) => {
               color={colors.gray3}
             />
           </TouchableOpacity>
-          <View style={{ ...styles.header }}>
+          {/* <View style={{ ...styles.header }}>
             <View style={styles.headerTime}>
               <Text style={styles.text}>
                 {timer.hours.toString().padStart(2, "0")}:
@@ -162,6 +165,19 @@ const SubmittedWorkouts = ({ route }) => {
               </Text>
               <Text style={styles.text}>
                 {timer.seconds.toString().padStart(2, "0")}
+              </Text>
+            </View>
+          </View> */}
+          <View style={{ ...styles.header }}>
+            <View style={styles.headerTime}>
+              <Text style={styles.text}>
+                {submittedHours.toString().padStart(2, "0")}:
+              </Text>
+              <Text style={styles.text}>
+                {submittedMinutes.toString().padStart(2, "0")}:
+              </Text>
+              <Text style={styles.text}>
+                {submittedSeconds.toString().padStart(2, "0")}
               </Text>
             </View>
           </View>
@@ -231,9 +247,9 @@ const SubmittedWorkouts = ({ route }) => {
             style={{ marginTop: getHeight(3) }}
           /> */}
         <View style={{ paddingHorizontal: getWidth(3) }}>
-        <View style={{ marginTop: getHeight(3) }}>
-                <Text style={styles.set}>Assigned Set</Text>
-              </View>
+          <View style={{ marginTop: getHeight(3) }}>
+            <Text style={styles.set}>Assigned Set</Text>
+          </View>
           {exercise?.sets?.map((set, index) => (
             <View key={index} style={{ paddingHorizontal: getWidth(3) }}>
               <View style={styles.repsCon}>
@@ -316,7 +332,7 @@ const SubmittedWorkouts = ({ route }) => {
               <Text style={styles.note}>Notes:</Text>
               <View style={{ ...styles.repsCon, marginTop: getHeight(2) }}>
                 <View style={{ ...styles.whiteCon, height: getHeight(10) }}>
-                  <Text>{exercise?.notes}</Text>
+                  <Text style={{color:'black'}}>{exercise?.notes}</Text>
                 </View>
                 {/* <View style={styles.tickCon}>
                   <RightIcon height={15} width={15} />
@@ -413,7 +429,7 @@ const SubmittedWorkouts = ({ route }) => {
               <Text style={styles.note}>Notes:</Text>
               <View style={{ ...styles.repsCon, marginTop: getHeight(2) }}>
                 <View style={{ ...styles.whiteCon, height: getHeight(10) }}>
-                  <Text>{exercise?.submitted_notes}</Text>
+                  <Text style={{color:'black'}}>{exercise?.submitted_notes}</Text>
                 </View>
                 {/* <View style={styles.tickCon}>
                   <RightIcon height={15} width={15} />

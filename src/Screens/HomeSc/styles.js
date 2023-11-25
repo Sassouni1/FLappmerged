@@ -83,7 +83,7 @@ export const styles = StyleSheet.create({
   },
   call: {
     color: colors.white,
-    fontSize: getFontSize(1.6),
+    fontSize: getFontSize(1.5),
     fontFamily: fonts.UBo,
   },
   paragraph: {

@@ -26,7 +26,7 @@ const PrivacyPolicy = () => {
         title={" Privacy Policy"}
         LeftIcon={
           <Ionicons
-            //  style={{ alignSelf: "center", marginRight: getWidth(2) }}
+             style={{ alignSelf: "center" }}
             name={"arrow-back"}
             size={25}
             color={"#ffff"}

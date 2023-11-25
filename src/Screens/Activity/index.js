@@ -299,6 +299,20 @@ const Activity = () => {
             },
           });
           break;
+          case "assigned":
+            customDatesStyles.push({
+              startDate: currentDate,
+              dateNameStyle: { color: "#05b7ff"  },
+              dateNumberStyle: { color: "#05b7ff" },
+              dateContainerStyle: {
+                height: getHeight(8),
+                backgroundColor: colors.calendar,
+                borderWidth: 0,
+                width: getWidth(11),
+                borderRadius: getFontSize(0.5),
+              },
+            });
+            break;
         case "complete":
           customDatesStyles.push({
             startDate: currentDate,

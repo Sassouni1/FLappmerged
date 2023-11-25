@@ -20,6 +20,7 @@ import { GernalStyle } from "../../constants/GernalStyle";
 import { colors } from "../../constants/colors";
 import HeaderBottom from "../../Components/HeaderBottom";
 import messaging from "@react-native-firebase/messaging";
+import { useNavigation } from "@react-navigation/native";
 
 // create a component
 
@@ -46,6 +47,7 @@ import messaging from "@react-native-firebase/messaging";
 //     alert(error?.message);
 //   }
 // };
+
 export const requestUserPermission = async (token) => {
   try {
     const authStatus = await messaging().requestPermission();
@@ -56,24 +58,24 @@ export const requestUserPermission = async (token) => {
     if (enabled) {
       await getFcmToken(token);
     } else {
-      console.log('Permission denied for notifications');
+      console.log("Permission denied for notifications");
     }
   } catch (error) {
-    console.log('Error requesting permission:', error?.message);
+    console.log("Error requesting permission:", error?.message);
   }
 };
 
 export const getFcmToken = async (token) => {
   try {
-    const apnsToken =  await messaging().setAPNSToken('test');
-    console.log('APNS token:', apnsToken);
+    const apnsToken = await messaging().setAPNSToken("test");
+    console.log("APNS token:", apnsToken);
 
     const fcmToken = await messaging().getToken();
     sendFcm(token, fcmToken);
-    console.log('FCM token:', fcmToken);
+    console.log("FCM token:", fcmToken);
     // Send fcmtoken to your server for sending notifications
   } catch (error) {
-    console.log('Error fetching FCM token:', error?.message);
+    console.log("Error fetching FCM token:", error?.message);
     // Handle FCM token retrieval error
   }
 };
@@ -81,22 +83,101 @@ export const getFcmToken = async (token) => {
 const sendFcm = async (token, fcmtoken) => {
   try {
     const res = await ApiCall({
-      route: 'auth/update_fcm_token',
+      route: "auth/update_fcm_token",
       token: token,
-      params: {fcmToken: fcmtoken},
-      verb: 'put',
+      params: { fcmToken: fcmtoken },
+      verb: "put",
     });
-    if (res?.status == '200') {
-      console.log('fcm res == 200 ... ', res);
+    if (res?.status == "200") {
+      console.log("fcm res == 200 ... ", res);
     } else {
-      console.log('error in fcm api', res);
+      console.log("error in fcm api", res);
     }
   } catch (e) {
-    console.log('saga error -- ', e.toString());
+    console.log("saga error -- ", e.toString());
   }
 };
 
+export const appListner = async (navigation, getAllSms) => {
+  messaging().onNotificationOpenedApp((remoteMessage) => {
+    if (remoteMessage && remoteMessage.notification) {
+      console.log(
+        "Notification caused app to open from background state:",
+        remoteMessage.notification
+      );
+      if (remoteMessage.notification.title === "Message notification") {
+        navigation.navigate("Messages");
+        // getAllSms(remoteMessage?.data?.chatRoom);
+      } else {
+        console.log("else working");
+      }
+    } else {
+      console.log("Remote message or notification is null");
+    }
+  });
+  
+  messaging().getInitialNotification().then((remoteMessage) => {
+    if (remoteMessage && remoteMessage.notification) {
+      console.log(
+        "Notification caused app to open from background state:",
+        remoteMessage.notification
+      );
+      if (remoteMessage.notification.title === "Message notification") {
+        navigation.navigate("Messages");
+        // getAllSms(remoteMessage?.data?.chatRoom);
+      } else if (remoteMessage.notification.title === "Workout notification") {
+        navigation.navigate("Workouts", { data: "tab2" });
+        // getAllSms(remoteMessage?.data?.chatRoom);
+      } else{
+        console.log("else working");
+      }
+    } else {
+      console.log("Remote message or notification is null");
+    }
+  });
+  
+  messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+    if (remoteMessage && remoteMessage.notification) {
+      console.log(
+        "Notification caused app to open from background state:",
+        remoteMessage.notification
+      );
+      if (remoteMessage.notification.title === "Message notification") {
+        navigation.navigate("Messages");
+        // getAllSms(remoteMessage?.data?.chatRoom);
+      } else if (remoteMessage.notification.title === "Workout notification") {
+        navigation.navigate("Workouts", { data: "tab2" });
+        // getAllSms(remoteMessage?.data?.chatRoom);
+      } else{
+        console.log("else working");
+      }
+    } else {
+      console.log("Remote message or notification is null");
+    }
+  });
 
+  messaging().onMessage(async (remoteMessage) => {
+    if (remoteMessage) {
+      console.log(
+        "Notification caused app to open from quit state:",
+        remoteMessage.notification
+      );
+      console.log("forground state", remoteMessage);
+      // if (remoteMessage?.notification?.title === 'Message notification') {
+      //   navigation.navigate('Messages');
+
+      //   //getAllSms(remoteMessage?.data?.chatRoom);
+      // } else {
+      //   console.log('else working');
+      // }
+      // if (remoteMessage?.data?.type == 'message') {
+      //   getAllSms(remoteMessage?.data?.chatRoom);
+      // } else {
+      //   console.log('else working');
+      // }
+    }
+  });
+};
 const Notification = ({ navigation }) => {
   const dispatch = useDispatch();
   const [DATA, SetDATA] = useState([]);
@@ -112,7 +193,7 @@ const Notification = ({ navigation }) => {
       });
 
       if (res?.status == "200") {
-        //console.log("notifications data", res?.response);
+        console.log("notifications data", res?.status);
         SetDATA(res?.response?.list);
         dispatch(setLoader(false));
       } else {
@@ -146,7 +227,7 @@ const Notification = ({ navigation }) => {
         title={"Notifications"}
         LeftIcon={
           <Ionicons
-            //  style={{ alignSelf: "center", marginRight: getWidth(2) }}
+              style={{ alignSelf: "center", marginRight: getWidth(1) }}
             name={"arrow-back"}
             size={25}
             color={"#ffff"}

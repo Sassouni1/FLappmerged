@@ -24,6 +24,8 @@ import { setLoader } from "../../../Redux/actions/GernalActions";
 import { ApiCall } from "../../../Services/Apis";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import HeaderBottom from "../../../Components/HeaderBottom";
+import { PlayerSvg } from "../../../assets/images";
+
 
 const ViewProgram = ({ route }) => {
   const navigation = useNavigation();
@@ -44,7 +46,10 @@ const ViewProgram = ({ route }) => {
       });
 
       if (res?.status == "200") {
-        console.log("workout", res?.response?.detail?.workouts);
+        console.log(
+          "workout",
+          res?.response?.detail?.workouts[0]?.innerWorkout[0]?.exercise
+        );
         // console.log('workout',res?.response?.detail)
 
         // setData(res?.response?.detail)
@@ -84,7 +89,7 @@ const ViewProgram = ({ route }) => {
             <AntDesign name={"left"} size={30} color="#ffff" />
           </TouchableOpacity>
         }
-        RightIcon={<View style={{marginRight:getFontSize(4.5)}}/>}
+        RightIcon={<View style={{ marginRight: getFontSize(4.5) }} />}
       />
       {/* <View style={styles.spacebet}>
         <Text style={styles.chest}>Chest & Shoulders</Text>
@@ -120,7 +125,6 @@ const ViewProgram = ({ route }) => {
                       marginBottom: getHeight(1),
                     }}
                   >
-                    
                     <Text
                       style={{
                         ...styles.chest,
@@ -135,7 +139,7 @@ const ViewProgram = ({ route }) => {
                         color: colors.graytext5,
                         fontFamily: fonts.URe,
                         fontSize: 10,
-                        marginTop:getHeight(2)
+                        marginTop: getHeight(2),
                       }}
                     >
                       {item2?.exercise.length} exercises
@@ -157,7 +161,7 @@ const ViewProgram = ({ route }) => {
                         marginLeft: getWidth(3),
                       }}
                     >
-                      <Image
+                      {/* <Image
                         style={{
                           height: getHeight(8),
                           width: getWidth(17),
@@ -165,7 +169,18 @@ const ViewProgram = ({ route }) => {
                           marginTop: getHeight(1),
                         }}
                         source={require('../../../assets/images/wheelStrech.png')}
-                      />
+                      /> */}
+                      {ex?.exerciseId?.video_thumbnail ? (
+                        <Image
+                          source={{ uri: ex?.exerciseId?.video_thumbnail }}
+                          style={styles.thumbnail}
+                          resizeMode="cover"
+                        ></Image>
+                      ) : (
+                        <View style={styles.thumbnail}>
+                          <PlayerSvg height={20} width={20} />
+                        </View>
+                      )}
                       {/* {console.log('ex',ex)} */}
                       <View style={{ marginLeft: getWidth(2) }}>
                         <Text style={styles.heading}>
@@ -193,6 +208,17 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontFamily: fonts.UBo,
     fontSize: getFontSize(2.5),
+  },
+  thumbnail: {
+    backgroundColor: colors.white,
+    justifyContent: 'center',
+    height:65,
+    width: 85,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop:getFontSize(1),
+    marginBottom:getFontSize(1)
+
   },
   startwork: {
     width: getWidth(66),

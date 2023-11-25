@@ -26,7 +26,7 @@ const About = () => {
         title={"About This App"}
         LeftIcon={
             <Ionicons
-            //  style={{ alignSelf: "center", marginRight: getWidth(2) }}
+              style={{ alignSelf: "center", marginRight: getWidth(2) }}
               name={"arrow-back"}
               size={25}
               color={"#ffff"}

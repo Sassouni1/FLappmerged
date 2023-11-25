@@ -195,6 +195,7 @@ const CompleteWorkout = ({ route }) => {
           submitted_time: `${hours}:${minutes}:${seconds}`,
         },
       });
+      console.log('response of work',res)
       if (res?.status == "200") {
         console.log("workout api response", res?.response);
         toast.show("Exercise successfully completed");
@@ -264,7 +265,7 @@ const CompleteWorkout = ({ route }) => {
             </View>
           </View>
           <TouchableOpacity
-            style={{ ...styles.togle, marginRight: getWidth(2) }}
+            style={{ ...styles.togle, marginRight: getWidth(3) }}
             onPress={toggleTimer}
           >
             {!isRunning ? (
@@ -376,8 +377,11 @@ const CompleteWorkout = ({ route }) => {
                                 ""
                               );
                             }}
+                            style={{color:'black'}}
                           />
-                          <View style={styles.parameterCtn}>
+                          <View style={{...styles.parameterCtn, 
+                            bottom: Platform.OS ==='ios' ? getFontSize(0) :getFontSize(2)
+                            }}>
                             <Text style={styles.lbs}>
                               {set?.reps}
                               {`  `}
@@ -413,8 +417,11 @@ const CompleteWorkout = ({ route }) => {
                                 ""
                               );
                             }}
+                            style={{color:'black'}}
                           />
-                          <View style={styles.parameterCtn}>
+                          <View style={{...styles.parameterCtn,
+                          bottom: Platform.OS ==='ios' ? getFontSize(0) :getFontSize(2)
+                          }}>
                             <Text style={styles.lbs}>
                               {set?.lebs}
                               {`  `}
@@ -426,8 +433,7 @@ const CompleteWorkout = ({ route }) => {
                     ) : set?.parameter == "weight" ? (
                       <View
                         style={{
-                          ...styles.rowDirection,
-                          marginTop: getFontSize(1),
+                          ...styles.rowDirection,                    
                         }}
                       >
                         <TextInput
@@ -450,7 +456,7 @@ const CompleteWorkout = ({ route }) => {
                               ""
                             );
                           }}
-                          style={{ paddingTop: getFontSize(0.6),width:getWidth(30) }}
+                          style={{ width:getWidth(30),color:'black' }}
                         />
                         <View style={styles.parameterCtn}>
                           <Text style={styles.lbs}>
@@ -464,7 +470,6 @@ const CompleteWorkout = ({ route }) => {
                       <View
                         style={{
                           ...styles.rowDirection,
-                          marginTop: getFontSize(1),
                         }}
                       >
                         <TextInput
@@ -487,7 +492,7 @@ const CompleteWorkout = ({ route }) => {
                               ""
                             );
                           }}
-                          style={{ paddingTop: getFontSize(0.6),width:getWidth(30) }}
+                          style={{width:getWidth(30),color:'black' }}
                         />
                         <View style={styles.parameterCtn}>
                           <Text style={styles.lbs}>
@@ -501,7 +506,7 @@ const CompleteWorkout = ({ route }) => {
                       <View
                         style={{
                           ...styles.rowDirection,
-                          marginTop: getFontSize(1),
+                          // marginTop: getFontSize(1),
                         }}
                       >
                         <TextInput
@@ -524,7 +529,7 @@ const CompleteWorkout = ({ route }) => {
                               ""
                             );
                           }}
-                          style={{ paddingTop: getFontSize(0.6),width:getWidth(30) }}
+                          style={{width:getWidth(30),color:'black' }}
                         />
                         <View style={styles.parameterCtn}>
                           <Text style={styles.lbs}>
@@ -576,61 +581,14 @@ const CompleteWorkout = ({ route }) => {
               </View>
             ))}
             {exercise?.notes && exercise?.notes.length > 0 ? (
-              // <View style={{ marginLeft: getWidth(7) }}>
-              //   <Text style={styles.note}>Notes:</Text>
-              //   <View style={{ ...styles.repsCon, marginTop: getHeight(2) }}>
-              //     <View style={{ ...styles.whiteCon, height: getHeight(10) }}>
-              //       {/* <Text>{exercise?.notes}</Text> */}
-              //       <TextInput
-              //         placeholder="Notes"
-              //         placeholderTextColor={colors.black}
-              //         keyboardType="default"
-              //         style={styles.rest}
-              //         onChangeText={(text) => {setSubmittedNotes(text);
-              //         }}
-              //       />
-              //     </View>
-              //     {/* <View style={styles.tickCon}>
-              //       <RightIcon height={15} width={15} />
-              //     </View> */}
-              //     {/* <View style={styles.btng}>
-              //         <View style={styles.btnhor}></View>
-              //       </View> */}
-              //   </View>
-              // </View>
-              <View
-                style={{
-                 
-                }}
-              >
+              <View>
                 <TextInput
                   multiline
                   numberOfLines={3}
                   placeholder="Enter Notes"
                   placeholderTextColor={colors.primary}
                   keyboardType="default"
-                  style={{
-                    fontFamily: fonts.UBo,
-                    color: colors.primary,
-                    fontSize: getFontSize(1.5),
-                    marginRight: getWidth(2),
-                    marginBottom: getWidth(2),
-                    width: getWidth(75),
-                    //height: getHeight(6),
-                    borderRadius: 5,
-                    borderWidth: 1,
-                    borderColor: colors.graytext5,
-                    backgroundColor: colors.white,
-                    justifyContent: "flex-start",
-                    alignItems: "flex-start",
-                    flexDirection: "row",
-                    paddingLeft: getFontSize(3),
-                    paddingTop: getFontSize(1),
-                    paddingBottom: getFontSize(0.5),
-                    marginLeft: getWidth(7),
-                    marginTop: getHeight(2),
-                    height: getHeight(10),
-                  }}
+                  style={styles.notes}
                   onChangeText={(text) => {
                     setSubmittedNotes(text);
                   }}

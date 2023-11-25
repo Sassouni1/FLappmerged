@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import {Platform, StyleSheet} from 'react-native';
 import {getFontSize, getHeight, getWidth} from '../../../utils/ResponsiveFun';
 
 export const styles = StyleSheet.create({
@@ -22,7 +22,7 @@ export const styles = StyleSheet.create({
     color: 'white',
     fontSize: 24,
     alignSelf: 'flex-end',
-    marginBottom: 3,
+    marginBottom: Platform.OS==="ios"? 3:0,
     fontFamily: 'Russo_One',
     fontWeight:'600'
   },

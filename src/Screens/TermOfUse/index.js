@@ -26,6 +26,7 @@ const TermOfUse = () => {
         title={"Term Of Use"}
         LeftIcon={
           <Ionicons
+           style={{ alignSelf: "center" }}
             name={"arrow-back"}
             size={25}
             color={"#ffff"}

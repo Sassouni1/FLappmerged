@@ -19,16 +19,29 @@ import HeaderBottom from "../../Components/HeaderBottom";
 import { colors } from "../../constants/colors";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Video from "react-native-video";
-import Notification, { requestUserPermission } from "../Notifications";
+import Notification, { appListner, requestUserPermission } from "../Notifications";
+import { useNavigation } from "@react-navigation/native";
+import { getSingleUser } from "../../Redux/actions/AuthActions";
+
 
 const HomeSc = ({ navigation, route }) => {
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
+  const dispatch = useDispatch();
+
+  // const navigation = useNavigation()
 
   useEffect(()=>{
     requestUserPermission(token)
   },[])
+  useEffect(() => {
+    if (token) {
+      dispatch(getSingleUser(token));
 
+      appListner(navigation);
+    }
+  }, []);
+  
   const Workout = ({ paragraphtext, headingText, subheading }) => {
     return (
       <View style={{ ...styles.eliteCon, marginBottom: getHeight(1.5) }}>

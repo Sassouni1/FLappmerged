@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import {
   getHeight,
   getFontSize,
@@ -37,7 +37,7 @@ export const styles = StyleSheet.create({
     fontSize: getFontSize(2),
     color: colors.graytext4,
     fontFamily: fonts.URe,
-    marginTop: getHeight(0.5),
+    // marginTop: getHeight(0.5),
     textAlign: "center",
     //right:getFontSize(1.5)
   },
@@ -151,9 +151,8 @@ export const styles = StyleSheet.create({
     width: getWidth(100),
   },
   text: {
-    fontSize: 18,
     marginHorizontal: 4,
-    fontSize: getFontSize(5.2),
+    fontSize: Platform.OS === "ios" ?getFontSize(5.2):getFontSize(4),
     fontFamily: fonts.Re,
     color: colors.white,
     marginLeft: getWidth(2),
@@ -173,7 +172,7 @@ export const styles = StyleSheet.create({
   headerTime: {
     //flex:1,
     flexDirection: "row",
-    marginTop: 5,
+   // marginTop: 5,
   },
   betww: {
     width: getWidth(78),
@@ -190,12 +189,12 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.graytext5,
     backgroundColor: colors.white,
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
+    //justifyContent: "space-around",
+    //alignItems: "center",
     flexDirection: "row",
     paddingLeft: getFontSize(3),
-    paddingTop: getFontSize(0.5),
-    paddingBottom: getFontSize(0.5),
+    //  paddingTop: getFontSize(0.5),
+    //  paddingBottom: getFontSize(0.5),
   },
   heading: {
     height: getHeight(3.5),
@@ -222,11 +221,13 @@ export const styles = StyleSheet.create({
   rest: {
     fontFamily: fonts.UBo,
     color: colors.white,
-    fontSize: getFontSize(2),
+    fontSize: Platform.OS === "ios" ?getFontSize(2):getFontSize(1.5),
     marginRight: getWidth(2),
+    width:getWidth(32),
+    height:getHeight(10)
   },
   btng: {
-    width: getFontSize(22),
+    width: getFontSize(21),
     height: getHeight(3.5),
     borderRadius: 5,
     backgroundColor: colors.secondary,
@@ -245,7 +246,7 @@ export const styles = StyleSheet.create({
   rowDirection: {
     flexDirection: "row",
     justifyContent: "space-around",
-    alignItems: "center",
+    // alignItems: "center",
     width: "100%",
     // marginTop:getFontSize(1),
     right: getFontSize(2),
@@ -254,5 +255,24 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+  },
+  notes: {
+    fontFamily: fonts.UBo,
+    color: colors.calendar,
+    fontSize: getFontSize(1.7),
+    width: getWidth(75),
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: colors.graytext5,
+    backgroundColor: colors.white,
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    flexDirection: "row",
+    paddingLeft: getFontSize(3),
+    paddingTop: getFontSize(1),
+    marginLeft: getWidth(7.5),
+    marginTop: getHeight(2),
+    height: getHeight(10),
+    paddingBottom: Platform.OS === "ios" ? getFontSize(0) :getFontSize(7)
   },
 });

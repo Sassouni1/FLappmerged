@@ -180,9 +180,9 @@ import {
                             ></Image>
                           </View>
                         ) : (
-                          <View >
-                            <PlayerSvg height={20} width={20} />
-                          </View>
+                           <View style={styles.thumbnail}>
+                          <PlayerSvg height={20} width={20} />
+                        </View> 
                         )}
                         <View style={{ flexDirection: "column" }}>
                           <Text style={styles.text}>
