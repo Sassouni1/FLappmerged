@@ -130,11 +130,11 @@ const ResetPassword = ({ navigation, route }) => {
           secureTextEntry={hidePass2 ? true : false}
           right={
             <TextInput.Icon
-              name={() => (
+              icon={() => (
                 <MaterialCommunityIcons
                   name={hidePass2 ? "eye-off-outline" : "eye-outline"}
-                  size={getFontSize(2.5)}
-                  color={"#BDC3C4"}
+                  size={getFontSize(3)}
+                  color={"#ffff"}
                   style={styles.icon}
                   onPress={() => setHidePass2(!hidePass2)}
                 />
@@ -176,11 +176,11 @@ const ResetPassword = ({ navigation, route }) => {
           secureTextEntry={hidePass ? true : false}
           right={
             <TextInput.Icon
-              name={() => (
+              icon={() => (
                 <MaterialCommunityIcons
                   name={hidePass ? "eye-off-outline" : "eye-outline"}
-                  size={getFontSize(2.5)}
-                  color={"#BDC3C4"}
+                  size={getFontSize(3)}
+                  color={"#fff"}
                   style={styles.icon}
                   onPress={() => setHidePass(!hidePass)}
                 />

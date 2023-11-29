@@ -119,7 +119,9 @@ const ChangePassword = ({ navigation }) => {
   const eyeSlash = <FontAwesome name="eye-slash" size={20} color={"white"} />;
 
   return (
-    <View  style={{ ...GernalStyle.continer, backgroundColor: colors.homeColor }}>
+    <View
+      style={{ ...GernalStyle.continer, backgroundColor: colors.homeColor }}
+    >
       <GeneralStatusBar
         barStyle="light-content"
         hidden={false}
@@ -138,7 +140,7 @@ const ChangePassword = ({ navigation }) => {
               onPress={() => navigation.goBack()}
             />
           }
-          RightIcon={<View style={{marginRight:getFontSize(4)}}/>}
+          RightIcon={<View style={{ marginRight: getFontSize(4) }} />}
         />
         <Divider style={styles.headerDivider} />
       </View>
@@ -169,11 +171,15 @@ const ChangePassword = ({ navigation }) => {
             secureTextEntry={hidePass ? true : false}
             right={
               <TextInput.Icon
-                name={hidePass ? eye : eyeSlash}
-                size={getFontSize(2.5)}
-                color={"blue"}
-                style={styles.icon}
-                onPress={() => setHidePass(!hidePass)}
+                icon={() => (
+                  <MaterialCommunityIcons
+                    name={hidePass ? "eye-off-outline" : "eye-outline"}
+                    size={getFontSize(3)}
+                    color={"#ffff"}
+                    style={styles.icon}
+                    onPress={() => setHidePass(!hidePass)}
+                  />
+                )}
               />
             }
             onFocus={() => setState({ ...state, oldpasswordError: "" })}
@@ -209,13 +215,26 @@ const ChangePassword = ({ navigation }) => {
             value={state.newPassword}
             returnKeyType={"send"}
             secureTextEntry={hideNewPass ? true : false}
+            // right={
+            //   <TextInput.Icon
+            //     name={hideNewPass ? eye : eyeSlash}
+            //     size={getFontSize(2.5)}
+            //     color={"blue"}
+            //     style={styles.icon}
+            //     onPress={() => setHideNewPass(!hideNewPass)}
+            //   />
+            // }
             right={
               <TextInput.Icon
-                name={hideNewPass ? eye : eyeSlash}
-                size={getFontSize(2.5)}
-                color={"blue"}
-                style={styles.icon}
-                onPress={() => setHideNewPass(!hideNewPass)}
+                icon={() => (
+                  <MaterialCommunityIcons
+                    name={hideNewPass ? 'eye-off-outline' : 'eye-outline'}
+                    size={getFontSize(3)}
+                    color={"#ffff"}
+                    style={styles.icon}
+                    onPress={() => setHideNewPass(!hideNewPass)}
+                  />
+                )}
               />
             }
             onFocus={() => setState({ ...state, newpasswordError: "" })}
@@ -252,28 +271,28 @@ const ChangePassword = ({ navigation }) => {
             value={state.cnfrPassword}
             returnKeyType={"send"}
             secureTextEntry={hideCnfPass ? true : false}
-            // right={
-            //   <TextInput.Icon
-            //     name={() => (
-            //       <MaterialCommunityIcons
-            //         name={hideCnfPass ? "eye-off-outline" : "eye-outline"}
-            //         size={getFontSize(3)}
-            //         color={"#BDC3C4"}
-            //         style={styles.icon}
-            //         onPress={() => setHideCnfPass(!hideCnfPass)}
-            //       />
-            //     )}
-            //   />
-            // }
             right={
               <TextInput.Icon
-                name={hideCnfPass ? eye : eyeSlash}
-                size={getFontSize(2.5)}
-                color={"blue"}
-                style={styles.icon}
-                onPress={() => setHideCnfPass(!hideCnfPass)}
+                icon={() => (
+                  <MaterialCommunityIcons
+                    name={hideCnfPass ? "eye-off-outline" : "eye-outline"}
+                    size={getFontSize(3)}
+                    color={"#fff"}
+                    style={styles.icon}
+                    onPress={() => setHideCnfPass(!hideCnfPass)}
+                  />
+                )}
               />
             }
+            // right={
+            //   <TextInput.Icon
+            //     name={hideCnfPass ? eye : eyeSlash}
+            //     size={getFontSize(2.5)}
+            //     color={"blue"}
+            //     style={styles.icon}
+            //     onPress={() => setHideCnfPass(!hideCnfPass)}
+            //   />
+            // }
             onFocus={() => setState({ ...state, cnfrPasswordError: "" })}
             onBlur={() =>
               validateFields(state.cnfrPassword, "passwordC", (error) =>
@@ -291,7 +310,8 @@ const ChangePassword = ({ navigation }) => {
             {state.cnfrPasswordError}
           </Text>
         </View>
-        <View
+        </KeyboardAwareScrollView>
+        {/* <View
           style={{
             bottom: getHeight(5),
             justifyContent: "flex-end",
@@ -299,7 +319,7 @@ const ChangePassword = ({ navigation }) => {
             alignSelf: "center",
             marginTop: getFontSize(50),
           }}
-        >
+        > */}
           <Button
             onPress={() => PasswordUpdate()}
             text="Update Password"
@@ -307,12 +327,12 @@ const ChangePassword = ({ navigation }) => {
               ...GernalStyle.btn,
               backgroundColor: colors.buttonColor,
               position: "absolute",
-              top: getHeight(3.5),
+              bottom: getHeight(5),
             }}
             btnTextStyle={GernalStyle.btnText}
           />
-        </View>
-      </KeyboardAwareScrollView>
+        {/* </View> */}
+    
     </View>
   );
 };

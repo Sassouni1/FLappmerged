@@ -452,6 +452,7 @@ const UpdateProfiles = () => {
         buttonText={"Update"}
         style={{ marginBottom: getHeight(4) }}
       /> */}
+      <View style={{marginTop:Platform.OS === "ios"?getFontSize(0): getFontSize(15)}}>
       <Button
         onPress={profileSetting}
         text="Update profile"
@@ -463,6 +464,8 @@ const UpdateProfiles = () => {
         }}
         btnTextStyle={GernalStyle.btnText}
       />
+      </View>
+      
     </View>
   );
 };

@@ -140,7 +140,7 @@ const Skills = () => {
       >
         <SearchSvg height={20} width={20} style={{ marginLeft: getWidth(6) }} />
         <TextInput
-          placeholder="Search an skill"
+          placeholder="Search a skill"
           placeholderTextColor={colors.graytext4}
           style={{
             ...GernalStyle.textinput,
@@ -198,7 +198,7 @@ const Skills = () => {
                       onPress={() =>
                         navigation.navigate("FolderVideo", {
                           folder: item?.videos,
-                          //name: item?.title,
+                          foldername: item?.folder_title,
                         })
                       }
                       style={styles.listCon}
@@ -229,7 +229,7 @@ const Skills = () => {
                           />
                         </View>
                       {/* )} */}
-                      <View style={{ flexDirection: "column" }}>
+                      <View style={{ flexDirection: "column",right:getFontSize(1) }}>
                         <Text style={styles.text}>
                           {/* {(item?.folder_title ?*/}
                              {item.folder_title}

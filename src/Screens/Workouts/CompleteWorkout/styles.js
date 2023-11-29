@@ -258,21 +258,17 @@ export const styles = StyleSheet.create({
   },
   notes: {
     fontFamily: fonts.UBo,
-    color: colors.calendar,
+    color: colors.primary,
     fontSize: getFontSize(1.7),
     width: getWidth(75),
     borderRadius: 5,
-    borderWidth: 1,
-    borderColor: colors.graytext5,
     backgroundColor: colors.white,
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
-    flexDirection: "row",
     paddingLeft: getFontSize(3),
     paddingTop: getFontSize(1),
     marginLeft: getWidth(7.5),
     marginTop: getHeight(2),
     height: getHeight(10),
-    paddingBottom: Platform.OS === "ios" ? getFontSize(0) :getFontSize(7)
+    paddingBottom: Platform.OS === "ios" ? getFontSize(0) :getFontSize(7),
+    fontWeight: Platform.OS==="ios" ?"400":"normal"
   },
 });

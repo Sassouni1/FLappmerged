@@ -389,9 +389,10 @@ const ConversationScreen = ({ navigation, route }) => {
       // />
       <>
         {profileImage !== "" ? (
-          <Image
+          <ImageModal
             source={{ uri: profileImage }}
             resizeMode="cover"
+            modalImageResizeMode="contain"
             style={{
               width: getWidth(10),
               height: getHeight(4.5),
@@ -430,11 +431,26 @@ const ConversationScreen = ({ navigation, route }) => {
       /> */}
       <HeaderBottom
         title={channelName}
+        TitelStyle={{
+          color: "white",
+          fontSize: 24,
+          alignSelf: "flex-end",
+          marginBottom: Platform.OS === "ios" ? 3 : 0,
+          fontFamily: "Russo_One",
+          fontWeight: "600",
+          marginTop:
+            Platform.OS === "android" ? getFontSize(1) : getFontSize(0),
+        }}
         LeftIcon={
           <AntDesign
             onPress={() => navigation.goBack()}
             name="left"
-            style={{ alignSelf: "center", marginRight: getWidth(4) }}
+            style={{
+              alignSelf: "center",
+              marginRight: getWidth(4),
+              marginTop:
+                Platform.OS === "android" ? getFontSize(1) : getFontSize(0),
+            }}
             color="white"
             size={20}
           />

@@ -32,7 +32,7 @@ import {
   
   const FolderVideo = ({route}) => {
     const navigation = useNavigation();
-    const {folder} = route?.params;
+    const {folder,foldername} = route?.params;
     console.log('folder',folder)
     const token = useSelector((state) => state.auth.userToken);
     const dispatch = useDispatch();
@@ -76,7 +76,7 @@ import {
           translucent={true}
         />
         <HeaderBottom
-          title={"Skills"}
+          title={foldername}
           LeftIcon={
             <Ionicons
               size={25}
@@ -85,7 +85,7 @@ import {
               name="arrow-back"
             />
           }
-          RightIcon={<View style={{ marginRight: getFontSize(4) }} />}
+          RightIcon={<View style={{ marginRight: getFontSize(3) }} />}
         />
         <View
           style={{
@@ -102,7 +102,7 @@ import {
         >
           <SearchSvg height={20} width={20} style={{ marginLeft: getWidth(6) }} />
           <TextInput
-            placeholder="Search an skill"
+            placeholder="Search a skill"
             placeholderTextColor={colors.graytext4}
             style={{
               ...GernalStyle.textinput,

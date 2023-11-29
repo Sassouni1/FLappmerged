@@ -27,6 +27,7 @@ import HeaderBottom from "../../../Components/HeaderBottom";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import ImageModal from "react-native-image-modal";
 
 const AllMember = () => {
   const navigation = useNavigation();
@@ -37,6 +38,7 @@ const AllMember = () => {
   const [invalidEntry, setInvalidEntry] = useState(false);
 
   const token = useSelector((state) => state.auth.userToken);
+  const user = useSelector((state) => state.auth.userData);
   const [searchText, setSearchText] = useState("");
   const createChatBox = async (item) => {
     // dispatch(setLoader(true))
@@ -51,9 +53,25 @@ const AllMember = () => {
       // console.log('arra',arr)
       if (res?.status == "200") {
         console.log("Create chat box___", res?.response?.detail);
-
-        dispatch(setLoader(false));
-        navigation.goBack();
+        dispatch(setLoader(true));
+        const chatResponse = res?.response?.detail;
+        navigation.navigate("ConversationScreen", {
+          channelId: chatResponse._id,
+          channelName:
+            user?._id == chatResponse?.user?._id
+              ? chatResponse?.customer?.full_name
+              : chatResponse?.user?.full_name,
+          reciver:
+            user?._id == chatResponse?.user?._id
+              ? chatResponse?.customer
+              : chatResponse?.user,
+          sender:
+            user?._id == chatResponse?.user?._id
+              ? chatResponse?.user
+              : chatResponse?.customer,
+          chatRoomType: "chat",
+        });
+        // navigation.goBack();
       } else {
         dispatch(setLoader(false));
 
@@ -208,9 +226,10 @@ const AllMember = () => {
           //   user.full_name.toLowerCase().includes(searchText.toLowerCase())
           // )}
           renderItem={({ item }) => {
+            console.log("item", item);
             return (
               <View>
-                <Pressable
+                <TouchableOpacity
                   onPress={() => {
                     createChatBox(item);
                   }}
@@ -220,8 +239,9 @@ const AllMember = () => {
                     marginTop: getHeight(1.5),
                   }}
                 >
-                  <Image
+                  <ImageModal
                     resizeMode="cover"
+                    modalImageResizeMode="contain"
                     style={{
                       width: getWidth(13.5),
                       height: getHeight(6),
@@ -246,7 +266,7 @@ const AllMember = () => {
                     </Text>
                     {/* <Text style={{fontSize:14,fontFamily:fonts.URe,color:colors.white}}>{item.lastmsg}</Text> */}
                   </View>
-                </Pressable>
+                </TouchableOpacity>
               </View>
             );
           }}

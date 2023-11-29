@@ -104,7 +104,7 @@ const ForgotPassword = () => {
             onPress={() => navigation.goBack()}
           />
         }
-        RightIcon={<View />}
+        RightIcon={<View style={{marginRight:getFontSize(4)}}/>}
       />
       <KeyboardAwareScrollView
           // contentContainerStyle={{height: getHeight(40)}}

@@ -260,7 +260,7 @@ const Notification = ({ navigation }) => {
               }}
             >
               <Text style={{ color: colors.white, fontSize: getFontSize(2) }}>
-                You have no any Notification Now
+              You have no notifications right now
               </Text>
             </View>
           )}

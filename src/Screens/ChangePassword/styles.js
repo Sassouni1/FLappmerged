@@ -1,6 +1,7 @@
 import {StyleSheet} from 'react-native';
 import {getFontSize, getHeight, getWidth} from '../../../utils/ResponsiveFun';
 import { colors } from '../../constants/colors';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export const styles = StyleSheet.create({
   contaner: {
@@ -41,7 +42,8 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   icon: {
-    marginTop: 6,
+     marginTop: getFontSize(1),
+    // height:getFontSize(4),
   },
   socialmedia: {
     flexDirection: 'row',

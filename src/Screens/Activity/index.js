@@ -88,6 +88,7 @@ const Activity = () => {
     setSelectedDate(day.dateString);
     dispatch(setLoader(true));
     exerciseProgress(day.dateString);
+    setModalVisible(false);
   };
   const toggleModal = () => {
     console.log("Opening modal");
@@ -299,20 +300,20 @@ const Activity = () => {
             },
           });
           break;
-          case "assigned":
-            customDatesStyles.push({
-              startDate: currentDate,
-              dateNameStyle: { color: "#05b7ff"  },
-              dateNumberStyle: { color: "#05b7ff" },
-              dateContainerStyle: {
-                height: getHeight(8),
-                backgroundColor: colors.calendar,
-                borderWidth: 0,
-                width: getWidth(11),
-                borderRadius: getFontSize(0.5),
-              },
-            });
-            break;
+        case "assigned":
+          customDatesStyles.push({
+            startDate: currentDate,
+            dateNameStyle: { color: "#05b7ff" },
+            dateNumberStyle: { color: "#05b7ff" },
+            dateContainerStyle: {
+              height: getHeight(8),
+              backgroundColor: colors.calendar,
+              borderWidth: 0,
+              width: getWidth(11),
+              borderRadius: getFontSize(0.5),
+            },
+          });
+          break;
         case "complete":
           customDatesStyles.push({
             startDate: currentDate,
@@ -367,12 +368,24 @@ const Activity = () => {
       />
       <HeaderBottom
         title={
-          <Text style={{ textAlign: "center" }}>
-            Hello!{`\n`}
-            <Text style={{ fontSize: getFontSize(1.5) }}>
-              Here’s how you’re going.
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <Text
+              style={{
+                textAlign: "center",
+                color: "white",
+                fontSize: 24,
+                // alignSelf: 'flex-end',
+                marginBottom: Platform.OS === "ios" ? 3 : 0,
+                fontFamily: "Russo_One",
+                fontWeight: "600",
+              }}
+            >
+              Hello!{`\n`}
+              <Text style={{ fontSize: getFontSize(1.5) }}>
+                Here’s how you’re going.
+              </Text>
             </Text>
-          </Text>
+          </View>
         }
         LeftIcon={
           <Entypo
@@ -538,7 +551,7 @@ const Activity = () => {
                 },
               }}
             />
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => {
                 setModalVisible(false);
                 //exerciseProgress(selectedDate);
@@ -554,7 +567,7 @@ const Activity = () => {
               >
                 Done
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </Modal>
       </ScrollView>

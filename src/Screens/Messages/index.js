@@ -29,6 +29,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ApiCall } from "../../Services/Apis";
 import HeaderBottom from "../../Components/HeaderBottom";
 import Seprator from "../../Components/Seprator";
+import ImageModal from "react-native-image-modal";
 
 const Messages = () => {
   const navigation = useNavigation();
@@ -54,7 +55,7 @@ const Messages = () => {
         console.log("chat Romms", res?.response?.chatrooms?.community);
 
         setAllUser(res?.response?.chatrooms?.member);
-        console.log("all user images", res?.response?.chatrooms?.member);
+        // console.log("all user images", res?.response?.chatrooms?.member);
         setAdmin(res?.response?.chatrooms?.admin);
         setCommunity(res?.response?.chatrooms?.community);
         dispatch(setLoader(false));
@@ -97,17 +98,18 @@ const Messages = () => {
             color={"white"}
             onPress={() => navigation.openDrawer()}
             name="menu"
-            style={{ alignSelf: "flex-start",
-            //marginLeft:getFontSize(-1.5) 
-          }}
+            style={{
+              alignSelf: "flex-start",
+              //marginLeft:getFontSize(-1.5)
+            }}
           />
         }
-        RightIcon={<View style={{marginRight:getFontSize(3.5)}}/>}
+        RightIcon={<View style={{ marginRight: getFontSize(3.5) }} />}
       />
       {loader ? null : (
         <>
           <HeadingText buttontext={"App"} />
-          {console.log("admin", admin)}
+          {/* {console.log("admin", admin)} */}
           {admin.map((item) => (
             <View
               style={{
@@ -139,8 +141,9 @@ const Messages = () => {
                   {item?.admin?.profile_image == "" ? (
                     <Userb height={getFontSize(7)} width={getFontSize(7)} />
                   ) : (
-                    <Image
+                    <ImageModal
                       resizeMode="cover"
+                      modalImageResizeMode="contain"
                       style={{
                         height: getFontSize(7),
                         width: getFontSize(7),
@@ -251,7 +254,10 @@ const Messages = () => {
           />
           <View style={{ alignSelf: "center", flex: 1 }}>
             <FlatList
-              data={users}
+              // data={users}
+              data={users
+                .filter(item => item !== null) // Filter out null items
+                .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))}
               showsVerticalScrollIndicator={false}
               refreshing={false}
               onRefresh={() => ChatroomUser()}
@@ -290,7 +296,7 @@ const Messages = () => {
                           chatRoomType: "chat",
                         })
                       }
-                      style={{ ...styles.row, marginTop: 5,marginBottom:5 }}
+                      style={{ ...styles.row, marginTop: 5, marginBottom: 5 }}
                     >
                       <View
                         style={{
@@ -300,27 +306,59 @@ const Messages = () => {
                           //   backgroundColor: colors.gray8,
                         }}
                       >
-                        {item?.user?.profile_image == "" ? (
-                          <Image
-                            resizeMode="cover"
-                            style={{
-                              height: getFontSize(7),
-                              width: getFontSize(7),
-                              borderRadius: getFontSize(0.5),
-                            }}
-                            source={require("../../assets/images/Pimg.jpeg")}
-                          />
-                        ) : (
-                          <Image
-                            resizeMode="cover"
-                            style={{
-                              height: getFontSize(7),
-                              width: getFontSize(7),
-                              borderRadius: getFontSize(0.5),
-                            }}
-                            source={{ uri: item?.user?.profile_image }}
-                          />
-                        )}
+                        {user?._id === item?.user?._id  ? 
+                        (
+                          item?.customer?.profile_image == "" ? (
+                            <ImageModal
+                              resizeMode="cover"
+                              modalImageResizeMode="contain"
+                              style={{
+                                height: getFontSize(7),
+                                width: getFontSize(7),
+                                borderRadius: getFontSize(0.5),
+                              }}
+                              source={require("../../assets/images/Pimg.jpeg")}
+                            />
+                          ) : (
+                            <ImageModal
+                              resizeMode="cover"
+                              modalImageResizeMode="contain"
+                              style={{
+                                height: getFontSize(7),
+                                width: getFontSize(7),
+                                borderRadius: getFontSize(0.5),
+                              }}
+                              source={{ uri: item?.customer?.profile_image }}
+                            />
+                          )
+                        ) : null}
+
+                        {user?._id === item?.customer?._id  ? 
+                        (
+                          item?.user?.profile_image == "" ? (
+                            <ImageModal
+                              resizeMode="cover"
+                              modalImageResizeMode="contain"
+                              style={{
+                                height: getFontSize(7),
+                                width: getFontSize(7),
+                                borderRadius: getFontSize(0.5),
+                              }}
+                              source={require("../../assets/images/Pimg.jpeg")}
+                            />
+                          ) : (
+                            <ImageModal
+                              resizeMode="cover"
+                              modalImageResizeMode="contain"
+                              style={{
+                                height: getFontSize(7),
+                                width: getFontSize(7),
+                                borderRadius: getFontSize(0.5),
+                              }}
+                              source={{ uri: item?.user?.profile_image }}
+                            />
+                          )
+                        ) : null}
                       </View>
                       <View>
                         <View style={styles.userCon}>

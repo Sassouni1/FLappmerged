@@ -120,7 +120,7 @@ const OTPverify = ({ route }) => {
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.stxt}>
-          An OTP has been sent to you email adress{`\n`}
+          An OTP has been sent to your email adress{`\n`}
           <Text style={{ color: "rgba(247, 147, 0, 1)" }}>"{email}" </Text>
         </Text>
 

@@ -118,7 +118,8 @@ const Workouts = ({ route }) => {
               }}
               pressColor="#333333"
               pressOpacity={1.0}
-              renderLabel={({ route, focused }) => {
+              renderLabel={({ route, focused,onPress }) => {
+                // console.log('Clicked tab: ', route.title,props)
                 //setfocusedTab(focused);
                 return (
                   <View

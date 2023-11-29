@@ -1,9 +1,10 @@
 import {ApiCall} from '../../Services/Apis';
 import {ACTIONS} from '../action-types';
 import {call, put, takeEvery, takeLatest} from 'redux-saga/effects';
-import {setLoginData, setSingleUser} from '../actions/AuthActions';
+import {logout, setLoginData, setSingleUser} from '../actions/AuthActions';
 import {setChats, setCounts, setLoader} from '../actions/GernalActions';
 import Toast from 'react-native-simple-toast';
+import { panGestureHandlerCustomNativeProps } from 'react-native-gesture-handler/lib/typescript/handlers/PanGestureHandler';
 
 function* loginRequest(params) { try {
     const res = yield ApiCall({
@@ -18,7 +19,7 @@ function* loginRequest(params) { try {
 
       yield put(setLoader(false));
     } else {
-      console.log('error', res.response);
+      console.log('errorrrererer', res.response);
       yield put(setLoader(false));
 
       alert(res?.response?.message, [
@@ -202,10 +203,11 @@ function* GetUserRequest(params) {
    
       yield put(setSingleUser(res?.response?.detail));
     } else {
-      console.log('error', res?.response);
+      console.log('errorrrrrr', res?.response);
       alert(res?.response?.message, [
         {text: 'OK', onPress: () => console.log('OK Pressed')},
       ]);
+      yield put(logout(null))
     }
   } catch (e) {
     console.log('saga get single user profile err --- ', e);

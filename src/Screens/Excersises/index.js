@@ -231,7 +231,7 @@ const Excercises = () => {
                             />
                           </View>
                         {/* )} */}
-                        <View style={{ flexDirection: "column" }}>
+                        <View style={{ flexDirection: "column",right:getFontSize(1) }}>
                           <Text style={styles.text}>
                             {/* {(item?.folder_title ?*/}
                                {item.folder_title}
