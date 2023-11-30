@@ -6,7 +6,7 @@ const initialState = {
   userData: null,
   assprogram: null,
   //timer: { hours: 0, minutes: 0, seconds: 0 },
-  exerciseTimers: {},
+  workoutTimers: {},
 };
 
 const authReducer = (state = initialState, action) => {
@@ -51,14 +51,28 @@ const authReducer = (state = initialState, action) => {
     //     timer: action.payload,
     //   };
 
+    // case ACTIONS.UPDATE_TIMER:
+    //   const { exerciseId, timer } = action.payload;
+    //   return {
+    //     ...state,
+    //     exerciseTimers: {
+    //       ...state.exerciseTimers,
+    //       [exerciseId]: timer,
+    //     },
+    //   };
     case ACTIONS.UPDATE_TIMER:
-      const { exerciseId, timer } = action.payload;
+      const { workoutId, exerciseId, timer } = action.payload;
+      const updatedWorkoutTimers = { ...state.workoutTimers };
+
+      if (!updatedWorkoutTimers[workoutId]) {
+        updatedWorkoutTimers[workoutId] = {};
+      }
+
+      updatedWorkoutTimers[workoutId][exerciseId] = timer;
+
       return {
         ...state,
-        exerciseTimers: {
-          ...state.exerciseTimers,
-          [exerciseId]: timer,
-        },
+        workoutTimers: updatedWorkoutTimers,
       };
     default:
       return state;

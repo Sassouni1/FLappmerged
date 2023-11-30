@@ -47,7 +47,11 @@ export const Assprogram = data => ({
   type: ACTIONS.ASSIGNED_PROGRAM,
   data,
 });
-export const updateTimer = (exerciseId, timer) => ({
+// export const updateTimer = (exerciseId, timer) => ({
+//   type: ACTIONS.UPDATE_TIMER,
+//   payload: { exerciseId, timer },
+// });
+export const updateTimer = (workoutId, exerciseId, timer) => ({
   type: ACTIONS.UPDATE_TIMER,
-  payload: { exerciseId, timer },
+  payload: { workoutId, exerciseId, timer },
 });

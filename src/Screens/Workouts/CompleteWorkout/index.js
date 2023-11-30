@@ -39,9 +39,14 @@ const CompleteWorkout = ({ route }) => {
   //console.log('execise id',exerciseId)
   const defaultTimer = { hours: 0, minutes: 0, seconds: 0 };
   //const timer = useSelector((state)=> state.auth.timer) || defaultTimer;
-  const timer =
-    useSelector((state) => state.auth.exerciseTimers[exerciseId]) ||
-    defaultTimer;
+  // const timer =
+  //   useSelector((state) => state.auth.workoutTimers[workoutId][exerciseId]) ||
+  //   defaultTimer;
+  const timer = useSelector((state) => 
+  state.auth.workoutTimers &&
+  state.auth.workoutTimers[workoutId] &&
+  state.auth.workoutTimers[workoutId][exerciseId]
+) || defaultTimer;
   //console.log(timer)
 
   const [hours, setHours] = useState(timer.hours);
@@ -215,8 +220,8 @@ const CompleteWorkout = ({ route }) => {
   //   dispatch(updateTimer(hours, minutes, seconds));
   // }, [hours, minutes, seconds]);
   useEffect(() => {
-    dispatch(updateTimer(exerciseId, { hours, minutes, seconds }));
-  }, [hours, minutes, seconds, exerciseId]);
+    dispatch(updateTimer(workoutId,exerciseId, { hours, minutes, seconds }));
+  }, [hours, minutes, seconds,workoutId, exerciseId]);
 
   return (
     <View
