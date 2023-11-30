@@ -258,6 +258,8 @@ export const styles = StyleSheet.create({
   },
   set: {
     color: colors.white,
-    fontSize: getFontSize(2),
+    fontSize: getFontSize(2.2),
+    fontFamily:"Ubuntu",
+    fontWeight:"bold"
   },
 });

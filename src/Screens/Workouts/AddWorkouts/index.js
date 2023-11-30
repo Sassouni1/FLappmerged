@@ -93,7 +93,7 @@ const AddWorkouts = () => {
 
      // console.log("respone of add workoutss", res?.response?.Workout[0].innerWorkout[0]);
       if (res?.status == "200") {
-        console.log("respone of add workoutss", res?.response?.Workout[0].innerWorkout[0]);
+        console.log("respone of add workoutss", res?.response?.Workout[0].innerWorkout[0]?.exercise[0]);
         setAssigWorkout(res?.response?.Workout[0]);
         dispatch(setLoader(false));
       } else {

@@ -221,13 +221,13 @@ export const styles = StyleSheet.create({
   rest: {
     fontFamily: fonts.UBo,
     color: colors.white,
-    fontSize: Platform.OS === "ios" ?getFontSize(2):getFontSize(1.5),
-    marginRight: getWidth(2),
+    fontSize: getFontSize(2),
+    // marginRight: getWidth(2),
     width:getWidth(32),
     height:getHeight(10)
   },
   btng: {
-    width: getFontSize(21),
+    width: getFontSize(22),
     height: getHeight(3.5),
     borderRadius: 5,
     backgroundColor: colors.secondary,
@@ -257,7 +257,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   notes: {
-    fontFamily: fonts.UBo,
+    fontFamily: 'Ubuntu',
     color: colors.primary,
     fontSize: getFontSize(1.7),
     width: getWidth(75),
@@ -269,6 +269,14 @@ export const styles = StyleSheet.create({
     marginTop: getHeight(2),
     height: getHeight(10),
     paddingBottom: Platform.OS === "ios" ? getFontSize(0) :getFontSize(7),
-    fontWeight: Platform.OS==="ios" ?"400":"normal"
+    fontWeight: "normal"
   },
+  notesText:{
+    color: "white",
+    marginTop: getFontSize(2),
+    left: getFontSize(2),
+    fontSize: getFontSize(2),
+    fontFamily: fonts.URe,
+    marginRight: getWidth(2),
+  }
 });

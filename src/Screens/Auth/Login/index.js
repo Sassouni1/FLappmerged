@@ -112,11 +112,11 @@ const Login = ({ navigation }) => {
             secureTextEntry={hidePass ? true : false}
             right={
               <TextInput.Icon
-                name={() => (
+                icon={() => (
                   <MaterialCommunityIcons
                     name={hidePass ? "eye-off-outline" : "eye-outline"}
-                    size={getFontSize(2.5)}
-                    color={"rgba(189, 189, 189, 1)"}
+                    size={getFontSize(3)}
+                    color={"#fff"}
                     style={styles.icon}
                     onPress={() => setHidePass(!hidePass)}
                   />

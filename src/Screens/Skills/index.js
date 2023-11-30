@@ -56,11 +56,14 @@ const Skills = () => {
 
   useEffect(() => {
     const filtered = data.filter((item) => {
-      const title = item.folder_title || ''; 
-      return title.toUpperCase().includes(searchQuery.toUpperCase()) || title.trim() === '';
+      const title = item.folder_title || "";
+      return (
+        title.toUpperCase().includes(searchQuery.toUpperCase()) ||
+        title.trim() === ""
+      );
     });
     setFilteredData(filtered);
-  
+
     if (filtered.length === 0 && searchQuery) {
       setInvalidEntry(true);
     } else {
@@ -76,8 +79,8 @@ const Skills = () => {
         verb: "get",
         token: token,
       });
-      console.log("skill response", res?.response);
       if (res?.status == "200") {
+        console.log("skill response", res?.response);
         setData(res?.response?.category_list);
         setFilteredData(res?.response?.category_list);
         dispatch(setLoader(false));
@@ -157,20 +160,20 @@ const Skills = () => {
       </View>
       <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
         <View style={{ flex: 1 }}>
-          {invalidEntry || (filteredData.length === 0) ? (
+          {invalidEntry || filteredData.length === 0 ? (
             <View
               style={{
                 justifyContent: "center",
                 alignItems: "center",
                 flex: 1,
-                bottom:getFontSize(9)
+                bottom: getFontSize(9),
               }}
             >
-               <AntDesign
-                  size={getFontSize(8)}
-                  color={"white"}
-                  name="exclamationcircleo"
-                />
+              <AntDesign
+                size={getFontSize(8)}
+                color={"white"}
+                name="exclamationcircleo"
+              />
               <Text
                 style={{
                   fontSize: getFontSize(2),
@@ -178,13 +181,90 @@ const Skills = () => {
                   marginLeft: getFontSize(5),
                   marginRight: getFontSize(5),
                   textAlign: "center",
-                  marginTop:getHeight(1)
+                  marginTop: getHeight(1),
                 }}
               >
                 No videos on Skills found.
               </Text>
             </View>
           ) : (
+            // <FlatList
+            //   data={filteredData}
+            //   refreshing={false}
+            //   onRefresh={handleRefresh}
+            //   showsVerticalScrollIndicator={false}
+            //   renderItem={({ item, index }) => {
+            //     return (
+            //       <View>
+            //         {index > 0 && <Seprator />}
+            //         <TouchableOpacity
+            //           onPress={() =>
+            //             navigation.navigate("FolderVideo", {
+            //               folder: item?.videos,
+            //               foldername: item?.folder_title,
+            //             })
+            //           }
+            //           style={styles.listCon}
+            //         >
+            //           {/* <View style={styles.thumbnail}>
+            //             <PlayerSvg height={20} width={20} />
+            //           </View> */}
+            //           {/* {item?.video_thumbnail ? (
+            //             <View>
+            //               <Image
+            //                 source={{ uri: item?.video_thumbnail }}
+            //                 style={styles.thumbnail}
+            //                 resizeMode="cover"
+            //               ></Image>
+            //             </View>
+            //           ) : ( */}
+            //           <View>
+            //             {/* <PlayerSvg height={20} width={20} /> */}
+            //             <Entypo
+            //               size={45}
+            //               color={"white"}
+            //               name="folder"
+            //               style={{
+            //                 justifyContent: "center",
+            //                 marginLeft: getFontSize(1.5),
+            //                 marginRight: getFontSize(1.5),
+            //                 alignItems: "center",
+            //               }}
+            //             />
+            //           </View>
+            //           {/* )} */}
+            //           {/* <View style={{ flexDirection: "row"}}> */}
+            //           <View
+            //             style={{
+            //               flexDirection: "column",
+            //               right: getFontSize(1),
+            //             }}
+            //           >
+            //             <Text style={styles.text}>
+            //               {/* {(item?.folder_title ?*/}
+            //               {item.folder_title}
+            //               {/* : item?.title */}
+            //               {/* ).toUpperCase() || ""} */}
+            //             </Text>
+
+            //             <Text style={styles.descriptionText} numberOfLines={2}>
+            //               {item?.folder_description}
+            //             </Text>
+            //           </View>
+            //           <View>
+            //             <Text style={{ color: colors.white }}>
+            //               {item?.videos.length} video
+            //               {item?.videos.length !== 1 ? "s" : ""}
+            //             </Text>
+            //           </View>
+            //           {/* </View> */}
+            //         </TouchableOpacity>
+            //       </View>
+            //     );
+            //   }}
+            // />
+            // ... (Previous code remains unchanged)
+
             <FlatList
               data={filteredData}
               refreshing={false}
@@ -203,43 +283,45 @@ const Skills = () => {
                       }
                       style={styles.listCon}
                     >
-                      {/* <View style={styles.thumbnail}>
-                        <PlayerSvg height={20} width={20} />
-                      </View> */}
-                      {/* {item?.video_thumbnail ? (
-                        <View>
-                          <Image
-                            source={{ uri: item?.video_thumbnail }}
-                            style={styles.thumbnail}
-                            resizeMode="cover"
-                          ></Image>
-                        </View>
-                      ) : ( */}
-                        <View >
-                          {/* <PlayerSvg height={20} width={20} /> */}
-                          <Entypo
-                            size={45}
-                            color={"white"}
-                            name="folder"
+                      <View
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                      >
+                        <View style={{ flex: 1 }}>
+                          <View
                             style={{
-                              justifyContent: 'center',
-                              marginLeft:getFontSize(1.5),
-                              marginRight:getFontSize(1.5),
-                              alignItems: 'center',}}
-                          />
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <Entypo
+                              size={45}
+                              color={"white"}
+                              name="folder"
+                              style={{
+                                justifyContent: "center",
+                                marginLeft: getFontSize(1.5),
+                                marginRight: getFontSize(1.5),
+                                alignItems: "center",
+                              }}
+                            />
+                            <View style={{ flexDirection: "column", flex: 1 }}>
+                              <Text style={styles.text}>
+                                {item.folder_title}
+                              </Text>
+                              <Text
+                                style={styles.descriptionText}
+                                numberOfLines={2}
+                              >
+                                {item?.folder_description}
+                              </Text>
+                            </View>
+                            <Text style={{ color: colors.white }}>
+                              {item?.videos.length} video
+                              {item?.videos.length !== 1 ? "s" : "  "}
+                            </Text>
+                          </View>
                         </View>
-                      {/* )} */}
-                      <View style={{ flexDirection: "column",right:getFontSize(1) }}>
-                        <Text style={styles.text}>
-                          {/* {(item?.folder_title ?*/}
-                             {item.folder_title}
-                            {/* : item?.title */}
-                          {/* ).toUpperCase() || ""} */}
-                        </Text>
-
-                        <Text style={styles.descriptionText} numberOfLines={2}>
-                          {item?.folder_description}
-                        </Text>
                       </View>
                     </TouchableOpacity>
                   </View>

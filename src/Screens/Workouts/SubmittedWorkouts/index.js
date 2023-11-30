@@ -27,7 +27,6 @@ import { ApiCall } from "../../../Services/Apis";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
-import { updateTimer } from "../../../Redux/actions/AuthActions";
 
 const SubmittedWorkouts = ({ route }) => {
   const navigation = useNavigation();
@@ -47,9 +46,7 @@ const SubmittedWorkouts = ({ route }) => {
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
   const loader = useSelector((state) => state.gernal.loader);
-  const timer =
-    useSelector((state) => state.auth.exerciseTimers[exerciseId]) ||
-    defaultTimer;
+ 
     const submittedTime = exercise?.submitted_time || '0:0:0';
     const [submittedHours, submittedMinutes, submittedSeconds] = submittedTime.split(':');
   useEffect(() => {
@@ -248,7 +245,7 @@ const SubmittedWorkouts = ({ route }) => {
           /> */}
         <View style={{ paddingHorizontal: getWidth(3) }}>
           <View style={{ marginTop: getHeight(3) }}>
-            <Text style={styles.set}>Assigned Set</Text>
+            <Text style={{...styles.set,marginLeft:getFontSize(2)}}>Assigned Set</Text>
           </View>
           {exercise?.sets?.map((set, index) => (
             <View key={index} style={{ paddingHorizontal: getWidth(3) }}>
@@ -343,7 +340,7 @@ const SubmittedWorkouts = ({ route }) => {
         </View>
 
         <View style={{ paddingHorizontal: getWidth(3) }}>
-          <Text style={{ ...styles.set, marginTop: getHeight(3) }}>
+          <Text style={{ ...styles.set, marginTop: getHeight(7),marginLeft:getFontSize(2) }}>
             Submitted Set
           </Text>
           {exercise?.submitted_sets?.map((set, index) => (

@@ -117,7 +117,7 @@ presence:{
   },
   newPassword: {
     presence: {
-      message: '^Please enter New Password',
+      message: '^Please enter new password',
     },
     length: {
       minimum: 6,
@@ -135,7 +135,7 @@ presence:{
   },
   passwordN: {
     presence: {
-      message: '^Please enter New Password',
+      message: '^Please enter new password',
     },
     length: {
       minimum: 6,

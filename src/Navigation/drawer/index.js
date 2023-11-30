@@ -212,7 +212,7 @@ export default function MyDrawer() {
             <Fontisto name={"home"} size={16} color={color} />
           ),
           drawerLabelStyle: {
-            fontFamily: "Ubuntu-Bold",
+            fontFamily: "Ubuntu",
             fontSize: getFontSize(1.7),
             marginLeft: getFontSize(0.1),
           },
@@ -235,9 +235,9 @@ export default function MyDrawer() {
             />
           ),
           drawerLabelStyle: {
-            fontFamily: "Ubuntu-Bold",
+            fontFamily: "Ubuntu",
             fontSize: getFontSize(1.7),
-            marginLeft: getFontSize(-0.3),
+            marginLeft: getFontSize(-0.4),
           },
         }}
         name="Profile Settings"
@@ -258,7 +258,7 @@ export default function MyDrawer() {
             />
           ),
           drawerLabelStyle: {
-            fontFamily: "Ubuntu-Bold",
+            fontFamily: "Ubuntu",
             fontSize: getFontSize(1.7),
             marginLeft: getFontSize(-0.5),
           },
@@ -278,11 +278,11 @@ export default function MyDrawer() {
               name="information-circle"
               size={25}
               color={"white"}
-              style={{ marginLeft: getFontSize(-0.5) }}
+              style={{ marginLeft: getFontSize(-0.55) }}
             />
           ),
           drawerLabelStyle: {
-            fontFamily: "Ubuntu-Bold",
+            fontFamily: "Ubuntu",
             fontSize: getFontSize(1.7),
             marginLeft: getFontSize(-0.3),
           },
@@ -300,8 +300,9 @@ export default function MyDrawer() {
           drawerIcon: ({ color, size, focuced }) => (
             <FontAwesome name="envelope" size={18} color={"white"} />
           ),
+          drawerLabelStyle:{ fontFamily: "Ubuntu",  fontSize: getFontSize(1.7),
+          marginLeft: getFontSize(-0.25), }
         }}
-        style={{ fontFamily: "Ubuntu-Bold", fontSize: 12 }}
         name="Contact Us"
         component={ContactUs}
       />
@@ -319,8 +320,10 @@ export default function MyDrawer() {
               color={colors.white}
             />
           ),
+          drawerLabelStyle:{ fontFamily: "Ubuntu",  fontSize: getFontSize(1.7),
+          marginLeft: getFontSize(-0.3), }
         }}
-        style={{ fontFamily: "Ubuntu-Bold", fontSize: 12 }}
+        // style={{ fontFamily: "Ubuntu-Bold", fontSize: 12 }}
         name="Notifications"
         component={Notification}
       />
