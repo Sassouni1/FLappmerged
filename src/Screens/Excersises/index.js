@@ -25,14 +25,10 @@ import { RefreshControl } from "react-native";
 import HeaderBottom from "../../Components/HeaderBottom";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
-
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { Modal } from "react-native-paper";
 
 const Excercises = () => {
   const navigation = useNavigation();
-  const openDrawer = () => {
-    navigation.openDrawer(); // Open the drawer
-  };
   const token = useSelector((state) => state.auth.userToken);
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
@@ -41,22 +37,49 @@ const Excercises = () => {
   const [invalidEntry, setInvalidEntry] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // useEffect(() => {
-  //   const filtered = data.filter((item) =>
-  //     item.title.toUpperCase().includes(searchQuery.toUpperCase())
-  //   );
-  //   setFilteredData(filtered);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [allTypes, setAllTypes] = useState([]);
+  const [selectedTypes, setSelectedTypes] = useState([]);
 
-  //   // Check if there are no matching results
-  //   if (filtered.length === 0 && searchQuery) {
-  //     setInvalidEntry(true);
-  //   } else {
-  //     setInvalidEntry(false);
-  //   }
-  // }, [searchQuery, data]);
+  // Function to get all unique types
+  const getAllUniqueTypes = () => {
+    const allTypes = data.map((item) => item.type);
+    const uniqueTypes = Array.from(new Set(allTypes));
+    setAllTypes(uniqueTypes);
+  };
+  // console.log("all types", allTypes);
+
+  // Function to toggle type selection
+  const toggleTypeSelection = (selectedType) => {
+    if (selectedTypes.includes(selectedType)) {
+      setSelectedTypes(selectedTypes.filter((type) => type !== selectedType));
+    } else {
+      setSelectedTypes([...selectedTypes, selectedType]);
+    }
+  };
+
+  // Function to filter videos based on selected types
+  const filterVideosBySelectedTypes = () => {
+    if (selectedTypes.length === 0) {
+      setFilteredData(data);
+    } else {
+      const filtered = data.filter((item) => selectedTypes.includes(item.type));
+      setFilteredData(filtered);
+    }
+    toggleModal(); // Close the modal after selection
+  };
+
+  useEffect(() => {
+    getAllUniqueTypes();
+  }, [data]);
+
+  useEffect(() => {
+    filterVideosBySelectedTypes();
+  }, [selectedTypes]);
+
   useEffect(() => {
     const filtered = data.filter((item) => {
-      const title = item.folder_title || "";
+      const title = item.parent_title || "";
       return (
         title.toUpperCase().includes(searchQuery.toUpperCase()) ||
         title.trim() === ""
@@ -79,8 +102,9 @@ const Excercises = () => {
         verb: "get",
         token: token,
       });
-      console.log("res::", res?.response);
+
       if (res?.status == "200") {
+        console.log("res::", res?.response);
         setData(res?.response?.video_list);
         setFilteredData(res?.response?.video_list);
         dispatch(setLoader(false));
@@ -102,8 +126,12 @@ const Excercises = () => {
   };
 
   useEffect(() => {
-    handleRefresh(); // Call handleRefresh to load data initially
+    handleRefresh();
   }, []);
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
+  
 
   return (
     <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
@@ -159,6 +187,51 @@ const Excercises = () => {
           value={searchQuery}
         />
       </View>
+
+      <View>
+        <Text
+          style={{
+            fontSize: getFontSize(2),
+            color: colors.white,
+            marginLeft: getFontSize(1.3),
+            marginTop: getFontSize(2),
+            fontFamily: "Ubuntu",
+          }}
+        >
+          Exercise Type
+        </Text>
+        <TouchableOpacity
+          onPress={toggleModal}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            width: getWidth(95),
+            height: getHeight(7),
+            marginVertical: getHeight(1),
+            // marginTop: getHeight(2.5),
+            backgroundColor: colors.secondary,
+            borderRadius: 5,
+            alignSelf: "center",
+            paddingLeft: getFontSize(1),
+            paddingRight: getFontSize(1.5),
+          }}
+        >
+          <Text
+            style={{
+              color: "white",
+              fontSize: getFontSize(2),
+              marginLeft: 10,
+              flex: 1,
+              flexWrap: "wrap",
+            }}
+          >
+            {selectedTypes.length > 0
+              ? selectedTypes.join(", ")
+              : "Select Exercise Type"}
+          </Text>
+          <AntDesign size={getFontSize(2)} color={"white"} name="down" />
+        </TouchableOpacity>
+      </View>
       <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
         <View style={{ flex: 1 }}>
           {invalidEntry || filteredData.length === 0 ? (
@@ -189,68 +262,6 @@ const Excercises = () => {
               </Text>
             </View>
           ) : (
-            // <FlatList
-            //   data={filteredData}
-            //   refreshing={false}
-            //   onRefresh={handleRefresh}
-            //   showsVerticalScrollIndicator={false}
-            //   renderItem={({ item, index }) => {
-            //     return (
-            //       <View>
-            //         {index > 0 && <Seprator />}
-            //         <TouchableOpacity
-            //           onPress={() =>
-            //             navigation.navigate("ExerciseVideo", {
-            //               folder: item?.videos,
-            //               folderName : item?.folder_title
-            //               //name: item?.title,
-            //             })
-            //           }
-            //           style={styles.listCon}
-            //         >
-            //           {/* <View style={styles.thumbnail}>
-            //             <PlayerSvg height={20} width={20} />
-            //           </View> */}
-            //           {/* {item?.video_thumbnail ? (
-            //             <View>
-            //               <Image
-            //                 source={{ uri: item?.video_thumbnail }}
-            //                 style={styles.thumbnail}
-            //                 resizeMode="cover"
-            //               ></Image>
-            //             </View>
-            //           ) : ( */}
-            //             <View >
-            //               {/* <PlayerSvg height={20} width={20} /> */}
-            //               <Entypo
-            //                 size={45}
-            //                 color={"white"}
-            //                 name="folder"
-            //                 style={{
-            //                   justifyContent: 'center',
-            //                   marginLeft:getFontSize(1.5),
-            //                   marginRight:getFontSize(1.5),
-            //                   alignItems: 'center',}}
-            //               />
-            //             </View>
-            //           {/* )} */}
-            //           <View style={{ flexDirection: "column",right:getFontSize(1) }}>
-            //             <Text style={styles.text}>
-            //               {/* {(item?.folder_title ?*/}
-            //                  {item.folder_title}
-            //                 {/* : item?.title */}
-            //               {/* ).toUpperCase() || ""} */}
-            //             </Text>
-
-            //             <Text style={styles.descriptionText} numberOfLines={2}>
-            //               {item?.folder_description}
-            //             </Text>
-            //           </View>
-            //         </TouchableOpacity>
-            //       </View>
-            //     );
-            //   }}
-            // />
             <FlatList
               data={filteredData}
               refreshing={false}
@@ -262,53 +273,35 @@ const Excercises = () => {
                     {index > 0 && <Seprator />}
                     <TouchableOpacity
                       onPress={() =>
-                        navigation.navigate("ExerciseVideo", {
-                          folder: item?.videos,
-                          folderName: item?.folder_title,
-                          //name: item?.title,
+                        navigation.navigate("VideoSkills", {
+                          video: item?.video,
+                          name: item?.title,
                         })
                       }
                       style={styles.listCon}
                     >
-                      <View
-                        style={{ flexDirection: "row", alignItems: "center" }}
-                      >
-                        <View style={{ flex: 1 }}>
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Entypo
-                              size={45}
-                              color={"white"}
-                              name="folder"
-                              style={{
-                                justifyContent: "center",
-                                marginLeft: getFontSize(1.5),
-                                marginRight: getFontSize(1.5),
-                                alignItems: "center",
-                              }}
-                            />
-                            <View style={{ flexDirection: "column", flex: 1 }}>
-                              <Text style={styles.text}>
-                                {item.folder_title}
-                              </Text>
-                              <Text
-                                style={styles.descriptionText}
-                                numberOfLines={2}
-                              >
-                                {item?.folder_description}
-                              </Text>
-                            </View>
-                            <Text style={{ color: colors.white }}>
-                              {item?.videos.length} video
-                              {item?.videos.length !== 1 ? "s" : "  "}
-                            </Text>
-                          </View>
+                      {/* <View style={styles.thumbnail}>
+                      <PlayerSvg height={20} width={20} />
+                    </View> */}
+                      {item?.video_thumbnail ? (
+                        <View>
+                          <Image
+                            source={{ uri: item?.video_thumbnail }}
+                            style={styles.thumbnail}
+                            resizeMode="cover"
+                          ></Image>
                         </View>
+                      ) : (
+                        <View style={styles.thumbnail}>
+                          <PlayerSvg height={20} width={20} />
+                        </View>
+                      )}
+                      <View style={{ flexDirection: "column" }}>
+                        <Text style={styles.text}>{item?.title}</Text>
+
+                        <Text style={styles.descriptionText} numberOfLines={2}>
+                          {item?.description}
+                        </Text>
                       </View>
                     </TouchableOpacity>
                   </View>
@@ -318,6 +311,49 @@ const Excercises = () => {
           )}
         </View>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={toggleModal}
+      >
+        <View
+          style={{
+            backgroundColor: colors.primary,
+            borderRadius: 5,
+            margin: 20,
+            padding: 20,
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => setModalVisible(false)}
+            style={{ alignItems: "flex-start" }}
+          >
+            <Text style={{ color: "red" }}>Close</Text>
+          </TouchableOpacity>
+          <View style={{ padding: 20 }}>
+            {allTypes.map((type) => (
+              <TouchableOpacity
+                key={type}
+                onPress={() => toggleTypeSelection(type)}
+                style={{
+                  padding: 10,
+                  backgroundColor: selectedTypes.includes(type)
+                    ? "gray"
+                    : colors.primary,
+                }}
+              >
+                <Text style={{ color: "white", fontSize: getFontSize(2) }}>
+                  {type}
+                </Text>
+              </TouchableOpacity>
+            ))}
+            {/* <TouchableOpacity onPress={filterVideosBySelectedTypes}>
+              <Text>Apply Filters</Text>
+            </TouchableOpacity> */}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };

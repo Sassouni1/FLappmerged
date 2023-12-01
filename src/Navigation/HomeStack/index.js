@@ -53,6 +53,8 @@ import SubmittedWorkouts from '../../Screens/Workouts/SubmittedWorkouts';
 import Notification from '../../Screens/Notifications';
 import FolderVideo from '../../Screens/Skills/FolderVideo';
 import ExerciseVideo from '../../Screens/Excersises/ExerciseVideo';
+import ExSubFolder from '../../Screens/Excersises/ExSubFolder';
+import SubFolder from '../../Screens/Skills/SubFolder';
 
 const stack = createNativeStackNavigator();
 const HomeStack = () => {
@@ -67,6 +69,20 @@ const HomeStack = () => {
         }}
         name="VideoSkills"
         component={VideoSkills}
+      />
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="ExSubFolder"
+        component={ExSubFolder}
+      />
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="SubFolder"
+        component={SubFolder}
       />
       <stack.Screen
         options={{

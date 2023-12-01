@@ -18,7 +18,11 @@ import {
   import Entypo from "react-native-vector-icons/Entypo";
   import { SearchSvg, PlayerSvg, InvalidSearch } from "../../../assets/images";
   import Seprator from "../../../Components/Seprator";
-  import { getWidth, getHeight, getFontSize } from "../../../../utils/ResponsiveFun";
+  import {
+    getWidth,
+    getHeight,
+    getFontSize,
+  } from "../../../../utils/ResponsiveFun";
   import { useNavigation } from "@react-navigation/native";
   import { setLoader } from "../../../Redux/actions/GernalActions";
   import { useDispatch, useSelector } from "react-redux";
@@ -28,12 +32,11 @@ import {
   import AntDesign from "react-native-vector-icons/AntDesign";
   import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
   import Ionicons from "react-native-vector-icons/Ionicons";
-
   
-  const FolderVideo = ({route}) => {
+  const ExSubFolder = ({ route }) => {
     const navigation = useNavigation();
-    const {childFolderVideos,childFolderName} = route?.params;
-     console.log('folder',childFolderName)
+    const { folder, foldername } = route?.params;
+    console.log("folder", folder);
     const token = useSelector((state) => state.auth.userToken);
     const dispatch = useDispatch();
     const [data, setData] = useState([]);
@@ -45,8 +48,8 @@ import {
     //console.log('filtered data',filteredData)
   
     useEffect(() => {
-      const filtered = childFolderVideos.filter((item) =>
-        item.title.toUpperCase().includes(searchQuery.toUpperCase())
+      const filtered = folder.filter((item) =>
+        item.folder_title.toUpperCase().includes(searchQuery.toUpperCase())
       );
       setFilteredData(filtered);
   
@@ -56,11 +59,11 @@ import {
       } else {
         setInvalidEntry(false);
       }
-    }, [searchQuery, childFolderVideos]);
+    }, [searchQuery, folder]);
   
     const handleRefresh = () => {
       //dispatch(setLoader(true));
-      childFolderVideos
+      folder;
     };
   
     useEffect(() => {
@@ -76,7 +79,7 @@ import {
           translucent={true}
         />
         <HeaderBottom
-          title={childFolderName}
+          title={foldername}
           LeftIcon={
             <Ionicons
               size={25}
@@ -119,16 +122,16 @@ import {
         </View>
         <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
           <View style={{ flex: 1 }}>
-            {invalidEntry || (childFolderVideos.length === 0)? (
+            {invalidEntry || folder.length === 0 ? (
               <View
                 style={{
                   justifyContent: "center",
                   alignItems: "center",
                   flex: 1,
-                  bottom:getFontSize(9)
+                  bottom: getFontSize(9),
                 }}
               >
-                 <AntDesign
+                <AntDesign
                   size={getFontSize(8)}
                   color={"white"}
                   name="exclamationcircleo"
@@ -140,13 +143,61 @@ import {
                     marginLeft: getFontSize(5),
                     marginRight: getFontSize(5),
                     textAlign: "center",
-                    marginTop:getHeight(1)
+                    marginTop: getHeight(1),
                   }}
                 >
                   No videos on Skills found.
                 </Text>
               </View>
             ) : (
+              //   <FlatList
+              //     data={filteredData}
+              //     refreshing={false}
+              //     onRefresh={handleRefresh}
+              //     showsVerticalScrollIndicator={false}
+              //     renderItem={({ item, index }) => {
+              //       return (
+              //         <View>
+              //           {index > 0 && <Seprator />}
+              //           <TouchableOpacity
+              //             onPress={() =>
+              //               navigation.navigate("FolderVideo", {
+              //                 childFolderVideos: item?.videos,
+              //                 childFolderName: item?.title,
+              //               })
+              //             }
+              //             style={styles.listCon}
+              //           >
+              //             {/* <View style={styles.thumbnail}>
+              //               <PlayerSvg height={20} width={20} />
+              //             </View> */}
+              //             {item?.folder_image ? (
+              //               <View>
+              //                 <Image
+              //                   source={{ uri: item?.video_thumbnail }}
+              //                   style={styles.thumbnail}
+              //                   resizeMode="cover"
+              //                 ></Image>
+              //               </View>
+              //             ) : (
+              //                 <View style={styles.thumbnail}>
+              //               <PlayerSvg height={20} width={20} />
+              //             </View>
+              //             )}
+              //             <View style={{ flexDirection: "column" }}>
+              //               <Text style={styles.text}>
+              //                   {item?.folder_title}
+              //               </Text>
+  
+              //               <Text style={styles.descriptionText} numberOfLines={2}>
+              //                 {item?.folder_description}
+              //               </Text>
+              //             </View>
+              //           </TouchableOpacity>
+              //         </View>
+              //       );
+              //     }}
+              //   />
               <FlatList
                 data={filteredData}
                 refreshing={false}
@@ -158,37 +209,52 @@ import {
                       {index > 0 && <Seprator />}
                       <TouchableOpacity
                         onPress={() =>
-                          navigation.navigate("VideoSkills", {
-                            video: item?.video,
-                            name: item?.title,
+                          navigation.navigate("ExerciseVideo", {
+                            childFolderVideos: item?.videos,
+                            childFolderName: item?.title,
                           })
                         }
                         style={styles.listCon}
                       >
-                        {/* <View style={styles.thumbnail}>
-                          <PlayerSvg height={20} width={20} />
-                        </View> */}
-                        {item?.video_thumbnail ? (
-                          <View>
-                            <Image
-                              source={{ uri: item?.video_thumbnail }}
-                              style={styles.thumbnail}
-                              resizeMode="cover"
-                            ></Image>
+                        <View
+                          style={{ flexDirection: "row", alignItems: "center" }}
+                        >
+                          <View style={{ flex: 1 }}>
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Entypo
+                                size={45}
+                                color={"white"}
+                                name="folder"
+                                style={{
+                                  justifyContent: "center",
+                                  marginLeft: getFontSize(1.5),
+                                  marginRight: getFontSize(1.5),
+                                  alignItems: "center",
+                                }}
+                              />
+                              <View style={{ flexDirection: "column", flex: 1 }}>
+                                <Text style={styles.text}>
+                                  {item.folder_title}
+                                </Text>
+                                <Text
+                                  style={styles.descriptionText}
+                                  numberOfLines={2}
+                                >
+                                  {item?.folder_description}
+                                </Text>
+                              </View>
+                              <Text style={{ color: colors.white }}>
+                                {item?.videos.length} video
+                                {item?.videos.length !== 1 ? "s" : "  "}
+                              </Text>
+                            </View>
                           </View>
-                        ) : (
-                            <View style={styles.thumbnail}>
-                          <PlayerSvg height={20} width={20} />
-                        </View>
-                        )}
-                        <View style={{ flexDirection: "column" }}>
-                          <Text style={styles.text}>
-                              {item?.title}
-                          </Text>
-  
-                          <Text style={styles.descriptionText} numberOfLines={2}>
-                            {item?.description}
-                          </Text>
                         </View>
                       </TouchableOpacity>
                     </View>
@@ -202,5 +268,5 @@ import {
     );
   };
   
-  export default FolderVideo;
+  export default ExSubFolder;
   

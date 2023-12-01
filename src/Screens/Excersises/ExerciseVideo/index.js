@@ -35,8 +35,8 @@ import {
   
   const ExerciseVideo = ({route}) => {
     const navigation = useNavigation();
-    const {folder,folderName} = route?.params;
-    console.log('folder',folder)
+    const {childFolderVideos,childFolderName} = route?.params;
+    //console.log('folder',folder)
     const token = useSelector((state) => state.auth.userToken);
     const dispatch = useDispatch();
     const [data, setData] = useState([]);
@@ -48,7 +48,7 @@ import {
     //console.log('filtered data',filteredData)
   
     useEffect(() => {
-      const filtered = folder.filter((item) =>
+      const filtered = childFolderVideos.filter((item) =>
         item.title.toUpperCase().includes(searchQuery.toUpperCase())
       );
       setFilteredData(filtered);
@@ -63,7 +63,7 @@ import {
   
     const handleRefresh = () => {
       //dispatch(setLoader(true));
-      folder
+      childFolderVideos
     };
   
     useEffect(() => {
@@ -79,7 +79,7 @@ import {
           translucent={true}
         />
         <HeaderBottom
-          title={folderName}
+          title={childFolderName}
           LeftIcon={
             <Ionicons
               size={25}

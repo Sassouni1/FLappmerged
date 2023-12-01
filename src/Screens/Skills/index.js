@@ -56,7 +56,7 @@ const Skills = () => {
 
   useEffect(() => {
     const filtered = data.filter((item) => {
-      const title = item.folder_title || "";
+      const title = item.parent_title || "";
       return (
         title.toUpperCase().includes(searchQuery.toUpperCase()) ||
         title.trim() === ""
@@ -276,9 +276,9 @@ const Skills = () => {
                     {index > 0 && <Seprator />}
                     <TouchableOpacity
                       onPress={() =>
-                        navigation.navigate("FolderVideo", {
-                          folder: item?.videos,
-                          foldername: item?.folder_title,
+                        navigation.navigate("SubFolder", {
+                          folder: item?.child_folder,
+                          foldername: item?.parent_title,
                         })
                       }
                       style={styles.listCon}
@@ -294,7 +294,19 @@ const Skills = () => {
                               justifyContent: "space-between",
                             }}
                           >
-                            <Entypo
+                            {item?.parent_Image && item?.parent_Image != '' ?(
+                              <View>
+                                <Image
+                                  source={{ uri: item?.parent_Image }}
+                                  style={styles.thumbnail}
+                                  resizeMode="cover"
+                                ></Image>
+                              </View>
+                            ) : (
+                              // <View style={styles.thumbnail}>
+                              //   <PlayerSvg height={20} width={20} />
+                              // </View>
+                              <Entypo
                               size={45}
                               color={"white"}
                               name="folder"
@@ -305,20 +317,32 @@ const Skills = () => {
                                 alignItems: "center",
                               }}
                             />
+                            )}
+                            {/* <Entypo
+                              size={45}
+                              color={"white"}
+                              name="folder"
+                              style={{
+                                justifyContent: "center",
+                                marginLeft: getFontSize(1.5),
+                                marginRight: getFontSize(1.5),
+                                alignItems: "center",
+                              }}
+                            /> */}
                             <View style={{ flexDirection: "column", flex: 1 }}>
                               <Text style={styles.text}>
-                                {item.folder_title}
+                                {item.parent_title}
                               </Text>
                               <Text
                                 style={styles.descriptionText}
                                 numberOfLines={2}
                               >
-                                {item?.folder_description}
+                                {item?.parent_description}
                               </Text>
                             </View>
                             <Text style={{ color: colors.white }}>
-                              {item?.videos.length} video
-                              {item?.videos.length !== 1 ? "s" : "  "}
+                              {item?.child_folder.length} folder
+                              {item?.child_folder.length !== 1 ? "s" : "  "}
                             </Text>
                           </View>
                         </View>

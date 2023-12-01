@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Text,
   View,
@@ -19,21 +19,121 @@ import HeaderBottom from "../../Components/HeaderBottom";
 import { colors } from "../../constants/colors";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Video from "react-native-video";
-import Notification, { appListner, requestUserPermission } from "../Notifications";
+import Notification, {
+  appListner,
+  requestUserPermission,
+} from "../Notifications";
 import { useNavigation } from "@react-navigation/native";
 import { getSingleUser } from "../../Redux/actions/AuthActions";
-
+import { ApiCall } from "../../Services/Apis";
+import { setLoader } from "../../Redux/actions/GernalActions";
 
 const HomeSc = ({ navigation, route }) => {
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
   const dispatch = useDispatch();
+  const videoRef = useRef(null);
+  const videoRefFaq = useRef(null);
+  const videoRef3 = useRef(null);
+  const videoRef4 = useRef(null);
+
+  const [adminAlert, setAdminAlert] = useState("");
+
+  const [isPaused, setIsPaused] = useState(true);
+  const [isPausedFaq, setIsPausedFaq] = useState(true);
+  const [isPaused3, setIsPaused3] = useState(true);
+  const [isPaused4, setIsPaused4] = useState(true);
+
+  const playVideo = () => {
+    if (videoRef.current) {
+      //videoRef.current.presentFullscreenPlayer();
+      videoRef.current.seek(0);
+      videoRef.current.resume();
+      setIsPaused(false); // Video is playing, update state
+    }
+  };
+
+  const pauseVideo = () => {
+    if (videoRef.current) {
+      videoRef.current.pause(); // Pause the video
+      setIsPaused(true); // Update state to reflect video pause
+    }
+  };
+
+  const playVideoFaq = () => {
+    if (videoRefFaq.current) {
+      // videoRef.current.presentFullscreenPlayer();
+      videoRefFaq.current.seek(0);
+      videoRefFaq.current.resume();
+      setIsPausedFaq(false); // Video is playing, update state
+    }
+  };
+
+  const pauseVideoFaq = () => {
+    if (videoRefFaq.current) {
+      videoRefFaq.current.pause(); // Pause the video
+      setIsPausedFaq(true); // Update state to reflect video pause
+    }
+  };
+
+  const playVideo3 = () => {
+    if (videoRef3.current) {
+      //videoRef.current.presentFullscreenPlayer();
+      videoRef3.current.seek(0);
+      videoRef3.current.resume();
+      setIsPaused3(false); // Video is playing, update state
+    }
+  };
+
+  const pauseVideo3 = () => {
+    if (videoRef3.current) {
+      videoRef3.current.pause(); // Pause the video
+      setIsPaused3(true); // Update state to reflect video pause
+    }
+  };
+
+  const playVideo4 = () => {
+    if (videoRef4.current) {
+      //videoRef.current.presentFullscreenPlayer();
+      videoRef4.current.seek(0);
+      videoRef4.current.resume();
+      setIsPaused4(false); // Video is playing, update state
+    }
+  };
+
+  const pauseVideo4 = () => {
+    if (videoRef4.current) {
+      videoRef4.current.pause(); // Pause the video
+      setIsPaused4(true); // Update state to reflect video pause
+    }
+  };
+
+  const getAdminAlert = async () => {
+    try {
+      const res = await ApiCall({
+        route: `admin/get_alert`,
+        verb: "get",
+        token: token,
+      });
+
+      if (res?.status == "200") {
+        console.log("admin response", res?.response);
+        setAdminAlert(res?.response?.admin);
+        dispatch(setLoader(false));
+      } else {
+        dispatch(setLoader(false));
+        console.log("errorrrr in calenders");
+      }
+    } catch (e) {
+      console.log("api get skill error -- ", e.toString());
+    }
+  };
 
   // const navigation = useNavigation()
 
-  useEffect(()=>{
-    requestUserPermission(token)
-  },[])
+  useEffect(() => {
+    requestUserPermission(token);
+  }, []);
   useEffect(() => {
     if (token) {
       dispatch(getSingleUser(token));
@@ -41,7 +141,10 @@ const HomeSc = ({ navigation, route }) => {
       appListner(navigation);
     }
   }, []);
-  
+  useEffect(() => {
+    getAdminAlert();
+  }, []);
+
   const Workout = ({ paragraphtext, headingText, subheading }) => {
     return (
       <View style={{ ...styles.eliteCon, marginBottom: getHeight(1.5) }}>
@@ -105,46 +208,6 @@ const HomeSc = ({ navigation, route }) => {
             repeat={true}
             style={styles.img}
           />
-          {/* <HeaderBottom
-          title={""}
-          LeftIcon={
-            <Entypo
-              size={30}
-              color={"white"}
-              onPress={() => navigation.openDrawer()}
-              name="menu"
-              style={{ marginLeft: getFontSize(-0.7) }}
-            />
-          }
-          RightIcon={<View />}
-        /> */}
-
-        
-
-          {/* } */}
-
-          {/* <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            marginBottom: getFontSize(5),
-          }}
-        >
-          <View style={styles.playerbtn}>
-            <Ionicons
-              style={{ alignSelf: "center" }}
-              name={"play"}
-              size={35}
-              color={"#ffff"}
-              onPress={() =>
-                navigation.navigate("VideoSkills", {
-                  video: "https://www.youtube.com/watch?v=5JFDAwfF01E",
-                  name: "DaruStrong",
-                })
-              }
-            />
-          </View>
-        </View> */}
           <View
             style={{
               flex: 1,
@@ -156,7 +219,148 @@ const HomeSc = ({ navigation, route }) => {
             <Text style={styles.welcome}>Welcome to DaruStrong</Text>
           </View>
         </View>
-        {/* </ImageBackground> */}
+        <View
+          style={{
+            // width: getWidth(90),
+            height: getHeight(5),
+            // backgroundColor: colors.homeConColor,
+            width: getWidth(96),
+            backgroundColor: colors.homeConColor,
+            alignSelf: "center",
+            borderRadius: 7,
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: getFontSize(2),
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Ionicons
+              size={20}
+              color={"white"}
+              name="calendar"
+              style={{ paddingRight: getFontSize(1) }}
+            />
+            <Text
+              style={{
+                color: colors.white,
+                fontSize: getFontSize(2),
+                fontFamily: "ubuntu",
+              }}
+            >
+              {adminAlert}
+            </Text>
+          </View>
+        </View>
+        <View style={{ flexDirection: "column" }}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-evenly",
+              flex: 1,
+              alignItems: "center",
+              marginTop: getFontSize(2),
+            }}
+          >
+            <View>
+              {/* <Video
+                source={require("../../assets/images/background.mp4")}
+                resizeMode="cover"
+                // repeat={true}
+                style={styles.imgHome}
+              /> */}
+              <TouchableOpacity
+                onPress={isPaused ? playVideo : pauseVideo}
+                activeOpacity={1}
+              >
+                <Video
+                  ref={videoRef}
+                  source={require("../../assets/images/background.mp4")}
+                  resizeMode="cover"
+                  repeat={false}
+                  style={styles.imgHome}
+                  paused={isPaused}
+                />
+              </TouchableOpacity>
+              <Text style={styles.VideoText}>Welcome to Fight Life</Text>
+            </View>
+            <View>
+              {/* <Video
+                source={require("../../assets/images/background.mp4")}
+                resizeMode="cover"
+                // repeat={true}
+                style={styles.imgHome}
+              /> */}
+              <TouchableOpacity
+                onPress={isPausedFaq ? playVideoFaq : pauseVideoFaq}
+                activeOpacity={1}
+              >
+                <Video
+                  ref={videoRefFaq}
+                  source={require("../../assets/images/background.mp4")}
+                  resizeMode="cover"
+                  repeat={false}
+                  style={styles.imgHome}
+                  paused={isPausedFaq}
+                />
+              </TouchableOpacity>
+              <Text style={styles.VideoText}>How to Use App</Text>
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-evenly",
+              flex: 1,
+              alignItems: "center",
+              marginTop: getFontSize(2),
+            }}
+          >
+            <View>
+              {/* <Video
+                source={require("../../assets/images/background.mp4")}
+                resizeMode="cover"
+                // repeat={true}
+                style={styles.imgHome}
+              /> */}
+              <TouchableOpacity
+                onPress={isPaused3 ? playVideo3 : pauseVideo3}
+                activeOpacity={1}
+              >
+                <Video
+                  ref={videoRef3}
+                  source={require("../../assets/images/background.mp4")}
+                  resizeMode="cover"
+                  repeat={false}
+                  style={styles.imgHome}
+                  paused={isPaused3}
+                />
+              </TouchableOpacity>
+              <Text style={styles.VideoText}>Meet your Strength Coach</Text>
+            </View>
+            <View>
+              {/* <Video
+                source={require("../../assets/images/background.mp4")}
+                resizeMode="cover"
+                // repeat={true}
+                style={styles.imgHome}
+              /> */}
+              <TouchableOpacity
+                onPress={isPaused4 ? playVideo4 : pauseVideo4}
+                activeOpacity={1}
+              >
+                <Video
+                  ref={videoRef4}
+                  source={require("../../assets/images/background.mp4")}
+                  resizeMode="cover"
+                  repeat={false}
+                  style={styles.imgHome}
+                  paused={isPaused4}
+                />
+              </TouchableOpacity>
+              <Text style={styles.VideoText}>Everything You Need to Know</Text>
+            </View>
+          </View>
+        </View>
         <View
           style={{
             ...styles.eliteCon,
@@ -208,21 +412,21 @@ const HomeSc = ({ navigation, route }) => {
         />
       </ScrollView>
       <View
-            style={{
-              flex: 1,
-              position: "absolute",
-              top: getFontSize(5.5),//27.7
-              left: getWidth(3.5),
-            }}
-          >
-            <Entypo
-              size={30}
-              color={"white"}
-              onPress={() => navigation.openDrawer()}
-              name="menu"
-              style={{ marginLeft: getFontSize(-0.7) }}
-            />
-          </View>
+        style={{
+          flex: 1,
+          position: "absolute",
+          top: getFontSize(5.5), //27.7
+          left: getWidth(3.5),
+        }}
+      >
+        <Entypo
+          size={30}
+          color={"white"}
+          onPress={() => navigation.openDrawer()}
+          name="menu"
+          style={{ marginLeft: getFontSize(-0.7) }}
+        />
+      </View>
     </View>
   );
 };

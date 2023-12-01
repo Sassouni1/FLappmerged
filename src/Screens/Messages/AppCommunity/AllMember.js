@@ -243,9 +243,9 @@ const AllMember = () => {
                     resizeMode="cover"
                     modalImageResizeMode="contain"
                     style={{
-                      width: getWidth(13.5),
-                      height: getHeight(6),
-                      borderRadius: 30,
+                      height: getFontSize(7),
+                      width: getFontSize(7),
+                      borderRadius: getFontSize(0.5),
                       marginLeft: getWidth(4),
                     }}
                     source={
