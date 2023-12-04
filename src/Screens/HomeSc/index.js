@@ -145,6 +145,27 @@ const HomeSc = ({ navigation, route }) => {
     getAdminAlert();
   }, []);
 
+  // const slideAnim = useRef(new Animated.Value(-100)).current;
+  // const textWidth = useRef(0);
+
+  // const slideIn = () => {
+  //   Animated.loop(
+  //     Animated.timing(slideAnim, {
+  //       toValue: getWidth(20) - textWidth.current,
+  //       duration: 10000,
+  //       useNativeDriver: false,
+  //     })
+  //   ).start();
+  // };
+
+  // useEffect(() => {
+  //   slideIn();
+  // }, []);
+
+  const measureText = (text) => {
+    textWidth.current = text.length * 10;
+  };
+
   const Workout = ({ paragraphtext, headingText, subheading }) => {
     return (
       <View style={{ ...styles.eliteCon, marginBottom: getHeight(1.5) }}>
@@ -233,7 +254,14 @@ const HomeSc = ({ navigation, route }) => {
             marginTop: getFontSize(2),
           }}
         >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          {/* <Animated.View */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              // left: slideAnim,
+            }}
+          >
             <Ionicons
               size={20}
               color={"white"}
@@ -241,6 +269,10 @@ const HomeSc = ({ navigation, route }) => {
               style={{ paddingRight: getFontSize(1) }}
             />
             <Text
+              // onLayout={(event) => {
+              //   const { width } = event.nativeEvent.layout;
+              //   measureText(width);
+              // }}
               style={{
                 color: colors.white,
                 fontSize: getFontSize(2),
@@ -249,7 +281,8 @@ const HomeSc = ({ navigation, route }) => {
             >
               {adminAlert}
             </Text>
-          </View>
+            </View>
+          {/* </Animated.View> */}
         </View>
         <View style={{ flexDirection: "column" }}>
           <View

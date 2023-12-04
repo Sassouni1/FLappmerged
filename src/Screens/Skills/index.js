@@ -38,22 +38,6 @@ const Skills = () => {
   const [invalidEntry, setInvalidEntry] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  //console.log('filtered data',filteredData)
-
-  // useEffect(() => {
-  //   const filtered = data.filter((item) =>
-  //     item.folder_title.toUpperCase().includes(searchQuery.toUpperCase())
-  //   );
-  //   setFilteredData(filtered);
-
-  //   // Check if there are no matching results
-  //   if (filtered.length === 0 && searchQuery) {
-  //     setInvalidEntry(true);
-  //   } else {
-  //     setInvalidEntry(false);
-  //   }
-  // }, [searchQuery, data]);
-
   useEffect(() => {
     const filtered = data.filter((item) => {
       const title = item.parent_title || "";

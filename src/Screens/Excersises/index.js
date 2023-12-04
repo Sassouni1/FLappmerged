@@ -25,7 +25,8 @@ import { RefreshControl } from "react-native";
 import HeaderBottom from "../../Components/HeaderBottom";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import { Modal } from "react-native-paper";
+import Modal from "react-native-modal";
+import { ScrollView } from "react-native-gesture-handler";
 
 const Excercises = () => {
   const navigation = useNavigation();
@@ -33,6 +34,8 @@ const Excercises = () => {
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filteredDataText, setFilteredDataText] = useState([]);
+
   const [filteredData, setFilteredData] = useState([]);
   const [invalidEntry, setInvalidEntry] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -43,11 +46,14 @@ const Excercises = () => {
 
   // Function to get all unique types
   const getAllUniqueTypes = () => {
-    const allTypes = data.map((item) => item.type);
+    const allTypes = data
+      .map((item) => item.type)
+      .filter((type) => type !== undefined);
     const uniqueTypes = Array.from(new Set(allTypes));
     setAllTypes(uniqueTypes);
   };
-  // console.log("all types", allTypes);
+
+  //  console.log("all types", allTypes);
 
   // Function to toggle type selection
   const toggleTypeSelection = (selectedType) => {
@@ -66,7 +72,7 @@ const Excercises = () => {
       const filtered = data.filter((item) => selectedTypes.includes(item.type));
       setFilteredData(filtered);
     }
-    toggleModal(); // Close the modal after selection
+    // toggleModal(); // Close the modal after selection
   };
 
   useEffect(() => {
@@ -131,7 +137,6 @@ const Excercises = () => {
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
-  
 
   return (
     <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
@@ -312,46 +317,61 @@ const Excercises = () => {
         </View>
       </View>
       <Modal
-        animationType="slide"
         transparent={true}
-        visible={modalVisible}
-        onRequestClose={toggleModal}
+        isVisible={modalVisible}
+        onBackdropPress={() => setModalVisible(false)}
       >
         <View
           style={{
             backgroundColor: colors.primary,
             borderRadius: 5,
             margin: 20,
-            padding: 20,
+            padding: 10,
           }}
         >
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => setModalVisible(false)}
             style={{ alignItems: "flex-start" }}
           >
             <Text style={{ color: "red" }}>Close</Text>
-          </TouchableOpacity>
-          <View style={{ padding: 20 }}>
-            {allTypes.map((type) => (
-              <TouchableOpacity
-                key={type}
-                onPress={() => toggleTypeSelection(type)}
-                style={{
-                  padding: 10,
-                  backgroundColor: selectedTypes.includes(type)
-                    ? "gray"
-                    : colors.primary,
-                }}
-              >
-                <Text style={{ color: "white", fontSize: getFontSize(2) }}>
-                  {type}
-                </Text>
-              </TouchableOpacity>
+          </TouchableOpacity> */}
+          <ScrollView
+            style={{ paddingLeft: 10, right: 10 }}
+            showsVerticalScrollIndicator="false"
+          >
+            {allTypes.map((type, index) => (
+              <View>
+                {index > 0 &&  <Seprator style={{ marginTop: getFontSize(1) }} />}
+                <TouchableOpacity
+                  key={type}
+                  onPress={() => {
+                    toggleTypeSelection(type), toggleModal();
+                  }}
+                  style={{
+                    padding: 10,
+                    backgroundColor: selectedTypes.includes(type)
+                      ? "gray"
+                      : colors.primary,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "white",
+                      fontSize: getFontSize(2),
+                      fontFamily: "Ubuntu-bold",
+                      paddingBottom: getFontSize(0.5),
+                    }}
+                  >
+                    {type}
+                  </Text>
+                  {/* <Seprator style={{ marginTop: getFontSize(1) }} /> */}
+                </TouchableOpacity>
+              </View>
             ))}
             {/* <TouchableOpacity onPress={filterVideosBySelectedTypes}>
               <Text>Apply Filters</Text>
             </TouchableOpacity> */}
-          </View>
+          </ScrollView>
         </View>
       </Modal>
     </View>

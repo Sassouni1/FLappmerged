@@ -34,6 +34,7 @@ import toast from "react-native-simple-toast";
 import { updateTimer } from "../../../Redux/actions/AuthActions";
 import Button from "../../../Components/Button";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import Seprator from "../../../Components/Seprator";
 
 const CompleteWorkout = ({ route }) => {
   const navigation = useNavigation();
@@ -349,10 +350,68 @@ const CompleteWorkout = ({ route }) => {
           </View>
         </ImageBackground>
         <View style={{ paddingHorizontal: getWidth(3) }}>
+          <View
+            style={{
+              marginTop: getFontSize(2),
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Seprator style={{ width: getWidth(30) }} />
+            <Text
+              style={{
+                fontSize: getFontSize(1.8),
+                color: colors.white,
+                fontFamily: "Ubuntu",
+                paddingLeft: getFontSize(1),
+                paddingRight: getFontSize(1),
+              }}
+            >
+              {exercise?.no_of_sets === "1"
+                ? `${exercise?.no_of_sets} WORKING SET`
+                : `${exercise?.no_of_sets} WORKING SETS`}
+            </Text>
+            <Seprator style={{ width: getWidth(30) }} />
+          </View>
+          {exercise?.notes && exercise?.notes.length > 0 ? (
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
+              <View style={styles.notesStyle}>
+                <Text
+                  style={{
+                    color: colors.white,
+                    fontSize: getFontSize(1.5),
+                    fontFamily: "Ubuntu",
+                  }}
+                >
+                  {exercise?.notes}
+                </Text>
+              </View>
+            </View>
+          ) : null}
           {exercise?.sets?.map((set, index) => (
-            <View key={index} style={{ paddingHorizontal: getWidth(3) }}>
+            <View
+              key={index}
+              style={{
+                paddingHorizontal: getWidth(3),
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <View style={styles.repsCon}>
-                <Text style={styles.count}>{index + 1}</Text>
+                <View
+                  style={{
+                    backgroundColor: colors.whiteOp20,
+                    height: getHeight(8),
+                    width: getWidth(10),
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderTopLeftRadius: getFontSize(1),
+                    borderBottomLeftRadius: getFontSize(1),
+                  }}
+                >
+                  <Text style={styles.count}>{index + 1}</Text>
+                </View>
                 <View style={styles.whiteCon}>
                   {set?.parameter == "reps lebs" ||
                   set?.parameter == "reps" ||
@@ -366,7 +425,7 @@ const CompleteWorkout = ({ route }) => {
                       >
                         <TextInput
                           placeholder="Enter reps"
-                          placeholderTextColor={"black"}
+                          placeholderTextColor={"white"}
                           keyboardType="number-pad"
                           onFocus={() => setSelectedInput(index)}
                           onBlur={() => setSelectedInput(null)}
@@ -384,7 +443,7 @@ const CompleteWorkout = ({ route }) => {
                               ""
                             );
                           }}
-                          style={{ color: "black" }}
+                          style={{ color: "white" }}
                         />
                         <View
                           style={{
@@ -402,7 +461,14 @@ const CompleteWorkout = ({ route }) => {
                           <Text style={styles.lbs}>reps</Text>
                         </View>
                       </View>
+                      <View
+                        style={{
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
                       <View style={styles.horizental}></View>
+                      </View>
 
                       <View
                         style={{
@@ -412,7 +478,7 @@ const CompleteWorkout = ({ route }) => {
                       >
                         <TextInput
                           placeholder="Enter lebs"
-                          placeholderTextColor={"black"}
+                          placeholderTextColor={"white"}
                           keyboardType="number-pad"
                           onFocus={() => setSelectedInput(index)}
                           onBlur={() => setSelectedInput(null)}
@@ -430,7 +496,7 @@ const CompleteWorkout = ({ route }) => {
                               ""
                             );
                           }}
-                          style={{ color: "black" }}
+                          style={{ color: "white" }}
                         />
                         <View
                           style={{
@@ -457,7 +523,7 @@ const CompleteWorkout = ({ route }) => {
                     >
                       <TextInput
                         placeholder="Enter weight"
-                        placeholderTextColor={"black"}
+                        placeholderTextColor={"white"}
                         keyboardType="number-pad"
                         onFocus={() => setSelectedInput(index)}
                         onBlur={() => setSelectedInput(null)}
@@ -467,7 +533,7 @@ const CompleteWorkout = ({ route }) => {
                           setInputContent(updatedContent);
                           updateSubmittedSets(index, "", "", text, "", "", "");
                         }}
-                        style={{ width: getWidth(30), color: "black" }}
+                        style={{ width: getWidth(30), color: "white" }}
                       />
                       <View style={styles.parameterCtn}>
                         <Text style={styles.lbs}>
@@ -485,7 +551,7 @@ const CompleteWorkout = ({ route }) => {
                     >
                       <TextInput
                         placeholder="Enter seconds"
-                        placeholderTextColor={"black"}
+                        placeholderTextColor={"white"}
                         keyboardType="number-pad"
                         onFocus={() => setSelectedInput(index)}
                         onBlur={() => setSelectedInput(null)}
@@ -495,7 +561,7 @@ const CompleteWorkout = ({ route }) => {
                           setInputContent(updatedContent);
                           updateSubmittedSets(index, "", "", "", text, "", "");
                         }}
-                        style={{ width: getWidth(30), color: "black" }}
+                        style={{ width: getWidth(30), color: "white" }}
                       />
                       <View style={styles.parameterCtn}>
                         <Text style={styles.lbs}>
@@ -514,7 +580,7 @@ const CompleteWorkout = ({ route }) => {
                     >
                       <TextInput
                         placeholder="Enter distance"
-                        placeholderTextColor={"black"}
+                        placeholderTextColor={"white"}
                         keyboardType="number-pad"
                         onFocus={() => setSelectedInput(index)}
                         onBlur={() => setSelectedInput(null)}
@@ -524,7 +590,7 @@ const CompleteWorkout = ({ route }) => {
                           setInputContent(updatedContent);
                           updateSubmittedSets(index, "", "", "", "", text, "");
                         }}
-                        style={{ width: getWidth(30), color: "black" }}
+                        style={{ width: getWidth(30), color: "white" }}
                       />
                       <View style={styles.parameterCtn}>
                         <Text style={styles.lbs}>
@@ -541,11 +607,18 @@ const CompleteWorkout = ({ route }) => {
                   </View> */}
                 <View
                   style={{
+                    width: getWidth(0.3),
+                    height: getHeight(8),
+                    backgroundColor: colors.whiteOp20,
+                  }}
+                ></View>
+                <View
+                  style={{
                     ...styles.tickCon,
                     backgroundColor:
                       selectedInput === index || inputContent[index]
                         ? colors.buttonColor
-                        : colors.whiteOp40,
+                        : colors.whiteOp20,
                   }}
                 >
                   {/* <RightIcon height={15} width={15} /> */}
@@ -558,28 +631,43 @@ const CompleteWorkout = ({ route }) => {
                 </View>
               </View>
               {set?.rest_time != 0 ? (
-                <View style={styles.spacebet}>
-                  <TextInput
-                    // placeholder="Enter Rest Time"
-                    editable={false}
-                    placeholderTextColor={colors.white}
-                    keyboardType="number-pad"
-                    style={styles.rest}
-                    value={set?.rest_time}
-                    onChangeText={(text) => {
-                      updateSubmittedSets(index, "", "", "", "", "", text);
-                    }}
-                  />
-                  <View style={styles.btng}>
-                    <View style={styles.btnhor}></View>
+                // <View style={styles.spacebet}>
+                //   <TextInput
+                //     // placeholder="Enter Rest Time"
+                //     editable={false}
+                //     placeholderTextColor={colors.white}
+                //     keyboardType="number-pad"
+                //     style={styles.rest}
+                //     value={set?.rest_time}
+                //     onChangeText={(text) => {
+                //       updateSubmittedSets(index, "", "", "", "", "", text);
+                //     }}
+                //   />
+                //   <View style={styles.btng}>
+                //     <View style={styles.btnhor}></View>
+                //   </View>
+                // </View>
+                <View
+                  style={{ justifyContent: "center", alignItems: "center" }}
+                >
+                  <View style={styles.notesStyle}>
+                    <Text
+                      style={{
+                        color: colors.white,
+                        fontSize: getFontSize(1.5),
+                        fontFamily: "Ubuntu",
+                      }}
+                    >
+                      {set?.rest_time} Rest
+                    </Text>
                   </View>
                 </View>
               ) : null}
             </View>
           ))}
-          {exercise?.notes && exercise?.notes.length > 0 ? (
+          {/* {exercise?.notes && exercise?.notes.length > 0 ? (
             <View>
-              <View style={{marginTop:getFontSize(2)}}>
+              <View style={{ marginTop: getFontSize(2) }}>
                 <Text style={styles.notesText}>Assigned Notes:</Text>
                 <View style={styles.notes}>
                   <Text style={{ color: colors.primary }}>
@@ -600,12 +688,12 @@ const CompleteWorkout = ({ route }) => {
                 onChangeText={(text) => {
                   setSubmittedNotes(text);
                 }}
-              />
-              {/* <View style={styles.tickCon}>
+              /> */}
+          {/* <View style={styles.tickCon}>
                   <RightIcon height={15} width={15} />
                 </View> */}
-            </View>
-          ) : null}
+          {/* </View>
+          ) : null} */}
         </View>
         <View style={{ height: getHeight(15) }}></View>
       </KeyboardAwareScrollView>
