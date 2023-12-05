@@ -33,7 +33,8 @@ export const styles = StyleSheet.create({
       height: getHeight(21), // Adjust the height as needed
       resizeMode: 'cover',
       marginTop: getHeight(1.5),
-      borderRadius:10
+      borderRadius:10,
+      shadowOpacity:0.5,
     },
     calendarContainer: {
       marginTop: 20, // Adjust the margin as needed

@@ -1,12 +1,12 @@
-import {StyleSheet} from 'react-native';
+import {Platform, StyleSheet} from 'react-native';
 import {getHeight, getWidth, getFontSize} from '../../../utils/ResponsiveFun';
 import {colors} from '../../constants/colors';
 import {fonts} from '../../constants/fonts';
 
 export const styles = StyleSheet.create({
   listCon: {
-    height: getHeight(10),
-    paddingHorizontal: getWidth(3),
+    // height: getHeight(8),
+    // paddingHorizontal: getWidth(3),
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -43,9 +43,21 @@ export const styles = StyleSheet.create({
   thumbnail: {
     backgroundColor: colors.white,
     justifyContent: 'center',
-    height: getHeight(6),
-    width: getWidth(18),
-    borderRadius: getFontSize(1),
+    height: getHeight(8),
+    width: getWidth(20),
+    borderTopLeftRadius: getFontSize(2),
+    borderBottomLeftRadius:getFontSize(2),
     alignItems: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: 'black',
+        shadowOffset: { width: 10, height: 1 },
+        shadowOpacity: 0.4,
+        shadowRadius: 5,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
   },
 });

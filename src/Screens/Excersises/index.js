@@ -27,6 +27,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Modal from "react-native-modal";
 import { ScrollView } from "react-native-gesture-handler";
+import SelectDropdown from "react-native-select-dropdown";
 
 const Excercises = () => {
   const navigation = useNavigation();
@@ -41,27 +42,36 @@ const Excercises = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [allTypes, setAllTypes] = useState([]);
+  const [allTypes, setAllTypes] = useState([
+    "All Exercises",
+    "Abs",
+    "Back",
+    "Biceps",
+    "Calves",
+    "Chest",
+    "Forearms",
+  ]);
   const [selectedTypes, setSelectedTypes] = useState([]);
 
   // Function to get all unique types
-  const getAllUniqueTypes = () => {
-    const allTypes = data
-      .map((item) => item.type)
-      .filter((type) => type !== undefined);
-    const uniqueTypes = Array.from(new Set(allTypes));
-    setAllTypes(uniqueTypes);
-  };
-
-  //  console.log("all types", allTypes);
+  // const getAllUniqueTypes = () => {
+  //   const allTypes = data
+  //     .map((item) => item.type)
+  //     .filter((type) => type !== undefined);
+  //   const uniqueTypes = Array.from(new Set(allTypes));
+  //   setAllTypes(uniqueTypes);
+  // };
 
   // Function to toggle type selection
+  // const toggleTypeSelection = (selectedType) => {
+  //   if (selectedTypes.includes(selectedType)) {
+  //     setSelectedTypes(selectedTypes.filter((type) => type !== selectedType));
+  //   } else {
+  //     setSelectedTypes([...selectedTypes, selectedType]);
+  //   }
+  // };
   const toggleTypeSelection = (selectedType) => {
-    if (selectedTypes.includes(selectedType)) {
-      setSelectedTypes(selectedTypes.filter((type) => type !== selectedType));
-    } else {
-      setSelectedTypes([...selectedTypes, selectedType]);
-    }
+    setSelectedTypes([selectedType]);
   };
 
   // Function to filter videos based on selected types
@@ -70,14 +80,15 @@ const Excercises = () => {
       setFilteredData(data);
     } else {
       const filtered = data.filter((item) => selectedTypes.includes(item.type));
+      console.log("filtered", filtered);
       setFilteredData(filtered);
     }
     // toggleModal(); // Close the modal after selection
   };
 
-  useEffect(() => {
-    getAllUniqueTypes();
-  }, [data]);
+  // useEffect(() => {
+  //   getAllUniqueTypes();
+  // }, [data]);
 
   useEffect(() => {
     filterVideosBySelectedTypes();
@@ -85,7 +96,7 @@ const Excercises = () => {
 
   useEffect(() => {
     const filtered = data.filter((item) => {
-      const title = item.parent_title || "";
+      const title = item.title || "";
       return (
         title.toUpperCase().includes(searchQuery.toUpperCase()) ||
         title.trim() === ""
@@ -205,7 +216,7 @@ const Excercises = () => {
         >
           Exercise Type
         </Text>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={toggleModal}
           style={{
             flexDirection: "row",
@@ -235,10 +246,94 @@ const Excercises = () => {
               : "Select Exercise Type"}
           </Text>
           <AntDesign size={getFontSize(2)} color={"white"} name="down" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+        <SelectDropdown
+          defaultValue={"All Exercises"}
+          data={allTypes}
+          onSelect={(selectedType) => toggleTypeSelection(selectedType)}
+          defaultButtonText="Select Exercise Type"
+          buttonTextAfterSelection={(selectedItem, index) => {
+            // return selectedItem;
+            return (
+              <View
+                style={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    width: getWidth(95),
+                    height: getHeight(7),
+                    // marginVertical: getHeight(1),
+                    // marginTop: getHeight(2.5),
+                    backgroundColor: colors.secondary,
+                    borderRadius: 5,
+                    paddingLeft: getFontSize(1),
+                    paddingRight: getFontSize(1.5),
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "white",
+                      fontSize: getFontSize(2),
+                      marginLeft: 10,
+                      flex: 1,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    {selectedItem}
+                  </Text>
+                  <AntDesign
+                    size={getFontSize(2)}
+                    color={"white"}
+                    name="down"
+                  />
+                </View>
+              </View>
+            );
+          }}
+          buttonStyle={{
+            width: getWidth(95),
+            height: getHeight(7),
+            marginVertical: getHeight(1),
+            backgroundColor: colors.secondary,
+            borderRadius: 5,
+            alignSelf: "center",
+            justifyContent: "center",
+          }}
+          buttonTextStyle={{
+            color: "white",
+            fontSize: getFontSize(2),
+            fontFamily: "Ubuntu",
+            // marginLeft: 10,
+          }}
+          showsVerticalScrollIndicator={false}
+          dropdownStyle={{
+            backgroundColor: colors.secondary,
+            height: getHeight(30),
+          }}
+          rowStyle={{
+            backgroundColor: colors.secondary,
+            borderBottomColor: "rgba(0, 0, 0, 0.1)",
+            // margin:getFontSize(0.5)
+          }}
+          selectedRowTextStyle={{
+            color: colors.buttonColor,
+          }}
+          rowTextStyle={{
+            color: "white",
+            fontSize: getFontSize(2),
+            textAlign: "left",
+            paddingLeft: getFontSize(1),
+            fontFamily: "Ubuntu-bold",
+          }}
+        />
       </View>
       <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, marginTop: getFontSize(2) }}>
           {invalidEntry || filteredData.length === 0 ? (
             <View
               style={{
@@ -274,41 +369,55 @@ const Excercises = () => {
               showsVerticalScrollIndicator={false}
               renderItem={({ item, index }) => {
                 return (
-                  <View>
-                    {index > 0 && <Seprator />}
-                    <TouchableOpacity
-                      onPress={() =>
-                        navigation.navigate("VideoSkills", {
-                          video: item?.video,
-                          name: item?.title,
-                        })
-                      }
-                      style={styles.listCon}
+                  <View
+                    style={{ justifyContent: "center", alignItems: "center" }}
+                  >
+                    <View
+                      style={{
+                        backgroundColor: colors.secondary1,
+                        width: getWidth(90),
+                        borderRadius: getFontSize(2),
+                        marginBottom: getFontSize(2),
+                      }}
                     >
-                      {/* <View style={styles.thumbnail}>
+                      {/* {index > 0 && <Seprator />} */}
+                      <TouchableOpacity
+                        onPress={() =>
+                          navigation.navigate("VideoSkills", {
+                            video: item?.video,
+                            name: item?.title,
+                          })
+                        }
+                        style={styles.listCon}
+                      >
+                        {/* <View style={styles.thumbnail}>
                       <PlayerSvg height={20} width={20} />
                     </View> */}
-                      {item?.video_thumbnail ? (
-                        <View>
-                          <Image
-                            source={{ uri: item?.video_thumbnail }}
-                            style={styles.thumbnail}
-                            resizeMode="cover"
-                          ></Image>
-                        </View>
-                      ) : (
-                        <View style={styles.thumbnail}>
-                          <PlayerSvg height={20} width={20} />
-                        </View>
-                      )}
-                      <View style={{ flexDirection: "column" }}>
-                        <Text style={styles.text}>{item?.title}</Text>
+                        {item?.video_thumbnail ? (
+                          <View>
+                            <Image
+                              source={{ uri: item?.video_thumbnail }}
+                              style={{ ...styles.thumbnail }}
+                              resizeMode="cover"
+                            ></Image>
+                          </View>
+                        ) : (
+                          <View style={styles.thumbnail}>
+                            <PlayerSvg height={20} width={20} />
+                          </View>
+                        )}
+                        <View style={{ flexDirection: "column" }}>
+                          <Text style={styles.text}>{item?.title}</Text>
 
-                        <Text style={styles.descriptionText} numberOfLines={2}>
-                          {item?.description}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
+                          <Text
+                            style={styles.descriptionText}
+                            numberOfLines={2}
+                          >
+                            {item?.description}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 );
               }}
@@ -337,11 +446,13 @@ const Excercises = () => {
           </TouchableOpacity> */}
           <ScrollView
             style={{ paddingLeft: 10, right: 10 }}
-            showsVerticalScrollIndicator="false"
+            showsVerticalScrollIndicator={false}
           >
             {allTypes.map((type, index) => (
               <View>
-                {index > 0 &&  <Seprator style={{ marginTop: getFontSize(1) }} />}
+                {index > 0 && (
+                  <Seprator style={{ marginTop: getFontSize(1) }} />
+                )}
                 <TouchableOpacity
                   key={type}
                   onPress={() => {

@@ -146,7 +146,7 @@ const HomeSc = ({ navigation, route }) => {
   }, []);
 
   // const slideAnim = useRef(new Animated.Value(-100)).current;
-  // const textWidth = useRef(0);
+  const textWidth = useRef(0);
 
   // const slideIn = () => {
   //   Animated.loop(
@@ -243,7 +243,7 @@ const HomeSc = ({ navigation, route }) => {
         <View
           style={{
             // width: getWidth(90),
-            height: getHeight(5),
+            // height: getHeight(5),
             // backgroundColor: colors.homeConColor,
             width: getWidth(96),
             backgroundColor: colors.homeConColor,
@@ -252,6 +252,8 @@ const HomeSc = ({ navigation, route }) => {
             justifyContent: "center",
             alignItems: "center",
             marginTop: getFontSize(2),
+            paddingTop: getFontSize(1.5),
+            paddingBottom:getFontSize(1.5)
           }}
         >
           {/* <Animated.View */}
@@ -259,6 +261,9 @@ const HomeSc = ({ navigation, route }) => {
             style={{
               flexDirection: "row",
               alignItems: "center",
+              width: getWidth(80),
+              justifyContent: "center",
+              alignSelf: "center",
               // left: slideAnim,
             }}
           >
@@ -269,10 +274,10 @@ const HomeSc = ({ navigation, route }) => {
               style={{ paddingRight: getFontSize(1) }}
             />
             <Text
-              // onLayout={(event) => {
-              //   const { width } = event.nativeEvent.layout;
-              //   measureText(width);
-              // }}
+              onLayout={(event) => {
+                const { width } = event.nativeEvent.layout;
+                measureText(width);
+              }}
               style={{
                 color: colors.white,
                 fontSize: getFontSize(2),
@@ -281,7 +286,7 @@ const HomeSc = ({ navigation, route }) => {
             >
               {adminAlert}
             </Text>
-            </View>
+          </View>
           {/* </Animated.View> */}
         </View>
         <View style={{ flexDirection: "column" }}>

@@ -37,7 +37,7 @@ export const styles = StyleSheet.create({
     fontSize: getFontSize(2),
     color: colors.graytext4,
     fontFamily: fonts.URe,
-    marginTop: Platform.OS ==='ios' ? getHeight(0.5) : getHeight(-0.5),
+    // marginTop: Platform.OS === "ios" ? getHeight(0) : getHeight(0),
     textAlign: "center",
     //right:getFontSize(1.5)
   },
@@ -61,7 +61,7 @@ export const styles = StyleSheet.create({
   numbr: {
     fontSize: getFontSize(2),
     fontFamily: fonts.URe,
-    color: colors.darktext,
+    color: colors.white,
     // marginLeft: getWidth(-3),
   },
   count: {
@@ -152,7 +152,7 @@ export const styles = StyleSheet.create({
   },
   text: {
     marginHorizontal: 4,
-    fontSize: Platform.OS ==="ios"? getFontSize(5):getFontSize(4),
+    fontSize: Platform.OS === "ios" ? getFontSize(5) : getFontSize(4),
     fontFamily: fonts.Re,
     color: colors.white,
     marginLeft: getWidth(2),
@@ -164,10 +164,20 @@ export const styles = StyleSheet.create({
     marginRight: getFontSize(1),
   },
   repsCon: {
+    // flexDirection: "row",
+    // alignItems: "center",
+    // height: getHeight(8),
+    //marginTop: getHeight(3),
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     height: getHeight(8),
-    //marginTop: getHeight(3),
+    marginTop: getHeight(3),
+    backgroundColor: colors.secondary1,
+    width: getWidth(90),
+    // paddingLeft:getFontSize(1),
+    paddingRight: getFontSize(1),
+    borderRadius: getFontSize(1),
   },
   headerTime: {
     //flex:1,
@@ -183,18 +193,12 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   whiteCon: {
-    width: getWidth(75),
+    width: getWidth(70),
     height: getHeight(6),
     borderRadius: 5,
-    borderWidth: 1,
+    // borderWidth: 1,
     borderColor: colors.graytext5,
-    backgroundColor: colors.white,
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
     flexDirection: "row",
-    paddingLeft: getFontSize(3),
-    paddingTop: getFontSize(0.5),
-    paddingBottom: getFontSize(0.5),
   },
   heading: {
     height: getHeight(3.5),
@@ -217,7 +221,7 @@ export const styles = StyleSheet.create({
     height: getHeight(3),
     marginTop: getHeight(2.5),
     marginLeft: getFontSize(2),
-    marginBottom:getHeight(1)
+    marginBottom: getHeight(1),
   },
   rest: {
     fontFamily: fonts.UBo,
@@ -247,7 +251,7 @@ export const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     width: "100%",
-    // marginTop:getFontSize(1),
+    //  marginBottom:getFontSize(1),
     right: getFontSize(2),
   },
   note: {
@@ -259,7 +263,17 @@ export const styles = StyleSheet.create({
   set: {
     color: colors.white,
     fontSize: getFontSize(2.2),
-    fontFamily:"Ubuntu",
-    fontWeight:"bold"
+    fontFamily: "Ubuntu",
+    fontWeight: "bold",
+  },
+  notesStyle: {
+    marginTop: getFontSize(2),
+    backgroundColor: colors.secondary1,
+    width: getWidth(90),
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: getFontSize(1.5),
+    paddingBottom: getFontSize(1.5),
+    borderRadius: getFontSize(0.5),
   },
 });

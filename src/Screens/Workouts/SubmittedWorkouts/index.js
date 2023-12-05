@@ -27,6 +27,7 @@ import { ApiCall } from "../../../Services/Apis";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import Seprator from "../../../Components/Seprator";
 
 const SubmittedWorkouts = ({ route }) => {
   const navigation = useNavigation();
@@ -46,9 +47,10 @@ const SubmittedWorkouts = ({ route }) => {
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
   const loader = useSelector((state) => state.gernal.loader);
- 
-    const submittedTime = exercise?.submitted_time || '0:0:0';
-    const [submittedHours, submittedMinutes, submittedSeconds] = submittedTime.split(':');
+
+  const submittedTime = exercise?.submitted_time || "0:0:0";
+  const [submittedHours, submittedMinutes, submittedSeconds] =
+    submittedTime.split(":");
   useEffect(() => {
     let interval;
 
@@ -243,175 +245,143 @@ const SubmittedWorkouts = ({ route }) => {
             buttontext={"2 warm up sets"}
             style={{ marginTop: getHeight(3) }}
           /> */}
-        <View style={{ paddingHorizontal: getWidth(3) }}>
-          <View style={{ marginTop: getHeight(3) }}>
-            <Text style={{...styles.set,marginLeft:getFontSize(2)}}>Assigned Set</Text>
-          </View>
-          {exercise?.sets?.map((set, index) => (
-            <View key={index} style={{ paddingHorizontal: getWidth(3) }}>
-              <View style={styles.repsCon}>
-                <Text style={styles.count}>{index + 1}</Text>
-                <View style={styles.whiteCon}>
-                  {set?.parameter == "reps lebs" ||
-                  set?.parameter == "reps" ||
-                  set?.parameter == "lebs" ? (
-                    <View style={styles.rowDirection}>
-                      <View>
-                        <Text style={styles.numbr}>
-                          {set.reps} reps
-                          {/* {set.lebs} lebs */}
-                        </Text>
-                        <Text style={styles.lbs}>reps</Text>
-                      </View>
-                      <View style={styles.horizental}></View>
-
-                      <View>
-                        <Text style={styles.numbr}>
-                          {set.lebs} lebs
-                          {/* {set.lebs} lebs */}
-                        </Text>
-                        <Text style={styles.lbs}>lebs</Text>
-                      </View>
-                    </View>
-                  ) : set?.parameter == "weight" ? (
-                    <View
-                      style={{
-                        ...styles.rowDirection,
-                        marginTop: getFontSize(1),
-                      }}
-                    >
-                      <Text style={styles.numbr}>{set.weight}kg</Text>
-                      <Text style={styles.lbs}>{set.parameter}</Text>
-                    </View>
-                  ) : set?.parameter == "seconds" ? (
-                    <View
-                      style={{
-                        ...styles.rowDirection,
-                        marginTop: getFontSize(1),
-                      }}
-                    >
-                      <Text style={styles.numbr}>{set.seconds}sec</Text>
-                      <Text style={styles.lbs}>{set.parameter}</Text>
-                    </View>
-                  ) : set?.parameter == "distance" ? (
-                    <View
-                      style={{
-                        ...styles.rowDirection,
-                        marginTop: getFontSize(1),
-                      }}
-                    >
-                      <Text style={styles.numbr}>{set.distance}miles</Text>
-                      <Text style={styles.lbs}>{set.parameter}</Text>
-                    </View>
-                  ) : null}
-                  {/* <View style={styles.horizental}></View> */}
-                  {/* <View>
-                      <Text style={styles.dashes}> ---</Text>
-                      <Text style={styles.lbs}>LBS</Text>
-                    </View> */}
-                </View>
-                {/* <View style={styles.tickCon}>
-                  <RightIcon height={15} width={15} />
-                </View> */}
+        {loader ? null : (
+          <>
+            <View style={{ paddingHorizontal: getWidth(3) }}>
+              <View style={{ marginTop: getHeight(3) }}>
+                <Text style={{ ...styles.set, marginLeft: getFontSize(2) }}>
+                  Assigned Set
+                </Text>
               </View>
-              {set?.rest_time != 0 ? (
-                <View style={styles.spacebet}>
-                  <Text style={styles.rest}>{set.rest_time} rest</Text>
-                  <View style={styles.btng}>
-                    <View style={styles.btnhor}></View>
+              <View
+                style={{
+                  marginTop: getFontSize(2),
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Seprator style={{ width: getWidth(30) }} />
+                <Text
+                  style={{
+                    fontSize: getFontSize(1.8),
+                    color: colors.white,
+                    fontFamily: "Ubuntu",
+                    paddingLeft: getFontSize(1),
+                    paddingRight: getFontSize(1),
+                  }}
+                >
+                  {exercise?.no_of_sets === "1"
+                    ? `${exercise?.no_of_sets} WORKING SET`
+                    : `${exercise?.no_of_sets} WORKING SETS`}
+                </Text>
+                <Seprator style={{ width: getWidth(30) }} />
+              </View>
+              {exercise?.notes && exercise?.notes.length > 0 ? (
+                <View
+                  style={{ justifyContent: "center", alignItems: "center" }}
+                >
+                  <View style={styles.notesStyle}>
+                    <Text
+                      style={{
+                        color: colors.white,
+                        fontSize: getFontSize(1.5),
+                        fontFamily: "Ubuntu",
+                      }}
+                    >
+                      {exercise?.notes}
+                    </Text>
                   </View>
                 </View>
               ) : null}
-            </View>
-          ))}
-          {exercise?.notes && exercise?.notes.length > 0 ? (
-            <View style={{ marginLeft: getWidth(7) }}>
-              <Text style={styles.note}>Notes:</Text>
-              <View style={{ ...styles.repsCon, marginTop: getHeight(2) }}>
-                <View style={{ ...styles.whiteCon, height: getHeight(10) }}>
-                  <Text style={{color:'black'}}>{exercise?.notes}</Text>
-                </View>
-                {/* <View style={styles.tickCon}>
-                  <RightIcon height={15} width={15} />
-                </View> */}
-              </View>
-            </View>
-          ) : null}
-        </View>
+              {exercise?.sets?.map((set, index) => (
+                <View
+                  key={index}
+                  style={{
+                    paddingHorizontal: getWidth(3),
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <View style={styles.repsCon}>
+                    {/* <Text style={styles.count}>{index + 1}</Text> */}
+                    <View
+                      style={{
+                        backgroundColor: colors.whiteOp20,
+                        height: getHeight(8),
+                        width: getWidth(10),
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderTopLeftRadius: getFontSize(1),
+                        borderBottomLeftRadius: getFontSize(1),
+                      }}
+                    >
+                      <Text style={styles.count}>{index + 1}</Text>
+                    </View>
+                    <View style={styles.whiteCon}>
+                      {set?.parameter == "reps lebs" ||
+                      set?.parameter == "reps" ||
+                      set?.parameter == "lebs" ? (
+                        <View style={styles.rowDirection}>
+                          <View>
+                            <Text style={styles.numbr}>
+                              {set.reps} reps
+                              {/* {set.lebs} lebs */}
+                            </Text>
+                            <Text style={styles.lbs}>reps</Text>
+                          </View>
+                          <View style={styles.horizental}></View>
 
-        <View style={{ paddingHorizontal: getWidth(3) }}>
-          <Text style={{ ...styles.set, marginTop: getHeight(7),marginLeft:getFontSize(2) }}>
-            Submitted Set
-          </Text>
-          {exercise?.submitted_sets?.map((set, index) => (
-            <View key={index} style={{ paddingHorizontal: getWidth(3) }}>
-              <View style={{ marginTop: getHeight(0.1) }}></View>
-              <View style={styles.repsCon}>
-                <Text style={styles.count}>{index + 1}</Text>
-                <View style={styles.whiteCon}>
-                  {set?.parameter == "reps lebs" ||
-                  set?.parameter == "reps" ||
-                  set?.parameter == "lebs" ? (
-                    <View style={styles.rowDirection}>
-                      <View>
-                        <Text style={styles.numbr}>
-                          {set.reps} reps
-                          {/* {set.lebs} lebs */}
-                        </Text>
-                        <Text style={styles.lbs}>reps</Text>
-                      </View>
-                      <View style={styles.horizental}></View>
-
-                      <View>
-                        <Text style={styles.numbr}>
-                          {set.lebs} lebs
-                          {/* {set.lebs} lebs */}
-                        </Text>
-                        <Text style={styles.lbs}>lebs</Text>
-                      </View>
-                    </View>
-                  ) : set?.parameter == "weight" ? (
-                    <View
-                      style={{
-                        ...styles.rowDirection,
-                        marginTop: getFontSize(1),
-                      }}
-                    >
-                      <Text style={styles.numbr}>{set.weight}kg</Text>
-                      <Text style={styles.lbs}>{set.parameter}</Text>
-                    </View>
-                  ) : set?.parameter == "seconds" ? (
-                    <View
-                      style={{
-                        ...styles.rowDirection,
-                        marginTop: getFontSize(1),
-                      }}
-                    >
-                      <Text style={styles.numbr}>{set.seconds}sec</Text>
-                      <Text style={styles.lbs}>{set.parameter}</Text>
-                    </View>
-                  ) : set?.parameter == "distance" ? (
-                    <View
-                      style={{
-                        ...styles.rowDirection,
-                        marginTop: getFontSize(1),
-                      }}
-                    >
-                      <Text style={styles.numbr}>{set.distance}miles</Text>
-                      <Text style={styles.lbs}>{set.parameter}</Text>
-                    </View>
-                  ) : null}
-                  {/* <View style={styles.horizental}></View> */}
-                  {/* <View>
+                          <View>
+                            <Text style={styles.numbr}>
+                              {set.lebs} lebs
+                              {/* {set.lebs} lebs */}
+                            </Text>
+                            <Text style={styles.lbs}>lebs</Text>
+                          </View>
+                        </View>
+                      ) : set?.parameter == "weight" ? (
+                        <View
+                          style={{
+                            ...styles.rowDirection,
+                            // marginTop: getFontSize(1),
+                          }}
+                        >
+                          <Text style={styles.numbr}>{set.weight}kg</Text>
+                          <Text style={styles.lbs}>{set.parameter}</Text>
+                        </View>
+                      ) : set?.parameter == "seconds" ? (
+                        <View
+                          style={{
+                            ...styles.rowDirection,
+                            // marginTop: getFontSize(1),
+                          }}
+                        >
+                          <Text style={styles.numbr}>{set.seconds}sec</Text>
+                          <Text style={styles.lbs}>{set.parameter}</Text>
+                        </View>
+                      ) : set?.parameter == "distance" ? (
+                        <View
+                          style={{
+                            ...styles.rowDirection,
+                            // marginTop: getFontSize(1),
+                          }}
+                        >
+                          <Text style={styles.numbr}>{set.distance}miles</Text>
+                          <Text style={styles.lbs}>{set.parameter}</Text>
+                        </View>
+                      ) : null}
+                      {/* <View style={styles.horizental}></View> */}
+                      {/* <View>
                       <Text style={styles.dashes}> ---</Text>
                       <Text style={styles.lbs}>LBS</Text>
                     </View> */}
-                </View>
-                {/* <View style={styles.tickCon}>
+                    </View>
+                    {/* <View style={styles.tickCon}>
                   <RightIcon height={15} width={15} />
                 </View> */}
-              </View>
-              {/* {set?.rest_time != 0 ? (
+                  </View>
+                  {/* {set?.rest_time != 0 ? (
                 <View style={styles.spacebet}>
                   <Text style={styles.rest}>{set.rest_time} rest</Text>
                   <View style={styles.btng}>
@@ -419,37 +389,175 @@ const SubmittedWorkouts = ({ route }) => {
                   </View>
                 </View>
               ) : null} */}
-            </View>
-          ))}
-          {exercise?.submitted_notes && exercise?.submitted_notes.length > 0 ? (
-            <View style={{ marginLeft: getWidth(7) }}>
-              <Text style={styles.note}>Notes:</Text>
-              <View style={{ ...styles.repsCon, marginTop: getHeight(2) }}>
-                <View style={{ ...styles.whiteCon, height: getHeight(10) }}>
-                  <Text style={{color:'black'}}>{exercise?.submitted_notes}</Text>
+                  {set?.rest_time != 0 ? (
+                    <View
+                      style={{ justifyContent: "center", alignItems: "center" }}
+                    >
+                      <View style={styles.notesStyle}>
+                        <Text
+                          style={{
+                            color: colors.white,
+                            fontSize: getFontSize(1.5),
+                            fontFamily: "Ubuntu",
+                          }}
+                        >
+                          {set?.rest_time} Rest
+                        </Text>
+                      </View>
+                    </View>
+                  ) : null}
                 </View>
-                {/* <View style={styles.tickCon}>
+              ))}
+            </View>
+          </>
+        )}
+        {loader ? null : (
+          <>
+            <View style={{ paddingHorizontal: getWidth(3) }}>
+              <Text
+                style={{
+                  ...styles.set,
+                  marginTop: getHeight(7),
+                  marginLeft: getFontSize(2),
+                }}
+              >
+                Submitted Set
+              </Text>
+              <View
+                style={{
+                  marginTop: getFontSize(2),
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Seprator style={{ width: getWidth(27) }} />
+                <Text
+                  style={{
+                    fontSize: getFontSize(1.8),
+                    color: colors.white,
+                    fontFamily: "Ubuntu",
+                    paddingLeft: getFontSize(1),
+                    paddingRight: getFontSize(1),
+                  }}
+                >
+                  {exercise?.submitted_sets &&
+                  exercise?.submitted_sets.length === "1"
+                    ? `${exercise.submitted_sets.length} SUBMITTED SET`
+                    : `${
+                        exercise?.submitted_sets
+                          ? exercise?.submitted_sets.length
+                          : 0
+                      } SUBMITTED SETS`}
+                </Text>
+                <Seprator style={{ width: getWidth(27) }} />
+              </View>
+              {exercise?.submitted_sets?.map((set, index) => (
+                <View key={index} style={{ paddingHorizontal: getWidth(3) }}>
+                  <View style={{ marginTop: getHeight(0.1) }}></View>
+                  <View style={styles.repsCon}>
+                    <View
+                      style={{
+                        backgroundColor: colors.whiteOp20,
+                        height: getHeight(8),
+                        width: getWidth(10),
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderTopLeftRadius: getFontSize(1),
+                        borderBottomLeftRadius: getFontSize(1),
+                      }}
+                    >
+                      <Text style={styles.count}>{index + 1}</Text>
+                    </View>
+                    <View style={styles.whiteCon}>
+                      {set?.parameter == "reps lebs" ||
+                      set?.parameter == "reps" ||
+                      set?.parameter == "lebs" ? (
+                        <View style={styles.rowDirection}>
+                          <View>
+                            <Text style={styles.numbr}>
+                              {set.reps} reps
+                            </Text>
+                            <Text style={styles.lbs}>reps</Text>
+                          </View>
+                          <View style={styles.horizental}></View>
+
+                          <View>
+                            <Text style={styles.numbr}>
+                              {set.lebs} lebs
+                            </Text>
+                            <Text style={styles.lbs}>lebs</Text>
+                          </View>
+                        </View>
+                      ) : set?.parameter == "weight" ? (
+                        <View
+                          style={{
+                            ...styles.rowDirection,
+                            // marginTop: getFontSize(1),
+                          }}
+                        >
+                          <Text style={styles.numbr}>{set.weight}kg</Text>
+                          <Text style={styles.lbs}>{set.parameter}</Text>
+                        </View>
+                      ) : set?.parameter == "seconds" ? (
+                        <View
+                          style={{
+                            ...styles.rowDirection,
+                            // marginTop: getFontSize(1),
+                          }}
+                        >
+                          <Text style={styles.numbr}>{set.seconds}sec</Text>
+                          <Text style={styles.lbs}>{set.parameter}</Text>
+                        </View>
+                      ) : set?.parameter == "distance" ? (
+                        <View
+                          style={{
+                            ...styles.rowDirection,
+                            // marginTop: getFontSize(1),
+                          }}
+                        >
+                          <Text style={styles.numbr}>{set.distance}miles</Text>
+                          <Text style={styles.lbs}>{set.parameter}</Text>
+                        </View>
+                      ) : null}
+                      {/* <View style={styles.horizental}></View> */}
+                      {/* <View>
+                      <Text style={styles.dashes}> ---</Text>
+                      <Text style={styles.lbs}>LBS</Text>
+                    </View> */}
+                    </View>
+                    {/* <View style={styles.tickCon}>
                   <RightIcon height={15} width={15} />
                 </View> */}
-              </View>
+                  </View>
+                  {/* {set?.rest_time != 0 ? (
+                <View style={styles.spacebet}>
+                  <Text style={styles.rest}>{set.rest_time} rest</Text>
+                  <View style={styles.btng}>
+                    <View style={styles.btnhor}></View>
+                  </View>
+                </View>
+              ) : null} */}
+                </View>
+              ))}
+              {exercise?.submitted_notes &&
+              exercise?.submitted_notes.length > 0 ? (
+                <View style={{ marginLeft: getWidth(7) }}>
+                  <Text style={styles.note}>Notes:</Text>
+                  <View style={{ ...styles.repsCon, marginTop: getHeight(2) }}>
+                    <View style={{ ...styles.whiteCon, height: getHeight(10) }}>
+                      <Text style={{ color: "black" }}>
+                        {exercise?.submitted_notes}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              ) : null}
             </View>
-          ) : null}
-        </View>
+          </>
+        )}
         <View style={{ height: getHeight(15) }}></View>
       </ScrollView>
-      {/* <TouchableOpacity
-          // onPress={()=>navigation.navigate('Workouts')}
-          onPress={() =>
-            navigation.navigate("CompleteWorkout", {
-              workoutId: workoutId,
-              innerWorkoutId: innerWorkoutId,
-              exerciseId: exerciseId,
-            })
-          }
-          style={styles.buttonMark}
-        >
-          <Text style={styles.markas}>Process</Text>
-        </TouchableOpacity> */}
     </View>
   );
 };

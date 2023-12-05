@@ -33,7 +33,7 @@ import {
   const FolderVideo = ({route}) => {
     const navigation = useNavigation();
     const {childFolderVideos,childFolderName} = route?.params;
-     console.log('folder',childFolderName)
+     console.log('folder',childFolderVideos)
     const token = useSelector((state) => state.auth.userToken);
     const dispatch = useDispatch();
     const [data, setData] = useState([]);

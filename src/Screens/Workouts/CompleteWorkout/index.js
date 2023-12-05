@@ -349,6 +349,8 @@ const CompleteWorkout = ({ route }) => {
             <Text style={styles.flatchest1}>sets: {exercise?.no_of_sets}</Text>
           </View>
         </ImageBackground>
+        {loader ? null : (
+          <>
         <View style={{ paddingHorizontal: getWidth(3) }}>
           <View
             style={{
@@ -695,16 +697,9 @@ const CompleteWorkout = ({ route }) => {
           {/* </View>
           ) : null} */}
         </View>
+        </>)}
         <View style={{ height: getHeight(15) }}></View>
       </KeyboardAwareScrollView>
-      {/* <TouchableOpacity
-        // onPress={()=>navigation.navigate('Workouts')}
-        onPress={() => singleExerciseComplete()}
-        style={styles.buttonMark}
-      >
-        <Text style={styles.markas}>Complete Exercise</Text>
-      </TouchableOpacity> */}
-
       <View
         style={{
           marginTop: Platform.OS === "ios" ? getFontSize(0) : getFontSize(15),
