@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
+  Platform,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { colors } from "../../constants/colors";
@@ -79,9 +80,14 @@ const Excercises = () => {
     if (selectedTypes.length === 0) {
       setFilteredData(data);
     } else {
-      const filtered = data.filter((item) => selectedTypes.includes(item.type));
-      console.log("filtered", filtered);
-      setFilteredData(filtered);
+      if (selectedTypes.includes("All Exercises")) {
+        setFilteredData(data);
+      } else {
+        const filtered = data.filter((item) =>
+          selectedTypes.includes(item.type)
+        );
+        setFilteredData(filtered);
+      }
     }
     // toggleModal(); // Close the modal after selection
   };
@@ -103,7 +109,7 @@ const Excercises = () => {
       );
     });
     setFilteredData(filtered);
-
+    setIsRefreshing(true);
     if (filtered.length === 0 && searchQuery) {
       setInvalidEntry(true);
     } else {
@@ -121,7 +127,7 @@ const Excercises = () => {
       });
 
       if (res?.status == "200") {
-        console.log("res::", res?.response);
+        console.log("res of exercise video", res?.response);
         setData(res?.response?.video_list);
         setFilteredData(res?.response?.video_list);
         dispatch(setLoader(false));
@@ -140,14 +146,22 @@ const Excercises = () => {
   const handleRefresh = () => {
     dispatch(setLoader(true));
     getSkills();
+    setIsRefreshing(true);
   };
 
   useEffect(() => {
     handleRefresh();
   }, []);
-  const toggleModal = () => {
-    setModalVisible(!modalVisible);
+  const handleSelection = () => {
+    if (isRefreshing) {
+      setIsRefreshing(false);
+    }
+    // Add any other logic based on selection if needed
   };
+
+  // const toggleModal = () => {
+  //   setModalVisible(!modalVisible);
+  // };
 
   return (
     <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
@@ -247,90 +261,94 @@ const Excercises = () => {
           </Text>
           <AntDesign size={getFontSize(2)} color={"white"} name="down" />
         </TouchableOpacity> */}
-        <SelectDropdown
-          defaultValue={"All Exercises"}
-          data={allTypes}
-          onSelect={(selectedType) => toggleTypeSelection(selectedType)}
-          defaultButtonText="Select Exercise Type"
-          buttonTextAfterSelection={(selectedItem, index) => {
-            // return selectedItem;
-            return (
-              <View
-                style={{
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
+        <TouchableOpacity>
+          <SelectDropdown
+             defaultValue={isRefreshing ? "All Exercises" : undefined}
+            data={allTypes}
+            onSelect={(selectedType) => {
+              toggleTypeSelection(selectedType), handleSelection();
+            }}
+            defaultButtonText="Select Exercise Type"
+            buttonTextAfterSelection={(selectedItem, index) => {
+              // return selectedItem;
+              return (
                 <View
                   style={{
-                    flexDirection: "row",
+                    justifyContent: "space-between",
                     alignItems: "center",
-                    width: getWidth(95),
-                    height: getHeight(7),
-                    // marginVertical: getHeight(1),
-                    // marginTop: getHeight(2.5),
-                    backgroundColor: colors.secondary,
-                    borderRadius: 5,
-                    paddingLeft: getFontSize(1),
-                    paddingRight: getFontSize(1.5),
                   }}
                 >
-                  <Text
+                  <View
                     style={{
-                      color: "white",
-                      fontSize: getFontSize(2),
-                      marginLeft: 10,
-                      flex: 1,
-                      flexWrap: "wrap",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      width: getWidth(95),
+                      height: getHeight(7),
+                      // marginVertical: getHeight(1),
+                      // marginTop: getHeight(2.5),
+                      backgroundColor: colors.secondary,
+                      borderRadius: 5,
+                      paddingLeft: getFontSize(1),
+                      paddingRight: getFontSize(1.5),
                     }}
                   >
-                    {selectedItem}
-                  </Text>
-                  <AntDesign
-                    size={getFontSize(2)}
-                    color={"white"}
-                    name="down"
-                  />
+                    <Text
+                      style={{
+                        color: "white",
+                        fontSize: getFontSize(2),
+                        marginLeft: 10,
+                        flex: 1,
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      {isRefreshing ? "All Exercises" : selectedItem}
+                    </Text>
+                    <AntDesign
+                      size={getFontSize(2)}
+                      color={"white"}
+                      name="down"
+                    />
+                  </View>
                 </View>
-              </View>
-            );
-          }}
-          buttonStyle={{
-            width: getWidth(95),
-            height: getHeight(7),
-            marginVertical: getHeight(1),
-            backgroundColor: colors.secondary,
-            borderRadius: 5,
-            alignSelf: "center",
-            justifyContent: "center",
-          }}
-          buttonTextStyle={{
-            color: "white",
-            fontSize: getFontSize(2),
-            fontFamily: "Ubuntu",
-            // marginLeft: 10,
-          }}
-          showsVerticalScrollIndicator={false}
-          dropdownStyle={{
-            backgroundColor: colors.secondary,
-            height: getHeight(30),
-          }}
-          rowStyle={{
-            backgroundColor: colors.secondary,
-            borderBottomColor: "rgba(0, 0, 0, 0.1)",
-            // margin:getFontSize(0.5)
-          }}
-          selectedRowTextStyle={{
-            color: colors.buttonColor,
-          }}
-          rowTextStyle={{
-            color: "white",
-            fontSize: getFontSize(2),
-            textAlign: "left",
-            paddingLeft: getFontSize(1),
-            fontFamily: "Ubuntu-bold",
-          }}
-        />
+              );
+            }}
+            buttonStyle={{
+              width: getWidth(95),
+              height: getHeight(7),
+              marginVertical: getHeight(1),
+              backgroundColor: colors.secondary,
+              borderRadius: 5,
+              alignSelf: "center",
+              justifyContent: "center",
+            }}
+            buttonTextStyle={{
+              color: "white",
+              fontSize: getFontSize(2),
+              fontFamily: "Ubuntu",
+              // marginLeft: 10,
+            }}
+            showsVerticalScrollIndicator={false}
+            dropdownStyle={{
+              backgroundColor: colors.secondary,
+              height: getHeight(30),
+            }}
+            rowStyle={{
+              backgroundColor: colors.secondary,
+              borderBottomColor: "rgba(0, 0, 0, 0.1)",
+              // margin:getFontSize(0.5)
+            }}
+            selectedRowTextStyle={{
+              color: colors.buttonColor,
+            }}
+            rowTextStyle={{
+              color: "white",
+              fontSize: getFontSize(2),
+              textAlign: "left",
+              paddingLeft: getFontSize(1),
+              fontFamily: "Ubuntu-bold",
+            }}
+          />
+        </TouchableOpacity>
       </View>
       <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
         <View style={{ flex: 1, marginTop: getFontSize(2) }}>
@@ -339,8 +357,7 @@ const Excercises = () => {
               style={{
                 justifyContent: "center",
                 alignItems: "center",
-                flex: 1,
-                bottom: getFontSize(9),
+                height: getHeight(40),
               }}
             >
               <AntDesign
@@ -394,7 +411,22 @@ const Excercises = () => {
                       <PlayerSvg height={20} width={20} />
                     </View> */}
                         {item?.video_thumbnail ? (
-                          <View>
+                          <View
+                            style={{
+                              backgroundColor: "black",
+                              ...Platform.select({
+                                ios: {
+                                  shadowColor: "black",
+                                  shadowOffset: { width: 10, height: 1 },
+                                  shadowOpacity: 0.4,
+                                  shadowRadius: 5,
+                                },
+                                android: {
+                                  elevation: 4,
+                                },
+                              }),
+                            }}
+                          >
                             <Image
                               source={{ uri: item?.video_thumbnail }}
                               style={{ ...styles.thumbnail }}
@@ -425,7 +457,7 @@ const Excercises = () => {
           )}
         </View>
       </View>
-      <Modal
+      {/* <Modal
         transparent={true}
         isVisible={modalVisible}
         onBackdropPress={() => setModalVisible(false)}
@@ -444,7 +476,7 @@ const Excercises = () => {
           >
             <Text style={{ color: "red" }}>Close</Text>
           </TouchableOpacity> */}
-          <ScrollView
+      {/* <ScrollView
             style={{ paddingLeft: 10, right: 10 }}
             showsVerticalScrollIndicator={false}
           >
@@ -474,17 +506,15 @@ const Excercises = () => {
                     }}
                   >
                     {type}
-                  </Text>
-                  {/* <Seprator style={{ marginTop: getFontSize(1) }} /> */}
-                </TouchableOpacity>
-              </View>
-            ))}
-            {/* <TouchableOpacity onPress={filterVideosBySelectedTypes}>
+                  </Text> */}
+      {/* <Seprator style={{ marginTop: getFontSize(1) }} /> */}
+
+      {/* <TouchableOpacity onPress={filterVideosBySelectedTypes}>
               <Text>Apply Filters</Text>
             </TouchableOpacity> */}
-          </ScrollView>
+      {/* </ScrollView>
         </View>
-      </Modal>
+      </Modal>  */}
     </View>
   );
 };
