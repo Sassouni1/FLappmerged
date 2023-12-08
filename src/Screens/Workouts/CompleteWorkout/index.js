@@ -8,8 +8,9 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { GernalStyle } from "../../../constants/GernalStyle";
 import { colors } from "../../../constants/colors";
 import GeneralStatusBar from "../../../Components/GeneralStatusBar";
@@ -59,9 +60,19 @@ const CompleteWorkout = ({ route }) => {
   const [seconds, setSeconds] = useState(timer.seconds);
   const [isRunning, setIsRunning] = useState(false); // Track timer state
   const [selectedInput, setSelectedInput] = useState(null);
+  const [selectedInputAdditional, setSelectedInputAdditional] = useState(null);
+  const [additionalSetCount, setAdditionalSetCount] = useState(0);
   const [inputContent, setInputContent] = useState(
     Array(exercise?.sets.length).fill("")
   ); // State to store input content
+
+  const [inputContentAdditional, setInputContentAdditional] = useState(
+    Array(exercise?.sets[0]).fill("")
+  );
+
+  // const [inputContentAdditional, setInputContentAdditional] = useState(
+  //   Array(exercise?.sets.length).fill("")
+  // );
 
   const dispatch = useDispatch();
 
@@ -75,6 +86,7 @@ const CompleteWorkout = ({ route }) => {
 
   // State variables for text inputs
   const [submittedSets, setSubmittedSets] = useState([]);
+
   const [submittedNotes, setSubmittedNotes] = useState("");
 
   const updateSubmittedSets = (
@@ -185,8 +197,38 @@ const CompleteWorkout = ({ route }) => {
     getSingleExcercise();
   }, []);
 
-  const completed = () => {
-    toast.show("Comming soon");
+  const [additionalSet, setAdditionalSets] = useState([]);
+
+  const updateAdditionalSets = (
+    index,
+    reps,
+    lebs,
+    weight,
+    seconds,
+    distance
+  ) => {
+    const updatedAdditionalSets = [...additionalSet];
+
+    // Create a copy of the current set to avoid mutating the state directly
+    const currentSet = { ...updatedAdditionalSets[index] };
+
+    if (reps !== "" || lebs !== "") {
+      currentSet.reps = reps?.trim() !== "" ? reps : currentSet.reps;
+      currentSet.lebs = lebs?.trim() !== "" ? lebs : currentSet.lebs;
+      currentSet.parameter = "reps";
+    } else if (weight !== "") {
+      currentSet.weight = weight;
+      currentSet.parameter = "weight";
+    } else if (seconds !== "") {
+      currentSet.seconds = seconds;
+      currentSet.parameter = "seconds";
+    } else if (distance !== "") {
+      currentSet.distance = distance;
+      currentSet.parameter = "distance";
+    }
+
+    updatedAdditionalSets[index] = currentSet;
+    setAdditionalSets(updatedAdditionalSets);
   };
 
   const singleExerciseComplete = async () => {
@@ -201,6 +243,7 @@ const CompleteWorkout = ({ route }) => {
           exercise_objId: exerciseId,
           inner_objId: innerWorkoutId,
           submitted_sets: JSON.stringify(submittedSets),
+          additional_sets: JSON.stringify(additionalSet),
           submitted_notes: submittedNotes,
           submitted_time: `${hours}:${minutes}:${seconds}`,
         },
@@ -221,13 +264,16 @@ const CompleteWorkout = ({ route }) => {
     }
   };
 
-  // useEffect(() => {
-  //   dispatch(updateTimer(hours, minutes, seconds));
-  // }, [hours, minutes, seconds]);
   useEffect(() => {
     dispatch(updateTimer(workoutId, exerciseId, { hours, minutes, seconds }));
   }, [hours, minutes, seconds, workoutId, exerciseId]);
+  const [showAdditionalSets, setShowAdditionalSets] = useState(false);
 
+  const handlePress = () => {
+    setShowAdditionalSets(true);
+    setAdditionalSetCount(additionalSetCount + 1);
+    // update other necessary states or perform additional actions
+  };
   return (
     <View
       style={{ ...GernalStyle.continer, backgroundColor: colors.homeColor }}
@@ -289,15 +335,7 @@ const CompleteWorkout = ({ route }) => {
           </TouchableOpacity>
         </View>
       </View>
-      <KeyboardAwareScrollView
-        showsVerticalScrollIndicator={false}
-        // behavior={Platform.OS === "ios" ? "padding" : getFontSize(1)}
-        // style={{ flex: 1 }}
-      >
-        {/* <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
-          showsVerticalScrollIndicator={false}
-        > */}
+      <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
         <ImageBackground
           resizeMode="cover"
           style={styles.imgb}
@@ -307,29 +345,6 @@ const CompleteWorkout = ({ route }) => {
               : require("../../../assets/images/reps.png")
           }
         >
-          {/* <Text style={styles.flatchest}>{exercise?.exercise_name}</Text>
-            {/* <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("VideoSkills", {
-                  video: exercise?.video,
-                  name: exercise?.exercise_name,
-                })
-              }
-              style={styles.videobtn}
-            > */}
-          {/* <AntDesign
-                name="youtube"
-                size={getFontSize(5)}
-                color={colors.white}
-                onPress={() =>
-                  navigation.navigate("VideoSkills", {
-                    video: exercise?.video,
-                    name: exercise?.exercise_name,
-                  })
-                }
-                style={styles.videobtn}
-              />  */}
-          {/* </TouchableOpacity> */}
           <View style={styles.overlayContainer}>
             <FontAwesome
               name="play-circle"
@@ -351,304 +366,32 @@ const CompleteWorkout = ({ route }) => {
         </ImageBackground>
         {loader ? null : (
           <>
-        <View style={{ paddingHorizontal: getWidth(3) }}>
-          <View
-            style={{
-              marginTop: getFontSize(2),
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Seprator style={{ width: getWidth(30) }} />
-            <Text
-              style={{
-                fontSize: getFontSize(1.8),
-                color: colors.white,
-                fontFamily: "Ubuntu",
-                paddingLeft: getFontSize(1),
-                paddingRight: getFontSize(1),
-              }}
-            >
-              {exercise?.no_of_sets === "1"
-                ? `${exercise?.no_of_sets} WORKING SET`
-                : `${exercise?.no_of_sets} WORKING SETS`}
-            </Text>
-            <Seprator style={{ width: getWidth(30) }} />
-          </View>
-          {exercise?.notes && exercise?.notes.length > 0 ? (
-            <View style={{ justifyContent: "center", alignItems: "center" }}>
-              <View style={styles.notesStyle}>
+            <View style={{ paddingHorizontal: getWidth(3) }}>
+              <View
+                style={{
+                  marginTop: getFontSize(2),
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Seprator style={{ width: getWidth(30) }} />
                 <Text
                   style={{
+                    fontSize: getFontSize(1.8),
                     color: colors.white,
-                    fontSize: getFontSize(1.5),
                     fontFamily: "Ubuntu",
+                    paddingLeft: getFontSize(1),
+                    paddingRight: getFontSize(1),
                   }}
                 >
-                  {exercise?.notes}
+                  {exercise?.no_of_sets === "1"
+                    ? `${exercise?.no_of_sets} WORKING SET`
+                    : `${exercise?.no_of_sets} WORKING SETS`}
                 </Text>
+                <Seprator style={{ width: getWidth(30) }} />
               </View>
-            </View>
-          ) : null}
-          {exercise?.sets?.map((set, index) => (
-            <View
-              key={index}
-              style={{
-                paddingHorizontal: getWidth(3),
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <View style={styles.repsCon}>
-                <View
-                  style={{
-                    backgroundColor: colors.whiteOp20,
-                    height: getHeight(8),
-                    width: getWidth(10),
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderTopLeftRadius: getFontSize(1),
-                    borderBottomLeftRadius: getFontSize(1),
-                  }}
-                >
-                  <Text style={styles.count}>{index + 1}</Text>
-                </View>
-                <View style={styles.whiteCon}>
-                  {set?.parameter == "reps lebs" ||
-                  set?.parameter == "reps" ||
-                  set?.parameter == "lebs" ? (
-                    <View style={styles.rowDirection}>
-                      <View
-                        style={{
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <TextInput
-                          placeholder="Enter reps"
-                          placeholderTextColor={"white"}
-                          keyboardType="number-pad"
-                          onFocus={() => setSelectedInput(index)}
-                          onBlur={() => setSelectedInput(null)}
-                          onChangeText={(text) => {
-                            const updatedContent = [...inputContent];
-                            updatedContent[index] = text;
-                            setInputContent(updatedContent);
-                            updateSubmittedSets(
-                              index,
-                              text,
-                              "",
-                              "",
-                              "",
-                              "",
-                              ""
-                            );
-                          }}
-                          style={{ color: "white" }}
-                        />
-                        <View
-                          style={{
-                            ...styles.parameterCtn,
-                            bottom:
-                              Platform.OS === "ios"
-                                ? getFontSize(0)
-                                : getFontSize(2),
-                          }}
-                        >
-                          <Text style={styles.lbs}>
-                            {set?.reps}
-                            {`  `}
-                          </Text>
-                          <Text style={styles.lbs}>reps</Text>
-                        </View>
-                      </View>
-                      <View
-                        style={{
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                      <View style={styles.horizental}></View>
-                      </View>
-
-                      <View
-                        style={{
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <TextInput
-                          placeholder="Enter lebs"
-                          placeholderTextColor={"white"}
-                          keyboardType="number-pad"
-                          onFocus={() => setSelectedInput(index)}
-                          onBlur={() => setSelectedInput(null)}
-                          onChangeText={(text) => {
-                            const updatedContent = [...inputContent];
-                            updatedContent[index] = text;
-                            setInputContent(updatedContent);
-                            updateSubmittedSets(
-                              index,
-                              "",
-                              text,
-                              "",
-                              "",
-                              "",
-                              ""
-                            );
-                          }}
-                          style={{ color: "white" }}
-                        />
-                        <View
-                          style={{
-                            ...styles.parameterCtn,
-                            bottom:
-                              Platform.OS === "ios"
-                                ? getFontSize(0)
-                                : getFontSize(2),
-                          }}
-                        >
-                          <Text style={styles.lbs}>
-                            {set?.lebs}
-                            {`  `}
-                          </Text>
-                          <Text style={styles.lbs}>lebs</Text>
-                        </View>
-                      </View>
-                    </View>
-                  ) : set?.parameter == "weight" ? (
-                    <View
-                      style={{
-                        ...styles.rowDirection,
-                      }}
-                    >
-                      <TextInput
-                        placeholder="Enter weight"
-                        placeholderTextColor={"white"}
-                        keyboardType="number-pad"
-                        onFocus={() => setSelectedInput(index)}
-                        onBlur={() => setSelectedInput(null)}
-                        onChangeText={(text) => {
-                          const updatedContent = [...inputContent];
-                          updatedContent[index] = text;
-                          setInputContent(updatedContent);
-                          updateSubmittedSets(index, "", "", text, "", "", "");
-                        }}
-                        style={{ width: getWidth(30), color: "white" }}
-                      />
-                      <View style={styles.parameterCtn}>
-                        <Text style={styles.lbs}>
-                          {set.weight}
-                          {`  `}
-                        </Text>
-                        <Text style={styles.lbs}>{set.parameter}</Text>
-                      </View>
-                    </View>
-                  ) : set?.parameter == "seconds" ? (
-                    <View
-                      style={{
-                        ...styles.rowDirection,
-                      }}
-                    >
-                      <TextInput
-                        placeholder="Enter seconds"
-                        placeholderTextColor={"white"}
-                        keyboardType="number-pad"
-                        onFocus={() => setSelectedInput(index)}
-                        onBlur={() => setSelectedInput(null)}
-                        onChangeText={(text) => {
-                          const updatedContent = [...inputContent];
-                          updatedContent[index] = text;
-                          setInputContent(updatedContent);
-                          updateSubmittedSets(index, "", "", "", text, "", "");
-                        }}
-                        style={{ width: getWidth(30), color: "white" }}
-                      />
-                      <View style={styles.parameterCtn}>
-                        <Text style={styles.lbs}>
-                          {set.seconds}
-                          {`  `}
-                        </Text>
-                        <Text style={styles.lbs}>{set.parameter}</Text>
-                      </View>
-                    </View>
-                  ) : set?.parameter == "distance" ? (
-                    <View
-                      style={{
-                        ...styles.rowDirection,
-                        // marginTop: getFontSize(1),
-                      }}
-                    >
-                      <TextInput
-                        placeholder="Enter distance"
-                        placeholderTextColor={"white"}
-                        keyboardType="number-pad"
-                        onFocus={() => setSelectedInput(index)}
-                        onBlur={() => setSelectedInput(null)}
-                        onChangeText={(text) => {
-                          const updatedContent = [...inputContent];
-                          updatedContent[index] = text;
-                          setInputContent(updatedContent);
-                          updateSubmittedSets(index, "", "", "", "", text, "");
-                        }}
-                        style={{ width: getWidth(30), color: "white" }}
-                      />
-                      <View style={styles.parameterCtn}>
-                        <Text style={styles.lbs}>
-                          {set.distance}
-                          {`  `}
-                        </Text>
-                        <Text style={styles.lbs}>{set.parameter}</Text>
-                      </View>
-                    </View>
-                  ) : null}
-                </View>
-                {/* <View style={styles.tickCon}>
-                    <RightIcon height={15} width={15} />
-                  </View> */}
-                <View
-                  style={{
-                    width: getWidth(0.3),
-                    height: getHeight(8),
-                    backgroundColor: colors.whiteOp20,
-                  }}
-                ></View>
-                <View
-                  style={{
-                    ...styles.tickCon,
-                    backgroundColor:
-                      selectedInput === index || inputContent[index]
-                        ? colors.buttonColor
-                        : colors.whiteOp20,
-                  }}
-                >
-                  {/* <RightIcon height={15} width={15} /> */}
-                  <Ionicons
-                    name="checkmark-sharp"
-                    size={20}
-                    color={colors.white}
-                    //style={{marginTop: getWidth(2)}}
-                  />
-                </View>
-              </View>
-              {set?.rest_time != 0 ? (
-                // <View style={styles.spacebet}>
-                //   <TextInput
-                //     // placeholder="Enter Rest Time"
-                //     editable={false}
-                //     placeholderTextColor={colors.white}
-                //     keyboardType="number-pad"
-                //     style={styles.rest}
-                //     value={set?.rest_time}
-                //     onChangeText={(text) => {
-                //       updateSubmittedSets(index, "", "", "", "", "", text);
-                //     }}
-                //   />
-                //   <View style={styles.btng}>
-                //     <View style={styles.btnhor}></View>
-                //   </View>
-                // </View>
+              {exercise?.notes && exercise?.notes.length > 0 ? (
                 <View
                   style={{ justifyContent: "center", alignItems: "center" }}
                 >
@@ -660,44 +403,618 @@ const CompleteWorkout = ({ route }) => {
                         fontFamily: "Ubuntu",
                       }}
                     >
-                      {set?.rest_time} Rest
+                      {exercise?.notes}
                     </Text>
                   </View>
                 </View>
               ) : null}
-            </View>
-          ))}
-          {/* {exercise?.notes && exercise?.notes.length > 0 ? (
-            <View>
-              <View style={{ marginTop: getFontSize(2) }}>
-                <Text style={styles.notesText}>Assigned Notes:</Text>
-                <View style={styles.notes}>
-                  <Text style={{ color: colors.primary }}>
-                    {exercise?.notes}
-                  </Text>
+              {exercise?.sets?.map((set, index) => (
+                <View
+                  key={index}
+                  style={{
+                    paddingHorizontal: getWidth(3),
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <View style={styles.repsCon}>
+                    <View
+                      style={{
+                        backgroundColor: colors.whiteOp20,
+                        height: getHeight(8),
+                        width: getWidth(10),
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderTopLeftRadius: getFontSize(1),
+                        borderBottomLeftRadius: getFontSize(1),
+                      }}
+                    >
+                      <Text style={styles.count}>{index + 1}</Text>
+                    </View>
+                    <View style={styles.whiteCon}>
+                      {set?.parameter == "reps lebs" ||
+                      set?.parameter == "reps" ||
+                      set?.parameter == "lebs" ? (
+                        <View style={styles.rowDirection}>
+                          <View
+                            style={{
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <TextInput
+                              placeholder="Enter reps"
+                              placeholderTextColor={"white"}
+                              keyboardType="number-pad"
+                              onFocus={() => setSelectedInput(index)}
+                              onBlur={() => setSelectedInput(null)}
+                              onChangeText={(text) => {
+                                const updatedContent = [...inputContent];
+                                updatedContent[index] = text;
+                                setInputContent(updatedContent);
+                                updateSubmittedSets(
+                                  index,
+                                  text,
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  ""
+                                );
+                              }}
+                              style={{ color: "white" }}
+                            />
+                            <View
+                              style={{
+                                ...styles.parameterCtn,
+                                bottom:
+                                  Platform.OS === "ios"
+                                    ? getFontSize(0)
+                                    : getFontSize(2),
+                              }}
+                            >
+                              <Text style={styles.lbs}>
+                                {set?.reps}
+                                {`  `}
+                              </Text>
+                              <Text style={styles.lbs}>reps</Text>
+                            </View>
+                          </View>
+                          <View
+                            style={{
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <View style={styles.horizental}></View>
+                          </View>
+
+                          <View
+                            style={{
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <TextInput
+                              placeholder="Enter lebs"
+                              placeholderTextColor={"white"}
+                              keyboardType="number-pad"
+                              onFocus={() => setSelectedInput(index)}
+                              onBlur={() => setSelectedInput(null)}
+                              onChangeText={(text) => {
+                                const updatedContent = [...inputContent];
+                                updatedContent[index] = text;
+                                setInputContent(updatedContent);
+                                updateSubmittedSets(
+                                  index,
+                                  "",
+                                  text,
+                                  "",
+                                  "",
+                                  "",
+                                  ""
+                                );
+                              }}
+                              style={{ color: "white" }}
+                            />
+                            <View
+                              style={{
+                                ...styles.parameterCtn,
+                                bottom:
+                                  Platform.OS === "ios"
+                                    ? getFontSize(0)
+                                    : getFontSize(2),
+                              }}
+                            >
+                              <Text style={styles.lbs}>
+                                {set?.lebs}
+                                {`  `}
+                              </Text>
+                              <Text style={styles.lbs}>lebs</Text>
+                            </View>
+                          </View>
+                        </View>
+                      ) : set?.parameter == "weight" ? (
+                        <View
+                          style={{
+                            ...styles.rowDirection,
+                          }}
+                        >
+                          <TextInput
+                            placeholder="Enter weight"
+                            placeholderTextColor={"white"}
+                            keyboardType="number-pad"
+                            onFocus={() => setSelectedInput(index)}
+                            onBlur={() => setSelectedInput(null)}
+                            onChangeText={(text) => {
+                              const updatedContent = [...inputContent];
+                              updatedContent[index] = text;
+                              setInputContent(updatedContent);
+                              updateSubmittedSets(
+                                index,
+                                "",
+                                "",
+                                text,
+                                "",
+                                "",
+                                ""
+                              );
+                            }}
+                            style={{ width: getWidth(30), color: "white" }}
+                          />
+                          <View style={styles.parameterCtn}>
+                            <Text style={styles.lbs}>
+                              {set.weight}
+                              {`  `}
+                            </Text>
+                            <Text style={styles.lbs}>{set.parameter}</Text>
+                          </View>
+                        </View>
+                      ) : set?.parameter == "seconds" ? (
+                        <View
+                          style={{
+                            ...styles.rowDirection,
+                          }}
+                        >
+                          <TextInput
+                            placeholder="Enter seconds"
+                            placeholderTextColor={"white"}
+                            keyboardType="number-pad"
+                            onFocus={() => setSelectedInput(index)}
+                            onBlur={() => setSelectedInput(null)}
+                            onChangeText={(text) => {
+                              const updatedContent = [...inputContent];
+                              updatedContent[index] = text;
+                              setInputContent(updatedContent);
+                              updateSubmittedSets(
+                                index,
+                                "",
+                                "",
+                                "",
+                                text,
+                                "",
+                                ""
+                              );
+                            }}
+                            style={{ width: getWidth(30), color: "white" }}
+                          />
+                          <View style={styles.parameterCtn}>
+                            <Text style={styles.lbs}>
+                              {set.seconds}
+                              {`  `}
+                            </Text>
+                            <Text style={styles.lbs}>{set.parameter}</Text>
+                          </View>
+                        </View>
+                      ) : set?.parameter == "distance" ? (
+                        <View
+                          style={{
+                            ...styles.rowDirection,
+                          }}
+                        >
+                          <TextInput
+                            placeholder="Enter distance"
+                            placeholderTextColor={"white"}
+                            keyboardType="number-pad"
+                            onFocus={() => setSelectedInput(index)}
+                            onBlur={() => setSelectedInput(null)}
+                            onChangeText={(text) => {
+                              const updatedContent = [...inputContent];
+                              updatedContent[index] = text;
+                              setInputContent(updatedContent);
+                              updateSubmittedSets(
+                                index,
+                                "",
+                                "",
+                                "",
+                                "",
+                                text,
+                                ""
+                              );
+                            }}
+                            style={{ width: getWidth(30), color: "white" }}
+                          />
+                          <View style={styles.parameterCtn}>
+                            <Text style={styles.lbs}>
+                              {set.distance}
+                              {`  `}
+                            </Text>
+                            <Text style={styles.lbs}>{set.parameter}</Text>
+                          </View>
+                        </View>
+                      ) : null}
+                    </View>
+                    <View
+                      style={{
+                        width: getWidth(0.3),
+                        height: getHeight(8),
+                        backgroundColor: colors.whiteOp20,
+                      }}
+                    ></View>
+                    <View
+                      style={{
+                        ...styles.tickCon,
+                        backgroundColor:
+                          selectedInput === index || inputContent[index]
+                            ? colors.buttonColor
+                            : colors.whiteOp20,
+                      }}
+                    >
+                      <Ionicons
+                        name="checkmark-sharp"
+                        size={20}
+                        color={colors.white}
+                      />
+                    </View>
+                  </View>
+                  {set?.rest_time != 0 ? (
+                    <View
+                      style={{ justifyContent: "center", alignItems: "center" }}
+                    >
+                      <View style={styles.notesStyle}>
+                        <Text
+                          style={{
+                            color: colors.white,
+                            fontSize: getFontSize(1.5),
+                            fontFamily: "Ubuntu",
+                          }}
+                        >
+                          {set?.rest_time} minutes Rest
+                        </Text>
+                      </View>
+                    </View>
+                  ) : null}
                 </View>
-              </View>
-              <View>
-                <Text style={styles.notesText}>Submitted Notes</Text>
-              </View>
-              <TextInput
-                multiline
-                numberOfLines={3}
-                placeholder="Enter Notes..."
-                placeholderTextColor={colors.primary}
-                keyboardType="default"
-                style={styles.notes}
-                onChangeText={(text) => {
-                  setSubmittedNotes(text);
+              ))}
+            </View>
+          </>
+        )}
+        <View>
+          <View
+            style={{
+              marginTop: getFontSize(4),
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Seprator style={{ width: getWidth(28) }} />
+            <Text
+              style={{
+                fontSize: getFontSize(1.8),
+                color: colors.white,
+                fontFamily: "Ubuntu",
+                paddingLeft: getFontSize(1),
+                paddingRight: getFontSize(1),
+              }}
+            >
+              {additionalSetCount === 1
+                ? `${additionalSetCount} ADDITIONAL SET`
+                : `${additionalSetCount} ADDITIONAL SETS`}
+            </Text>
+            <Seprator style={{ width: getWidth(28) }} />
+          </View>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {/* <AdditionalSets exercise={exercise}/> */}
+            <TouchableOpacity
+              style={styles.additionalSet}
+              onPress={() => handlePress()}
+            >
+              <Text
+                style={{
+                  color: colors.white,
+                  fontSize: getFontSize(2),
+                  fontFamily: "Ubuntu-BOLD",
                 }}
-              /> */}
-          {/* <View style={styles.tickCon}>
-                  <RightIcon height={15} width={15} />
-                </View> */}
-          {/* </View>
-          ) : null} */}
+              >
+                + Add Set
+              </Text>
+            </TouchableOpacity>
+            {showAdditionalSets &&
+              Array.from({ length: additionalSetCount }).map((_, index) => (
+                <View>
+                  <View
+                    key={index}
+                    style={{
+                      paddingHorizontal: getWidth(3),
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <View style={styles.repsCon}>
+                      <View
+                        style={{
+                          backgroundColor: colors.whiteOp20,
+                          height: getHeight(8),
+                          width: getWidth(10),
+                          justifyContent: "center",
+                          alignItems: "center",
+                          borderTopLeftRadius: getFontSize(1),
+                          borderBottomLeftRadius: getFontSize(1),
+                        }}
+                      >
+                        <Text style={styles.count}>{index + 1}</Text>
+                      </View>
+                      <View style={styles.whiteCon}>
+                        {exercise?.sets[0]?.parameter == "reps lebs" ||
+                        exercise?.sets[0]?.parameter == "reps" ||
+                        exercise?.sets[0]?.parameter == "lebs" ? (
+                          <View style={styles.rowDirection}>
+                            <View
+                              style={{
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <TextInput
+                                placeholder="Enter reps"
+                                placeholderTextColor={"white"}
+                                keyboardType="number-pad"
+                                onFocus={() =>
+                                  setSelectedInputAdditional(index)
+                                }
+                                onBlur={() => setSelectedInputAdditional(null)}
+                                onChangeText={(text) => {
+                                  const updatedContent = [
+                                    ...inputContentAdditional,
+                                  ];
+                                  updatedContent[index] = text;
+                                  setInputContentAdditional(updatedContent);
+                                  updateAdditionalSets(
+                                    index,
+                                    text,
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    ""
+                                  );
+                                }}
+                                style={{ color: "white" }}
+                              />
+                              <View
+                                style={{
+                                  ...styles.parameterCtn,
+                                  bottom:
+                                    Platform.OS === "ios"
+                                      ? getFontSize(0)
+                                      : getFontSize(2),
+                                }}
+                              >
+                                <Text style={styles.lbs}>reps</Text>
+                              </View>
+                            </View>
+                            <View
+                              style={{
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <View style={styles.horizental}></View>
+                            </View>
+
+                            <View
+                              style={{
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <TextInput
+                                placeholder="Enter lebs"
+                                placeholderTextColor={"white"}
+                                keyboardType="number-pad"
+                                onFocus={() =>
+                                  setSelectedInputAdditional(index)
+                                }
+                                onBlur={() => setSelectedInputAdditional(null)}
+                                onChangeText={(text) => {
+                                  const updatedContent = [
+                                    ...inputContentAdditional,
+                                  ];
+                                  updatedContent[index] = text;
+                                  setInputContentAdditional(updatedContent);
+                                  updateAdditionalSets(
+                                    index,
+                                    "",
+                                    text,
+                                    "",
+                                    "",
+                                    "",
+                                    ""
+                                  );
+                                }}
+                                style={{ color: "white" }}
+                              />
+                              <View
+                                style={{
+                                  ...styles.parameterCtn,
+                                  bottom:
+                                    Platform.OS === "ios"
+                                      ? getFontSize(0)
+                                      : getFontSize(2),
+                                }}
+                              >
+                                <Text style={styles.lbs}>lebs</Text>
+                              </View>
+                            </View>
+                          </View>
+                        ) : exercise?.sets[0]?.parameter == "weight" ? (
+                          <View
+                            style={{
+                              ...styles.rowDirection,
+                            }}
+                          >
+                            <TextInput
+                              placeholder="Enter weight"
+                              placeholderTextColor={"white"}
+                              keyboardType="number-pad"
+                              onFocus={() => setSelectedInputAdditional(index)}
+                              onBlur={() => setSelectedInputAdditional(null)}
+                              onChangeText={(text) => {
+                                const updatedContent = [
+                                  ...inputContentAdditional,
+                                ];
+                                updatedContent[index] = text;
+                                setInputContentAdditional(updatedContent);
+                                updateAdditionalSets(
+                                  index,
+                                  "",
+                                  "",
+                                  text,
+                                  "",
+                                  "",
+                                  ""
+                                );
+                              }}
+                              style={{ width: getWidth(30), color: "white" }}
+                            />
+                            <View style={styles.parameterCtn}>
+                              {/* <Text style={styles.lbs}>
+                          {exercise?.sets[0]?.weight}
+                          {`  `}
+                        </Text> */}
+                              <Text style={styles.lbs}>
+                                {exercise?.sets[0]?.parameter}
+                              </Text>
+                            </View>
+                          </View>
+                        ) : exercise?.sets[0]?.parameter == "seconds" ? (
+                          <View
+                            style={{
+                              ...styles.rowDirection,
+                            }}
+                          >
+                            <TextInput
+                              placeholder="Enter seconds"
+                              placeholderTextColor={"white"}
+                              keyboardType="number-pad"
+                              onFocus={() => setSelectedInputAdditional(index)}
+                              onBlur={() => setSelectedInputAdditional(null)}
+                              onChangeText={(text) => {
+                                const updatedContent = [
+                                  ...inputContentAdditional,
+                                ];
+                                updatedContent[index] = text;
+                                setInputContentAdditional(updatedContent);
+                                updateAdditionalSets(
+                                  index,
+                                  "",
+                                  "",
+                                  "",
+                                  text,
+                                  "",
+                                  ""
+                                );
+                              }}
+                              style={{ width: getWidth(30), color: "white" }}
+                            />
+
+                            <View style={styles.parameterCtn}>
+                              {/* <Text style={styles.lbs}>
+                          {exercise?.sets[0].seconds}
+                          {`  `}
+                        </Text> */}
+                              <Text style={styles.lbs}>
+                                {exercise?.sets[0].parameter}
+                              </Text>
+                            </View>
+                          </View>
+                        ) : exercise?.sets[0]?.parameter == "distance" ? (
+                          <View
+                            style={{
+                              ...styles.rowDirection,
+                            }}
+                          >
+                            <TextInput
+                              placeholder="Enter distance"
+                              placeholderTextColor={"white"}
+                              keyboardType="number-pad"
+                              onFocus={() => setSelectedInputAdditional(index)}
+                              onBlur={() => setSelectedInputAdditional(null)}
+                              onChangeText={(text) => {
+                                const updatedContent = [
+                                  ...inputContentAdditional,
+                                ];
+                                updatedContent[index] = text;
+                                setInputContentAdditional(updatedContent);
+                                updateAdditionalSets(
+                                  index,
+                                  "",
+                                  "",
+                                  "",
+                                  "",
+                                  text,
+                                  ""
+                                );
+                              }}
+                              style={{ width: getWidth(30), color: "white" }}
+                            />
+                            <View style={styles.parameterCtn}>
+                              {/* <Text style={styles.lbs}>
+                          {exercise?.sets[0].distance}
+                          {`  `}
+                        </Text> */}
+                              <Text style={styles.lbs}>
+                                {exercise?.sets[0].parameter}
+                              </Text>
+                            </View>
+                          </View>
+                        ) : null}
+                      </View>
+                      <View
+                        style={{
+                          width: getWidth(0.3),
+                          height: getHeight(8),
+                          backgroundColor: colors.whiteOp20,
+                        }}
+                      ></View>
+                      <View
+                        style={{
+                          ...styles.tickCon,
+                          backgroundColor:
+                            selectedInputAdditional === index ||
+                            inputContentAdditional[index]
+                              ? colors.buttonColor
+                              : colors.whiteOp20,
+                        }}
+                      >
+                        <Ionicons
+                          name="checkmark-sharp"
+                          size={20}
+                          color={colors.white}
+                        />
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              ))}
+          </View>
         </View>
-        </>)}
         <View style={{ height: getHeight(15) }}></View>
       </KeyboardAwareScrollView>
       <View

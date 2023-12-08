@@ -15,8 +15,8 @@ export const styles = StyleSheet.create({
       alignSelf: 'center',
     },
     progress:{
-      fontFamily: fonts.Re,
-      fontSize: getFontSize(2.5),
+      fontFamily: fonts.UBo,
+      fontSize: getFontSize(2.4),
       color: colors.white,
       marginTop: getHeight(4),
       marginLeft: getWidth(3),
@@ -36,13 +36,13 @@ export const styles = StyleSheet.create({
     },
     todayt:{
       fontSize: 10,
-      fontFamily: fonts.Re,
+      fontFamily: fonts.URe,
       color: colors.white,
       position: 'absolute',
       bottom: getHeight(5.5),
     },
     activityCon:{flexDirection: 'row', alignItems: 'center'},
-    activty:{fontSize: 18, color: colors.white, fontFamily: fonts.Re},
+    activty:{fontSize: getFontSize(1.8), color: colors.white, fontFamily: 'Ubuntu-bold'},
     spaceBet:{
       paddingHorizontal: getWidth(3),
       flexDirection: 'row',

@@ -106,10 +106,9 @@ const Activity = () => {
           givenDate: selectedDate,
         },
       });
-      console.log("progress response", res);
 
       if (res?.status == "200") {
-        console.log("workouts progress response", res);
+        console.log("workouts progress percentage", res);
         setWeeklyProgress(res?.response?.weeklyProgress);
         dispatch(setLoader(false));
       } else {
@@ -439,7 +438,7 @@ const Activity = () => {
           <Text style={styles.todayt}>Today’s progress</Text>
         </View>
         <View style={styles.spaceBet}>
-          <Text style={styles.activty}>Activity</Text>
+          <Text style={styles.activty}>TRAINING COMPLETTEION</Text>
           <View style={styles.activityCon}>
             {/* <AngelLeft height={15} width={15} /> */}
             <TouchableOpacity

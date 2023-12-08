@@ -17,16 +17,12 @@ import {
   getHeight,
 } from "../../../../utils/ResponsiveFun";
 import Feather from "react-native-vector-icons/Feather";
-import { fonts } from "../../../../constants/fonts";
-import { PlayerSvg, RightIcon, StopSvg } from "../../../assets/images";
 import { useNavigation } from "@react-navigation/native";
 import { styles } from "./styles";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../../Redux/actions/GernalActions";
 import { ApiCall } from "../../../Services/Apis";
-import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import Seprator from "../../../Components/Seprator";
 
 const SubmittedWorkouts = ({ route }) => {
@@ -102,13 +98,11 @@ const SubmittedWorkouts = ({ route }) => {
       });
 
       if (res?.status == "200") {
-        // setAssigWorkout(res?.response?.Workout[0]);
         console.log("workout api response", res?.response?.Exercise);
         setExercise(res?.response?.Exercise);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        //setAssigWorkout([]);
         console.log("errorrrr in calenders");
       }
     } catch (e) {
@@ -154,19 +148,6 @@ const SubmittedWorkouts = ({ route }) => {
               color={colors.gray3}
             />
           </TouchableOpacity>
-          {/* <View style={{ ...styles.header }}>
-            <View style={styles.headerTime}>
-              <Text style={styles.text}>
-                {timer.hours.toString().padStart(2, "0")}:
-              </Text>
-              <Text style={styles.text}>
-                {timer.minutes.toString().padStart(2, "0")}:
-              </Text>
-              <Text style={styles.text}>
-                {timer.seconds.toString().padStart(2, "0")}
-              </Text>
-            </View>
-          </View> */}
           <View style={{ ...styles.header }}>
             <View style={styles.headerTime}>
               <Text style={styles.text}>
@@ -180,47 +161,18 @@ const SubmittedWorkouts = ({ route }) => {
               </Text>
             </View>
           </View>
-          {/* <TouchableOpacity
-            style={{ ...styles.togle, marginRight: getWidth(2) }}
-            onPress={toggleTimer}
-          >
-            {isRunning ? (
-              <FontAwesome6 name={"pause"} size={20} color={"white"} />
-            ) : (
-              <AntDesign name={"caretright"} size={22} color={"white"} />
-            )}
-
-            <Text style={styles.start}>{isRunning ? "Pause" : "Start"}</Text>
-          </TouchableOpacity> */}
         </View>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <ImageBackground
           resizeMode="cover"
           style={styles.imgb}
-          // source={require("../../../assets/images/reps.png")}
           source={
             exercise?.video_thumbnail
               ? { uri: exercise?.video_thumbnail }
               : require("../../../assets/images/reps.png")
           }
         >
-          {/* <View style={styles.playerbtn}>
-              <Image
-                resizeMode="center"
-                style={{ height: getHeight(3), width: getWidth(4) }}
-                source={require("../../../assets/images/player.png")}
-              />
-            </View> */}
-          {/* <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("VideoSkills", {
-                  video: exercise?.video,
-                  name: exercise?.exercise_name,
-                })
-              }
-              style={styles.videobtn}
-            > */}
           <View style={styles.overlayContainer}>
             <FontAwesome
               name="play-circle"
@@ -239,12 +191,7 @@ const SubmittedWorkouts = ({ route }) => {
             <Text style={styles.flatchest}>{exercise?.exercise_name}</Text>
             <Text style={styles.flatchest1}>sets: {exercise?.no_of_sets}</Text>
           </View>
-          {/* </TouchableOpacity> */}
         </ImageBackground>
-        {/* <HeadingText
-            buttontext={"2 warm up sets"}
-            style={{ marginTop: getHeight(3) }}
-          /> */}
         {loader ? null : (
           <>
             <View style={{ paddingHorizontal: getWidth(3) }}>
@@ -401,7 +348,7 @@ const SubmittedWorkouts = ({ route }) => {
                             fontFamily: "Ubuntu",
                           }}
                         >
-                          {set?.rest_time} Rest
+                          {set?.rest_time} minutes Rest
                         </Text>
                       </View>
                     </View>
@@ -442,7 +389,7 @@ const SubmittedWorkouts = ({ route }) => {
                   }}
                 >
                   {exercise?.submitted_sets &&
-                  exercise?.submitted_sets.length === "1"
+                  exercise?.submitted_sets.length === 1
                     ? `${exercise.submitted_sets.length} SUBMITTED SET`
                     : `${
                         exercise?.submitted_sets
@@ -475,17 +422,13 @@ const SubmittedWorkouts = ({ route }) => {
                       set?.parameter == "lebs" ? (
                         <View style={styles.rowDirection}>
                           <View>
-                            <Text style={styles.numbr}>
-                              {set.reps} reps
-                            </Text>
+                            <Text style={styles.numbr}>{set.reps} reps</Text>
                             <Text style={styles.lbs}>reps</Text>
                           </View>
                           <View style={styles.horizental}></View>
 
                           <View>
-                            <Text style={styles.numbr}>
-                              {set.lebs} lebs
-                            </Text>
+                            <Text style={styles.numbr}>{set.lebs} lebs</Text>
                             <Text style={styles.lbs}>lebs</Text>
                           </View>
                         </View>
@@ -540,7 +483,7 @@ const SubmittedWorkouts = ({ route }) => {
               ) : null} */}
                 </View>
               ))}
-              {exercise?.submitted_notes &&
+              {/* {exercise?.submitted_notes &&
               exercise?.submitted_notes.length > 0 ? (
                 <View style={{ marginLeft: getWidth(7) }}>
                   <Text style={styles.note}>Notes:</Text>
@@ -552,8 +495,153 @@ const SubmittedWorkouts = ({ route }) => {
                     </View>
                   </View>
                 </View>
-              ) : null}
+              ) : null} */}
             </View>
+          </>
+        )}
+
+        {loader ? null : (
+          <>
+          {exercise?.additional_sets &&
+                  exercise?.additional_sets.length === 0 ?
+           null
+            : <View style={{ paddingHorizontal: getWidth(3) }}>
+            <Text
+              style={{
+                ...styles.set,
+                marginTop: getHeight(7),
+                marginLeft: getFontSize(2),
+              }}
+            >
+              Additional Submitted Set
+            </Text>
+            <View
+              style={{
+                marginTop: getFontSize(2),
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Seprator style={{ width: getWidth(15) }} />
+              <Text
+                style={{
+                  fontSize: getFontSize(1.8),
+                  color: colors.white,
+                  fontFamily: "Ubuntu",
+                  paddingLeft: getFontSize(1),
+                  paddingRight: getFontSize(1),
+                }}
+              >
+                {exercise?.additional_sets &&
+                exercise?.additional_sets.length === 1
+                  ? `${exercise.additional_sets.length}  ADDITIONAL SUBMITTED SET`
+                  : `${
+                      exercise?.additional_sets
+                        ? exercise?.additional_sets.length
+                        : 0
+                    }  ADDITIONAL SUBMITTED SETS`}
+              </Text>
+              <Seprator style={{ width: getWidth(15) }} />
+            </View>
+            {exercise?.additional_sets?.map((set, index) => (
+              <View key={index} style={{ paddingHorizontal: getWidth(3) }}>
+                <View style={{ marginTop: getHeight(0.1) }}></View>
+                <View style={styles.repsCon}>
+                  <View
+                    style={{
+                      backgroundColor: colors.whiteOp20,
+                      height: getHeight(8),
+                      width: getWidth(10),
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderTopLeftRadius: getFontSize(1),
+                      borderBottomLeftRadius: getFontSize(1),
+                    }}
+                  >
+                    <Text style={styles.count}>{index + 1}</Text>
+                  </View>
+                  <View style={styles.whiteCon}>
+                    {set?.parameter == "reps lebs" ||
+                    set?.parameter == "reps" ||
+                    set?.parameter == "lebs" ? (
+                      <View style={styles.rowDirection}>
+                        <View>
+                          <Text style={styles.numbr}>{set.reps} reps</Text>
+                          <Text style={styles.lbs}>reps</Text>
+                        </View>
+                        <View style={styles.horizental}></View>
+
+                        <View>
+                          <Text style={styles.numbr}>{set.lebs} lebs</Text>
+                          <Text style={styles.lbs}>lebs</Text>
+                        </View>
+                      </View>
+                    ) : set?.parameter == "weight" ? (
+                      <View
+                        style={{
+                          ...styles.rowDirection,
+                          // marginTop: getFontSize(1),
+                        }}
+                      >
+                        <Text style={styles.numbr}>{set.weight}kg</Text>
+                        <Text style={styles.lbs}>{set.parameter}</Text>
+                      </View>
+                    ) : set?.parameter == "seconds" ? (
+                      <View
+                        style={{
+                          ...styles.rowDirection,
+                          // marginTop: getFontSize(1),
+                        }}
+                      >
+                        <Text style={styles.numbr}>{set.seconds}sec</Text>
+                        <Text style={styles.lbs}>{set.parameter}</Text>
+                      </View>
+                    ) : set?.parameter == "distance" ? (
+                      <View
+                        style={{
+                          ...styles.rowDirection,
+                          // marginTop: getFontSize(1),
+                        }}
+                      >
+                        <Text style={styles.numbr}>{set.distance}miles</Text>
+                        <Text style={styles.lbs}>{set.parameter}</Text>
+                      </View>
+                    ) : null}
+                    {/* <View style={styles.horizental}></View> */}
+                    {/* <View>
+                    <Text style={styles.dashes}> ---</Text>
+                    <Text style={styles.lbs}>LBS</Text>
+                  </View> */}
+                  </View>
+                  {/* <View style={styles.tickCon}>
+                <RightIcon height={15} width={15} />
+              </View> */}
+                </View>
+                {/* {set?.rest_time != 0 ? (
+              <View style={styles.spacebet}>
+                <Text style={styles.rest}>{set.rest_time} rest</Text>
+                <View style={styles.btng}>
+                  <View style={styles.btnhor}></View>
+                </View>
+              </View>
+            ) : null} */}
+              </View>
+            ))}
+            {/* {exercise?.submitted_notes &&
+            exercise?.submitted_notes.length > 0 ? (
+              <View style={{ marginLeft: getWidth(7) }}>
+                <Text style={styles.note}>Notes:</Text>
+                <View style={{ ...styles.repsCon, marginTop: getHeight(2) }}>
+                  <View style={{ ...styles.whiteCon, height: getHeight(10) }}>
+                    <Text style={{ color: "black" }}>
+                      {exercise?.submitted_notes}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            ) : null} */}
+          </View>}
           </>
         )}
         <View style={{ height: getHeight(15) }}></View>

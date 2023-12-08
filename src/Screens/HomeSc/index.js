@@ -48,14 +48,14 @@ const HomeSc = ({ navigation, route }) => {
     if (videoRef.current) {
       //videoRef.current.presentFullscreenPlayer();
       videoRef.current.seek(0);
-      videoRef.current.resume();
+      // videoRef.current.resume();
       setIsPaused(false); // Video is playing, update state
     }
   };
 
   const pauseVideo = () => {
     if (videoRef.current) {
-      videoRef.current.pause(); // Pause the video
+      // videoRef.current.pause(); // Pause the video
       setIsPaused(true); // Update state to reflect video pause
     }
   };
@@ -64,14 +64,14 @@ const HomeSc = ({ navigation, route }) => {
     if (videoRefFaq.current) {
       // videoRef.current.presentFullscreenPlayer();
       videoRefFaq.current.seek(0);
-      videoRefFaq.current.resume();
+      // videoRefFaq.current.resume();
       setIsPausedFaq(false); // Video is playing, update state
     }
   };
 
   const pauseVideoFaq = () => {
     if (videoRefFaq.current) {
-      videoRefFaq.current.pause(); // Pause the video
+      // videoRefFaq.current.pause(); // Pause the video
       setIsPausedFaq(true); // Update state to reflect video pause
     }
   };
@@ -80,14 +80,14 @@ const HomeSc = ({ navigation, route }) => {
     if (videoRef3.current) {
       //videoRef.current.presentFullscreenPlayer();
       videoRef3.current.seek(0);
-      videoRef3.current.resume();
+      // videoRef3.current.resume();
       setIsPaused3(false); // Video is playing, update state
     }
   };
 
   const pauseVideo3 = () => {
     if (videoRef3.current) {
-      videoRef3.current.pause(); // Pause the video
+      // videoRef3.current.pause(); // Pause the video
       setIsPaused3(true); // Update state to reflect video pause
     }
   };
@@ -96,14 +96,14 @@ const HomeSc = ({ navigation, route }) => {
     if (videoRef4.current) {
       //videoRef.current.presentFullscreenPlayer();
       videoRef4.current.seek(0);
-      videoRef4.current.resume();
+      // videoRef4.current.resume();
       setIsPaused4(false); // Video is playing, update state
     }
   };
 
   const pauseVideo4 = () => {
     if (videoRef4.current) {
-      videoRef4.current.pause(); // Pause the video
+      // videoRef4.current.pause(); // Pause the video
       setIsPaused4(true); // Update state to reflect video pause
     }
   };
@@ -253,7 +253,7 @@ const HomeSc = ({ navigation, route }) => {
             alignItems: "center",
             marginTop: getFontSize(2),
             paddingTop: getFontSize(1.5),
-            paddingBottom:getFontSize(1.5)
+            paddingBottom: getFontSize(1.5),
           }}
         >
           {/* <Animated.View */}

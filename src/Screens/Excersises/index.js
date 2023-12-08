@@ -261,94 +261,92 @@ const Excercises = () => {
           </Text>
           <AntDesign size={getFontSize(2)} color={"white"} name="down" />
         </TouchableOpacity> */}
-        <TouchableOpacity>
-          <SelectDropdown
-             defaultValue={isRefreshing ? "All Exercises" : undefined}
-            data={allTypes}
-            onSelect={(selectedType) => {
-              toggleTypeSelection(selectedType), handleSelection();
-            }}
-            defaultButtonText="Select Exercise Type"
-            buttonTextAfterSelection={(selectedItem, index) => {
-              // return selectedItem;
-              return (
+        <SelectDropdown
+          defaultValue={isRefreshing ? "All Exercises" : undefined}
+          data={allTypes}
+          onSelect={(selectedType) => {
+            toggleTypeSelection(selectedType), handleSelection();
+          }}
+          defaultButtonText="Select Exercise Type"
+          buttonTextAfterSelection={(selectedItem, index) => {
+            // return selectedItem;
+            return (
+              <View
+                style={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
                 <View
                   style={{
-                    justifyContent: "space-between",
+                    flexDirection: "row",
                     alignItems: "center",
+                    width: getWidth(95),
+                    height: getHeight(7),
+                    // marginVertical: getHeight(1),
+                    // marginTop: getHeight(2.5),
+                    backgroundColor: colors.secondary,
+                    borderRadius: 5,
+                    paddingLeft: getFontSize(1),
+                    paddingRight: getFontSize(1.5),
                   }}
                 >
-                  <View
+                  <Text
                     style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      width: getWidth(95),
-                      height: getHeight(7),
-                      // marginVertical: getHeight(1),
-                      // marginTop: getHeight(2.5),
-                      backgroundColor: colors.secondary,
-                      borderRadius: 5,
-                      paddingLeft: getFontSize(1),
-                      paddingRight: getFontSize(1.5),
+                      color: "white",
+                      fontSize: getFontSize(2),
+                      marginLeft: 10,
+                      flex: 1,
+                      flexWrap: "wrap",
                     }}
                   >
-                    <Text
-                      style={{
-                        color: "white",
-                        fontSize: getFontSize(2),
-                        marginLeft: 10,
-                        flex: 1,
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      {isRefreshing ? "All Exercises" : selectedItem}
-                    </Text>
-                    <AntDesign
-                      size={getFontSize(2)}
-                      color={"white"}
-                      name="down"
-                    />
-                  </View>
+                    {isRefreshing ? "All Exercises" : selectedItem}
+                  </Text>
+                  <AntDesign
+                    size={getFontSize(2)}
+                    color={"white"}
+                    name="down"
+                  />
                 </View>
-              );
-            }}
-            buttonStyle={{
-              width: getWidth(95),
-              height: getHeight(7),
-              marginVertical: getHeight(1),
-              backgroundColor: colors.secondary,
-              borderRadius: 5,
-              alignSelf: "center",
-              justifyContent: "center",
-            }}
-            buttonTextStyle={{
-              color: "white",
-              fontSize: getFontSize(2),
-              fontFamily: "Ubuntu",
-              // marginLeft: 10,
-            }}
-            showsVerticalScrollIndicator={false}
-            dropdownStyle={{
-              backgroundColor: colors.secondary,
-              height: getHeight(30),
-            }}
-            rowStyle={{
-              backgroundColor: colors.secondary,
-              borderBottomColor: "rgba(0, 0, 0, 0.1)",
-              // margin:getFontSize(0.5)
-            }}
-            selectedRowTextStyle={{
-              color: colors.buttonColor,
-            }}
-            rowTextStyle={{
-              color: "white",
-              fontSize: getFontSize(2),
-              textAlign: "left",
-              paddingLeft: getFontSize(1),
-              fontFamily: "Ubuntu-bold",
-            }}
-          />
-        </TouchableOpacity>
+              </View>
+            );
+          }}
+          buttonStyle={{
+            width: getWidth(95),
+            height: getHeight(7),
+            marginVertical: getHeight(1),
+            backgroundColor: colors.secondary,
+            borderRadius: 5,
+            alignSelf: "center",
+            justifyContent: "center",
+          }}
+          buttonTextStyle={{
+            color: "white",
+            fontSize: getFontSize(2),
+            fontFamily: "Ubuntu",
+            // marginLeft: 10,
+          }}
+          showsVerticalScrollIndicator={false}
+          dropdownStyle={{
+            backgroundColor: colors.secondary,
+            height: getHeight(30),
+          }}
+          rowStyle={{
+            backgroundColor: colors.secondary,
+            borderBottomColor: "rgba(0, 0, 0, 0.1)",
+            // margin:getFontSize(0.5)
+          }}
+          selectedRowTextStyle={{
+            color: colors.buttonColor,
+          }}
+          rowTextStyle={{
+            color: "white",
+            fontSize: getFontSize(2),
+            textAlign: "left",
+            paddingLeft: getFontSize(1),
+            fontFamily: "Ubuntu-bold",
+          }}
+        />
       </View>
       <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
         <View style={{ flex: 1, marginTop: getFontSize(2) }}>
@@ -414,6 +412,10 @@ const Excercises = () => {
                           <View
                             style={{
                               backgroundColor: "black",
+                              height: getHeight(8),
+                              width: getWidth(20),
+                              borderTopLeftRadius: getFontSize(2),
+                              borderBottomLeftRadius: getFontSize(2),
                               ...Platform.select({
                                 ios: {
                                   shadowColor: "black",

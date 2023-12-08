@@ -33,14 +33,14 @@ const Help = () => {
     if (videoRef.current) {
       //videoRef.current.presentFullscreenPlayer();
       videoRef.current.seek(0);
-      videoRef.current.resume();
+      // videoRef.current.resume();
       setIsPaused(false); // Video is playing, update state
     }
   };
 
   const pauseVideo = () => {
     if (videoRef.current) {
-      videoRef.current.pause(); // Pause the video
+      // videoRef.current.pause(); // Pause the video
       setIsPaused(true); // Update state to reflect video pause
     }
   };
@@ -49,14 +49,14 @@ const Help = () => {
     if (videoRefFaq.current) {
      // videoRef.current.presentFullscreenPlayer();
       videoRefFaq.current.seek(0);
-      videoRefFaq.current.resume();
+      // videoRefFaq.current.resume();
       setIsPausedFaq(false); // Video is playing, update state
     }
   };
 
   const pauseVideoFaq = () => {
     if (videoRefFaq.current) {
-      videoRefFaq.current.pause(); // Pause the video
+      // videoRefFaq.current.pause(); // Pause the video
       setIsPausedFaq(true); // Update state to reflect video pause
     }
   };

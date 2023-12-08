@@ -77,7 +77,7 @@ const LeaderBoard = () => {
         token: token,
       });
       if (res?.status == "200") {
-        console.log("maxComplete response", res?.response?.maxMessages);
+        console.log("maxComplete response", res?.response);
         setData(res?.response?.maxComplete);
         setDataWeight(res?.response?.maxWeight);
         setDataMessages(res?.response?.maxMessages);

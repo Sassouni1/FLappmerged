@@ -152,7 +152,7 @@ export const styles = StyleSheet.create({
   },
   text: {
     marginHorizontal: 4,
-    fontSize: Platform.OS === "ios" ?getFontSize(5.2):getFontSize(4),
+    fontSize: Platform.OS === "ios" ? getFontSize(5.2) : getFontSize(4),
     fontFamily: fonts.Re,
     color: colors.white,
     marginLeft: getWidth(2),
@@ -166,19 +166,19 @@ export const styles = StyleSheet.create({
   repsCon: {
     flexDirection: "row",
     alignItems: "center",
-     justifyContent:"space-between",
+    justifyContent: "space-between",
     height: getHeight(8),
     marginTop: getHeight(3),
-    backgroundColor:colors.secondary1,
-    width:getWidth(90),
+    backgroundColor: colors.secondary1,
+    width: getWidth(90),
     // paddingLeft:getFontSize(1),
-    paddingRight:getFontSize(1),
-    borderRadius:getFontSize(1)
+    paddingRight: getFontSize(1),
+    borderRadius: getFontSize(1),
   },
   headerTime: {
     //flex:1,
     flexDirection: "row",
-   // marginTop: 5,
+    // marginTop: 5,
   },
   betww: {
     width: getWidth(78),
@@ -225,8 +225,8 @@ export const styles = StyleSheet.create({
     color: colors.white,
     fontSize: getFontSize(2),
     // marginRight: getWidth(2),
-    width:getWidth(32),
-    height:getHeight(10)
+    width: getWidth(32),
+    height: getHeight(10),
   },
   btng: {
     width: getFontSize(22),
@@ -257,7 +257,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   notes: {
-    fontFamily: 'Ubuntu',
+    fontFamily: "Ubuntu",
     color: colors.primary,
     fontSize: getFontSize(1.7),
     width: getWidth(75),
@@ -268,10 +268,10 @@ export const styles = StyleSheet.create({
     marginLeft: getWidth(7.5),
     marginTop: getHeight(2),
     height: getHeight(10),
-    paddingBottom: Platform.OS === "ios" ? getFontSize(0) :getFontSize(7),
-    fontWeight: "normal"
+    paddingBottom: Platform.OS === "ios" ? getFontSize(0) : getFontSize(7),
+    fontWeight: "normal",
   },
-  notesText:{
+  notesText: {
     color: "white",
     marginTop: getFontSize(2),
     left: getFontSize(2),
@@ -279,14 +279,28 @@ export const styles = StyleSheet.create({
     fontFamily: fonts.URe,
     marginRight: getWidth(2),
   },
-  notesStyle:{
+  notesStyle: {
     marginTop: getFontSize(2),
     backgroundColor: colors.secondary1,
     width: getWidth(90),
-    justifyContent:"center",
-    alignItems:"center",
-    paddingTop:getFontSize(1.5),
-    paddingBottom:getFontSize(1.5),
-    borderRadius:getFontSize(0.5)
-  }
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: getFontSize(1.5),
+    paddingBottom: getFontSize(1.5),
+    borderRadius: getFontSize(0.5),
+  },
+  additionalSet: {
+    marginTop: getFontSize(2),
+    backgroundColor: colors.secondary1,
+    width: getWidth(90),
+    height: getHeight(6),
+    justifyContent: "center",
+    alignItems: "center",
+    // paddingTop:getFontSize(1.5),
+    // paddingBottom:getFontSize(1.5),
+    borderRadius: getFontSize(0.5),
+    borderWidth: 1,
+    borderColor: colors.gray1, 
+    borderStyle: "dashed",
+  },
 });
