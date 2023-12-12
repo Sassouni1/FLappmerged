@@ -53,6 +53,7 @@ const Activity = () => {
     Sunday: 0,
   });
   const [weekDataProgress, setWeekDataProgress] = useState({});
+  const [messagesProgress, setMessagesProgress] = useState([]);
   const [assigWorkout, setAssigWorkout] = useState([]);
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
@@ -64,6 +65,8 @@ const Activity = () => {
     getSingleExcercise(selectedDate);
     exerciseProgress(selectedDate);
     exerciseWeekProgress(selectedDate);
+    getMessagesProgress();
+    
   };
 
   const generateDateRange = (selectedDate) => {
@@ -110,6 +113,34 @@ const Activity = () => {
       if (res?.status == "200") {
         console.log("workouts progress percentage", res);
         setWeeklyProgress(res?.response?.weeklyProgress);
+        dispatch(setLoader(false));
+      } else {
+        dispatch(setLoader(false));
+        //setAssigWorkout([]);
+        console.log("errorrrr in calenders progress");
+        // Alert.alert(res?.response?.message, [
+        //   { text: "OK", onPress: () => console.log("OK Pressed") },
+        // ]);
+      }
+    } catch (e) {
+      console.log("api get skill error -- ", e.toString());
+    }
+  };
+  const getMessagesProgress = async (selectedDate) => {
+    try {
+      const res = await ApiCall({
+        route: `assignProgram/totalMessages/${user?._id}`,
+        verb: "get",
+        token: token,
+        // params: {
+        //   givenDate: selectedDate,
+        // },
+      });
+
+      if (res?.status == "200") {
+        console.log("messages percentage", res?.response?.totalMessages);
+        setMessagesProgress( res?.response?.totalMessages)
+        // setWeeklyProgress(res?.response?.weeklyProgress);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -190,6 +221,7 @@ const Activity = () => {
   useEffect(() => {
     dispatch(setLoader(true));
     exerciseProgress(selectedDate);
+    getMessagesProgress();
   }, []);
 
   let weekProgress = {
@@ -357,6 +389,18 @@ const Activity = () => {
       }
     }
   }
+
+//   const percentages = messagesProgress.map((item) => item.percentage);
+//  console.log(percentages);
+let percentages = [];
+
+if (messagesProgress.length > 0) {
+  percentages = messagesProgress.map((item) => item.percentage);
+} else {
+  // Set default values for seven indices
+  percentages = [0, 0, 2, 0, 0, 0, 0];
+}
+
   return (
     <View style={styles.contaner}>
       <GeneralStatusBar
@@ -438,7 +482,7 @@ const Activity = () => {
           <Text style={styles.todayt}>Today’s progress</Text>
         </View>
         <View style={styles.spaceBet}>
-          <Text style={styles.activty}>TRAINING COMPLETTEION</Text>
+          <Text style={styles.activty}>TRAINING COMPLETETION</Text>
           <View style={styles.activityCon}>
             {/* <AngelLeft height={15} width={15} /> */}
             <TouchableOpacity
@@ -492,6 +536,74 @@ const Activity = () => {
                     weeklyProgress.Friday,
                     weeklyProgress.Saturday,
                     weeklyProgress.Sunday,
+                  ],
+                },
+              ],
+            }}
+            width={getWidth(95)} // from react-native
+            height={getHeight(25)}
+            yAxisSuffix="%"
+            withHorizontalLines={false}
+            withVerticalLines={false}
+            chartConfig={{
+              backgroundColor: "#ffffff",
+              backgroundGradientFrom: "#ffffff",
+              backgroundGradientTo: "#ffffff",
+              decimalPlaces: 0, // round to decimal places
+              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              style: {
+                borderRadius: 16,
+              },
+              propsForDots: {
+                r: "6",
+                strokeWidth: "2",
+                stroke: "#ffa726",
+              },
+              yAxis: {
+                min: 0,
+                max: 100,
+              },
+            }}
+            bezier // smooth lines
+            style={{
+              marginVertical: 8,
+              borderRadius: getFontSize(2),
+            }}
+          />
+        </View>
+
+
+
+
+        <View style={styles.spaceBet}>
+          <Text style={styles.activty}>USER ENGAGEMENT</Text>
+        </View>
+        <View style={{...styles.graphCon, marginTop: getHeight(2),}}>
+          {/* <GraphActivity
+          height={getHeight(30)}
+          width={getWidth(100)}
+          style={{ alignSelf: "center" }}
+        /> */}
+          <LineChart
+            data={{
+              labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+              
+              datasets: [
+                {
+                  data: [
+                   percentages[0],
+                   percentages[1],
+                   percentages[2],
+                   percentages[3],
+                   percentages[4],
+                   percentages[5],
+                   percentages[6],
+                    // weeklyProgress.Wednesday,
+                    // weeklyProgress.Thursday,
+                    // weeklyProgress.Friday,
+                    // weeklyProgress.Saturday,
+                    // weeklyProgress.Sunday,
                   ],
                 },
               ],
