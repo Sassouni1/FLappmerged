@@ -84,7 +84,7 @@ const WorkoutHistory = ({ route }) => {
 
       if (res?.status == "200") {
         setAssigWorkout(res?.response?.Workout[0]);
-        console.log("workouts details", res?.response?.Workout[0].progress);
+        console.log("workouts details", res?.response?.Workout[0]?.innerWorkout);
 
         dispatch(setLoader(false));
       } else {
@@ -147,9 +147,6 @@ const WorkoutHistory = ({ route }) => {
   let customDatesStyles = [];
   const startDate = new Date(date);
   const endDate = new Date(date);
-  // const diff = startDate.getDay() - 1; // Sunday = 0, Monday = 1, ..., Saturday = 6
-  // startDate.setDate(startDate.getDate() - diff);
-  // endDate.setDate(startDate.getDate() + 6);
   if (startDate.getDay() === 0) {
     startDate.setDate(startDate.getDate() - 6);
   } else {
@@ -159,13 +156,6 @@ const WorkoutHistory = ({ route }) => {
   endDate.setDate(startDate.getDate() + 6);
 
   const dayOfWeekMap = {
-    // 0: "Monday",
-    // 1: "Tuesday",
-    // 2: "Wednesday",
-    // 3: "Thursday",
-    // 4: "Friday",
-    // 5: "Saturday",
-    // 6: "Sunday",
     0: "Sunday",
     1: "Monday",
     2: "Tuesday",
@@ -338,15 +328,15 @@ const WorkoutHistory = ({ route }) => {
           showMonth={false}
           selectedDate={date}
           onDateSelected={handleDateChange}
+          customDatesStyles={customDatesStyles}
           calendarAnimation={{ type: "sequence", duration: 30 }}
           iconLeft={require("../../../assets/images/leftp.png")}
           iconRight={require("../../../assets/images/rightp.png")}
           style={{
             height: getHeight(8),
-            marginTop: getHeight(1),
+            marginTop: getHeight(2.5),
             paddingHorizontal: 5,
           }}
-          // calendarHeaderStyle={{color: colors.white}}
           calendarColor={colors.primary}
           iconContainer={{ flex: 0.05 }}
         />
@@ -455,13 +445,6 @@ const WorkoutHistory = ({ route }) => {
 
               {item.exercise.map((ex) => (
                 <TouchableOpacity
-                  // onPress={() =>
-                  //   navigation.navigate("WorkoutSet", {
-                  //     workoutId: assigWorkout?._id,
-                  //     innerWorkoutId: item?._id,
-                  //     exerciseId: ex?._id,
-                  //   })
-                  // }
                   onPress={() => {
                     if (ex?.complete == "true") {
                       navigation.navigate("SubmittedWorkouts", {
@@ -470,11 +453,6 @@ const WorkoutHistory = ({ route }) => {
                         exerciseId: ex?._id,
                       });
                     } else {
-                      // navigation.navigate("WorkoutSet", {
-                      //   workoutId: assigWorkout?._id,
-                      //   innerWorkoutId: item?._id,
-                      //   exerciseId: ex?._id,
-                      // });
                       navigation.navigate("CompleteWorkout", {
                         workoutId: assigWorkout?._id,
                         innerWorkoutId: item?._id,
@@ -489,9 +467,17 @@ const WorkoutHistory = ({ route }) => {
                     marginTop: getHeight(2),
                   }}
                 >
-                  <View style={styles.thumbnail}>
-                    <PlayerSvg height={30} width={30} />
-                  </View>
+                    {ex?.video_thumbnail ? (
+                    <Image
+                      source={{ uri: ex?.video_thumbnail }}
+                      style={styles.thumbnail}
+                      resizeMode="cover"
+                    ></Image>
+                  ) : (
+                    <View style={styles.thumbnail}>
+                      <PlayerSvg height={20} width={20} />
+                    </View>
+                  )}
                   {/* {console.log('ex',ex)} */}
                   <View style={{ marginLeft: getWidth(2) }}>
                     <Text style={styles.heading}>{ex?.exercise_name}</Text>
@@ -502,6 +488,7 @@ const WorkoutHistory = ({ route }) => {
                         marginTop: getFontSize(0.5),
                       }}
                     >
+                      <Text numberOfLines={1} style={{width:getWidth(60)}}>
                       <Text
                         style={{ ...styles.total, fontSize: getFontSize(1.5) }}
                       >
@@ -510,7 +497,6 @@ const WorkoutHistory = ({ route }) => {
                       {ex?.sets.map((set, index) => (
                         <Text
                           style={{
-                            ...styles.text,
                             fontSize: getFontSize(1.5),
                             color: colors.graytext5,
                           }}
@@ -520,6 +506,7 @@ const WorkoutHistory = ({ route }) => {
                           {getUnit(set)}
                         </Text>
                       ))}
+                      </Text>
                     </View>
                     {ex?.complete == "true" ? (
                       <View>
@@ -554,7 +541,7 @@ const WorkoutHistory = ({ route }) => {
             width: getWidth(60),
             backgroundColor: colors.greenlight,
             position: "absolute",
-            bottom: getHeight(2),
+            bottom: getHeight(5),
           }}
           btnTextStyle={GernalStyle.btnText}
         />

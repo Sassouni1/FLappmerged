@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Text,
   ImageBackground,
-  ScrollView,
   Alert,
 } from "react-native";
 import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
@@ -14,7 +13,6 @@ import { useState } from "react";
 import Modal from "react-native-modal";
 import { colors } from "../../constants/colors";
 import { fonts } from "../../constants/fonts";
-import { RightIcon } from "../../../assets/Images";
 import { useNavigation } from "@react-navigation/native";
 import { styles } from "./styles";
 import { ApiCall } from "../../Services/Apis";
@@ -27,18 +25,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const WorkoutDetails = () => {
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(
-    new Date()
-  );
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [data, setData] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState();
-  const [isConfirmModalVisible, setConfirmModalVisible] = useState(false);
-  const [assignProgram, setAssignProgram] = useState([]);
-  const [count, setCount] = useState(0);
   const token = useSelector((state) => state.auth.userToken);
   const user = useSelector((state) => state.auth.userData);
-  console.log('selected id',selectedItemId)
 
   const dispatch = useDispatch();
   const toggleModal = () => {
@@ -47,7 +38,6 @@ const WorkoutDetails = () => {
     console.log("Opened modal");
   };
 
-  var lastTap = null;
   const handleDoubleTap = (item) => {
     navigation.navigate("ViewProgram", { passData: item });
   };
@@ -66,16 +56,12 @@ const WorkoutDetails = () => {
         verb: "get",
         token: token,
       });
-      console.log("response of all programs", res?.response);
       if (res?.status == "200") {
-        console.log("view all programs", res?.response?.detail);
         setData(res?.response?.detail);
-
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-
-        alert(res?.response?.message, [
+        Alert.alert(res?.response?.message, [
           { text: "OK", onPress: () => console.log("OK Pressed") },
         ]);
       }
@@ -91,31 +77,25 @@ const WorkoutDetails = () => {
     dispatch(setLoader(true));
     const today = new Date();
     today.setDate(today.getDate() + 7);
-    // Format the resulting date as a string in ISO format
-    const sevenDaysLater = today.toISOString().split("T")[0];
-    //console.log(sevenDaysLater);
     try {
       const res = await ApiCall({
         params: {
           startDate: selectedDate,
           programId: selectedItemId,
-          //lastDate: sevenDaysLater,
         },
         route: "assignProgram/assign_Program",
         verb: "post",
         token: token,
       });
-
-      console.log("aProgram", res?.response);
       if (res?.status == "200") {
         dispatch(Assprogram(res?.response?.Assigned_Program));
         dispatch(getSingleUser(token));
         dispatch(setLoader(false));
-        navigation.navigate("WorkoutSucessfully",{selectDate: selectedDate});
+        navigation.navigate("WorkoutSucessfully", { selectDate: selectedDate });
       } else {
         dispatch(setLoader(false));
 
-        alert(res?.response?.message, [
+        Alert.alert(res?.response?.message, [
           { text: "OK", onPress: () => console.log("OK Pressed") },
         ]);
       }
@@ -128,8 +108,6 @@ const WorkoutDetails = () => {
     dispatch(setLoader(true));
     const today = new Date();
     today.setDate(today.getDate() + 7);
-    // Format the resulting date as a string in ISO format
-    const sevenDaysLater = today.toISOString().split("T")[0];
     try {
       const res = await ApiCall({
         params: {
@@ -145,7 +123,7 @@ const WorkoutDetails = () => {
         dispatch(Assprogram(res?.response?.Assigned_Program));
         dispatch(getSingleUser(token));
         dispatch(setLoader(false));
-        navigation.navigate("WorkoutSucessfully",{selectDate: selectedDate});
+        navigation.navigate("WorkoutSucessfully", { selectDate: selectedDate });
       } else {
         dispatch(setLoader(false));
 
@@ -158,8 +136,6 @@ const WorkoutDetails = () => {
     }
   };
 
-
-
   useEffect(() => {
     const fetchSelectedItemId = async () => {
       const latestSelectedItemId = await AsyncStorage.getItem(
@@ -169,7 +145,6 @@ const WorkoutDetails = () => {
         setSelectedItemId(latestSelectedItemId);
       }
     };
-
     fetchSelectedItemId();
   }, []);
 
@@ -192,26 +167,23 @@ const WorkoutDetails = () => {
       "selectedItems",
       JSON.stringify(prevSelectedItems)
     );
-
     // Update the latest selected program ID in AsyncStorage
     await AsyncStorage.setItem("latestSelectedItemId", item._id);
-
     setSelectedItemId(item._id);
   };
 
   const handleAddToCalendar = () => {
     if (user?.isAssigned === true) {
-      Alert.alert('', ' Do you want to switch to new program?', [
+      Alert.alert("", " Do you want to switch to new program?", [
         {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style:"destructive"
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "destructive",
         },
-        {text: 'Continue', onPress: () => toggleModal(), style:"default"},
+        { text: "Continue", onPress: () => toggleModal(), style: "default" },
       ]);
-    }
-    else{
-      toggleModal()
+    } else {
+      toggleModal();
     }
   };
 
@@ -234,8 +206,6 @@ const WorkoutDetails = () => {
                   <Text
                     style={{
                       fontSize: getFontSize(1.9),
-                      // fontSize: 14,
-
                       color: colors.white,
                       fontFamily: fonts.UBo,
                       position: "absolute",
@@ -263,12 +233,10 @@ const WorkoutDetails = () => {
                       borderRadius: 25,
                     }}
                   >
-                    {/* <RightIcon height={15} width={15} /> */}
                     <Ionicons
                       name="checkmark-sharp"
                       size={20}
                       color={colors.white}
-                      //style={{marginTop: getWidth(2)}}
                     />
                   </TouchableOpacity>
                 </ImageBackground>
@@ -279,37 +247,37 @@ const WorkoutDetails = () => {
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.list}
       />
-      { selectedItemId !== user?.program_id ?
-      <TouchableOpacity
-        onPress={() => {
-          handleAddToCalendar()
-        }}
-        activeOpacity={0.5}
-        style={{
-          backgroundColor: colors.buttonColor,
-          width: getWidth(93),
-          height: getHeight(5),
-          justifyContent: "center",
-          alignContent: "center",
-          alignSelf: "center",
-          borderRadius: 5,
-          alignItems: "center",
-          position: "absolute",
-          bottom: getHeight(1),
-        }}
-      >
-        <Text
+      {selectedItemId !== user?.program_id ? (
+        <TouchableOpacity
+          onPress={() => {
+            handleAddToCalendar();
+          }}
+          activeOpacity={0.5}
           style={{
-            fontSize: getFontSize(1.5),
-            color: colors.white,
-            fontFamily: fonts.UBo,
-            fontWeight: "bold",
+            backgroundColor: colors.buttonColor,
+            width: getWidth(93),
+            height: getHeight(5),
+            justifyContent: "center",
+            alignContent: "center",
+            alignSelf: "center",
+            borderRadius: 5,
+            alignItems: "center",
+            position: "absolute",
+            bottom: getHeight(1),
           }}
         >
-          Add Workout to my Calendar
-        </Text>
-      </TouchableOpacity>
-:null}
+          <Text
+            style={{
+              fontSize: getFontSize(1.5),
+              color: colors.white,
+              fontFamily: fonts.UBo,
+              fontWeight: "bold",
+            }}
+          >
+            Add Workout to my Calendar
+          </Text>
+        </TouchableOpacity>
+      ) : null}
 
       <Modal
         isVisible={isModalVisible}
@@ -331,7 +299,7 @@ const WorkoutDetails = () => {
                 selectedColor: colors.buttonColor,
               },
             }}
-            minDate={new Date().toISOString().split('T')[0]}
+            minDate={new Date().toISOString().split("T")[0]}
           />
           <TouchableOpacity
             onPress={() => {

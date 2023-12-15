@@ -68,7 +68,7 @@ function NavHeader(props) {
           source={
             user?.profile_image
               ? { uri: user?.profile_image }
-              : require("../../assets/images/user.png")
+              : require("../../assets/images/Pimg.jpeg")
           }
         />
         <View

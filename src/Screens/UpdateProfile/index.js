@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  Image,
   TouchableOpacity,
   StyleSheet,
   Keyboard,
@@ -26,45 +25,32 @@ import { getSingleUser } from "../../Redux/actions/AuthActions";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Button from "../../Components/Button";
-import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import {
   captureImage,
   chooseImageGallery,
-  requestCameraPermission,
-  requestExternalWritePermission,
 } from "../../../utils/ImageAndCamera";
-import { BASE_URL, IMAGE_URL } from "../../Services/Constants";
 import ImagePickerModal from "../../Components/ImagePickerModal";
-import ImagePicker, { openCropper } from "react-native-image-crop-picker";
+import ImagePicker from "react-native-image-crop-picker";
 import ImageModal from "react-native-image-modal";
-import axios from "axios";
 import { TextInput } from "react-native-paper";
 
 const UpdateProfiles = () => {
   const navigation = useNavigation();
   const user = useSelector((state) => state.auth.userData);
-  console.log("User upppp", user);
   const token = useSelector((state) => state.auth.userToken);
-  const [imageToUpload, setImageToUpload] = useState("");
   const [pickerModalVisibile, setPickerModalVisibile] = useState(false);
-  const [imageCrop,setImageCrop] = useState('');
-
-  const [imageObject, setImageObject] = useState();
+  const [imageCrop, setImageCrop] = useState("");
   const [imageSave, setImageSave] = useState(null);
-  
-
 
   const handleImagePress = () => {
     setPickerModalVisibile(true);
   };
 
+
+
+// image upload
   const uploadFromCamera = async () => {
     const res = await captureImage();
-    // console.log('ress___',res[0])
-    setImageSave(res?.data?.uri);
-
-    console.log("___img", res?.data?.uri);
-
     if (res.status == false) {
       toast.show(res.error);
       return;
@@ -74,9 +60,7 @@ const UpdateProfiles = () => {
       type: res?.data?.type,
       name: res?.data?.name,
     };
-    setImageObject(imageObject);
     setPickerModalVisibile(false);
-    setImageToUpload(imageObject?.uri);
     setTimeout(function () {
       cropimage(imageObject?.uri);
       dispatch(setLoader(false));
@@ -84,8 +68,6 @@ const UpdateProfiles = () => {
   };
   const uploadFromGallry = async () => {
     const res = await chooseImageGallery("", 1, false);
-    setImageSave(res?.data?.uri);
-    console.log("___img", res?.data?.uri);
     if (res.status == false) {
       toast.show(res.error);
       return;
@@ -95,8 +77,7 @@ const UpdateProfiles = () => {
       type: res?.data?.type,
       name: res?.data?.name,
     };
-    setImageObject(imageObject);
-    setImageToUpload(imageObject?.uri);
+    dispatch(setLoader(true));
     setTimeout(function () {
       cropimage(imageObject?.uri);
       dispatch(setLoader(false));
@@ -104,23 +85,23 @@ const UpdateProfiles = () => {
     setPickerModalVisibile(false);
   };
 
-  const cropimage = uri => {
-    ImagePicker,openCropper({
-      path: Platform.OS === 'android' ? 'file://' + uri : uri,
-    }).then(image => {
-      setImageToUpload(image?.path);
+  const cropimage = (uri) => {
+    ImagePicker.openCropper({
+      path: Platform.OS === "android" ? "file://" + uri : uri,
+    }).then((image) => {
       const MyObject = {
         uri: image?.path,
         type: image?.mime,
-        name: 'profileImage' + user?._id,
+        name: "profileImage" + user?._id,
       };
-      setImageObject(MyObject);
       setPickerModalVisibile(false);
-      setImageCrop(MyObject)
-      //profileSetting(MyObject);
+      setImageCrop(MyObject);
+      setImageSave(MyObject?.uri);
     });
   };
 
+
+// api call
   const inputRefs = {
     fullname: useRef(null),
     weight: useRef(null),
@@ -179,7 +160,7 @@ const UpdateProfiles = () => {
           dispatch(getSingleUser(token));
           toast.show(res?.response?.message);
           dispatch(setLoader(false));
-          Keyboard.dismiss()
+          Keyboard.dismiss();
         } else {
           console.log("error of api", res);
           dispatch(setLoader(false));
@@ -196,50 +177,6 @@ const UpdateProfiles = () => {
     }
   };
 
-  // const updateProfile = async () => {
-  //   const { fullname, weight, height } = state;
-  //   const fullnameError = await validator("fullname", fullname);
-  //   const weightError = await validator("weight", weight);
-  //   const heightError = await validator("height", height);
-
-  //   if (!fullnameError && !weightError && !heightError) {
-  //     dispatch(setLoader(true));
-  //     try {
-  //       console.log("imagesss");
-  //       const formData = new FormData();
-  //       formData.append("full_name", fullname);
-  //       formData.append("height", height);
-  //       formData.append("weight", weight);
-  //       formData.append("profile_image", imageObject);
-  //       console.log('Form Data',formData)
-
-  //       const res = await axios.put(`${BASE_URL}/user/update_user`, formData, {
-  //         headers: {
-  //           Authorization: `x-sh-auth ${token}`,
-  //           "Content-Type": "multipart/form-data",
-  //         },
-  //       });
-  //       if (res?.status == "200") {
-  //         navigation.goBack();
-  //         dispatch(getSingleUser(token));
-  //         toast.show(res?.response?.message);
-  //         dispatch(setLoader(false));
-  //       } else {
-  //         toast.show(res?.response);
-  //         alert(res?.response?.message, [
-  //           { text: "OK", onPress: () => console.log("OK Pressed") },
-  //         ]);
-  //       }
-  //     } catch (e) {
-  //       console.log("Saga error:", e);
-  //     } finally {
-  //       dispatch(setLoader(false));
-  //     }
-  //   } else {
-  //     setState({ ...state, emailError, weightError, heightError });
-  //   }
-  // };
-
   return (
     <View
       style={{ ...GernalStyle.continer, backgroundColor: colors.homeColor }}
@@ -250,12 +187,6 @@ const UpdateProfiles = () => {
         backgroundColor={colors.primary}
         translucent={true}
       />
-      {/* <HeaderBottom
-        heading={"Profile Settings"}
-        onPress={() => {
-          navigation.openDrawer();
-        }}
-      /> */}
       <HeaderBottom
         title={"Profile Settings"}
         LeftIcon={
@@ -268,7 +199,7 @@ const UpdateProfiles = () => {
             }}
           />
         }
-        RightIcon={<View style={{marginRight:getFontSize(2.5)}}/>}
+        RightIcon={<View style={{ marginRight: getFontSize(2.5) }} />}
       />
       <ImagePickerModal
         visible={pickerModalVisibile}
@@ -297,24 +228,9 @@ const UpdateProfiles = () => {
                 ? { uri: imageSave }
                 : user?.profile_image
                 ? { uri: user?.profile_image }
-                : require("../../assets/images/user.png")
+                : require("../../assets/images/Pimg.jpeg")
             }
           />
-          {/* <ImageModal
-            resizeMode="cover"
-            modalImageResizeMode="contain"
-            style={{ ...styles.userProfile, marginTop: 0 }}
-            source={
-              imageSave
-                ? { uri: imageSave }
-                : user?.profile_image
-                ? { uri: IMAGE_URL + user?.profile_image }
-                : require("../../assets/images/user.png")
-            }
-          /> */}
-
-          {/* <ProfileImg height={getHeight(14)} width={getWidth(30)} /> */}
-          {/* <TouchableOpacity style={styles.editbtn}> */}
           <TouchableOpacity
             onPress={() => handleImagePress()}
             style={{
@@ -331,7 +247,6 @@ const UpdateProfiles = () => {
           >
             <MaterialIcons name={"edit"} size={24} color={"#182d4a"} />
           </TouchableOpacity>
-          {/* </TouchableOpacity> */}
         </View>
         <Text style={styles.username}>{user?.full_name}</Text>
         <Text style={styles.useremail}>{user?.email}</Text>
@@ -388,7 +303,7 @@ const UpdateProfiles = () => {
           activeUnderlineColor="#BDC3C4"
           activeOutlineColor="#BDC3C4"
           textColor="white"
-          style={{ ...GernalStyle.input, marginTop: getHeight(2), }}
+          style={{ ...GernalStyle.input, marginTop: getHeight(2) }}
           ref={inputRefs.weight}
           value={state.weight.toString()}
           returnKeyType={"done"}
@@ -421,7 +336,11 @@ const UpdateProfiles = () => {
           activeUnderlineColor="#BDC3C4"
           activeOutlineColor="#BDC3C4"
           textColor="white"
-          style={{ ...GernalStyle.input, marginTop: getHeight(2),marginBottom:getFontSize(2) }}
+          style={{
+            ...GernalStyle.input,
+            marginTop: getHeight(2),
+            marginBottom: getFontSize(2),
+          }}
           ref={inputRefs.height}
           value={state.height.toString()}
           returnKeyType={"done"}
@@ -447,25 +366,23 @@ const UpdateProfiles = () => {
           </Text>
         )}
       </KeyboardAwareScrollView>
-      {/* <AppButton
-        onPress={profileSetting}
-        buttonText={"Update"}
-        style={{ marginBottom: getHeight(4) }}
-      /> */}
-      <View style={{marginTop:Platform.OS === "ios"?getFontSize(0): getFontSize(15)}}>
-      <Button
-        onPress={profileSetting}
-        text="Update profile"
-        btnStyle={{
-          ...GernalStyle.btn,
-          backgroundColor: colors.buttonColor,
-          position: "absolute",
-          bottom: getHeight(5),
+      <View
+        style={{
+          marginTop: Platform.OS === "ios" ? getFontSize(0) : getFontSize(15),
         }}
-        btnTextStyle={GernalStyle.btnText}
-      />
+      >
+        <Button
+          onPress={profileSetting}
+          text="Update profile"
+          btnStyle={{
+            ...GernalStyle.btn,
+            backgroundColor: colors.buttonColor,
+            position: "absolute",
+            bottom: getHeight(5),
+          }}
+          btnTextStyle={GernalStyle.btnText}
+        />
       </View>
-      
     </View>
   );
 };

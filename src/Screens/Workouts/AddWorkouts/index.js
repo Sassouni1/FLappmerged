@@ -19,28 +19,15 @@ import {
   getWidth,
   getHeight,
 } from "../../../../utils/ResponsiveFun";
-import {
-  AngelDown,
-  StrechSvg,
-  CrunchSvg,
-  RopeSvg,
-  IconWhite,
-  AngelUp,
-  PlayerSvg,
-} from "../../../assets/images";
+import { PlayerSvg } from "../../../assets/images";
 import Seprator from "../../../Components/Seprator";
 import { styles } from "./styles";
 import Button from "../../../Components/Button";
-import Header from "../../../Components/Header";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../../Redux/actions/GernalActions";
 import { ApiCall } from "../../../Services/Apis";
 import { fonts } from "../../../constants/fonts";
 import ReactNativeCalendarStrip from "react-native-calendar-strip";
-import HeaderBottom from "../../../Components/HeaderBottom";
-import Toast from "react-native-simple-toast";
 
 const AddWorkouts = () => {
   const navigation = useNavigation();
@@ -53,7 +40,6 @@ const AddWorkouts = () => {
   const token = useSelector((state) => state.auth.userToken);
   const loader = useSelector((state) => state.gernal.loader);
   const [weekDataProgress, setWeekDataProgress] = useState({});
-  const [singleDay, setSingleDay] = useState();
 
   const handleDateChange = (selectedDate) => {
     setDate(selectedDate);
@@ -61,11 +47,6 @@ const AddWorkouts = () => {
     getSingleExcercise(selectedDate);
     exerciseProgress(selectedDate);
   };
-  // const handleWeekChange = (selectedDate) => {
-  //   exerciseProgress(selectedDate);
-  //   dispatch(setLoader(true));
-  //   setDate(selectedDate);
-  // };
   const getUnit = (set) => {
     if (set.weight) {
       return `${set.weight} kg`;
@@ -89,20 +70,18 @@ const AddWorkouts = () => {
         verb: "get",
         token: token,
       });
-      console.log("starteddd",res);
-
-     // console.log("respone of add workoutss", res?.response?.Workout[0].innerWorkout[0]);
+      console.log("starteddd", res);
       if (res?.status == "200") {
-        console.log("respone of add workoutss", res?.response?.Workout[0].innerWorkout[0]?.exercise[0]);
+        console.log(
+          "respone of add workoutss",
+          res?.response?.Workout[0].innerWorkout[0]?.exercise[0]
+        );
         setAssigWorkout(res?.response?.Workout[0]);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
         setAssigWorkout([]);
         console.log("errorrrr in calenders");
-        // Alert.alert(res?.response?.message, [
-        //   { text: "OK", onPress: () => console.log("OK Pressed") },
-        // ]);
       }
     } catch (e) {
       console.log("api get skill errorrrr -- ", e.toString());
@@ -138,36 +117,6 @@ const AddWorkouts = () => {
     }
   };
 
-  // const singleDayProgress = async (selectedDate) => {
-  //   try {
-  //     const res = await ApiCall({
-  //       route: `assignProgram/single_status/${user?.user_id}`,
-  //       verb: "post",
-  //       token: token,
-  //       params: {
-  //         givenDate: selectedDate,
-  //       },
-  //     });
-  //     console.log("single day progress response", res?.response?.status);
-  //     if (res?.status == "200") {
-  //       console.log("single day progress response", res?.response?.status);
-  //       setSingleDay(res?.response?.status);
-  //       // setWeekDataProgress({...res?.response?.weeklyProgress});
-  //       dispatch(setLoader(false));
-  //     } else {
-  //       dispatch(setLoader(false));
-  //       console.log("errorrrr in calenders progress");
-  //     }
-  //   } catch (e) {
-  //     console.log("api get skill error -- ", e.toString());
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   dispatch(setLoader(true));
-  //   getSingleExcercise(date);
-  //    exerciseProgress(date)
-  // }, []);
   useFocusEffect(
     React.useCallback(() => {
       dispatch(setLoader(true));
@@ -175,134 +124,6 @@ const AddWorkouts = () => {
       exerciseProgress(date);
     }, [date])
   );
-
-  // const getstyle = (date) => {
-  //   var days = [
-  //     "Sunday",
-  //     "Monday",
-  //     "Tuesday",
-  //     "Wednesday",
-  //     "Thursday",
-  //     "Friday",
-  //     "Saturday",
-  //   ];
-  //   var d = new Date(date);
-  //   var selectedDayName = days[d.getDay()];
-
-  //   let weekProgress = {
-  //     Monday: "coming soon",
-  //     Tuesday: "partially complete",
-  //     Wednesday: "not assigned",
-  //     Thursday: "assigned",
-  //     Friday: "'partially complete'",
-  //     Saturday: "missed",
-  //     Sunday: "partially complete",
-  //   };
-
-  //   // console.log(
-  //   //   "sfdjailjkasdfljkasdfljk jfads ljkasjjlf ajlasdf ",
-  //   //   weekDataProgress
-  //   // );
-  //   switch (singleDay) {
-  //     case "coming soon":
-  //       return {
-  //         startDate: date,
-  //         dateNameStyle: { color: "#05b7ff" },
-  //         dateNumberStyle: { color: "#05b7ff" },
-  //         dateContainerStyle: {
-  //           height: getHeight(8),
-  //           backgroundColor: colors.calendar,
-  //           borderWidth: 0,
-  //           width: getWidth(11),
-  //           borderRadius: getFontSize(0.5),
-  //         },
-  //       };
-
-  //     case "partially complete":
-  //       return {
-  //         startDate: date,
-  //         dateNameStyle: { color: colors.buttonColor },
-  //         dateNumberStyle: { color: colors.buttonColor },
-  //         dateContainerStyle: {
-  //           height: getHeight(8),
-  //           backgroundColor: colors.calendar,
-  //           borderWidth: 0,
-  //           width: getWidth(11),
-  //           borderRadius: getFontSize(0.5),
-  //         },
-  //       };
-
-  //     case "not assigned":
-  //       return {
-  //         startDate: date,
-  //         dateNameStyle: { color: colors.gray1 },
-  //         dateNumberStyle: { color: colors.gray1 },
-  //         dateContainerStyle: {
-  //           height: getHeight(8),
-  //           backgroundColor: colors.calendar,
-  //           borderWidth: 0,
-  //           width: getWidth(11),
-  //           borderRadius: getFontSize(0.5),
-  //         },
-  //       };
-
-  //     case "assigned":
-  //       return {
-  //         startDate: date,
-  //         dateNameStyle: { color: colors.white },
-  //         dateNumberStyle: { color: colors.white },
-  //         dateContainerStyle: {
-  //           height: getHeight(8),
-  //           backgroundColor: colors.calendar,
-  //           borderWidth: 0,
-  //           width: getWidth(11),
-  //           borderRadius: getFontSize(0.5),
-  //         },
-  //       };
-
-  //     case "complete":
-  //       return {
-  //         startDate: date,
-  //         dateNameStyle: { color: colors.greenlight },
-  //         dateNumberStyle: { color: colors.greenlight },
-  //         dateContainerStyle: {
-  //           height: getHeight(8),
-  //           backgroundColor: colors.calendar,
-  //           borderWidth: 0,
-  //           width: getWidth(11),
-  //           borderRadius: getFontSize(0.5),
-  //         },
-  //       };
-
-  //     case "missed":
-  //       return {
-  //         startDate: date,
-  //         dateNameStyle: { color: colors.redtime },
-  //         dateNumberStyle: { color: colors.redtime },
-  //         dateContainerStyle: {
-  //           backgroundColor: colors.calendar,
-  //           height: getHeight(8),
-  //           borderWidth: 0,
-  //           width: getWidth(11),
-  //           borderRadius: getFontSize(0.5),
-  //         },
-  //       };
-
-  //     default:
-  //       return {
-  //         startDate: date,
-  //         dateNameStyle: { color: colors.white },
-  //         dateNumberStyle: { color: colors.white },
-  //         dateContainerStyle: {
-  //           height: getHeight(8),
-  //           backgroundColor: colors.calendar,
-  //           borderWidth: 0,
-  //           width: getWidth(11),
-  //           borderRadius: getFontSize(0.5),
-  //         },
-  //       };
-  //   }
-  // };
 
   let weekProgress = {
     Monday: weekDataProgress?.Monday,
@@ -317,9 +138,6 @@ const AddWorkouts = () => {
   let customDatesStyles = [];
   const startDate = new Date(date);
   const endDate = new Date(date);
-  // const diff = startDate.getDay() - 1; // Sunday = 0, Monday = 1, ..., Saturday = 6
-  // startDate.setDate(startDate.getDate() - diff);
-  // endDate.setDate(startDate.getDate() + 6);
   if (startDate.getDay() === 0) {
     startDate.setDate(startDate.getDate() - 6);
   } else {
@@ -329,13 +147,6 @@ const AddWorkouts = () => {
   endDate.setDate(startDate.getDate() + 6);
 
   const dayOfWeekMap = {
-    // 0: "Monday",
-    // 1: "Tuesday",
-    // 2: "Wednesday",
-    // 3: "Thursday",
-    // 4: "Friday",
-    // 5: "Saturday",
-    // 6: "Sunday",
     0: "Sunday",
     1: "Monday",
     2: "Tuesday",
@@ -411,10 +222,10 @@ const AddWorkouts = () => {
             },
           });
           break;
-          case "assigned":
+        case "assigned":
           customDatesStyles.push({
             startDate: currentDate,
-            dateNameStyle: { color: "#05b7ff"  },
+            dateNameStyle: { color: "#05b7ff" },
             dateNumberStyle: { color: "#05b7ff" },
             dateContainerStyle: {
               height: getHeight(8),
@@ -478,30 +289,6 @@ const AddWorkouts = () => {
         marginTop: getFontSize(1),
       }}
     >
-      {/* {isTime && (
-      {Object.keys(weekDataProgress).length === 0 ? null : 
-      ( */}
-      {/* <ReactNativeCalendarStrip
-        showMonth={false}
-        selectedDate={date}
-        onDateSelected={handleDateChange}
-        calendarAnimation={{ type: "sequence", duration: 30 }}
-        customDatesStyles={(ab) => {
-          getstyle(ab);
-          singleDayProgress(ab);
-        }}
-        styleWeekend={false}
-        onWeekChanged={(start) => handleWeekChange(start)}
-        iconLeft={require("../../../assets/images/leftp.png")}
-        iconRight={require("../../../assets/images/rightp.png")}
-        style={{
-          height: getHeight(8),
-          marginTop: getHeight(1),
-          paddingHorizontal: 5,
-        }}
-        calendarColor={colors.primary}
-        iconContainer={{ flex: 0.05 }}
-      /> */}
       <ReactNativeCalendarStrip
         showMonth={false}
         selectedDate={date}
@@ -551,7 +338,7 @@ const AddWorkouts = () => {
                       style={{
                         fontSize: getFontSize(2),
                         color: colors.graytext5,
-                        marginTop:getHeight(1)
+                        marginTop: getHeight(1),
                       }}
                     >
                       No workout found on selected date
@@ -580,7 +367,7 @@ const AddWorkouts = () => {
                       style={{
                         fontSize: getFontSize(2),
                         color: colors.graytext5,
-                        marginTop:getHeight(1)
+                        marginTop: getHeight(1),
                       }}
                     >
                       No workout found on selected date
@@ -635,13 +422,6 @@ const AddWorkouts = () => {
 
               {item.exercise.map((ex) => (
                 <TouchableOpacity
-                  // onPress={() =>
-                  //   navigation.navigate("WorkoutSet", {
-                  //     workoutId: assigWorkout?._id,
-                  //     innerWorkoutId: item?._id,
-                  //     exerciseId: ex?._id,
-                  //   })
-                  // }
                   onPress={() => {
                     if (ex?.complete == "true") {
                       navigation.navigate("SubmittedWorkouts", {
@@ -650,11 +430,6 @@ const AddWorkouts = () => {
                         exerciseId: ex?._id,
                       });
                     } else {
-                      // navigation.navigate("WorkoutSet", {
-                      //   workoutId: assigWorkout?._id,
-                      //   innerWorkoutId: item?._id,
-                      //   exerciseId: ex?._id,
-                      // });
                       navigation.navigate("CompleteWorkout", {
                         workoutId: assigWorkout?._id,
                         innerWorkoutId: item?._id,
@@ -669,9 +444,6 @@ const AddWorkouts = () => {
                     marginTop: getHeight(2),
                   }}
                 >
-                  {/* <View style={styles.thumbnail}>
-                    <PlayerSvg height={30} width={30} />
-                  </View> */}
                   {ex?.video_thumbnail ? (
                     <Image
                       source={{ uri: ex?.video_thumbnail }}
@@ -693,24 +465,29 @@ const AddWorkouts = () => {
                         marginTop: getFontSize(0.5),
                       }}
                     >
-                      <Text
-                        style={{ ...styles.total, fontSize: getFontSize(1.5) }}
-                      >
-                        {ex?.no_of_sets} sets
-                      </Text>
-                      {ex?.sets.map((set, index) => (
+                      <Text numberOfLines={1} style={{ width: getWidth(60) }}>
                         <Text
                           style={{
-                            ...styles.text,
+                            ...styles.total,
                             fontSize: getFontSize(1.5),
-                            color: colors.graytext5,
                           }}
-                          key={index}
                         >
-                          {` `}|{` `}
-                          {getUnit(set)}
+                          {ex?.no_of_sets} sets
                         </Text>
-                      ))}
+                        {ex?.sets.map((set, index) => (
+                          <Text
+                            style={{
+                              ...styles.text,
+                              fontSize: getFontSize(1.5),
+                              color: colors.graytext5,
+                            }}
+                            key={index}
+                          >
+                            {` `}|{` `}
+                            {getUnit(set)}
+                          </Text>
+                        ))}
+                      </Text>
                     </View>
                     {ex?.complete == "true" ? (
                       <View>

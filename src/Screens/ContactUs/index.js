@@ -1,8 +1,7 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { GernalStyle } from "../../constants/GernalStyle";
 import { colors } from "../../constants/colors";
-import Header from "../../Components/Header";
 import GeneralStatusBar from "../../Components/GeneralStatusBar";
 import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -10,7 +9,6 @@ import Button from "../../Components/Button";
 import { useNavigation } from "@react-navigation/native";
 import validator from "../../../utils/validation/validator";
 import { validateFields } from "../../../utils/validation/validate-fields";
-import { styles } from "./styles";
 import { ApiCall } from "../../Services/Apis";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../Redux/actions/GernalActions";
@@ -50,9 +48,6 @@ const ContactUs = () => {
     }, [])
   );
 
-  const openDrawer = () => {
-    navigation.openDrawer(); // Open the drawer
-  };
   const changeHandler = (type, value) => setState({ ...state, [type]: value });
   const ContectToUser = async () => {
     const { email, fullname, question } = state;
@@ -85,7 +80,6 @@ const ContactUs = () => {
             question: "",
             questionError: "",
           });
-          // navigation.navigate('HomeScreen');
         } else {
           console.log("error", res.response);
           dispatch(setLoader(false));
@@ -204,35 +198,6 @@ const ContactUs = () => {
             {state.emailError}
           </Text>
         )}
-        {/* <TextInput
-          placeholder="Password"
-          placeholderTextColor={colors.graytext4}
-          style={{...GernalStyle.textinput, marginTop: getHeight(1.5)}}
-          ref={inputRefs.password}
-          value={state.password}
-          returnKeyType={'send'}
-          keyboardType={'default'}
-          onFocus={() => setState({...state, passwordError: ''})}
-          onBlur={() =>
-            validateFields(state.password, 'password', error =>
-              setState({...state, passwordError: error}),
-            )
-          }
-          onSubmitEditing={() => inputRefs?.question?.current?.focus()}
-          onChangeText={password =>
-            changeHandler('password', password.trim())
-          }
-          blurOnSubmit={false}
-        />
-        {state.passwordError && (
-          <Text
-            style={[
-              GernalStyle.inputError,
-              {width: getWidth(90), alignSelf: 'center'},
-            ]}>
-            {state.passwordError}
-          </Text>
-        )} */}
         <TextInput
           textAlignVertical="top"
           multiline
@@ -269,22 +234,13 @@ const ContactUs = () => {
             {state.questionError}
           </Text>
         )}
-        {/* <Text style={styles.textcontect}>
-          A member of our support staff will respond as soon as possible.
-        </Text> */}
       </KeyboardAwareScrollView>
-      {/* <Button
-        text={'Submit'}
-        btnStyle={{position: 'absolute', bottom: getHeight(4),width:getWidth(90),height:getHeight(6),justifyContent:"center",alignItems:"center",margin:getFontSize(2)}}
-        onPress={()=>ContectToUser()}
-      /> */}
       <Button
         onPress={() => ContectToUser()}
         text="Submit"
         btnStyle={{
           ...GernalStyle.btn,
           backgroundColor: colors.buttonColor,
-          // marginBottom:getFontSize(10)
           position: "absolute",
           bottom: getHeight(5),
         }}

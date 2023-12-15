@@ -2,9 +2,6 @@ import React, { useState, useRef } from "react";
 import {
   Text,
   View,
-  StatusBar,
-  SafeAreaView,
-  TouchableOpacity,
 } from "react-native";
 import { Divider, TextInput } from "react-native-paper";
 import Button from "../../Components/Button";
@@ -20,11 +17,9 @@ import validator from "../../../utils/validation/validator";
 import { getFontSize, getWidth, getHeight } from "../../../utils/ResponsiveFun";
 import { ApiCall } from "../../Services/Apis";
 import GeneralStatusBar from "../../Components/GeneralStatusBar";
-import Header from "../../Components/Header";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { colors } from "../../constants/colors";
 import HeaderBottom from "../../Components/HeaderBottom";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useFocusEffect } from "@react-navigation/native";
 
 const ChangePassword = ({ navigation }) => {
@@ -114,10 +109,6 @@ const ChangePassword = ({ navigation }) => {
   };
   const changeHandler = (type, value) => setState({ ...state, [type]: value });
 
-  const eye = <FontAwesome name="eye" size={20} color={"white"} />;
-
-  const eyeSlash = <FontAwesome name="eye-slash" size={20} color={"white"} />;
-
   return (
     <View
       style={{ ...GernalStyle.continer, backgroundColor: colors.homeColor }}
@@ -201,7 +192,6 @@ const ChangePassword = ({ navigation }) => {
         <View>
           <TextInput
             mode="outlined"
-            //label="New password"
             label={
               <Text style={GernalStyle.inputLabelStyle}>New password</Text>
             }
@@ -215,15 +205,6 @@ const ChangePassword = ({ navigation }) => {
             value={state.newPassword}
             returnKeyType={"send"}
             secureTextEntry={hideNewPass ? true : false}
-            // right={
-            //   <TextInput.Icon
-            //     name={hideNewPass ? eye : eyeSlash}
-            //     size={getFontSize(2.5)}
-            //     color={"blue"}
-            //     style={styles.icon}
-            //     onPress={() => setHideNewPass(!hideNewPass)}
-            //   />
-            // }
             right={
               <TextInput.Icon
                 icon={() => (
@@ -257,7 +238,6 @@ const ChangePassword = ({ navigation }) => {
         <View>
           <TextInput
             mode="outlined"
-            // label="Confirm password"
             label={
               <Text style={GernalStyle.inputLabelStyle}>Confirm password</Text>
             }
@@ -284,15 +264,6 @@ const ChangePassword = ({ navigation }) => {
                 )}
               />
             }
-            // right={
-            //   <TextInput.Icon
-            //     name={hideCnfPass ? eye : eyeSlash}
-            //     size={getFontSize(2.5)}
-            //     color={"blue"}
-            //     style={styles.icon}
-            //     onPress={() => setHideCnfPass(!hideCnfPass)}
-            //   />
-            // }
             onFocus={() => setState({ ...state, cnfrPasswordError: "" })}
             onBlur={() =>
               validateFields(state.cnfrPassword, "passwordC", (error) =>
@@ -311,15 +282,6 @@ const ChangePassword = ({ navigation }) => {
           </Text>
         </View>
         </KeyboardAwareScrollView>
-        {/* <View
-          style={{
-            bottom: getHeight(5),
-            justifyContent: "flex-end",
-            alignItems: "center",
-            alignSelf: "center",
-            marginTop: getFontSize(50),
-          }}
-        > */}
           <Button
             onPress={() => PasswordUpdate()}
             text="Update Password"
@@ -330,9 +292,7 @@ const ChangePassword = ({ navigation }) => {
               bottom: getHeight(5),
             }}
             btnTextStyle={GernalStyle.btnText}
-          />
-        {/* </View> */}
-    
+          />    
     </View>
   );
 };

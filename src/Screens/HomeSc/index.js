@@ -4,32 +4,25 @@ import {
   View,
   TouchableOpacity,
   Image,
-  Animated,
-  FlatList,
   ScrollView,
-  ImageBackground,
   StatusBar,
 } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
 import { styles } from "./styles";
-import Header from "../../Components/Header";
 import { useDispatch, useSelector } from "react-redux";
-import HeaderBottom from "../../Components/HeaderBottom";
 import { colors } from "../../constants/colors";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Video from "react-native-video";
-import Notification, {
+import {
   appListner,
   requestUserPermission,
 } from "../Notifications";
-import { useNavigation } from "@react-navigation/native";
 import { getSingleUser } from "../../Redux/actions/AuthActions";
 import { ApiCall } from "../../Services/Apis";
 import { setLoader } from "../../Redux/actions/GernalActions";
 
 const HomeSc = ({ navigation, route }) => {
-  const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
   const dispatch = useDispatch();
   const videoRef = useRef(null);
@@ -122,14 +115,13 @@ const HomeSc = ({ navigation, route }) => {
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        console.log("errorrrr in calenders");
+        console.log("errorrrr in alert");
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
     }
   };
 
-  // const navigation = useNavigation()
 
   useEffect(() => {
     requestUserPermission(token);
@@ -216,12 +208,6 @@ const HomeSc = ({ navigation, route }) => {
           backgroundColor="rgba(51, 51, 51, 1)"
           translucent={true}
         />
-
-        {/* <ImageBackground
-          resizeMode="cover"
-          source={require("../../assets/images/home1.png")}
-          style={styles.img}
-        > */}
         <View style={{ flex: 1 }}>
           <Video
             source={require("../../assets/images/background.mp4")}
@@ -242,9 +228,6 @@ const HomeSc = ({ navigation, route }) => {
         </View>
         <View
           style={{
-            // width: getWidth(90),
-            // height: getHeight(5),
-            // backgroundColor: colors.homeConColor,
             width: getWidth(96),
             backgroundColor: colors.homeConColor,
             alignSelf: "center",
@@ -300,12 +283,6 @@ const HomeSc = ({ navigation, route }) => {
             }}
           >
             <View>
-              {/* <Video
-                source={require("../../assets/images/background.mp4")}
-                resizeMode="cover"
-                // repeat={true}
-                style={styles.imgHome}
-              /> */}
               <TouchableOpacity
                 onPress={isPaused ? playVideo : pauseVideo}
                 activeOpacity={1}
@@ -322,12 +299,6 @@ const HomeSc = ({ navigation, route }) => {
               <Text style={styles.VideoText}>Welcome to Fight Life</Text>
             </View>
             <View>
-              {/* <Video
-                source={require("../../assets/images/background.mp4")}
-                resizeMode="cover"
-                // repeat={true}
-                style={styles.imgHome}
-              /> */}
               <TouchableOpacity
                 onPress={isPausedFaq ? playVideoFaq : pauseVideoFaq}
                 activeOpacity={1}
@@ -354,12 +325,6 @@ const HomeSc = ({ navigation, route }) => {
             }}
           >
             <View>
-              {/* <Video
-                source={require("../../assets/images/background.mp4")}
-                resizeMode="cover"
-                // repeat={true}
-                style={styles.imgHome}
-              /> */}
               <TouchableOpacity
                 onPress={isPaused3 ? playVideo3 : pauseVideo3}
                 activeOpacity={1}
@@ -376,12 +341,6 @@ const HomeSc = ({ navigation, route }) => {
               <Text style={styles.VideoText}>Meet your Strength Coach</Text>
             </View>
             <View>
-              {/* <Video
-                source={require("../../assets/images/background.mp4")}
-                resizeMode="cover"
-                // repeat={true}
-                style={styles.imgHome}
-              /> */}
               <TouchableOpacity
                 onPress={isPaused4 ? playVideo4 : pauseVideo4}
                 activeOpacity={1}

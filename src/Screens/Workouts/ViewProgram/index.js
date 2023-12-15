@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
+  Platform,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Header from "../../../Components/Header";
@@ -26,11 +27,11 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import HeaderBottom from "../../../Components/HeaderBottom";
 import { PlayerSvg } from "../../../assets/images";
 
-
 const ViewProgram = ({ route }) => {
   const navigation = useNavigation();
   const { _id } = route?.params?.passData;
   const [program, setProgram] = useState(null);
+  const [data, setData] = useState(null);
 
   const token = useSelector((state) => state.auth.userToken);
   const dispatch = useDispatch();
@@ -50,9 +51,9 @@ const ViewProgram = ({ route }) => {
           "workout",
           res?.response?.detail?.workouts[0]?.innerWorkout[0]?.exercise
         );
-        // console.log('workout',res?.response?.detail)
+        console.log("workout", res?.response?.detail);
 
-        // setData(res?.response?.detail)
+        setData(res?.response?.detail);
         setProgram(res?.response?.detail?.workouts);
         dispatch(setLoader(false));
         // navigation.goBack();
@@ -81,8 +82,16 @@ const ViewProgram = ({ route }) => {
         translucent={true}
       />
       <HeaderBottom
-        //backAngel={true}
-        title={"View Program"}
+        title={data?.title}
+        TitelStyle={{
+          color: "white",
+          fontSize: 24,
+          alignSelf: "flex-end",
+          marginBottom: Platform.OS === "ios" ? 3 : 0,
+          fontFamily: "Russo_One",
+          fontWeight: "600",
+          textAlign:"center"
+        }}
         //  onPress={() => navigation.goBack()}
         LeftIcon={
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -91,17 +100,6 @@ const ViewProgram = ({ route }) => {
         }
         RightIcon={<View style={{ marginRight: getFontSize(4.5) }} />}
       />
-      {/* <View style={styles.spacebet}>
-        <Text style={styles.chest}>Chest & Shoulders</Text>
-        <Text
-          style={{
-            fontSize: 10,
-            color: colors.graytext5,
-            fontFamily: fonts.URe,
-          }}>
-          9 total exercises
-        </Text>
-      </View> */}
       <Seprator
         style={{
           width: getWidth(95),
@@ -132,7 +130,7 @@ const ViewProgram = ({ route }) => {
                         marginTop: getHeight(2),
                       }}
                     >
-                      {item2?.workoutName + `(${item?.workoutDay})`}
+                      {item2?.workoutName + ` (${item?.workoutDay})`}
                     </Text>
                     <Text
                       style={{
@@ -161,18 +159,9 @@ const ViewProgram = ({ route }) => {
                         marginLeft: getWidth(3),
                       }}
                     >
-                      {/* <Image
-                        style={{
-                          height: getHeight(8),
-                          width: getWidth(17),
-                          borderRadius: 5,
-                          marginTop: getHeight(1),
-                        }}
-                        source={require('../../../assets/images/wheelStrech.png')}
-                      /> */}
-                      {ex?.exerciseId?.video_thumbnail ? (
+                      {ex?.video_thumbnail ? (
                         <Image
-                          source={{ uri: ex?.exerciseId?.video_thumbnail }}
+                          source={{ uri: ex?.video_thumbnail }}
                           style={styles.thumbnail}
                           resizeMode="cover"
                         ></Image>
@@ -184,12 +173,12 @@ const ViewProgram = ({ route }) => {
                       {/* {console.log('ex',ex)} */}
                       <View style={{ marginLeft: getWidth(2) }}>
                         <Text style={styles.heading}>
-                          {ex?.exerciseId?.exercise_name}
+                          {ex?.exercise_name}
                         </Text>
                         <Text
                           style={{ ...styles.total, marginTop: getHeight(0.6) }}
                         >
-                          {ex?.exerciseId?.description}
+                          {ex?.description}
                         </Text>
                       </View>
                     </View>
@@ -211,14 +200,13 @@ const styles = StyleSheet.create({
   },
   thumbnail: {
     backgroundColor: colors.white,
-    justifyContent: 'center',
-    height:65,
+    justifyContent: "center",
+    height: 65,
     width: 85,
     borderRadius: 10,
-    alignItems: 'center',
-    marginTop:getFontSize(1),
-    marginBottom:getFontSize(1)
-
+    alignItems: "center",
+    marginTop: getFontSize(1),
+    marginBottom: getFontSize(1),
   },
   startwork: {
     width: getWidth(66),
