@@ -74,7 +74,7 @@ const AddWorkouts = () => {
       if (res?.status == "200") {
         console.log(
           "respone of add workoutss",
-          res?.response?.Workout[0].innerWorkout[0]?.exercise[0]
+          res?.response?.Workout[0].innerWorkout[0]?.exercise
         );
         setAssigWorkout(res?.response?.Workout[0]);
         dispatch(setLoader(false));
@@ -437,72 +437,188 @@ const AddWorkouts = () => {
                       });
                     }
                   }}
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginLeft: getWidth(3),
-                    marginTop: getHeight(2),
-                  }}
                 >
-                  {ex?.video_thumbnail ? (
-                    <Image
-                      source={{ uri: ex?.video_thumbnail }}
-                      style={styles.thumbnail}
-                      resizeMode="cover"
-                    ></Image>
-                  ) : (
-                    <View style={styles.thumbnail}>
-                      <PlayerSvg height={20} width={20} />
-                    </View>
-                  )}
-                  {/* {console.log('ex',ex)} */}
-                  <View style={{ marginLeft: getWidth(2) }}>
-                    <Text style={styles.heading}>{ex?.exercise_name}</Text>
+                  {ex?.task?.length > 0
+                    ? ex?.task.map((ex, index) => (
+                        <View
+                          key={index}
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            marginLeft: getWidth(3),
+                            marginTop: index == 0 ? getHeight(2) : null,
+                          }}
+                        >
+                          {ex?.video_thumbnail ? (
+                            <View>
+                              {index == 0 ? null : (
+                                <View style={{ alignItems: "center" }}>
+                                  <View
+                                    style={{
+                                      height: getHeight(2),
+                                      width: getWidth(2),
+                                      backgroundColor: "white",
+                                    }}
+                                  ></View>
+                                </View>
+                              )}
+                              <Image
+                                source={{ uri: ex?.video_thumbnail }}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
+                            </View>
+                          ) : (
+                            <View>
+                              {index == 0 ? null : (
+                                <View style={{ alignItems: "center" }}>
+                                  <View
+                                    style={{
+                                      height: getHeight(2),
+                                      width: getWidth(2),
+                                      backgroundColor: "white",
+                                    }}
+                                  ></View>
+                                </View>
+                              )}
+                              <View style={styles.thumbnail}>
+                                <PlayerSvg height={20} width={20} />
+                              </View>
+                            </View>
+                          )}
 
+                          <View
+                            style={{
+                              marginLeft: getWidth(2),
+                              marginTop: index == 0 ? null : getHeight(2),
+                            }}
+                          >
+                            <Text style={styles.heading}>
+                              {ex?.exercise_name}
+                            </Text>
+
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                marginTop: getFontSize(0.5),
+                              }}
+                            >
+                              <Text
+                                numberOfLines={1}
+                                style={{ width: getWidth(60) }}
+                              >
+                                <Text
+                                  style={{
+                                    ...styles.total,
+                                    fontSize: getFontSize(1.5),
+                                  }}
+                                >
+                                  {ex?.no_of_sets} sets
+                                </Text>
+                                {ex?.sets.map((set, index) => (
+                                  <Text
+                                    style={{
+                                      ...styles.text,
+                                      fontSize: getFontSize(1.5),
+                                      color: colors.graytext5,
+                                    }}
+                                    key={index}
+                                  >
+                                    {` `}|{` `}
+                                    {getUnit(set)}
+                                  </Text>
+                                ))}
+                              </Text>
+                            </View>
+                            {ex?.complete == "true" ? (
+                              <View>
+                                <Image
+                                  resizeMode="contain"
+                                  source={require("../../../assets/images/completed.png")}
+                                  style={{
+                                    height: getFontSize(2),
+                                    width: getWidth(30),
+                                    marginTop: getFontSize(0.2),
+                                  }}
+                                />
+                              </View>
+                            ) : null}
+                          </View>
+                        </View>
+                      ))
+                    : null}
+                  {ex?.exercise_name && (
                     <View
                       style={{
                         flexDirection: "row",
-                        marginTop: getFontSize(0.5),
+                        alignItems: "center",
+                        marginLeft: getWidth(3),
+                        marginTop: getHeight(2),
                       }}
                     >
-                      <Text numberOfLines={1} style={{ width: getWidth(60) }}>
-                        <Text
+                      {ex?.video_thumbnail ? (
+                        <Image
+                          source={{ uri: ex?.video_thumbnail }}
+                          style={styles.thumbnail}
+                          resizeMode="cover"
+                        ></Image>
+                      ) : (
+                        <View style={styles.thumbnail}>
+                          <PlayerSvg height={20} width={20} />
+                        </View>
+                      )}
+                      <View style={{ marginLeft: getWidth(2) }}>
+                        <Text style={styles.heading}>{ex?.exercise_name}</Text>
+
+                        <View
                           style={{
-                            ...styles.total,
-                            fontSize: getFontSize(1.5),
+                            flexDirection: "row",
+                            marginTop: getFontSize(0.5),
                           }}
                         >
-                          {ex?.no_of_sets} sets
-                        </Text>
-                        {ex?.sets.map((set, index) => (
                           <Text
-                            style={{
-                              ...styles.text,
-                              fontSize: getFontSize(1.5),
-                              color: colors.graytext5,
-                            }}
-                            key={index}
+                            numberOfLines={1}
+                            style={{ width: getWidth(60) }}
                           >
-                            {` `}|{` `}
-                            {getUnit(set)}
+                            <Text
+                              style={{
+                                ...styles.total,
+                                fontSize: getFontSize(1.5),
+                              }}
+                            >
+                              {ex?.no_of_sets} sets
+                            </Text>
+                            {ex?.sets.map((set, index) => (
+                              <Text
+                                style={{
+                                  ...styles.text,
+                                  fontSize: getFontSize(1.5),
+                                  color: colors.graytext5,
+                                }}
+                                key={index}
+                              >
+                                {` `}|{` `}
+                                {getUnit(set)}
+                              </Text>
+                            ))}
                           </Text>
-                        ))}
-                      </Text>
-                    </View>
-                    {ex?.complete == "true" ? (
-                      <View>
-                        <Image
-                          resizeMode="contain"
-                          source={require("../../../assets/images/completed.png")}
-                          style={{
-                            height: getFontSize(2),
-                            width: getWidth(30),
-                            marginTop: getFontSize(0.2),
-                          }}
-                        />
+                        </View>
+                        {ex?.complete == "true" ? (
+                          <View>
+                            <Image
+                              resizeMode="contain"
+                              source={require("../../../assets/images/completed.png")}
+                              style={{
+                                height: getFontSize(2),
+                                width: getWidth(30),
+                                marginTop: getFontSize(0.2),
+                              }}
+                            />
+                          </View>
+                        ) : null}
                       </View>
-                    ) : null}
-                  </View>
+                    </View>
+                  )}
                 </TouchableOpacity>
               ))}
             </View>

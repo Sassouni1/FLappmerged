@@ -160,6 +160,7 @@ const Activity = () => {
       });
 
       if (res?.status == "200") {
+        console.log('hjdhfkjshfkjh',res?.response)
         setWeightProgress(res?.response?.weeklyWeight);
         dispatch(setLoader(false));
       } else {

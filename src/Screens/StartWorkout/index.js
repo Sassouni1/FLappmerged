@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
   ScrollView,
   FlatList,
@@ -11,22 +9,17 @@ import {
 } from "react-native";
 import DigitalTimer from "../../Components/DigitalTimer";
 import { colors } from "../../constants/colors";
-import { StatusBar } from "react-native";
 import GeneralStatusBar from "../../Components/GeneralStatusBar";
 import Entypo from "react-native-vector-icons/Entypo";
 import { getHeight, getFontSize, getWidth } from "../../../utils/ResponsiveFun";
 import { useNavigation } from "@react-navigation/native";
 import Seprator from "../../Components/Seprator";
-//import { fonts } from '../../../constants/fonts';
 import { styles } from "./styles";
-import Button from "../../Components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../Redux/actions/GernalActions";
-import { GernalStyle } from "../../constants/GernalStyle";
 import { ApiCall } from "../../Services/Apis";
 import { PlayerSvg } from "../../assets/images";
 import { fonts } from "../../constants/fonts";
-import Toast from "react-native-simple-toast";
 import AntDesign from "react-native-vector-icons/AntDesign";
 
 const StartWorkout = ({ route }) => {
@@ -125,251 +118,324 @@ const StartWorkout = ({ route }) => {
         showsVerticalScrollIndicator={false}
         style={styles.scrollContainer}
       >
-        {/* <View style={styles.contentContainer}>
-          <View style={styles.section}>
-            <Text style={styles.title}>{data?.workoutName}</Text>
-            <Text style={{ color: "#ffff",alignSelf:'center' }}>{data?.exercise&&data?.exercise.length} total exercises</Text>
-          </View>
-
-          <Seprator style={customSeparator} />
-        </View> */}
-
-        {/* <View style={{ margin: getHeight(1) }}>
-
-          <FlatList
-            data={data?.exercise?data?.exercise:[]}
-            ListFooterComponent={() => (
-              <View style={{ height: getHeight(8) }}></View>
-            )}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => {
-              console.log("ire", item);
-              return (
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("WorkoutSet")}
-                  style={styles.header1}
-                >
-                  <Image
-                    resizeMode="contain"
-                    source={require("../../assets/images/wheelStrech.png")}
-                    style={styles.img}
-                  ></Image>
-
-                  <View>
-                    <Text style={{ ...styles.text, fontSize: getFontSize(2) }}>
-                      {item?.exercise_name}
-                    </Text>
-                    <View style={{flexDirection:"row",marginTop:getFontSize(0.5)}}>
-                    <Text style={{ ...styles.text, fontSize: getFontSize(1.5) }}>
-                      {item?.no_of_sets} sets{` `} |
-                    </Text>
-                    {item?.sets.map((set, index) => (
-                      <Text
-                        style={{
-                          ...styles.text,
-                          fontSize: getFontSize(1.5),
-                          color: colors.graytext5,
-                        }}
-                        key={index}
-                      >
-                        {getUnit(set)}
-                      </Text>
-                    ))}
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              );
-            }}
-          />
-        </View> */}
         <FlatList
-          data={data?.innerWorkout}
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-          ListFooterComponent={() => (
-            <View style={{ height: getHeight(10) }}></View>
-          )}
-          ListEmptyComponent={() => (
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                height: getHeight(50),
-              }}
-            >
-              {loader ? null : (
+        data={data?.innerWorkout}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        ListFooterComponent={() => (
+          <View style={{ height: getHeight(10) }}></View>
+        )}
+        ListEmptyComponent={() => (
+          <>
+            
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: getFontSize(55),
+                }}
+              >
+                {loader ? null : (
+                  <View
+                    style={{ justifyContent: "center", alignItems: "center" }}
+                  >
+                    <AntDesign
+                      size={getFontSize(8)}
+                      color={"white"}
+                      name="exclamationcircleo"
+                    />
+                    <Text
+                      style={{
+                        fontSize: getFontSize(2),
+                        color: colors.graytext5,
+                        marginTop: getHeight(1),
+                      }}
+                    >
+                      No workout found on selected date
+                    </Text>
+                  </View>
+                )}
+              </View>
+           
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: getFontSize(55),
+                }}
+              >
+                {loader ? null : (
+                  <View
+                    style={{ justifyContent: "center", alignItems: "center" }}
+                  >
+                    <AntDesign
+                      size={getFontSize(8)}
+                      color={"white"}
+                      name="exclamationcircleo"
+                    />
+                    <Text
+                      style={{
+                        fontSize: getFontSize(2),
+                        color: colors.graytext5,
+                        marginTop: getHeight(1),
+                      }}
+                    >
+                      No workout found on selected date
+                    </Text>
+                  </View>
+                )}
+              </View>
+            
+          </>
+        )}
+        refreshing={false}
+        onRefresh={() => SingleExcercise}
+        renderItem={({ item }) => {
+          return (
+            <View style={{ marginLeft: getWidth(2) }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  paddingHorizontal: getWidth(3),
+                  marginBottom: getHeight(1),
+                  marginTop: getHeight(1.8),
+                }}
+              >
                 <Text
-                  style={{ fontSize: getFontSize(2), color: colors.graytext5 }}
+                  style={{
+                    ...styles.chest,
+                    fontSize: getFontSize(2.5),
+                    marginTop: getHeight(0.5),
+                  }}
                 >
-                  <AntDesign
-                    size={getFontSize(8)}
-                    color={"white"}
-                    name="exclamationcircleo"
-                  />
-                  No workout found on selected date
+                  {item?.workoutName}
                 </Text>
-              )}
-            </View>
-          )}
-          // refreshing={false}
-          //onRefresh={() => getSingleExcercise(selectedDate)}
-          renderItem={({ item }) => {
-            return (
-              <View style={{ marginLeft: getWidth(2) }}>
-                <View
+                <Text
                   style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    paddingHorizontal: getWidth(3),
-                    marginBottom: getHeight(1),
-                    marginTop: getHeight(1.8),
+                    color: colors.graytext5,
+                    fontFamily: fonts.URe,
+                    fontSize: 10,
                   }}
                 >
-                  <Text
-                    style={{
-                      ...styles.chest,
-                      fontSize: getFontSize(2.5),
-                      marginTop: getHeight(0.5),
-                    }}
-                  >
-                    {item?.workoutName}
-                  </Text>
-                  <Text
-                    style={{
-                      color: colors.graytext5,
-                      fontFamily: fonts.URe,
-                      fontSize: 10,
-                    }}
-                  >
-                    {item?.exercise.length} exercises
-                  </Text>
-                </View>
-                <Seprator
-                  style={{
-                    width: getWidth(95),
-                    alignSelf: "center",
-                    marginTop: getHeight(1),
+                  {item?.exercise.length} exercises
+                </Text>
+              </View>
+              <Seprator
+                style={{
+                  width: getWidth(95),
+                  alignSelf: "center",
+                  marginTop: getHeight(1),
+                }}
+              />
+
+              {item.exercise.map((ex) => (
+                <TouchableOpacity
+                  onPress={() => {
+                    if (ex?.complete == "true") {
+                      navigation.navigate("SubmittedWorkouts", {
+                        workoutId: data?._id,
+                        innerWorkoutId: item?._id,
+                        exerciseId: ex?._id,
+                      });
+                    } else {
+                      navigation.navigate("CompleteWorkout", {
+                        workoutId: data?._id,
+                        innerWorkoutId: item?._id,
+                        exerciseId: ex?._id,
+                      });
+                    }
                   }}
-                />
-
-                {item.exercise.map((ex) => (
-                  <TouchableOpacity
-                    // onPress={() =>
-                    //   navigation.navigate("WorkoutSet", {
-                    //     workoutId: data?._id,
-                    //     innerWorkoutId: item?._id,
-                    //     exerciseId: ex?._id,
-                    //   })
-                    // }
-                    onPress={() => {
-                      if (ex?.complete == "true") {
-                        navigation.navigate("SubmittedWorkouts", {
-                          workoutId: data?._id,
-                          innerWorkoutId: item?._id,
-                          exerciseId: ex?._id,
-                        });
-                      } else {
-                        // navigation.navigate("WorkoutSet", {
-                        //   workoutId: data?._id,
-                        //   innerWorkoutId: item?._id,
-                        //   exerciseId: ex?._id,
-                        // });
-                        navigation.navigate("CompleteWorkout", {
-                          workoutId: data?._id,
-                          innerWorkoutId: item?._id,
-                          exerciseId: ex?._id,
-                        });
-                      }
-                    }}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginLeft: getWidth(3),
-                      marginTop: getHeight(2)
-                    }}
-                  >
-                    {/* <View style={styles.thumbnail}>
-                      <PlayerSvg height={30} width={30} />
-                    </View> */}
-                     {ex?.video_thumbnail ? (
-                    <Image
-                      source={{ uri: ex?.video_thumbnail }}
-                      style={styles.thumbnail}
-                      resizeMode="cover"
-                    ></Image>
-                  ) : (
-                    <View style={styles.thumbnail}>
-                      <PlayerSvg height={20} width={20} />
-                    </View>
-                  )}
-                    {/* {console.log('ex',ex)} */}
-                    <View style={{ marginLeft: getWidth(2) }}>
-                      <Text style={styles.heading}>{ex?.exercise_name}</Text>
-
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          marginTop: getFontSize(0.5),
-                        }}
-                      >
-                        <Text
+                >
+                  {ex?.task?.length > 0
+                    ? ex?.task.map((ex, index) => (
+                        <View
+                          key={index}
                           style={{
-                            ...styles.total,
-                            fontSize: getFontSize(1.5),
+                            flexDirection: "row",
+                            alignItems: "center",
+                            marginLeft: getWidth(3),
+                            marginTop: index == 0 ? getHeight(2) : null,
                           }}
                         >
-                          {ex?.no_of_sets} sets
-                        </Text>
-                        {ex?.sets.map((set, index) => (
-                          <Text
+                          {ex?.video_thumbnail ? (
+                            <View>
+                              {index == 0 ? null : (
+                                <View style={{ alignItems: "center" }}>
+                                  <View
+                                    style={{
+                                      height: getHeight(2),
+                                      width: getWidth(2),
+                                      backgroundColor: "white",
+                                    }}
+                                  ></View>
+                                </View>
+                              )}
+                              <Image
+                                source={{ uri: ex?.video_thumbnail }}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
+                            </View>
+                          ) : (
+                            <View>
+                              {index == 0 ? null : (
+                                <View style={{ alignItems: "center" }}>
+                                  <View
+                                    style={{
+                                      height: getHeight(2),
+                                      width: getWidth(2),
+                                      backgroundColor: "white",
+                                    }}
+                                  ></View>
+                                </View>
+                              )}
+                              <View style={styles.thumbnail}>
+                                <PlayerSvg height={20} width={20} />
+                              </View>
+                            </View>
+                          )}
+
+                          <View
                             style={{
-                              //...styles.text,
-                              fontSize: getFontSize(1.5),
-                              color: colors.graytext5,
+                              marginLeft: getWidth(2),
+                              marginTop: index == 0 ? null : getHeight(2),
                             }}
-                            key={index}
                           >
-                            {` `}|{` `}
-                            {getUnit(set)}
-                          </Text>
-                        ))}
-                      </View>
-                      {ex?.complete == "true" ? (
-                        <View>
-                          <Image
-                            resizeMode="contain"
-                            source={require("../../assets/images/completed.png")}
-                            style={{
-                              height: getFontSize(2),
-                              width: getWidth(30),
-                              marginTop: getFontSize(0.2),
-                            }}
-                          />
+                            <Text style={styles.heading}>
+                              {ex?.exercise_name}
+                            </Text>
+
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                marginTop: getFontSize(0.5),
+                              }}
+                            >
+                              <Text
+                                numberOfLines={1}
+                                style={{ width: getWidth(60) }}
+                              >
+                                <Text
+                                  style={{
+                                    ...styles.total,
+                                    fontSize: getFontSize(1.5),
+                                  }}
+                                >
+                                  {ex?.no_of_sets} sets
+                                </Text>
+                                {ex?.sets.map((set, index) => (
+                                  <Text
+                                    style={{
+                                      ...styles.text,
+                                      fontSize: getFontSize(1.5),
+                                      color: colors.graytext5,
+                                    }}
+                                    key={index}
+                                  >
+                                    {` `}|{` `}
+                                    {getUnit(set)}
+                                  </Text>
+                                ))}
+                              </Text>
+                            </View>
+                            {ex?.complete == "true" ? (
+                              <View>
+                                <Image
+                                  resizeMode="contain"
+                                  source={require("../../assets/images/completed.png")}
+                                  style={{
+                                    height: getFontSize(2),
+                                    width: getWidth(30),
+                                    marginTop: getFontSize(0.2),
+                                  }}
+                                />
+                              </View>
+                            ) : null}
+                          </View>
                         </View>
-                      ) : null}
+                      ))
+                    : null}
+                  {ex?.exercise_name && (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginLeft: getWidth(3),
+                        marginTop: getHeight(2),
+                      }}
+                    >
+                      {ex?.video_thumbnail ? (
+                        <Image
+                          source={{ uri: ex?.video_thumbnail }}
+                          style={styles.thumbnail}
+                          resizeMode="cover"
+                        ></Image>
+                      ) : (
+                        <View style={styles.thumbnail}>
+                          <PlayerSvg height={20} width={20} />
+                        </View>
+                      )}
+                      <View style={{ marginLeft: getWidth(2) }}>
+                        <Text style={styles.heading}>{ex?.exercise_name}</Text>
+
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            marginTop: getFontSize(0.5),
+                          }}
+                        >
+                          <Text
+                            numberOfLines={1}
+                            style={{ width: getWidth(60) }}
+                          >
+                            <Text
+                              style={{
+                                ...styles.total,
+                                fontSize: getFontSize(1.5),
+                              }}
+                            >
+                              {ex?.no_of_sets} sets
+                            </Text>
+                            {ex?.sets.map((set, index) => (
+                              <Text
+                                style={{
+                                  ...styles.text,
+                                  fontSize: getFontSize(1.5),
+                                  color: colors.graytext5,
+                                }}
+                                key={index}
+                              >
+                                {` `}|{` `}
+                                {getUnit(set)}
+                              </Text>
+                            ))}
+                          </Text>
+                        </View>
+                        {ex?.complete == "true" ? (
+                          <View>
+                            <Image
+                              resizeMode="contain"
+                              source={require("../../assets/images/completed.png")}
+                              style={{
+                                height: getFontSize(2),
+                                width: getWidth(30),
+                                marginTop: getFontSize(0.2),
+                              }}
+                            />
+                          </View>
+                        ) : null}
+                      </View>
                     </View>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            );
-          }}
-        />
-      </ScrollView>
-      {/* <Button
-        onPress={() => navigation.navigate("WorkoutSet")}
-        text={"Complete workout"}
-        btnStyle={{
-          ...GernalStyle.btn,
-          backgroundColor: colors.buttonColor,
-          position: "absolute",
-          bottom: getHeight(2),
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+          );
         }}
-        btnTextStyle={{ ...GernalStyle.btnText, color: colors.white }}
-      /> */}
-      {/* <TouchableOpacity onPress={()=>navigation.navigate('WorkoutSet')} style={{height:getHeight(7),backgroundColor:colors.buttonColor,width:getWidth(60),borderRadius:5,alignSelf:"center",position:"absolute",bottom:getHeight(1),justifyContent:"center",alignItems:"center"}}>
-  <Text style={{fontSize:14,fontFamily:fonts.UBo,color:colors.white}}>Complete workout</Text>
-</TouchableOpacity> */}
+      />
+      </ScrollView>
     </View>
   );
 };
