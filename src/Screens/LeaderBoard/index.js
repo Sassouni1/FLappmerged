@@ -1,30 +1,15 @@
-import {
-  View,
-  Text,
-  TextInput,
-  FlatList,
-  ImageBackground,
-  TouchableOpacity,
-  StyleSheet,
-  RefreshControl,
-  Image,
-  ScrollView,
-} from "react-native";
+import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import { colors } from "../../constants/colors";
-import { GernalStyle } from "../../constants/GernalStyle";
 import { styles } from "./styles";
 import GeneralStatusBar from "../../Components/GeneralStatusBar";
 import Entypo from "react-native-vector-icons/Entypo";
-import { SearchSvg, PlayerSvg, InvalidSearch } from "../../assets/images";
-import Seprator from "../../Components/Seprator";
 import { getWidth, getHeight, getFontSize } from "../../../utils/ResponsiveFun";
 import { useNavigation } from "@react-navigation/native";
 import { setLoader } from "../../Redux/actions/GernalActions";
 import { useDispatch, useSelector } from "react-redux";
 import { ApiCall } from "../../Services/Apis";
 import HeaderBottom from "../../Components/HeaderBottom";
-import AntDesign from "react-native-vector-icons/AntDesign";
 
 const LeaderBoard = () => {
   const navigation = useNavigation();
@@ -34,8 +19,6 @@ const LeaderBoard = () => {
   const [data, setData] = useState([]);
   const [dataWeight, setDataWeight] = useState([]);
   const [dataMessages, setDataMessages] = useState([]);
-
-  const [filteredData, setFilteredData] = useState([]);
 
   const [showAll, setShowAll] = useState(false);
   const topItems = showAll ? data : data.slice(0, 5);
@@ -77,11 +60,9 @@ const LeaderBoard = () => {
         token: token,
       });
       if (res?.status == "200") {
-        console.log("maxComplete response", res?.response);
         setData(res?.response?.maxComplete);
         setDataWeight(res?.response?.maxWeight);
         setDataMessages(res?.response?.maxMessages);
-        // setFilteredData(res?.response?.category_list);
         dispatch(setLoader(false));
       } else {
         console.log("error", res.response);
@@ -121,7 +102,6 @@ const LeaderBoard = () => {
             name="menu"
             style={{
               alignSelf: "flex-start",
-              //marginLeft:getFontSize(-1.5)
             }}
           />
         }
@@ -133,7 +113,6 @@ const LeaderBoard = () => {
             <View
               style={{
                 backgroundColor: colors.secondary1,
-                // height: getHeight(59),
                 marginTop: getFontSize(8),
                 margin: getFontSize(1),
               }}
@@ -149,13 +128,7 @@ const LeaderBoard = () => {
                 >
                   <Text style={styles.txt}>MOST CONSISTENT USER</Text>
                 </View>
-                {/* <FlatList
-              data={topItems}
-              refreshing={false}
-              onRefresh={handleRefresh}
-              showsVerticalScrollIndicator={false}
-              renderItem={({ item, index }) => {
-                return ( */}
+
                 {topItems.map((item, index) => (
                   <View key={index}>
                     <View
@@ -278,11 +251,6 @@ const LeaderBoard = () => {
                 )}
               </View>
             </View>
-            {/* </ScrollView> */}
-
-            {/* <ScrollView style={{ flex: 1 }} */}
-            {/* showsVerticalScrollIndicator="false"> */}
-
             <View
               style={{
                 backgroundColor: colors.secondary1,
@@ -302,13 +270,7 @@ const LeaderBoard = () => {
                 >
                   <Text style={styles.txt}>MOST ENGAGED USER ON CHAT</Text>
                 </View>
-                {/* <FlatList
-              data={topItems}
-              refreshing={false}
-              onRefresh={handleRefresh}
-              showsVerticalScrollIndicator={false}
-              renderItem={({ item, index }) => {
-                return ( */}
+
                 {topItemsMessages.map((item, index) => (
                   <View key={index}>
                     <View
@@ -415,17 +377,17 @@ const LeaderBoard = () => {
                     </View>
                   </View>
                 ))}
-                {!showAllWeight && dataWeight.length > 5 && (
+                {!showAllMessages && dataWeight.length > 5 && (
                   <TouchableOpacity
-                    onPress={handleSeeMoreWeight}
+                    onPress={handleSeeMoreMessages}
                     style={{ margin: getFontSize(3) }}
                   >
                     <Text style={styles.txt}>SEE MORE</Text>
                   </TouchableOpacity>
                 )}
-                {showAllWeight && (
+                {showAllMessages && (
                   <TouchableOpacity
-                    onPress={handleSeeLessWeight}
+                    onPress={handleSeeLessMessages}
                     style={{ margin: getFontSize(3) }}
                   >
                     <Text style={styles.txt}>SEE LESS</Text>
@@ -453,13 +415,6 @@ const LeaderBoard = () => {
                 >
                   <Text style={styles.txt}>HEAVIEST SQUAT</Text>
                 </View>
-                {/* <FlatList
-              data={topItems}
-              refreshing={false}
-              onRefresh={handleRefresh}
-              showsVerticalScrollIndicator={false}
-              renderItem={({ item, index }) => {
-                return ( */}
                 {topItemsWeight.map((item, index) => (
                   <View key={index}>
                     <View

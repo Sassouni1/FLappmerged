@@ -3,10 +3,7 @@ import {
   Text,
   TextInput,
   FlatList,
-  ImageBackground,
   TouchableOpacity,
-  StyleSheet,
-  RefreshControl,
   Image,
 } from "react-native";
 import React, { useEffect, useState } from "react";
@@ -14,9 +11,8 @@ import { colors } from "../../../constants/colors";
 import { GernalStyle } from "../../../constants/GernalStyle";
 import { styles } from "./styles";
 import GeneralStatusBar from "../../../Components/GeneralStatusBar";
-// import AppHeader from '../../Components/AppHeader';
 import Entypo from "react-native-vector-icons/Entypo";
-import { SearchSvg, PlayerSvg, InvalidSearch } from "../../../assets/images";
+import { SearchSvg } from "../../../assets/images";
 import Seprator from "../../../Components/Seprator";
 import {
   getWidth,
@@ -24,28 +20,18 @@ import {
   getFontSize,
 } from "../../../../utils/ResponsiveFun";
 import { useNavigation } from "@react-navigation/native";
-import { setLoader } from "../../../Redux/actions/GernalActions";
-import { useDispatch, useSelector } from "react-redux";
-import { ApiCall } from "../../../Services/Apis";
-import Header from "../../../Components/Header";
 import HeaderBottom from "../../../Components/HeaderBottom";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 const SubFolder = ({ route }) => {
   const navigation = useNavigation();
   const { folder, foldername } = route?.params;
-  console.log("folder", folder);
-  const token = useSelector((state) => state.auth.userToken);
-  const dispatch = useDispatch();
-  const [data, setData] = useState([]);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [invalidEntry, setInvalidEntry] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  //console.log('filtered data',filteredData)
 
   useEffect(() => {
     const filtered = folder.filter((item) =>
@@ -53,7 +39,6 @@ const SubFolder = ({ route }) => {
     );
     setFilteredData(filtered);
 
-    // Check if there are no matching results
     if (filtered.length === 0 && searchQuery) {
       setInvalidEntry(true);
     } else {
@@ -150,54 +135,6 @@ const SubFolder = ({ route }) => {
               </Text>
             </View>
           ) : (
-            //   <FlatList
-            //     data={filteredData}
-            //     refreshing={false}
-            //     onRefresh={handleRefresh}
-            //     showsVerticalScrollIndicator={false}
-            //     renderItem={({ item, index }) => {
-            //       return (
-            //         <View>
-            //           {index > 0 && <Seprator />}
-            //           <TouchableOpacity
-            //             onPress={() =>
-            //               navigation.navigate("FolderVideo", {
-            //                 childFolderVideos: item?.videos,
-            //                 childFolderName: item?.title,
-            //               })
-            //             }
-            //             style={styles.listCon}
-            //           >
-            //             {/* <View style={styles.thumbnail}>
-            //               <PlayerSvg height={20} width={20} />
-            //             </View> */}
-            //             {item?.folder_image ? (
-            //               <View>
-            //                 <Image
-            //                   source={{ uri: item?.video_thumbnail }}
-            //                   style={styles.thumbnail}
-            //                   resizeMode="cover"
-            //                 ></Image>
-            //               </View>
-            //             ) : (
-            //                 <View style={styles.thumbnail}>
-            //               <PlayerSvg height={20} width={20} />
-            //             </View>
-            //             )}
-            //             <View style={{ flexDirection: "column" }}>
-            //               <Text style={styles.text}>
-            //                   {item?.folder_title}
-            //               </Text>
-
-            //               <Text style={styles.descriptionText} numberOfLines={2}>
-            //                 {item?.folder_description}
-            //               </Text>
-            //             </View>
-            //           </TouchableOpacity>
-            //         </View>
-            //       );
-            //     }}
-            //   />
             <FlatList
               data={filteredData}
               refreshing={false}
@@ -227,18 +164,7 @@ const SubFolder = ({ route }) => {
                               justifyContent: "space-between",
                             }}
                           >
-                            {/* <Entypo
-                              size={45}
-                              color={"white"}
-                              name="folder"
-                              style={{
-                                justifyContent: "center",
-                                marginLeft: getFontSize(1.5),
-                                marginRight: getFontSize(1.5),
-                                alignItems: "center",
-                              }}
-                            /> */}
-                             {item?.folder_Image && item?.folder_Image != '' ?(
+                            {item?.folder_Image && item?.folder_Image != "" ? (
                               <View>
                                 <Image
                                   source={{ uri: item?.folder_Image }}
@@ -247,20 +173,17 @@ const SubFolder = ({ route }) => {
                                 ></Image>
                               </View>
                             ) : (
-                              // <View style={styles.thumbnail}>
-                              //   <PlayerSvg height={20} width={20} />
-                              // </View>
                               <Entypo
-                              size={45}
-                              color={"white"}
-                              name="folder"
-                              style={{
-                                justifyContent: "center",
-                                marginLeft: getFontSize(1.5),
-                                marginRight: getFontSize(1.5),
-                                alignItems: "center",
-                              }}
-                            />
+                                size={45}
+                                color={"white"}
+                                name="folder"
+                                style={{
+                                  justifyContent: "center",
+                                  marginLeft: getFontSize(1.5),
+                                  marginRight: getFontSize(1.5),
+                                  alignItems: "center",
+                                }}
+                              />
                             )}
                             <View style={{ flexDirection: "column", flex: 1 }}>
                               <Text style={styles.text}>

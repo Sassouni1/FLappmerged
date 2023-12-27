@@ -1,13 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Platform,
-  Dimensions,
-} from "react-native";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { View, Text, StyleSheet, Dimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { colors } from "../../constants/colors";
 import { fonts } from "../../constants/fonts";
@@ -16,7 +8,6 @@ import WorkoutDetails from "../WorkoutDetails";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { useState } from "react";
 import AddWorkouts from "./AddWorkouts";
-import { GernalStyle } from "../../constants/GernalStyle";
 import GeneralStatusBar from "../../Components/GeneralStatusBar";
 import HeaderBottom from "../../Components/HeaderBottom";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -28,10 +19,7 @@ const initialLayout = { width: Dimensions.get("window").width };
 
 const Workouts = ({ route }) => {
   const navigation = useNavigation();
-  console.log("route?.params?.data", route?.params?.data);
-  const openDrawer = () => {
-    navigation.openDrawer();
-  };
+
   const [index, setIndex] = useState(0);
   const [focusedTab, setfocusedTab] = useState(0);
 
@@ -62,21 +50,14 @@ const Workouts = ({ route }) => {
         backgroundColor={colors.primary}
         translucent={true}
       />
-
-      {/* <View style={styles.header}>
-        <TouchableOpacity onPress={()=>  {navigation.openDrawer()}}>
-          <FontAwesome name="bars" size={25} color={colors.white} />
-        </TouchableOpacity>
-        <Text style={styles.title}>DaruStrong</Text>
-      </View> */}
       <HeaderBottom
         title={<Text style={{ textAlign: "center" }}>DaruStrong</Text>}
         LeftIcon={
           <Entypo
             size={30}
-            style={{ alignSelf: "flex-start",
-           // marginLeft:getFontSize(-1.5) 
-          }}
+            style={{
+              alignSelf: "flex-start",
+            }}
             color={"white"}
             onPress={() => navigation.openDrawer()}
             name="menu"
@@ -111,14 +92,13 @@ const Workouts = ({ route }) => {
               style={{
                 backgroundColor: colors.primary,
                 shadowColor: "#333333",
-                // marginHorizontal: 25,
                 marginLeft: getWidth(2),
                 marginRight: getWidth(0),
                 marginTop: getFontSize(2),
               }}
               pressColor="#333333"
               pressOpacity={1.0}
-              renderLabel={({ route, focused,onPress }) => {
+              renderLabel={({ route, focused, onPress }) => {
                 // console.log('Clicked tab: ', route.title,props)
                 //setfocusedTab(focused);
                 return (

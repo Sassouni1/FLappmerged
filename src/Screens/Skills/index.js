@@ -3,10 +3,7 @@ import {
   Text,
   TextInput,
   FlatList,
-  ImageBackground,
   TouchableOpacity,
-  StyleSheet,
-  RefreshControl,
   Image,
 } from "react-native";
 import React, { useEffect, useState } from "react";
@@ -14,19 +11,16 @@ import { colors } from "../../constants/colors";
 import { GernalStyle } from "../../constants/GernalStyle";
 import { styles } from "./styles";
 import GeneralStatusBar from "../../Components/GeneralStatusBar";
-// import AppHeader from '../../Components/AppHeader';
 import Entypo from "react-native-vector-icons/Entypo";
-import { SearchSvg, PlayerSvg, InvalidSearch } from "../../assets/images";
+import { SearchSvg } from "../../assets/images";
 import Seprator from "../../Components/Seprator";
 import { getWidth, getHeight, getFontSize } from "../../../utils/ResponsiveFun";
 import { useNavigation } from "@react-navigation/native";
 import { setLoader } from "../../Redux/actions/GernalActions";
 import { useDispatch, useSelector } from "react-redux";
 import { ApiCall } from "../../Services/Apis";
-import Header from "../../Components/Header";
 import HeaderBottom from "../../Components/HeaderBottom";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const Skills = () => {
   const navigation = useNavigation();
@@ -36,8 +30,9 @@ const Skills = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [invalidEntry, setInvalidEntry] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
+
+// search fun
   useEffect(() => {
     const filtered = data.filter((item) => {
       const title = item.parent_title || "";
@@ -55,6 +50,9 @@ const Skills = () => {
     }
   }, [searchQuery, data]);
 
+
+// api function
+
   const getSkills = async () => {
     try {
       const res = await ApiCall({
@@ -64,7 +62,6 @@ const Skills = () => {
         token: token,
       });
       if (res?.status == "200") {
-        console.log("skill response", res?.response);
         setData(res?.response?.category_list);
         setFilteredData(res?.response?.category_list);
         dispatch(setLoader(false));
@@ -79,6 +76,7 @@ const Skills = () => {
       console.log("api get skill error -- ", e.toString());
     }
   };
+
   const handleRefresh = () => {
     dispatch(setLoader(true));
     getSkills();
@@ -87,6 +85,7 @@ const Skills = () => {
   useEffect(() => {
     handleRefresh(); // Call handleRefresh to load data initially
   }, []);
+
 
   return (
     <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
@@ -106,7 +105,6 @@ const Skills = () => {
             name="menu"
             style={{
               alignSelf: "flex-start",
-              //marginLeft:getFontSize(-1.5)
             }}
           />
         }
@@ -172,83 +170,6 @@ const Skills = () => {
               </Text>
             </View>
           ) : (
-            // <FlatList
-            //   data={filteredData}
-            //   refreshing={false}
-            //   onRefresh={handleRefresh}
-            //   showsVerticalScrollIndicator={false}
-            //   renderItem={({ item, index }) => {
-            //     return (
-            //       <View>
-            //         {index > 0 && <Seprator />}
-            //         <TouchableOpacity
-            //           onPress={() =>
-            //             navigation.navigate("FolderVideo", {
-            //               folder: item?.videos,
-            //               foldername: item?.folder_title,
-            //             })
-            //           }
-            //           style={styles.listCon}
-            //         >
-            //           {/* <View style={styles.thumbnail}>
-            //             <PlayerSvg height={20} width={20} />
-            //           </View> */}
-            //           {/* {item?.video_thumbnail ? (
-            //             <View>
-            //               <Image
-            //                 source={{ uri: item?.video_thumbnail }}
-            //                 style={styles.thumbnail}
-            //                 resizeMode="cover"
-            //               ></Image>
-            //             </View>
-            //           ) : ( */}
-            //           <View>
-            //             {/* <PlayerSvg height={20} width={20} /> */}
-            //             <Entypo
-            //               size={45}
-            //               color={"white"}
-            //               name="folder"
-            //               style={{
-            //                 justifyContent: "center",
-            //                 marginLeft: getFontSize(1.5),
-            //                 marginRight: getFontSize(1.5),
-            //                 alignItems: "center",
-            //               }}
-            //             />
-            //           </View>
-            //           {/* )} */}
-            //           {/* <View style={{ flexDirection: "row"}}> */}
-            //           <View
-            //             style={{
-            //               flexDirection: "column",
-            //               right: getFontSize(1),
-            //             }}
-            //           >
-            //             <Text style={styles.text}>
-            //               {/* {(item?.folder_title ?*/}
-            //               {item.folder_title}
-            //               {/* : item?.title */}
-            //               {/* ).toUpperCase() || ""} */}
-            //             </Text>
-
-            //             <Text style={styles.descriptionText} numberOfLines={2}>
-            //               {item?.folder_description}
-            //             </Text>
-            //           </View>
-            //           <View>
-            //             <Text style={{ color: colors.white }}>
-            //               {item?.videos.length} video
-            //               {item?.videos.length !== 1 ? "s" : ""}
-            //             </Text>
-            //           </View>
-            //           {/* </View> */}
-            //         </TouchableOpacity>
-            //       </View>
-            //     );
-            //   }}
-            // />
-            // ... (Previous code remains unchanged)
-
             <FlatList
               data={filteredData}
               refreshing={false}
@@ -278,7 +199,7 @@ const Skills = () => {
                               justifyContent: "space-between",
                             }}
                           >
-                            {item?.parent_Image && item?.parent_Image != '' ?(
+                            {item?.parent_Image && item?.parent_Image != "" ? (
                               <View>
                                 <Image
                                   source={{ uri: item?.parent_Image }}
@@ -287,32 +208,18 @@ const Skills = () => {
                                 ></Image>
                               </View>
                             ) : (
-                              // <View style={styles.thumbnail}>
-                              //   <PlayerSvg height={20} width={20} />
-                              // </View>
                               <Entypo
-                              size={45}
-                              color={"white"}
-                              name="folder"
-                              style={{
-                                justifyContent: "center",
-                                marginLeft: getFontSize(1.5),
-                                marginRight: getFontSize(1.5),
-                                alignItems: "center",
-                              }}
-                            />
+                                size={45}
+                                color={"white"}
+                                name="folder"
+                                style={{
+                                  justifyContent: "center",
+                                  marginLeft: getFontSize(1.5),
+                                  marginRight: getFontSize(1.5),
+                                  alignItems: "center",
+                                }}
+                              />
                             )}
-                            {/* <Entypo
-                              size={45}
-                              color={"white"}
-                              name="folder"
-                              style={{
-                                justifyContent: "center",
-                                marginLeft: getFontSize(1.5),
-                                marginRight: getFontSize(1.5),
-                                alignItems: "center",
-                              }}
-                            /> */}
                             <View style={{ flexDirection: "column", flex: 1 }}>
                               <Text style={styles.text}>
                                 {item.parent_title}

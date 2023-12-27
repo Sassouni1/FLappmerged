@@ -14,10 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { colors } from "../../constants/colors";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Video from "react-native-video";
-import {
-  appListner,
-  requestUserPermission,
-} from "../Notifications";
+import { appListner, requestUserPermission } from "../Notifications";
 import { getSingleUser } from "../../Redux/actions/AuthActions";
 import { ApiCall } from "../../Services/Apis";
 import { setLoader } from "../../Redux/actions/GernalActions";
@@ -58,14 +55,14 @@ const HomeSc = ({ navigation, route }) => {
       // videoRef.current.presentFullscreenPlayer();
       videoRefFaq.current.seek(0);
       // videoRefFaq.current.resume();
-      setIsPausedFaq(false); // Video is playing, update state
+      setIsPausedFaq(false);
     }
   };
 
   const pauseVideoFaq = () => {
     if (videoRefFaq.current) {
       // videoRefFaq.current.pause(); // Pause the video
-      setIsPausedFaq(true); // Update state to reflect video pause
+      setIsPausedFaq(true);
     }
   };
 
@@ -74,14 +71,14 @@ const HomeSc = ({ navigation, route }) => {
       //videoRef.current.presentFullscreenPlayer();
       videoRef3.current.seek(0);
       // videoRef3.current.resume();
-      setIsPaused3(false); // Video is playing, update state
+      setIsPaused3(false);
     }
   };
 
   const pauseVideo3 = () => {
     if (videoRef3.current) {
       // videoRef3.current.pause(); // Pause the video
-      setIsPaused3(true); // Update state to reflect video pause
+      setIsPaused3(true);
     }
   };
 
@@ -90,14 +87,14 @@ const HomeSc = ({ navigation, route }) => {
       //videoRef.current.presentFullscreenPlayer();
       videoRef4.current.seek(0);
       // videoRef4.current.resume();
-      setIsPaused4(false); // Video is playing, update state
+      setIsPaused4(false);
     }
   };
 
   const pauseVideo4 = () => {
     if (videoRef4.current) {
       // videoRef4.current.pause(); // Pause the video
-      setIsPaused4(true); // Update state to reflect video pause
+      setIsPaused4(true);
     }
   };
 
@@ -122,14 +119,12 @@ const HomeSc = ({ navigation, route }) => {
     }
   };
 
-
   useEffect(() => {
     requestUserPermission(token);
   }, []);
   useEffect(() => {
     if (token) {
       dispatch(getSingleUser(token));
-
       appListner(navigation);
     }
   }, []);

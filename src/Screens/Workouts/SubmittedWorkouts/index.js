@@ -1,11 +1,9 @@
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ImageBackground,
   ScrollView,
-  Image,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { GernalStyle } from "../../../constants/GernalStyle";
@@ -24,7 +22,6 @@ import { setLoader } from "../../../Redux/actions/GernalActions";
 import { ApiCall } from "../../../Services/Apis";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Seprator from "../../../Components/Seprator";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 const SubmittedWorkouts = ({ route }) => {
   const navigation = useNavigation();
@@ -35,7 +32,6 @@ const SubmittedWorkouts = ({ route }) => {
   const dispatch = useDispatch();
 
   const [exercise, setExercise] = useState("");
-  const [video, setVideo] = useState("");
 
   const { workoutId, innerWorkoutId, exerciseId } = route?.params;
   console.log("ids", workoutId, innerWorkoutId, exerciseId);
@@ -45,10 +41,7 @@ const SubmittedWorkouts = ({ route }) => {
   const token = useSelector((state) => state.auth.userToken);
   const loader = useSelector((state) => state.gernal.loader);
 
-  // const submittedTime =
-  //   exercise?.sets?.length > 0
-  //     ? exercise?.submitted_time
-  //     : exercise?.task[exercise?.task?.length]?.submitted_time || "0:0:0";
+ 
   const submittedTime =
     exercise?.sets?.length > 0
       ? exercise?.submitted_time

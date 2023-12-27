@@ -6,7 +6,7 @@ import {
   TextInput,
   Platform,
 } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GernalStyle } from "../../../constants/GernalStyle";
 import { colors } from "../../../constants/colors";
 import GeneralStatusBar from "../../../Components/GeneralStatusBar";
@@ -16,8 +16,7 @@ import {
   getHeight,
 } from "../../../../utils/ResponsiveFun";
 import Feather from "react-native-vector-icons/Feather";
-import { fonts } from "../../../constants/fonts";
-import { PlayerSvg, RightIcon, StopSvg } from "../../../assets/images";
+import { StopSvg } from "../../../assets/images";
 import { useNavigation } from "@react-navigation/native";
 import { styles } from "./styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -176,13 +175,10 @@ const CompleteWorkout = ({ route }) => {
       });
 
       if (res?.status == "200") {
-        // setAssigWorkout(res?.response?.Workout[0]);
-        console.log("workout api response", res?.response?.Exercise);
         setExercise(res?.response?.Exercise);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        //setAssigWorkout([]);
         console.log("errorrrr in calenders");
       }
     } catch (e) {
@@ -229,6 +225,7 @@ const CompleteWorkout = ({ route }) => {
     setAdditionalSets(updatedAdditionalSets);
   };
 
+
   const singleExerciseComplete = async () => {
     try {
       dispatch(setLoader(true));
@@ -251,14 +248,8 @@ const CompleteWorkout = ({ route }) => {
         token: token,
         params: requestParams,
       });
-      // if (exercise?.task.length > 0) {
-      //   params.task_objId = exercise?.task?.[currentIndex]?._id;
-      // }
-      console.log("response of work", res);
       if (res?.status == "200") {
-        console.log("workout api response", res?.response?.Exercise?.task);
         toast.show("Exercise successfully completed");
-        //navigation.navigate("AddWorkouts");
         if (exercise?.sets?.length > 0) {
           navigation.navigate("Workouts", { data: "tab2" });
         }
@@ -297,6 +288,7 @@ const CompleteWorkout = ({ route }) => {
 
   // Use the function to get the index of the next incomplete task
   const nextIncompleteIndex = getNextIncompleteTaskIndex(currentIndex);
+
 
   return (
     <View
@@ -428,6 +420,14 @@ const CompleteWorkout = ({ route }) => {
           </ImageBackground>
         )}
 
+
+
+
+
+
+
+
+        {/* assigned set submission */}
         {loader ? null : (
           <>
             <View style={{ paddingHorizontal: getWidth(0) }}>
@@ -1118,6 +1118,13 @@ const CompleteWorkout = ({ route }) => {
             </View>
           </>
         )}
+
+
+
+
+
+
+        {/* additional sets submission */}
         <View>
           <View
             style={{
@@ -1169,7 +1176,6 @@ const CompleteWorkout = ({ route }) => {
                   {exercise.sets?.length > 0 ? (
                     <View key={index}>
                       <View
-                        
                         style={{
                           paddingHorizontal: getWidth(3),
                           justifyContent: "center",
@@ -1422,10 +1428,6 @@ const CompleteWorkout = ({ route }) => {
                                   }}
                                 />
                                 <View style={styles.parameterCtn}>
-                                  {/* <Text style={styles.lbs}>
-                          {exercise?.sets[0].distance}
-                          {`  `}
-                        </Text> */}
                                   <Text style={styles.lbs}>
                                     {exercise?.sets[0].parameter}
                                   </Text>
@@ -1460,9 +1462,8 @@ const CompleteWorkout = ({ route }) => {
                       </View>
                     </View>
                   ) : (
-                    <View  key={index}>
+                    <View key={index}>
                       <View
-                       
                         style={{
                           paddingHorizontal: getWidth(3),
                           justifyContent: "center",
@@ -1678,12 +1679,7 @@ const CompleteWorkout = ({ route }) => {
                                     color: "white",
                                   }}
                                 />
-
                                 <View style={styles.parameterCtn}>
-                                  {/* <Text style={styles.lbs}>
-                          {exercise?.sets[0].seconds}
-                          {`  `}
-                        </Text> */}
                                   <Text style={styles.lbs}>
                                     {
                                       exercise?.task?.[nextIncompleteIndex]
@@ -1774,6 +1770,8 @@ const CompleteWorkout = ({ route }) => {
         </View>
         <View style={{ height: getHeight(15) }}></View>
       </KeyboardAwareScrollView>
+
+      {/* button */}
       {exercise.sets?.length > 0 && exercise?.task.length == 0 ? (
         <View
           style={{
