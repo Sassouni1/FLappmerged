@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
-    <false/>
+	<false/>
 	<key>CFBundleDisplayName</key>
 	<string>DaruStrong</string>
 	<key>CFBundleExecutable</key>
@@ -37,7 +37,9 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
+	<key>NSCameraUsageDescription</key>
+	<string></string>
+	<key>NSAppleMusicUsageDescription</key>
 	<string></string>
 	<key>UIAppFonts</key>
 	<array>

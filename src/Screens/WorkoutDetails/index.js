@@ -229,7 +229,7 @@ const WorkoutDetails = () => {
                           : colors.whiteOp40,
                       position: "absolute",
                       top: getHeight(1),
-                      right: getWidth(9),
+                      right: getWidth(3),
                       borderRadius: 25,
                     }}
                   >

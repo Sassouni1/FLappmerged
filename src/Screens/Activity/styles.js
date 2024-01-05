@@ -58,7 +58,7 @@ export const styles = StyleSheet.create({
     graphCon:{
       paddingHorizontal: getWidth(3),
       marginBottom: getHeight(3),
-      marginTop: getHeight(2.5),
+      marginTop: getHeight(1),
     },
     dayconn: {
       width: getWidth(13),

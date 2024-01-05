@@ -620,7 +620,8 @@ const AddWorkouts = () => {
       assigWorkout?.innerWorkout.length > 0 &&
       assigWorkout?.progress !== 100 ? (
         <Button
-          text={"Start workout"}
+          //text={"Start workout"}
+          text={assigWorkout?.progress > 0 ? "Resume workout" : "Start workout"}
           onPress={() =>
             navigation.navigate("StartWorkout", {
               workoutId: assigWorkout?._id,

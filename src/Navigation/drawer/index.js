@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Platform, Text, View } from "react-native";
+import { Alert, Platform, Text, View } from "react-native";
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -115,6 +115,17 @@ function CustomDrawerContent(props) {
   const margin = Platform.OS === "android" ? getHeight(1.9) : height * 0.026;
   // const marginBo = Platform.OS === "android" ? getHeight(-0.5) : height * 0.03;
 
+  const logoutFun = () => {
+      Alert.alert("", " Do you want to logout?", [
+        {
+          text: "No",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "destructive",
+        },
+        { text: "Yes", onPress: () => dispatch(logout()), style: "default" },
+      ]);
+  };
+
   return (
     <DrawerContentScrollView
       contentContainerStyle={{ flex: 1, backgroundColor: "#0B0B0D" }}
@@ -182,7 +193,7 @@ function CustomDrawerContent(props) {
         <DrawerItem
           label={"Logout"}
           labelStyle={{ fontFamily: "Ubuntu-Bold" }}
-          onPress={() => dispatch(logout())}
+          onPress={() => logoutFun()}
           inactiveTintColor={"#EB5757"}
           activeTintColor={"#EB5757"}
           labelStyle={{ color: "#EB5757" }}
@@ -209,12 +220,12 @@ export default function MyDrawer() {
           drawerActiveTintColor: "#333333",
           drawerActiveBackgroundColor: "white",
           drawerIcon: ({ color, size, focuced }) => (
-            <Fontisto name={"home"} size={16} color={color} />
+            <Fontisto name={"home"} size={getFontSize(2.3)} color={color}  style={{ marginLeft: getFontSize(-0.4)}} />
           ),
           drawerLabelStyle: {
             fontFamily: "Ubuntu",
             fontSize: getFontSize(1.7),
-            marginLeft: getFontSize(0.1),
+            marginLeft: getFontSize(0.3),
           },
         }}
         name="Home"
@@ -237,7 +248,7 @@ export default function MyDrawer() {
           drawerLabelStyle: {
             fontFamily: "Ubuntu",
             fontSize: getFontSize(1.7),
-            marginLeft: getFontSize(-0.4),
+            marginLeft: getFontSize(-0.1),
           },
         }}
         name="Profile Settings"
@@ -260,7 +271,7 @@ export default function MyDrawer() {
           drawerLabelStyle: {
             fontFamily: "Ubuntu",
             fontSize: getFontSize(1.7),
-            marginLeft: getFontSize(-0.5),
+            marginLeft: getFontSize(-0.3),
           },
         }}
         name="Change Password"
@@ -284,7 +295,7 @@ export default function MyDrawer() {
           drawerLabelStyle: {
             fontFamily: "Ubuntu",
             fontSize: getFontSize(1.7),
-            marginLeft: getFontSize(-0.3),
+            //marginLeft: getFontSize(-0.3),
           },
         }}
         name="Help"
@@ -301,7 +312,8 @@ export default function MyDrawer() {
             <FontAwesome name="envelope" size={18} color={"white"} />
           ),
           drawerLabelStyle:{ fontFamily: "Ubuntu",  fontSize: getFontSize(1.7),
-          marginLeft: getFontSize(-0.25), }
+          marginLeft: getFontSize(0.1), 
+        }
         }}
         name="Contact Us"
         component={ContactUs}
@@ -321,7 +333,8 @@ export default function MyDrawer() {
             />
           ),
           drawerLabelStyle:{ fontFamily: "Ubuntu",  fontSize: getFontSize(1.7),
-          marginLeft: getFontSize(-0.3), }
+          //marginLeft: getFontSize(-0.3), 
+        }
         }}
         // style={{ fontFamily: "Ubuntu-Bold", fontSize: 12 }}
         name="Notifications"

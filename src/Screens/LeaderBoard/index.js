@@ -1,11 +1,11 @@
 import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { colors } from "../../constants/colors";
 import { styles } from "./styles";
 import GeneralStatusBar from "../../Components/GeneralStatusBar";
 import Entypo from "react-native-vector-icons/Entypo";
 import { getWidth, getHeight, getFontSize } from "../../../utils/ResponsiveFun";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { setLoader } from "../../Redux/actions/GernalActions";
 import { useDispatch, useSelector } from "react-redux";
 import { ApiCall } from "../../Services/Apis";
@@ -80,9 +80,11 @@ const LeaderBoard = () => {
     getConsistentUser();
   };
 
-  useEffect(() => {
-    handleRefresh(); // Call handleRefresh to load data initially
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      handleRefresh();
+    }, [])
+  );
 
   return (
     <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
@@ -107,8 +109,8 @@ const LeaderBoard = () => {
         }
         RightIcon={<View style={{ marginRight: getFontSize(4) }} />}
       />
-      {loader ? null : (
-        <>
+      {/* {loader ? null : (
+        <> */}
           <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
             <View
               style={{
@@ -537,8 +539,8 @@ const LeaderBoard = () => {
               </View>
             </View>
           </ScrollView>
-        </>
-      )}
+        {/* </>
+      )} */}
     </View>
   );
 };

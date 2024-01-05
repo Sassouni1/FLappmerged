@@ -53,7 +53,7 @@ export default function BottomTab() {
           tabBarIcon: ({ focused, color, size }) => (
             <Foundation
               name="home"
-              size={22}
+              size={getFontSize(2.7)}
               style={{ marginTop: getFontSize(1) }}
               color={focused ? "#F79300" : "white"}
             />
@@ -74,13 +74,13 @@ export default function BottomTab() {
           tabBarIcon: ({ focused, color, size }) => (
             <Entypo
               name="man"
-              size={22}
+              size={getFontSize(2.5)}
               style={{ marginTop: getFontSize(1) }}
               color={focused ? "#F79300" : "white"}
             />
           ),
           tabBarItemStyle:{
-            right:getFontSize(1)
+            right:getFontSize(0.8)
           }
         }}
       />
@@ -94,13 +94,13 @@ export default function BottomTab() {
           tabBarIcon: ({ focused, color, size }) => (
             <FontAwesome5
               name="hand-rock"
-              size={22}
+              size={getFontSize(2.5)}
               style={{ marginTop: getFontSize(1) }}
               color={focused ? "#F79300" : "white"}
             />
           ),
           tabBarItemStyle:{
-            right:getFontSize(1.3)
+            right:getFontSize(1.5)
           }
         }}
       />
@@ -114,13 +114,13 @@ export default function BottomTab() {
           tabBarIcon: ({ focused, color, size }) => (
             <FontAwesome6
               name="bolt-lightning"
-              size={21}
+              size={getFontSize(2.4)}
               style={{ marginTop: getFontSize(1) }}
               color={focused ? "#F79300" : "white"}
             />
           ),
           tabBarItemStyle:{
-            right:getFontSize(1.7)
+            right:getFontSize(2)
           }
         }}
       />
@@ -133,7 +133,7 @@ export default function BottomTab() {
           tabBarIcon: ({ focused, color, size }) => (
             <Entypo
               name="message"
-              size={25}
+              size={getFontSize(3)}
               style={{ marginTop: getFontSize(1), }}
               color={focused ? "#F79300" : "white"}
             />
@@ -173,11 +173,14 @@ export default function BottomTab() {
           tabBarIcon: ({ focused, color, size }) => (
             <MaterialIcons
               name="bar-chart"
-              size={27}
+              size={getFontSize(3.5)}
               style={{ marginTop: getFontSize(1), right: getFontSize(0.2) }}
               color={focused ? "#F79300" : "white"}
             />
           ),
+          tabBarItemStyle:{
+            right:getFontSize(0.2)
+          }
         }}
       />
     </Tab.Navigator>

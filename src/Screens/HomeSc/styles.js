@@ -135,9 +135,10 @@ export const styles = StyleSheet.create({
     height: getHeight(15),
     paddingTop: getHeight(5),
     paddingBottom: getHeight(2),
-    width: getWidth(42),
+    width: getWidth(46.5),
     justifyContent: "space-between",
     alignItems: "center",
+    borderRadius:7
   },
   video: {
     ...StyleSheet.absoluteFillObject,

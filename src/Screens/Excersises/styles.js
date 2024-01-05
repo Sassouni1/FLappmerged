@@ -43,10 +43,10 @@ export const styles = StyleSheet.create({
   thumbnail: {
     backgroundColor: colors.white,
     justifyContent: 'center',
-    height: getHeight(8),
-    width: getWidth(20),
-    borderTopLeftRadius: getFontSize(2),
-    borderBottomLeftRadius:getFontSize(2),
+    height: getHeight(7),
+    width: getWidth(19),
+    borderTopLeftRadius: getFontSize(0.6),
+    borderBottomLeftRadius:getFontSize(0.6),
     alignItems: 'center',
     ...Platform.select({
       ios: {

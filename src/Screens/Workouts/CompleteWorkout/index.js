@@ -225,7 +225,6 @@ const CompleteWorkout = ({ route }) => {
     setAdditionalSets(updatedAdditionalSets);
   };
 
-
   const singleExerciseComplete = async () => {
     try {
       dispatch(setLoader(true));
@@ -288,7 +287,6 @@ const CompleteWorkout = ({ route }) => {
 
   // Use the function to get the index of the next incomplete task
   const nextIncompleteIndex = getNextIncompleteTaskIndex(currentIndex);
-
 
   return (
     <View
@@ -419,13 +417,6 @@ const CompleteWorkout = ({ route }) => {
             </View>
           </ImageBackground>
         )}
-
-
-
-
-
-
-
 
         {/* assigned set submission */}
         {loader ? null : (
@@ -688,7 +679,8 @@ const CompleteWorkout = ({ route }) => {
                                   {set.weight}
                                   {`  `}
                                 </Text>
-                                <Text style={styles.lbs}>{set.parameter}</Text>
+                                {/* <Text style={styles.lbs}>{set.parameter}</Text> */}
+                                <Text style={styles.lbs}>kg</Text>
                               </View>
                             </View>
                           ) : set?.parameter == "seconds" ? (
@@ -724,7 +716,8 @@ const CompleteWorkout = ({ route }) => {
                                   {set.seconds}
                                   {`  `}
                                 </Text>
-                                <Text style={styles.lbs}>{set.parameter}</Text>
+                                {/* <Text style={styles.lbs}>{set.parameter}</Text> */}
+                                <Text style={styles.lbs}>sec</Text>
                               </View>
                             </View>
                           ) : set?.parameter == "distance" ? (
@@ -760,7 +753,8 @@ const CompleteWorkout = ({ route }) => {
                                   {set.distance}
                                   {`  `}
                                 </Text>
-                                <Text style={styles.lbs}>{set.parameter}</Text>
+                                {/* <Text style={styles.lbs}>{set.parameter}</Text> */}
+                                <Text style={styles.lbs}>miles</Text>
                               </View>
                             </View>
                           ) : null}
@@ -979,9 +973,10 @@ const CompleteWorkout = ({ route }) => {
                                       {set.weight}
                                       {`  `}
                                     </Text>
-                                    <Text style={styles.lbs}>
+                                    {/* <Text style={styles.lbs}>
                                       {set.parameter}
-                                    </Text>
+                                    </Text> */}
+                                    <Text style={styles.lbs}>kg</Text>
                                   </View>
                                 </View>
                               ) : set?.parameter == "seconds" ? (
@@ -1020,9 +1015,10 @@ const CompleteWorkout = ({ route }) => {
                                       {set.seconds}
                                       {`  `}
                                     </Text>
-                                    <Text style={styles.lbs}>
+                                    {/* <Text style={styles.lbs}>
                                       {set.parameter}
-                                    </Text>
+                                    </Text> */}
+                                    <Text style={styles.lbs}>sec</Text>
                                   </View>
                                 </View>
                               ) : set?.parameter == "distance" ? (
@@ -1061,9 +1057,10 @@ const CompleteWorkout = ({ route }) => {
                                       {set.distance}
                                       {`  `}
                                     </Text>
-                                    <Text style={styles.lbs}>
+                                    {/* <Text style={styles.lbs}>
                                       {set.parameter}
-                                    </Text>
+                                    </Text> */}
+                                    <Text style={styles.lbs}>miles</Text>
                                   </View>
                                 </View>
                               ) : null}
@@ -1118,11 +1115,6 @@ const CompleteWorkout = ({ route }) => {
             </View>
           </>
         )}
-
-
-
-
-
 
         {/* additional sets submission */}
         <View>
@@ -1341,8 +1333,11 @@ const CompleteWorkout = ({ route }) => {
                                   }}
                                 />
                                 <View style={styles.parameterCtn}>
-                                  <Text style={styles.lbs}>
+                                  {/* <Text style={styles.lbs}>
                                     {exercise?.sets[0]?.parameter}
+                                  </Text> */}
+                                   <Text style={styles.lbs}>
+                                    kg
                                   </Text>
                                 </View>
                               </View>
@@ -1385,8 +1380,11 @@ const CompleteWorkout = ({ route }) => {
                                 />
 
                                 <View style={styles.parameterCtn}>
-                                  <Text style={styles.lbs}>
+                                  {/* <Text style={styles.lbs}>
                                     {exercise?.sets[0].parameter}
+                                  </Text> */}
+                                   <Text style={styles.lbs}>
+                                    sec
                                   </Text>
                                 </View>
                               </View>
@@ -1428,8 +1426,11 @@ const CompleteWorkout = ({ route }) => {
                                   }}
                                 />
                                 <View style={styles.parameterCtn}>
-                                  <Text style={styles.lbs}>
+                                  {/* <Text style={styles.lbs}>
                                     {exercise?.sets[0].parameter}
+                                  </Text> */}
+                                   <Text style={styles.lbs}>
+                                    miles
                                   </Text>
                                 </View>
                               </View>
@@ -1633,11 +1634,14 @@ const CompleteWorkout = ({ route }) => {
                                   }}
                                 />
                                 <View style={styles.parameterCtn}>
-                                  <Text style={styles.lbs}>
+                                  {/* <Text style={styles.lbs}>
                                     {
                                       exercise?.task?.[nextIncompleteIndex]
                                         ?.sets[0]?.parameter
                                     }
+                                  </Text> */}
+                                  <Text style={styles.lbs}>
+                                    kg
                                   </Text>
                                 </View>
                               </View>
@@ -1680,11 +1684,14 @@ const CompleteWorkout = ({ route }) => {
                                   }}
                                 />
                                 <View style={styles.parameterCtn}>
-                                  <Text style={styles.lbs}>
+                                  {/* <Text style={styles.lbs}>
                                     {
                                       exercise?.task?.[nextIncompleteIndex]
                                         ?.sets[0].parameter
                                     }
+                                  </Text> */}
+                                  <Text style={styles.lbs}>
+                                   sec
                                   </Text>
                                 </View>
                               </View>
@@ -1727,11 +1734,14 @@ const CompleteWorkout = ({ route }) => {
                                   }}
                                 />
                                 <View style={styles.parameterCtn}>
-                                  <Text style={styles.lbs}>
+                                  {/* <Text style={styles.lbs}>
                                     {
                                       exercise?.task?.[nextIncompleteIndex]
                                         ?.sets[0].parameter
                                     }
+                                  </Text> */}
+                                   <Text style={styles.lbs}>
+                                    miles
                                   </Text>
                                 </View>
                               </View>
@@ -1807,13 +1817,14 @@ const CompleteWorkout = ({ route }) => {
               borderRadius: 5,
               borderWidth: getWidth(0.3),
               borderColor: colors.white,
+              justifyContent: "center",
+              alignItems: "center",
             }}
             onPress={previosSet}
           >
-            <View style={{ alignSelf: "center", justifyContent: "center" }}>
-              <Text></Text>
-              <AntDesign name="arrowleft" size={22} color={colors.white} />
-            </View>
+            {/* <View style={{ alignItems: "center", justifyContent: "center" }}> */}
+            <AntDesign name="arrowleft" size={22} color={colors.white} />
+            {/* </View> */}
           </TouchableOpacity>
           <TouchableOpacity
             style={{

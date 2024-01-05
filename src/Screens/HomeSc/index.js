@@ -159,7 +159,7 @@ const HomeSc = ({ navigation, route }) => {
         <View style={{ ...styles.eliteCon, marginBottom: getHeight(1.5) }}>
           <View style={styles.imageCon}>
             <Image
-              resizeMode="center"
+              resizeMode="contain"
               style={styles.image}
               source={require("../../assets/images/home3.png")}
             />
@@ -362,7 +362,7 @@ const HomeSc = ({ navigation, route }) => {
         >
           <View style={styles.imageCon}>
             <Image
-              resizeMode="center"
+              resizeMode="contain"
               style={styles.image}
               source={require("../../assets/images/home2.png")}
             />
