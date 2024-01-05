@@ -65,7 +65,7 @@ const AddWorkouts = () => {
       if (res?.status == "200") {
         console.log(
           "respone of add workoutss",
-          res?.response?.Workout[0].innerWorkout[0]?.exercise
+          res?.response?.Workout[0].innerWorkout
         );
         setAssigWorkout(res?.response?.Workout[0]);
         dispatch(setLoader(false));
@@ -425,6 +425,7 @@ const AddWorkouts = () => {
                         workoutId: assigWorkout?._id,
                         innerWorkoutId: item?._id,
                         exerciseId: ex?._id,
+                        calories: item?.calories
                       });
                     }
                   }}

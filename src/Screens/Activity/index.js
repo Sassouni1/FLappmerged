@@ -90,6 +90,28 @@ const Activity = () => {
   const [weightProgressSixMonth, setWeightProgressSixMonth] = useState([]);
   const [weightProgressAllMonth, setWeightProgressAllMonth] = useState([]);
 
+
+  // all calories progress states
+
+  const [caloriesProgress, setCaloriesProgress] = useState({
+    Monday: 0,
+    Tuesday: 0,
+    Wednesday: 0,
+    Thursday: 0,
+    Friday: 0,
+    Saturday: 0,
+    Sunday: 0,
+  });
+  const [monthlyCaloriesProgress, setMonthlyCaloriesProgess] = useState({
+    Week1: 0,
+    Week2: 0,
+    Week3: 0,
+    Week4: 0,
+  });
+  const [caloriesProgressThreeMonth, setCaloriesProgressThreeMonth] = useState([]);
+  const [caloriesProgressSixMonth, setCaloriesProgressSixMonth] = useState([]);
+  const [caloriesProgressAllMonth, setCaloriesProgressAllMonth] = useState([]);
+
   // select type states by dropdown
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [allTypes, setAllTypes] = useState([
@@ -420,6 +442,113 @@ const Activity = () => {
     }
   };
 
+
+ // all Calories progress apis functions
+
+  const getCaloriesProgress = async () => {
+    try {
+      const res = await ApiCall({
+        route: `assignProgram/user_weekly_calories/${user?.user_id}`,
+        verb: "get",
+        token: token,
+      });
+      if (res?.status == "200") {
+        setCaloriesProgress(res?.response?.weeklyWeight);
+        dispatch(setLoader(false));
+      } else {
+        dispatch(setLoader(false));
+        console.log("errorrrr in calenders progress");
+      }
+    } catch (e) {
+      console.log("api get weeklyWeight error -- ", e.toString());
+    }
+  };
+
+  const getCaloriesMonthProgress = async () => {
+    try {
+      const res = await ApiCall({
+        route: `assignProgram/monthly_calories/${user?.user_id}`,
+        verb: "get",
+        token: token,
+      });
+      console.log("response of weight", res?.response);
+
+      if (res?.status == "200") {
+        setMonthlyCaloriesProgess(res?.response?.weeklyProgress);
+        dispatch(setLoader(false));
+      } else {
+        dispatch(setLoader(false));
+        console.log("errorrrr in calenders progress");
+      }
+    } catch (e) {
+      console.log("api get monthlyWeight error -- ", e.toString());
+    }
+  };
+
+  const getCaloriesThreeMonthProgress = async () => {
+    try {
+      const res = await ApiCall({
+        route: `assignProgram/last_three_months_calories/${user?.user_id}`,
+        verb: "get",
+        token: token,
+      });
+      console.log("response of weightLKL", res?.response);
+      if (res?.status == "200") {
+        setCaloriesProgressThreeMonth(res?.response?.monthlyProgress);
+        dispatch(setLoader(false));
+      } else {
+        dispatch(setLoader(false));
+        console.log("errorrrr in calenders progress");
+      }
+    } catch (e) {
+      console.log("api get lastThreeMonthWeight error -- ", e.toString());
+    }
+  };
+
+  const getCaloriesSixMonthProgress = async () => {
+    try {
+      const res = await ApiCall({
+        route: `assignProgram/last_six_months_calories/${user?.user_id}`,
+        verb: "get",
+        token: token,
+      });
+      console.log("response of weightHJJH", res?.response);
+
+      if (res?.status == "200") {
+        setCaloriesProgressSixMonth(res?.response?.monthlyProgress);
+        dispatch(setLoader(false));
+      } else {
+        dispatch(setLoader(false));
+        console.log("errorrrr in calenders progress");
+      }
+    } catch (e) {
+      console.log("api get lastSixMonthWeight error -- ", e.toString());
+    }
+  };
+
+  const getCaloriesAllMonthProgress = async () => {
+    try {
+      const res = await ApiCall({
+        route: `assignProgram/all_months_calories/${user?.user_id}`,
+        verb: "get",
+        token: token,
+      });
+      console.log("response of weightJKJK", res?.response);
+
+      if (res?.status == "200") {
+        setCaloriesProgressAllMonth(res?.response?.yearlyProgress);
+        dispatch(setLoader(false));
+      } else {
+        dispatch(setLoader(false));
+        console.log("errorrrr in calenders progress");
+      }
+    } catch (e) {
+      console.log("api get allMonthsWeight error -- ", e.toString());
+    }
+  };
+
+
+
   // all calender progress apis functions
 
   const getSingleExcercise = async (selectedDate) => {
@@ -485,6 +614,7 @@ const Activity = () => {
       getMessagesProgress();
       exerciseProgress();
       getWeightProgress();
+      getCaloriesProgress()
     }, [])
   );
 
@@ -652,26 +782,31 @@ const Activity = () => {
       exerciseProgress();
       getMessagesProgress();
       getWeightProgress();
+      getCaloriesProgress()
     } else if (selectedType == "This Month") {
       dispatch(setLoader(true));
       getExerciseMonthProgress();
       getMessagesMonthProgress();
       getWeightMonthProgress();
+      getCaloriesMonthProgress();
     } else if (selectedType == "Last 3 Months") {
       dispatch(setLoader(true));
       getExerciseThreeMonthProgress();
       getMessagesThreeMonthProgress();
       getWeightThreeMonthProgress();
+      getCaloriesThreeMonthProgress();
     } else if (selectedType == "Last 6 Months") {
       dispatch(setLoader(true));
       getExerciseSixMonthProgress();
       getMessagesSixMonthProgress();
       getWeightSixMonthProgress();
+      getCaloriesSixMonthProgress();
     } else if (selectedType == "All Time") {
       dispatch(setLoader(true));
       getExerciseAllMonthProgress();
       getMessagesAllMonthProgress();
       getWeightAllMonthProgress();
+      getCaloriesAllMonthProgress();
     } else {
       console.log("NO select type selected");
     }
@@ -830,6 +965,62 @@ const Activity = () => {
     percentageOfAllMonthWeight = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   }
 
+
+
+
+ // three month names and their percentages of weight
+
+ let monthNameOfThreeMonthCalories = [];
+ if (caloriesProgressThreeMonth.length > 0) {
+   monthNameOfThreeMonthCalories = caloriesProgressThreeMonth.map(
+     (item) => item.month
+   );
+ } else {
+  monthNameOfThreeMonthCalories = [0, 0, 0];
+ }
+
+ let percentageOfThreeMonthCalories = [];
+ if (weightProgressThreeMonth.length > 0) {
+  percentageOfThreeMonthCalories = weightProgressThreeMonth.map(
+     (item) => item.percentage
+   );
+ } else {
+  percentageOfThreeMonthCalories = [0, 0, 0];
+ }
+
+ // Six month names and their percentages of weight
+
+ let monthNameOfSixMonthCalories = [];
+ if (caloriesProgressSixMonth.length > 0) {
+   monthNameOfSixMonthCalories = caloriesProgressSixMonth.map(
+     (item) => item.month
+   );
+ } else {
+   monthNameOfSixMonthCalories = [0, 0, 0, 0, 0, 0];
+ }
+
+ let percentageOfSixMonthCalories = [];
+ if (caloriesProgressSixMonth.length > 0) {
+   percentageOfSixMonthCalories = caloriesProgressSixMonth.map(
+     (item) => item.percentage
+   );
+ } else {
+   percentageOfSixMonthCalories = [0, 0, 0, 0, 0, 0];
+ }
+
+ // All month percentages of weight
+ let percentageOfAllMonthCalories = [];
+ if (caloriesProgressAllMonth.length > 0) {
+   percentageOfAllMonthCalories = caloriesProgressAllMonth.map(
+     (item) => item.percentage
+   );
+ } else {
+   percentageOfAllMonthCalories = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+ }
+
+
+
+
   // tooltip for progress
   const [tooltip, setTooltip] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ left: 0, top: 0 });
@@ -850,6 +1041,14 @@ const Activity = () => {
     top: 0,
   });
   const [isVisibleWeight, setIsVisibleWeight] = useState(false);
+
+ // tooltip for CALORIES
+  const [tooltipCalories, setTooltipCalories] = useState(null);
+  const [tooltipPositionCalories, setTooltipPositionCalories] = useState({
+    left: 0,
+    top: 0,
+  });
+  const [isVisibleCalories, setIsVisibleCalories] = useState(false);
 
   const handleDataPointClick = (
     data,
@@ -1045,7 +1244,7 @@ const Activity = () => {
           </View>
         </View>
         <View style={{ ...styles.spaceBet, marginTop: getFontSize(3) }}>
-          <Text style={styles.activty}>USER WORKOUT PROGRESS</Text>
+          <Text style={styles.activty}>TRAINING COMPLETION</Text>
         </View>
         <View style={styles.graphCon}>
           <LineChart
@@ -1231,7 +1430,7 @@ const Activity = () => {
         </View>
 
         <View style={styles.spaceBet}>
-          <Text style={styles.activty}>USER ENGAGEMENT</Text>
+          <Text style={styles.activty}>INDIVIDUAL EXERCISE</Text>
         </View>
         <View style={{ ...styles.graphCon, marginTop: getHeight(2) }}>
           <LineChart
@@ -1418,7 +1617,7 @@ const Activity = () => {
         </View>
 
         <View style={styles.spaceBet}>
-          <Text style={styles.activty}>HEAVIEST WEIGHT LIFTED</Text>
+          <Text style={styles.activty}>TOTAL VOLUME LIFTED</Text>
         </View>
         <View style={{ ...styles.graphCon, marginTop: getHeight(2) }}>
           <LineChart
@@ -1603,6 +1802,194 @@ const Activity = () => {
             </TouchableOpacity>
           )}
         </View>
+
+        <View style={styles.spaceBet}>
+          <Text style={styles.activty}>CALORIES BURNED</Text>
+        </View>
+        <View style={{ ...styles.graphCon, marginTop: getHeight(2) }}>
+          <LineChart
+            data={
+              selectedTypes === "Last 7 Days"
+                ? {
+                    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+
+                    datasets: [
+                      {
+                        data: [
+                          caloriesProgress.Monday,
+                          caloriesProgress.Tuesday,
+                          caloriesProgress.Wednesday,
+                          caloriesProgress.Thursday,
+                          caloriesProgress.Friday,
+                          caloriesProgress.Saturday,
+                          caloriesProgress.Sunday,
+                        ],
+                      },
+                    ],
+                  }
+                : selectedTypes === "This Month"
+                ? {
+                    labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+                    datasets: [
+                      {
+                        data: [
+                          monthlyCaloriesProgress.Week1,
+                          monthlyCaloriesProgress.Week2,
+                          monthlyCaloriesProgress.Week3,
+                          monthlyCaloriesProgress.Week4,
+                        ],
+                      },
+                    ],
+                  }
+                : selectedTypes === "Last 3 Months"
+                ? {
+                    labels: [
+                      monthNameOfThreeMonthCalories[0],
+                      monthNameOfThreeMonthCalories[1],
+                      monthNameOfThreeMonthCalories[2],
+                    ],
+                    datasets: [
+                      {
+                        data: [
+                          percentageOfThreeMonthCalories[0],
+                          percentageOfThreeMonthCalories[1],
+                          percentageOfThreeMonthCalories[2],
+                        ],
+                      },
+                    ],
+                  }
+                : selectedTypes === "Last 6 Months"
+                ? {
+                    labels: [
+                      monthNameOfSixMonthCalories[0],
+                      monthNameOfSixMonthCalories[1],
+                      monthNameOfSixMonthCalories[2],
+                      monthNameOfSixMonthCalories[3],
+                      monthNameOfSixMonthCalories[4],
+                      monthNameOfSixMonthCalories[5],
+                    ],
+                    datasets: [
+                      {
+                        data: [
+                          percentageOfSixMonthCalories[0],
+                          percentageOfSixMonthCalories[1],
+                          percentageOfSixMonthCalories[2],
+                          percentageOfSixMonthCalories[3],
+                          percentageOfSixMonthCalories[4],
+                          percentageOfSixMonthCalories[5],
+                        ],
+                      },
+                    ],
+                  }
+                : selectedTypes === "All Time"
+                ? {
+                    labels: [
+                      "Jan",
+                      "Feb",
+                      "Mar",
+                      "Apr",
+                      "May",
+                      "Jun",
+                      "Jul",
+                      "Aug",
+                      "Sep",
+                      "Oct",
+                      "Nov",
+                      "Dec",
+                    ],
+                    datasets: [
+                      {
+                        data: [
+                          percentageOfAllMonthCalories[0],
+                          percentageOfAllMonthCalories[1],
+                          percentageOfAllMonthCalories[2],
+                          percentageOfAllMonthCalories[3],
+                          percentageOfAllMonthCalories[4],
+                          percentageOfAllMonthCalories[5],
+                          percentageOfAllMonthCalories[6],
+                          percentageOfAllMonthCalories[7],
+                          percentageOfAllMonthCalories[8],
+                          percentageOfAllMonthCalories[9],
+                          percentageOfAllMonthCalories[10],
+                          percentageOfAllMonthCalories[11],
+                        ],
+                      },
+                    ],
+                  }
+                : {
+                    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+                    datasets: [
+                      {
+                        data: [
+                          caloriesProgress.Monday,
+                          caloriesProgress.Tuesday,
+                          caloriesProgress.Wednesday,
+                          caloriesProgress.Thursday,
+                          caloriesProgress.Friday,
+                          caloriesProgress.Saturday,
+                          caloriesProgress.Sunday,
+                        ],
+                      },
+                    ],
+                  }
+            }
+            width={chartWidth} // from react-native
+            height={getHeight(25)}
+            onDataPointClick={(data) =>
+              handleDataPointClick(
+                data,
+                setTooltipCalories,
+                setTooltipPositionCalories,
+                setIsVisibleCalories
+              )
+            }
+            yAxisSuffix="%"
+            withHorizontalLines={false}
+            withVerticalLines={false}
+            chartConfig={{
+              backgroundColor: colors.secondary,
+              backgroundGradientFrom: colors.secondary,
+              backgroundGradientTo: colors.secondary,
+              decimalPlaces: 0, // round to decimal places
+              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(250, 250, 250, ${opacity})`,
+              style: {
+                borderRadius: 16,
+              },
+              propsForDots: {
+                r: "6",
+                strokeWidth: "2",
+                stroke: "#ffa726",
+              },
+              yAxis: {
+                min: 0,
+                max: 100,
+              },
+            }}
+            bezier // smooth lines
+            style={{
+              marginVertical: 8,
+              borderRadius: getFontSize(2),
+            }}
+          />
+          {isVisibleCalories && (
+            <TouchableOpacity
+              style={{
+                position: "absolute",
+                left: tooltipPositionCalories.left,
+                top: tooltipPositionCalories.top - 20,
+              }}
+              onPress={() => setIsVisibleCalories(false)}
+            >
+              <Text
+                style={{ color: colors.buttonColor, fontSize: getFontSize(2) }}
+              >
+                {tooltipCalories}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
       </ScrollView>
     </View>
   );

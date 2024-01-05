@@ -34,7 +34,8 @@ import Seprator from "../../../Components/Seprator";
 
 const CompleteWorkout = ({ route }) => {
   const navigation = useNavigation();
-  const { workoutId, innerWorkoutId, exerciseId } = route?.params;
+  const { workoutId, innerWorkoutId, exerciseId,calories } = route?.params;
+  //console.log('calories',calories)
   const defaultTimer = { hours: 0, minutes: 0, seconds: 0 };
   const timer =
     useSelector(
@@ -232,6 +233,7 @@ const CompleteWorkout = ({ route }) => {
         workout_objId: workoutId,
         exercise_objId: exerciseId,
         inner_objId: innerWorkoutId,
+        calories:calories,
         submitted_sets: JSON.stringify(submittedSets),
         additional_sets: JSON.stringify(additionalSet),
         submitted_notes: submittedNotes,

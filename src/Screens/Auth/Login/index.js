@@ -7,7 +7,11 @@ import Button from "../../../Components/Button";
 import { validateFields } from "../../../../utils/validation/validate-fields";
 import GeneralStatusBar from "../../../Components/GeneralStatusBar";
 import { styles } from "./style";
-import { getFontSize, getHeight, getWidth } from "../../../../utils/ResponsiveFun";
+import {
+  getFontSize,
+  getHeight,
+  getWidth,
+} from "../../../../utils/ResponsiveFun";
 import { useDispatch } from "react-redux";
 import { loginRequest } from "../../../Redux/actions/AuthActions";
 import validator from "../../../../utils/validation/validator";
@@ -51,22 +55,21 @@ const Login = ({ navigation }) => {
         backgroundColor="rgba(51, 51, 51, 1)"
         translucent={true}
       />
- <KeyboardAwareScrollView
-          // contentContainerStyle={{height: getHeight(40)}}
+      <KeyboardAwareScrollView
+        // contentContainerStyle={{height: getHeight(40)}}
 
-          showsVerticalScrollIndicator={false}
-        >
-      <Text style={styles.txt}>DaruStrong</Text>
+        showsVerticalScrollIndicator={false}
+      >
+        <Text style={styles.txt}>FightLife</Text>
 
-      <View style={styles.mainview}>
-        <Text style={styles.txt2}>
-          Welcome,{"\n"}
-          <Text style={{ color: "rgba(189, 189, 189, 1)" }}>
-            Login to continue
+        <View style={styles.mainview}>
+          <Text style={styles.txt2}>
+            Welcome,{"\n"}
+            <Text style={{ color: "rgba(189, 189, 189, 1)" }}>
+              Login to continue
+            </Text>
           </Text>
-        </Text>
 
-       
           <TextInput
             mode="outlined"
             // label="Email address"
@@ -149,7 +152,11 @@ const Login = ({ navigation }) => {
           <Button
             onPress={() => login()}
             text="Login"
-            btnStyle={{ ...GernalStyle.btn, marginTop: getHeight(5),backgroundColor:colors.buttonColor }}
+            btnStyle={{
+              ...GernalStyle.btn,
+              marginTop: getHeight(5),
+              backgroundColor: colors.buttonColor,
+            }}
             btnTextStyle={GernalStyle.btnText}
           />
 
@@ -169,9 +176,8 @@ const Login = ({ navigation }) => {
 <Text>Login</Text>
             </TouchableOpacity>
           </View> */}
-      </View>
+        </View>
       </KeyboardAwareScrollView>
-
     </View>
   );
 };

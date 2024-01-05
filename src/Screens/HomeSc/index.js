@@ -218,7 +218,7 @@ const HomeSc = ({ navigation, route }) => {
               left: getWidth(2.5),
             }}
           >
-            <Text style={styles.welcome}>Welcome to DaruStrong</Text>
+            <Text style={styles.welcome}>Welcome to FightLife</Text>
           </View>
         </View>
         <View
@@ -379,7 +379,7 @@ const HomeSc = ({ navigation, route }) => {
             coaching
           </Text>
           <Text style={styles.para2}>
-            and with Coach Phil Daru or your own Daru Strong Certified Coach.
+            and with Coach Phil Daru or your own FightLife Certified Coach.
           </Text>
           <Text style={styles.nutration}>
             - Nutrition Custom Coaching - Accountability
@@ -392,14 +392,14 @@ const HomeSc = ({ navigation, route }) => {
           headingText={"Post workout"}
           subheading={"Recovery Drink"}
           paragraphtext={
-            "Bring your training to the next level with one on one custom coaching and with Coach Phil Daru or your own Daru Strong Certified Coach. Bring your training to the next level with one on one custom coaching and with Coach Phil Daru or your own Daru Strong Certified Coach."
+            "Bring your training to the next level with one on one custom coaching and with Coach Phil Daru or your own FightLife Certified Coach. Bring your training to the next level with one on one custom coaching and with Coach Phil Daru or your own FightLife Certified Coach."
           }
         />
         <Workout
-          headingText={"Daru Strong"}
+          headingText={"Fight Life"}
           subheading={"Nutrition"}
           paragraphtext={
-            "Bring your training to the next level with one on one custom coaching and with Coach Phil Daru or your own Daru Strong Certified Coach."
+            "Bring your training to the next level with one on one custom coaching and with Coach Phil Daru or your own FightLife Certified Coach."
           }
         />
       </ScrollView>

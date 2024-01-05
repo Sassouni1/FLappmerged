@@ -7,7 +7,7 @@
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>CFBundleDisplayName</key>
-	<string>DaruStrong</string>
+	<string>FightLife</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

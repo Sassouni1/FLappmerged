@@ -51,7 +51,7 @@ const Workouts = ({ route }) => {
         translucent={true}
       />
       <HeaderBottom
-        title={<Text style={{ textAlign: "center" }}>DaruStrong</Text>}
+        title={<Text style={{ textAlign: "center" }}>FightLife</Text>}
         LeftIcon={
           <Entypo
             size={30}

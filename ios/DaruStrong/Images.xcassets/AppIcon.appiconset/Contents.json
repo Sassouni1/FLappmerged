@@ -1,55 +1,55 @@
 {
   "images" : [
     {
-      "filename" : "Frame 52.png",
+      "filename" : "appicon-7.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "20x20"
     },
     {
-      "filename" : "Frame 44.png",
+      "filename" : "appicon.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "20x20"
     },
     {
-      "filename" : "Frame 45.png",
+      "filename" : "appicon-1.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "29x29"
     },
     {
-      "filename" : "Frame 46.png",
+      "filename" : "appicon-2.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "29x29"
     },
     {
-      "filename" : "Frame 47.png",
+      "filename" : "appicon-3.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "40x40"
     },
     {
-      "filename" : "Frame 48.png",
+      "filename" : "appicon-4.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "40x40"
     },
     {
-      "filename" : "Frame 51.png",
+      "filename" : "appicon-4 1.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "60x60"
     },
     {
-      "filename" : "Frame 49.png",
+      "filename" : "appicon-5.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "60x60"
     },
     {
-      "filename" : "Frame 50.png",
+      "filename" : "appicon-6.png",
       "idiom" : "ios-marketing",
       "scale" : "1x",
       "size" : "1024x1024"
