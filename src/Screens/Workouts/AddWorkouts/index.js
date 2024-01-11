@@ -45,8 +45,10 @@ const AddWorkouts = () => {
       return `${set.seconds} seconds`;
     } else if (set.distance) {
       return `${set.distance} meters`;
-    } else if (set.reps) {
-      return `${set.reps} reps ${set.lebs} lebs`;
+    } else if (set.parameter == "lbs") {
+      return `${set.lbs ? set.lbs : 0} lbs`;
+    } else if (set.parameter == "reps") {
+      return `${set.reps} reps`;
     } else {
       return "N/A"; // You can change this to a default value if needed
     }
@@ -393,15 +395,32 @@ const AddWorkouts = () => {
                 >
                   {item?.workoutName}
                 </Text>
-                <Text
+                <View
                   style={{
-                    color: colors.graytext5,
-                    fontFamily: fonts.URe,
-                    fontSize: 10,
+                    flexDirection: "column",
+                    alignItems: "center",
+                    marginTop: getHeight(0.5),
                   }}
                 >
-                  {item?.exercise.length} exercises
-                </Text>
+                  <Text
+                    style={{
+                      color: colors.graytext5,
+                      fontFamily: fonts.URe,
+                      fontSize: 10,
+                    }}
+                  >
+                    {item?.exercise.length} exercises
+                  </Text>
+                  <Text
+                    style={{
+                      color: colors.graytext5,
+                      fontFamily: fonts.URe,
+                      fontSize: 10,
+                    }}
+                  >
+                    {item?.calories} Calories
+                  </Text>
+                </View>
               </View>
               <Seprator
                 style={{
@@ -425,7 +444,7 @@ const AddWorkouts = () => {
                         workoutId: assigWorkout?._id,
                         innerWorkoutId: item?._id,
                         exerciseId: ex?._id,
-                        calories: item?.calories
+                        calories: item?.calories,
                       });
                     }
                   }}

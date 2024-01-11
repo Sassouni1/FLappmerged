@@ -34,7 +34,7 @@ import Seprator from "../../../Components/Seprator";
 
 const CompleteWorkout = ({ route }) => {
   const navigation = useNavigation();
-  const { workoutId, innerWorkoutId, exerciseId,calories } = route?.params;
+  const { workoutId, innerWorkoutId, exerciseId, calories } = route?.params;
   //console.log('calories',calories)
   const defaultTimer = { hours: 0, minutes: 0, seconds: 0 };
   const timer =
@@ -97,7 +97,7 @@ const CompleteWorkout = ({ route }) => {
   const updateSubmittedSets = (
     index,
     reps,
-    lebs,
+    lbs,
     weight,
     seconds,
     distance,
@@ -108,11 +108,16 @@ const CompleteWorkout = ({ route }) => {
     // Create a copy of the current set to avoid mutating the state directly
     const currentSet = { ...updatedSets[index] };
 
-    if (reps !== "" || lebs !== "") {
-      currentSet.reps = reps?.trim() !== "" ? reps : currentSet.reps;
-      currentSet.lebs = lebs?.trim() !== "" ? lebs : currentSet.lebs;
+    if (reps !== "") {
+      currentSet.reps =  reps;
+     // currentSet.lebs = lebs?.trim() !== "" ? lebs : currentSet.lebs;
       currentSet.parameter = "reps";
-    } else if (weight !== "") {
+    } 
+    else if (lbs !== "") {
+      currentSet.lbs = lbs;
+      currentSet.parameter = "lbs";
+    }
+    else if (weight !== "") {
       currentSet.weight = weight;
       currentSet.parameter = "weight";
     } else if (seconds !== "") {
@@ -176,6 +181,10 @@ const CompleteWorkout = ({ route }) => {
       });
 
       if (res?.status == "200") {
+        console.log(
+          "rsposne of workouts with exercises",
+          res?.response?.Exercise
+        );
         setExercise(res?.response?.Exercise);
         dispatch(setLoader(false));
       } else {
@@ -197,7 +206,7 @@ const CompleteWorkout = ({ route }) => {
   const updateAdditionalSets = (
     index,
     reps,
-    lebs,
+    lbs,
     weight,
     seconds,
     distance
@@ -207,11 +216,21 @@ const CompleteWorkout = ({ route }) => {
     // Create a copy of the current set to avoid mutating the state directly
     const currentSet = { ...updatedAdditionalSets[index] };
 
-    if (reps !== "" || lebs !== "") {
-      currentSet.reps = reps?.trim() !== "" ? reps : currentSet.reps;
-      currentSet.lebs = lebs?.trim() !== "" ? lebs : currentSet.lebs;
+    // if (reps !== "" || lebs !== "") {
+    //   currentSet.reps = reps?.trim() !== "" ? reps : currentSet.reps;
+    //   currentSet.lebs = lebs?.trim() !== "" ? lebs : currentSet.lebs;
+    //   currentSet.parameter = "reps";
+    // } 
+    if (reps !== "") {
+      currentSet.reps =  reps;
+     // currentSet.lebs = lebs?.trim() !== "" ? lebs : currentSet.lebs;
       currentSet.parameter = "reps";
-    } else if (weight !== "") {
+    } 
+    else if (lbs !== "") {
+      currentSet.lbs = lbs;
+      currentSet.parameter = "lbs";
+    }
+    else if (weight !== "") {
       currentSet.weight = weight;
       currentSet.parameter = "weight";
     } else if (seconds !== "") {
@@ -233,7 +252,7 @@ const CompleteWorkout = ({ route }) => {
         workout_objId: workoutId,
         exercise_objId: exerciseId,
         inner_objId: innerWorkoutId,
-        calories:calories,
+        calories: calories,
         submitted_sets: JSON.stringify(submittedSets),
         additional_sets: JSON.stringify(additionalSet),
         submitted_notes: submittedNotes,
@@ -546,14 +565,115 @@ const CompleteWorkout = ({ route }) => {
                           <Text style={styles.count}>{index + 1}</Text>
                         </View>
                         <View style={styles.whiteCon}>
-                          {set?.parameter == "reps lebs" ||
-                          set?.parameter == "reps" ||
-                          set?.parameter == "lebs" ? (
-                            <View style={styles.rowDirection}>
+                          {
+                            // set?.parameter == "reps lebs" ||
+                            // set?.parameter == "reps" ||
+                            // set?.parameter == "lebs" ?
+                            // (
+                            //   <View style={styles.rowDirection}>
+                            //     <View
+                            //       style={{
+                            //         justifyContent: "center",
+                            //         alignItems: "center",
+                            //       }}
+                            //     >
+                            //       <TextInput
+                            //         placeholder="Enter reps"
+                            //         placeholderTextColor={"white"}
+                            //         keyboardType="number-pad"
+                            //         onFocus={() => setSelectedInput(index)}
+                            //         onBlur={() => setSelectedInput(null)}
+                            //         onChangeText={(text) => {
+                            //           const updatedContent = [...inputContent];
+                            //           updatedContent[index] = text;
+                            //           setInputContent(updatedContent);
+                            //           updateSubmittedSets(
+                            //             index,
+                            //             text,
+                            //             "",
+                            //             "",
+                            //             "",
+                            //             "",
+                            //             ""
+                            //           );
+                            //         }}
+                            //         style={{ color: "white" }}
+                            //       />
+                            //       <View
+                            //         style={{
+                            //           ...styles.parameterCtn,
+                            //           bottom:
+                            //             Platform.OS === "ios"
+                            //               ? getFontSize(0)
+                            //               : getFontSize(2),
+                            //         }}
+                            //       >
+                            //         <Text style={styles.lbs}>
+                            //           {set?.reps}
+                            //           {`  `}
+                            //         </Text>
+                            //         <Text style={styles.lbs}>reps</Text>
+                            //       </View>
+                            //     </View>
+                            //     <View
+                            //       style={{
+                            //         justifyContent: "center",
+                            //         alignItems: "center",
+                            //       }}
+                            //     >
+                            //       <View style={styles.horizental}></View>
+                            //     </View>
+
+                            //     <View
+                            //       style={{
+                            //         justifyContent: "center",
+                            //         alignItems: "center",
+                            //       }}
+                            //     >
+                            //       <TextInput
+                            //         placeholder="Enter lebs"
+                            //         placeholderTextColor={"white"}
+                            //         keyboardType="number-pad"
+                            //         onFocus={() => setSelectedInput(index)}
+                            //         onBlur={() => setSelectedInput(null)}
+                            //         onChangeText={(text) => {
+                            //           const updatedContent = [...inputContent];
+                            //           updatedContent[index] = text;
+                            //           setInputContent(updatedContent);
+                            //           updateSubmittedSets(
+                            //             index,
+                            //             "",
+                            //             text,
+                            //             "",
+                            //             "",
+                            //             "",
+                            //             ""
+                            //           );
+                            //         }}
+                            //         style={{ color: "white" }}
+                            //       />
+                            //       <View
+                            //         style={{
+                            //           ...styles.parameterCtn,
+                            //           bottom:
+                            //             Platform.OS === "ios"
+                            //               ? getFontSize(0)
+                            //               : getFontSize(2),
+                            //         }}
+                            //       >
+                            //         <Text style={styles.lbs}>
+                            //           {set?.lebs}
+                            //           {`  `}
+                            //         </Text>
+                            //         <Text style={styles.lbs}>lebs</Text>
+                            //       </View>
+                            //     </View>
+                            //   </View>
+                            // )
+                            set?.parameter == "reps" ? (
                               <View
                                 style={{
-                                  justifyContent: "center",
-                                  alignItems: "center",
+                                  ...styles.rowDirection,
                                 }}
                               >
                                 <TextInput
@@ -576,41 +696,27 @@ const CompleteWorkout = ({ route }) => {
                                       ""
                                     );
                                   }}
-                                  style={{ color: "white" }}
-                                />
-                                <View
                                   style={{
-                                    ...styles.parameterCtn,
-                                    bottom:
-                                      Platform.OS === "ios"
-                                        ? getFontSize(0)
-                                        : getFontSize(2),
+                                    width: getWidth(30),
+                                    color: "white",
                                   }}
-                                >
+                                />
+                                <View style={styles.parameterCtn}>
                                   <Text style={styles.lbs}>
-                                    {set?.reps}
+                                    {set.reps}
                                     {`  `}
                                   </Text>
                                   <Text style={styles.lbs}>reps</Text>
                                 </View>
                               </View>
+                            ) : set?.parameter == "lbs" ? (
                               <View
                                 style={{
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <View style={styles.horizental}></View>
-                              </View>
-
-                              <View
-                                style={{
-                                  justifyContent: "center",
-                                  alignItems: "center",
+                                  ...styles.rowDirection,
                                 }}
                               >
                                 <TextInput
-                                  placeholder="Enter lebs"
+                                  placeholder="Enter weight (lbs)"
                                   placeholderTextColor={"white"}
                                   keyboardType="number-pad"
                                   onFocus={() => setSelectedInput(index)}
@@ -629,137 +735,141 @@ const CompleteWorkout = ({ route }) => {
                                       ""
                                     );
                                   }}
-                                  style={{ color: "white" }}
-                                />
-                                <View
                                   style={{
-                                    ...styles.parameterCtn,
-                                    bottom:
-                                      Platform.OS === "ios"
-                                        ? getFontSize(0)
-                                        : getFontSize(2),
+                                    width: getWidth(30),
+                                    color: "white",
                                   }}
-                                >
+                                />
+                                <View style={styles.parameterCtn}>
                                   <Text style={styles.lbs}>
-                                    {set?.lebs}
+                                    {set.lbs}
                                     {`  `}
                                   </Text>
-                                  <Text style={styles.lbs}>lebs</Text>
+                                  <Text style={styles.lbs}>lbs</Text>
                                 </View>
                               </View>
-                            </View>
-                          ) : set?.parameter == "weight" ? (
-                            <View
-                              style={{
-                                ...styles.rowDirection,
-                              }}
-                            >
-                              <TextInput
-                                placeholder="Enter weight"
-                                placeholderTextColor={"white"}
-                                keyboardType="number-pad"
-                                onFocus={() => setSelectedInput(index)}
-                                onBlur={() => setSelectedInput(null)}
-                                onChangeText={(text) => {
-                                  const updatedContent = [...inputContent];
-                                  updatedContent[index] = text;
-                                  setInputContent(updatedContent);
-                                  updateSubmittedSets(
-                                    index,
-                                    "",
-                                    "",
-                                    text,
-                                    "",
-                                    "",
-                                    ""
-                                  );
+                            ) : set?.parameter == "weight" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
                                 }}
-                                style={{ width: getWidth(30), color: "white" }}
-                              />
-                              <View style={styles.parameterCtn}>
-                                <Text style={styles.lbs}>
-                                  {set.weight}
-                                  {`  `}
-                                </Text>
-                                {/* <Text style={styles.lbs}>{set.parameter}</Text> */}
-                                <Text style={styles.lbs}>kg</Text>
+                              >
+                                <TextInput
+                                  placeholder="Enter weight"
+                                  placeholderTextColor={"white"}
+                                  keyboardType="number-pad"
+                                  onFocus={() => setSelectedInput(index)}
+                                  onBlur={() => setSelectedInput(null)}
+                                  onChangeText={(text) => {
+                                    const updatedContent = [...inputContent];
+                                    updatedContent[index] = text;
+                                    setInputContent(updatedContent);
+                                    updateSubmittedSets(
+                                      index,
+                                      "",
+                                      "",
+                                      text,
+                                      "",
+                                      "",
+                                      ""
+                                    );
+                                  }}
+                                  style={{
+                                    width: getWidth(30),
+                                    color: "white",
+                                  }}
+                                />
+                                <View style={styles.parameterCtn}>
+                                  <Text style={styles.lbs}>
+                                    {set.weight}
+                                    {`  `}
+                                  </Text>
+                                  {/* <Text style={styles.lbs}>{set.parameter}</Text> */}
+                                  <Text style={styles.lbs}>kg</Text>
+                                </View>
                               </View>
-                            </View>
-                          ) : set?.parameter == "seconds" ? (
-                            <View
-                              style={{
-                                ...styles.rowDirection,
-                              }}
-                            >
-                              <TextInput
-                                placeholder="Enter seconds"
-                                placeholderTextColor={"white"}
-                                keyboardType="number-pad"
-                                onFocus={() => setSelectedInput(index)}
-                                onBlur={() => setSelectedInput(null)}
-                                onChangeText={(text) => {
-                                  const updatedContent = [...inputContent];
-                                  updatedContent[index] = text;
-                                  setInputContent(updatedContent);
-                                  updateSubmittedSets(
-                                    index,
-                                    "",
-                                    "",
-                                    "",
-                                    text,
-                                    "",
-                                    ""
-                                  );
+                            ) : set?.parameter == "seconds" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
                                 }}
-                                style={{ width: getWidth(30), color: "white" }}
-                              />
-                              <View style={styles.parameterCtn}>
-                                <Text style={styles.lbs}>
-                                  {set.seconds}
-                                  {`  `}
-                                </Text>
-                                {/* <Text style={styles.lbs}>{set.parameter}</Text> */}
-                                <Text style={styles.lbs}>sec</Text>
+                              >
+                                <TextInput
+                                  placeholder="Enter seconds"
+                                  placeholderTextColor={"white"}
+                                  keyboardType="number-pad"
+                                  onFocus={() => setSelectedInput(index)}
+                                  onBlur={() => setSelectedInput(null)}
+                                  onChangeText={(text) => {
+                                    const updatedContent = [...inputContent];
+                                    updatedContent[index] = text;
+                                    setInputContent(updatedContent);
+                                    updateSubmittedSets(
+                                      index,
+                                      "",
+                                      "",
+                                      "",
+                                      text,
+                                      "",
+                                      ""
+                                    );
+                                  }}
+                                  style={{
+                                    width: getWidth(30),
+                                    color: "white",
+                                  }}
+                                />
+                                <View style={styles.parameterCtn}>
+                                  <Text style={styles.lbs}>
+                                    {set.seconds}
+                                    {`  `}
+                                  </Text>
+                                  {/* <Text style={styles.lbs}>{set.parameter}</Text> */}
+                                  <Text style={styles.lbs}>sec</Text>
+                                </View>
                               </View>
-                            </View>
-                          ) : set?.parameter == "distance" ? (
-                            <View
-                              style={{
-                                ...styles.rowDirection,
-                              }}
-                            >
-                              <TextInput
-                                placeholder="Enter distance"
-                                placeholderTextColor={"white"}
-                                keyboardType="number-pad"
-                                onFocus={() => setSelectedInput(index)}
-                                onBlur={() => setSelectedInput(null)}
-                                onChangeText={(text) => {
-                                  const updatedContent = [...inputContent];
-                                  updatedContent[index] = text;
-                                  setInputContent(updatedContent);
-                                  updateSubmittedSets(
-                                    index,
-                                    "",
-                                    "",
-                                    "",
-                                    "",
-                                    text,
-                                    ""
-                                  );
+                            ) : set?.parameter == "distance" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
                                 }}
-                                style={{ width: getWidth(30), color: "white" }}
-                              />
-                              <View style={styles.parameterCtn}>
-                                <Text style={styles.lbs}>
-                                  {set.distance}
-                                  {`  `}
-                                </Text>
-                                {/* <Text style={styles.lbs}>{set.parameter}</Text> */}
-                                <Text style={styles.lbs}>miles</Text>
+                              >
+                                <TextInput
+                                  placeholder="Enter distance"
+                                  placeholderTextColor={"white"}
+                                  keyboardType="number-pad"
+                                  onFocus={() => setSelectedInput(index)}
+                                  onBlur={() => setSelectedInput(null)}
+                                  onChangeText={(text) => {
+                                    const updatedContent = [...inputContent];
+                                    updatedContent[index] = text;
+                                    setInputContent(updatedContent);
+                                    updateSubmittedSets(
+                                      index,
+                                      "",
+                                      "",
+                                      "",
+                                      "",
+                                      text,
+                                      ""
+                                    );
+                                  }}
+                                  style={{
+                                    width: getWidth(30),
+                                    color: "white",
+                                  }}
+                                />
+                                <View style={styles.parameterCtn}>
+                                  <Text style={styles.lbs}>
+                                    {set.distance}
+                                    {`  `}
+                                  </Text>
+                                  {/* <Text style={styles.lbs}>{set.parameter}</Text> */}
+                                  <Text style={styles.lbs}>miles</Text>
+                                </View>
                               </View>
-                            </View>
-                          ) : null}
+                            ) : null
+                          }
                         </View>
                         <View
                           style={{
@@ -833,14 +943,118 @@ const CompleteWorkout = ({ route }) => {
                               <Text style={styles.count}>{index + 1}</Text>
                             </View>
                             <View style={styles.whiteCon}>
-                              {set?.parameter == "reps lebs" ||
-                              set?.parameter == "reps" ||
-                              set?.parameter == "lebs" ? (
-                                <View style={styles.rowDirection}>
+                              {
+                                // set?.parameter == "reps lebs" ||
+                                // set?.parameter == "reps" ||
+                                // set?.parameter == "lebs" ? (
+                                //   <View style={styles.rowDirection}>
+                                //     <View
+                                //       style={{
+                                //         justifyContent: "center",
+                                //         alignItems: "center",
+                                //       }}
+                                //     >
+                                //       <TextInput
+                                //         placeholder="Enter reps"
+                                //         placeholderTextColor={"white"}
+                                //         keyboardType="number-pad"
+                                //         onFocus={() => setSelectedInput(index)}
+                                //         onBlur={() => setSelectedInput(null)}
+                                //         onChangeText={(text) => {
+                                //           const updatedContent = [
+                                //             ...inputContent,
+                                //           ];
+                                //           updatedContent[index] = text;
+                                //           setInputContent(updatedContent);
+                                //           updateSubmittedSets(
+                                //             index,
+                                //             text,
+                                //             "",
+                                //             "",
+                                //             "",
+                                //             "",
+                                //             ""
+                                //           );
+                                //         }}
+                                //         style={{ color: "white" }}
+                                //       />
+                                //       <View
+                                //         style={{
+                                //           ...styles.parameterCtn,
+                                //           bottom:
+                                //             Platform.OS === "ios"
+                                //               ? getFontSize(0)
+                                //               : getFontSize(2),
+                                //         }}
+                                //       >
+                                //         <Text style={styles.lbs}>
+                                //           {set?.reps}
+                                //           {`  `}
+                                //         </Text>
+                                //         <Text style={styles.lbs}>reps</Text>
+                                //       </View>
+                                //     </View>
+                                //     <View
+                                //       style={{
+                                //         justifyContent: "center",
+                                //         alignItems: "center",
+                                //       }}
+                                //     >
+                                //       <View style={styles.horizental}></View>
+                                //     </View>
+
+                                //     <View
+                                //       style={{
+                                //         justifyContent: "center",
+                                //         alignItems: "center",
+                                //       }}
+                                //     >
+                                //       <TextInput
+                                //         placeholder="Enter lebs"
+                                //         placeholderTextColor={"white"}
+                                //         keyboardType="number-pad"
+                                //         onFocus={() => setSelectedInput(index)}
+                                //         onBlur={() => setSelectedInput(null)}
+                                //         onChangeText={(text) => {
+                                //           const updatedContent = [
+                                //             ...inputContent,
+                                //           ];
+                                //           updatedContent[index] = text;
+                                //           setInputContent(updatedContent);
+                                //           updateSubmittedSets(
+                                //             index,
+                                //             "",
+                                //             text,
+                                //             "",
+                                //             "",
+                                //             "",
+                                //             ""
+                                //           );
+                                //         }}
+                                //         style={{ color: "white" }}
+                                //       />
+                                //       <View
+                                //         style={{
+                                //           ...styles.parameterCtn,
+                                //           bottom:
+                                //             Platform.OS === "ios"
+                                //               ? getFontSize(0)
+                                //               : getFontSize(2),
+                                //         }}
+                                //       >
+                                //         <Text style={styles.lbs}>
+                                //           {set?.lebs}
+                                //           {`  `}
+                                //         </Text>
+                                //         <Text style={styles.lbs}>lebs</Text>
+                                //       </View>
+                                //     </View>
+                                //   </View>
+                                // )
+                                set?.parameter == "reps" ? (
                                   <View
                                     style={{
-                                      justifyContent: "center",
-                                      alignItems: "center",
+                                      ...styles.rowDirection,
                                     }}
                                   >
                                     <TextInput
@@ -865,41 +1079,27 @@ const CompleteWorkout = ({ route }) => {
                                           ""
                                         );
                                       }}
-                                      style={{ color: "white" }}
-                                    />
-                                    <View
                                       style={{
-                                        ...styles.parameterCtn,
-                                        bottom:
-                                          Platform.OS === "ios"
-                                            ? getFontSize(0)
-                                            : getFontSize(2),
+                                        width: getWidth(30),
+                                        color: "white",
                                       }}
-                                    >
+                                    />
+                                    <View style={styles.parameterCtn}>
                                       <Text style={styles.lbs}>
-                                        {set?.reps}
+                                        {set.reps}
                                         {`  `}
                                       </Text>
                                       <Text style={styles.lbs}>reps</Text>
                                     </View>
                                   </View>
+                                ) : set?.parameter == "lbs" ? (
                                   <View
                                     style={{
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <View style={styles.horizental}></View>
-                                  </View>
-
-                                  <View
-                                    style={{
-                                      justifyContent: "center",
-                                      alignItems: "center",
+                                      ...styles.rowDirection,
                                     }}
                                   >
                                     <TextInput
-                                      placeholder="Enter lebs"
+                                      placeholder="Enter weight (lbs)"
                                       placeholderTextColor={"white"}
                                       keyboardType="number-pad"
                                       onFocus={() => setSelectedInput(index)}
@@ -920,152 +1120,153 @@ const CompleteWorkout = ({ route }) => {
                                           ""
                                         );
                                       }}
-                                      style={{ color: "white" }}
-                                    />
-                                    <View
                                       style={{
-                                        ...styles.parameterCtn,
-                                        bottom:
-                                          Platform.OS === "ios"
-                                            ? getFontSize(0)
-                                            : getFontSize(2),
+                                        width: getWidth(30),
+                                        color: "white",
                                       }}
-                                    >
+                                    />
+                                    <View style={styles.parameterCtn}>
                                       <Text style={styles.lbs}>
-                                        {set?.lebs}
+                                        {set.lbs}
                                         {`  `}
                                       </Text>
-                                      <Text style={styles.lbs}>lebs</Text>
+                                      <Text style={styles.lbs}>lbs</Text>
                                     </View>
                                   </View>
-                                </View>
-                              ) : set?.parameter == "weight" ? (
-                                <View
-                                  style={{
-                                    ...styles.rowDirection,
-                                  }}
-                                >
-                                  <TextInput
-                                    placeholder="Enter weight"
-                                    placeholderTextColor={"white"}
-                                    keyboardType="number-pad"
-                                    onFocus={() => setSelectedInput(index)}
-                                    onBlur={() => setSelectedInput(null)}
-                                    onChangeText={(text) => {
-                                      const updatedContent = [...inputContent];
-                                      updatedContent[index] = text;
-                                      setInputContent(updatedContent);
-                                      updateSubmittedSets(
-                                        index,
-                                        "",
-                                        "",
-                                        text,
-                                        "",
-                                        "",
-                                        ""
-                                      );
-                                    }}
+                                ) : set?.parameter == "weight" ? (
+                                  <View
                                     style={{
-                                      width: getWidth(30),
-                                      color: "white",
+                                      ...styles.rowDirection,
                                     }}
-                                  />
-                                  <View style={styles.parameterCtn}>
-                                    <Text style={styles.lbs}>
-                                      {set.weight}
-                                      {`  `}
-                                    </Text>
-                                    {/* <Text style={styles.lbs}>
+                                  >
+                                    <TextInput
+                                      placeholder="Enter weight"
+                                      placeholderTextColor={"white"}
+                                      keyboardType="number-pad"
+                                      onFocus={() => setSelectedInput(index)}
+                                      onBlur={() => setSelectedInput(null)}
+                                      onChangeText={(text) => {
+                                        const updatedContent = [
+                                          ...inputContent,
+                                        ];
+                                        updatedContent[index] = text;
+                                        setInputContent(updatedContent);
+                                        updateSubmittedSets(
+                                          index,
+                                          "",
+                                          "",
+                                          text,
+                                          "",
+                                          "",
+                                          ""
+                                        );
+                                      }}
+                                      style={{
+                                        width: getWidth(30),
+                                        color: "white",
+                                      }}
+                                    />
+                                    <View style={styles.parameterCtn}>
+                                      <Text style={styles.lbs}>
+                                        {set.weight}
+                                        {`  `}
+                                      </Text>
+                                      {/* <Text style={styles.lbs}>
                                       {set.parameter}
                                     </Text> */}
-                                    <Text style={styles.lbs}>kg</Text>
+                                      <Text style={styles.lbs}>kg</Text>
+                                    </View>
                                   </View>
-                                </View>
-                              ) : set?.parameter == "seconds" ? (
-                                <View
-                                  style={{
-                                    ...styles.rowDirection,
-                                  }}
-                                >
-                                  <TextInput
-                                    placeholder="Enter seconds"
-                                    placeholderTextColor={"white"}
-                                    keyboardType="number-pad"
-                                    onFocus={() => setSelectedInput(index)}
-                                    onBlur={() => setSelectedInput(null)}
-                                    onChangeText={(text) => {
-                                      const updatedContent = [...inputContent];
-                                      updatedContent[index] = text;
-                                      setInputContent(updatedContent);
-                                      updateSubmittedSets(
-                                        index,
-                                        "",
-                                        "",
-                                        "",
-                                        text,
-                                        "",
-                                        ""
-                                      );
-                                    }}
+                                ) : set?.parameter == "seconds" ? (
+                                  <View
                                     style={{
-                                      width: getWidth(30),
-                                      color: "white",
+                                      ...styles.rowDirection,
                                     }}
-                                  />
-                                  <View style={styles.parameterCtn}>
-                                    <Text style={styles.lbs}>
-                                      {set.seconds}
-                                      {`  `}
-                                    </Text>
-                                    {/* <Text style={styles.lbs}>
+                                  >
+                                    <TextInput
+                                      placeholder="Enter seconds"
+                                      placeholderTextColor={"white"}
+                                      keyboardType="number-pad"
+                                      onFocus={() => setSelectedInput(index)}
+                                      onBlur={() => setSelectedInput(null)}
+                                      onChangeText={(text) => {
+                                        const updatedContent = [
+                                          ...inputContent,
+                                        ];
+                                        updatedContent[index] = text;
+                                        setInputContent(updatedContent);
+                                        updateSubmittedSets(
+                                          index,
+                                          "",
+                                          "",
+                                          "",
+                                          text,
+                                          "",
+                                          ""
+                                        );
+                                      }}
+                                      style={{
+                                        width: getWidth(30),
+                                        color: "white",
+                                      }}
+                                    />
+                                    <View style={styles.parameterCtn}>
+                                      <Text style={styles.lbs}>
+                                        {set.seconds}
+                                        {`  `}
+                                      </Text>
+                                      {/* <Text style={styles.lbs}>
                                       {set.parameter}
                                     </Text> */}
-                                    <Text style={styles.lbs}>sec</Text>
+                                      <Text style={styles.lbs}>sec</Text>
+                                    </View>
                                   </View>
-                                </View>
-                              ) : set?.parameter == "distance" ? (
-                                <View
-                                  style={{
-                                    ...styles.rowDirection,
-                                  }}
-                                >
-                                  <TextInput
-                                    placeholder="Enter distance"
-                                    placeholderTextColor={"white"}
-                                    keyboardType="number-pad"
-                                    onFocus={() => setSelectedInput(index)}
-                                    onBlur={() => setSelectedInput(null)}
-                                    onChangeText={(text) => {
-                                      const updatedContent = [...inputContent];
-                                      updatedContent[index] = text;
-                                      setInputContent(updatedContent);
-                                      updateSubmittedSets(
-                                        index,
-                                        "",
-                                        "",
-                                        "",
-                                        "",
-                                        text,
-                                        ""
-                                      );
-                                    }}
+                                ) : set?.parameter == "distance" ? (
+                                  <View
                                     style={{
-                                      width: getWidth(30),
-                                      color: "white",
+                                      ...styles.rowDirection,
                                     }}
-                                  />
-                                  <View style={styles.parameterCtn}>
-                                    <Text style={styles.lbs}>
-                                      {set.distance}
-                                      {`  `}
-                                    </Text>
-                                    {/* <Text style={styles.lbs}>
+                                  >
+                                    <TextInput
+                                      placeholder="Enter distance"
+                                      placeholderTextColor={"white"}
+                                      keyboardType="number-pad"
+                                      onFocus={() => setSelectedInput(index)}
+                                      onBlur={() => setSelectedInput(null)}
+                                      onChangeText={(text) => {
+                                        const updatedContent = [
+                                          ...inputContent,
+                                        ];
+                                        updatedContent[index] = text;
+                                        setInputContent(updatedContent);
+                                        updateSubmittedSets(
+                                          index,
+                                          "",
+                                          "",
+                                          "",
+                                          "",
+                                          text,
+                                          ""
+                                        );
+                                      }}
+                                      style={{
+                                        width: getWidth(30),
+                                        color: "white",
+                                      }}
+                                    />
+                                    <View style={styles.parameterCtn}>
+                                      <Text style={styles.lbs}>
+                                        {set.distance}
+                                        {`  `}
+                                      </Text>
+                                      {/* <Text style={styles.lbs}>
                                       {set.parameter}
                                     </Text> */}
-                                    <Text style={styles.lbs}>miles</Text>
+                                      <Text style={styles.lbs}>miles</Text>
+                                    </View>
                                   </View>
-                                </View>
-                              ) : null}
+                                ) : null
+                              }
                             </View>
                             <View
                               style={{
@@ -1191,14 +1392,119 @@ const CompleteWorkout = ({ route }) => {
                             <Text style={styles.count}>{index + 1}</Text>
                           </View>
                           <View style={styles.whiteCon}>
-                            {exercise?.sets[0]?.parameter == "reps lebs" ||
-                            exercise?.sets[0]?.parameter == "reps" ||
-                            exercise?.sets[0]?.parameter == "lebs" ? (
-                              <View style={styles.rowDirection}>
+                            {
+                              // exercise?.sets[0]?.parameter == "reps lebs" ||
+                              // exercise?.sets[0]?.parameter == "reps" ||
+                              // exercise?.sets[0]?.parameter == "lebs" ?
+                              // (
+                              //   <View style={styles.rowDirection}>
+                              //     <View
+                              //       style={{
+                              //         justifyContent: "center",
+                              //         alignItems: "center",
+                              //       }}
+                              //     >
+                              //       <TextInput
+                              //         placeholder="Enter reps"
+                              //         placeholderTextColor={"white"}
+                              //         keyboardType="number-pad"
+                              //         onFocus={() =>
+                              //           setSelectedInputAdditional(index)
+                              //         }
+                              //         onBlur={() =>
+                              //           setSelectedInputAdditional(null)
+                              //         }
+                              //         onChangeText={(text) => {
+                              //           const updatedContent = [
+                              //             ...inputContentAdditional,
+                              //           ];
+                              //           updatedContent[index] = text;
+                              //           setInputContentAdditional(updatedContent);
+                              //           updateAdditionalSets(
+                              //             index,
+                              //             text,
+                              //             "",
+                              //             "",
+                              //             "",
+                              //             "",
+                              //             ""
+                              //           );
+                              //         }}
+                              //         style={{ color: "white" }}
+                              //       />
+                              //       <View
+                              //         style={{
+                              //           ...styles.parameterCtn,
+                              //           bottom:
+                              //             Platform.OS === "ios"
+                              //               ? getFontSize(0)
+                              //               : getFontSize(2),
+                              //         }}
+                              //       >
+                              //         <Text style={styles.lbs}>reps</Text>
+                              //       </View>
+                              //     </View>
+                              //     <View
+                              //       style={{
+                              //         justifyContent: "center",
+                              //         alignItems: "center",
+                              //       }}
+                              //     >
+                              //       <View style={styles.horizental}></View>
+                              //     </View>
+
+                              //     <View
+                              //       style={{
+                              //         justifyContent: "center",
+                              //         alignItems: "center",
+                              //       }}
+                              //     >
+                              //       <TextInput
+                              //         placeholder="Enter lebs"
+                              //         placeholderTextColor={"white"}
+                              //         keyboardType="number-pad"
+                              //         onFocus={() =>
+                              //           setSelectedInputAdditional(index)
+                              //         }
+                              //         onBlur={() =>
+                              //           setSelectedInputAdditional(null)
+                              //         }
+                              //         onChangeText={(text) => {
+                              //           const updatedContent = [
+                              //             ...inputContentAdditional,
+                              //           ];
+                              //           updatedContent[index] = text;
+                              //           setInputContentAdditional(updatedContent);
+                              //           updateAdditionalSets(
+                              //             index,
+                              //             "",
+                              //             text,
+                              //             "",
+                              //             "",
+                              //             "",
+                              //             ""
+                              //           );
+                              //         }}
+                              //         style={{ color: "white" }}
+                              //       />
+                              //       <View
+                              //         style={{
+                              //           ...styles.parameterCtn,
+                              //           bottom:
+                              //             Platform.OS === "ios"
+                              //               ? getFontSize(0)
+                              //               : getFontSize(2),
+                              //         }}
+                              //       >
+                              //         <Text style={styles.lbs}>lebs</Text>
+                              //       </View>
+                              //     </View>
+                              //   </View>
+                              // )
+                              exercise?.sets[0]?.parameter == "reps" ? (
                                 <View
                                   style={{
-                                    justifyContent: "center",
-                                    alignItems: "center",
+                                    ...styles.rowDirection,
                                   }}
                                 >
                                   <TextInput
@@ -1227,37 +1533,23 @@ const CompleteWorkout = ({ route }) => {
                                         ""
                                       );
                                     }}
-                                    style={{ color: "white" }}
-                                  />
-                                  <View
                                     style={{
-                                      ...styles.parameterCtn,
-                                      bottom:
-                                        Platform.OS === "ios"
-                                          ? getFontSize(0)
-                                          : getFontSize(2),
+                                      width: getWidth(30),
+                                      color: "white",
                                     }}
-                                  >
+                                  />
+                                  <View style={styles.parameterCtn}>
                                     <Text style={styles.lbs}>reps</Text>
                                   </View>
                                 </View>
+                              ) : exercise?.sets[0]?.parameter == "lbs" ? (
                                 <View
                                   style={{
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <View style={styles.horizental}></View>
-                                </View>
-
-                                <View
-                                  style={{
-                                    justifyContent: "center",
-                                    alignItems: "center",
+                                    ...styles.rowDirection,
                                   }}
                                 >
                                   <TextInput
-                                    placeholder="Enter lebs"
+                                    placeholder="Enter weight (lbs)"
                                     placeholderTextColor={"white"}
                                     keyboardType="number-pad"
                                     onFocus={() =>
@@ -1282,161 +1574,150 @@ const CompleteWorkout = ({ route }) => {
                                         ""
                                       );
                                     }}
-                                    style={{ color: "white" }}
-                                  />
-                                  <View
                                     style={{
-                                      ...styles.parameterCtn,
-                                      bottom:
-                                        Platform.OS === "ios"
-                                          ? getFontSize(0)
-                                          : getFontSize(2),
+                                      width: getWidth(30),
+                                      color: "white",
                                     }}
-                                  >
-                                    <Text style={styles.lbs}>lebs</Text>
+                                  />
+                                  <View style={styles.parameterCtn}>
+                                    <Text style={styles.lbs}>lbs</Text>
                                   </View>
                                 </View>
-                              </View>
-                            ) : exercise?.sets[0]?.parameter == "weight" ? (
-                              <View
-                                style={{
-                                  ...styles.rowDirection,
-                                }}
-                              >
-                                <TextInput
-                                  placeholder="Enter weight"
-                                  placeholderTextColor={"white"}
-                                  keyboardType="number-pad"
-                                  onFocus={() =>
-                                    setSelectedInputAdditional(index)
-                                  }
-                                  onBlur={() =>
-                                    setSelectedInputAdditional(null)
-                                  }
-                                  onChangeText={(text) => {
-                                    const updatedContent = [
-                                      ...inputContentAdditional,
-                                    ];
-                                    updatedContent[index] = text;
-                                    setInputContentAdditional(updatedContent);
-                                    updateAdditionalSets(
-                                      index,
-                                      "",
-                                      "",
-                                      text,
-                                      "",
-                                      "",
-                                      ""
-                                    );
-                                  }}
+                              ) : exercise?.sets[0]?.parameter == "weight" ? (
+                                <View
                                   style={{
-                                    width: getWidth(30),
-                                    color: "white",
+                                    ...styles.rowDirection,
                                   }}
-                                />
-                                <View style={styles.parameterCtn}>
-                                  {/* <Text style={styles.lbs}>
+                                >
+                                  <TextInput
+                                    placeholder="Enter weight"
+                                    placeholderTextColor={"white"}
+                                    keyboardType="number-pad"
+                                    onFocus={() =>
+                                      setSelectedInputAdditional(index)
+                                    }
+                                    onBlur={() =>
+                                      setSelectedInputAdditional(null)
+                                    }
+                                    onChangeText={(text) => {
+                                      const updatedContent = [
+                                        ...inputContentAdditional,
+                                      ];
+                                      updatedContent[index] = text;
+                                      setInputContentAdditional(updatedContent);
+                                      updateAdditionalSets(
+                                        index,
+                                        "",
+                                        "",
+                                        text,
+                                        "",
+                                        "",
+                                        ""
+                                      );
+                                    }}
+                                    style={{
+                                      width: getWidth(30),
+                                      color: "white",
+                                    }}
+                                  />
+                                  <View style={styles.parameterCtn}>
+                                    {/* <Text style={styles.lbs}>
                                     {exercise?.sets[0]?.parameter}
                                   </Text> */}
-                                   <Text style={styles.lbs}>
-                                    kg
-                                  </Text>
+                                    <Text style={styles.lbs}>kg</Text>
+                                  </View>
                                 </View>
-                              </View>
-                            ) : exercise?.sets[0]?.parameter == "seconds" ? (
-                              <View
-                                style={{
-                                  ...styles.rowDirection,
-                                }}
-                              >
-                                <TextInput
-                                  placeholder="Enter seconds"
-                                  placeholderTextColor={"white"}
-                                  keyboardType="number-pad"
-                                  onFocus={() =>
-                                    setSelectedInputAdditional(index)
-                                  }
-                                  onBlur={() =>
-                                    setSelectedInputAdditional(null)
-                                  }
-                                  onChangeText={(text) => {
-                                    const updatedContent = [
-                                      ...inputContentAdditional,
-                                    ];
-                                    updatedContent[index] = text;
-                                    setInputContentAdditional(updatedContent);
-                                    updateAdditionalSets(
-                                      index,
-                                      "",
-                                      "",
-                                      "",
-                                      text,
-                                      "",
-                                      ""
-                                    );
-                                  }}
+                              ) : exercise?.sets[0]?.parameter == "seconds" ? (
+                                <View
                                   style={{
-                                    width: getWidth(30),
-                                    color: "white",
+                                    ...styles.rowDirection,
                                   }}
-                                />
+                                >
+                                  <TextInput
+                                    placeholder="Enter seconds"
+                                    placeholderTextColor={"white"}
+                                    keyboardType="number-pad"
+                                    onFocus={() =>
+                                      setSelectedInputAdditional(index)
+                                    }
+                                    onBlur={() =>
+                                      setSelectedInputAdditional(null)
+                                    }
+                                    onChangeText={(text) => {
+                                      const updatedContent = [
+                                        ...inputContentAdditional,
+                                      ];
+                                      updatedContent[index] = text;
+                                      setInputContentAdditional(updatedContent);
+                                      updateAdditionalSets(
+                                        index,
+                                        "",
+                                        "",
+                                        "",
+                                        text,
+                                        "",
+                                        ""
+                                      );
+                                    }}
+                                    style={{
+                                      width: getWidth(30),
+                                      color: "white",
+                                    }}
+                                  />
 
-                                <View style={styles.parameterCtn}>
-                                  {/* <Text style={styles.lbs}>
+                                  <View style={styles.parameterCtn}>
+                                    {/* <Text style={styles.lbs}>
                                     {exercise?.sets[0].parameter}
                                   </Text> */}
-                                   <Text style={styles.lbs}>
-                                    sec
-                                  </Text>
+                                    <Text style={styles.lbs}>sec</Text>
+                                  </View>
                                 </View>
-                              </View>
-                            ) : exercise?.sets[0]?.parameter == "distance" ? (
-                              <View
-                                style={{
-                                  ...styles.rowDirection,
-                                }}
-                              >
-                                <TextInput
-                                  placeholder="Enter distance"
-                                  placeholderTextColor={"white"}
-                                  keyboardType="number-pad"
-                                  onFocus={() =>
-                                    setSelectedInputAdditional(index)
-                                  }
-                                  onBlur={() =>
-                                    setSelectedInputAdditional(null)
-                                  }
-                                  onChangeText={(text) => {
-                                    const updatedContent = [
-                                      ...inputContentAdditional,
-                                    ];
-                                    updatedContent[index] = text;
-                                    setInputContentAdditional(updatedContent);
-                                    updateAdditionalSets(
-                                      index,
-                                      "",
-                                      "",
-                                      "",
-                                      "",
-                                      text,
-                                      ""
-                                    );
-                                  }}
+                              ) : exercise?.sets[0]?.parameter == "distance" ? (
+                                <View
                                   style={{
-                                    width: getWidth(30),
-                                    color: "white",
+                                    ...styles.rowDirection,
                                   }}
-                                />
-                                <View style={styles.parameterCtn}>
-                                  {/* <Text style={styles.lbs}>
+                                >
+                                  <TextInput
+                                    placeholder="Enter distance"
+                                    placeholderTextColor={"white"}
+                                    keyboardType="number-pad"
+                                    onFocus={() =>
+                                      setSelectedInputAdditional(index)
+                                    }
+                                    onBlur={() =>
+                                      setSelectedInputAdditional(null)
+                                    }
+                                    onChangeText={(text) => {
+                                      const updatedContent = [
+                                        ...inputContentAdditional,
+                                      ];
+                                      updatedContent[index] = text;
+                                      setInputContentAdditional(updatedContent);
+                                      updateAdditionalSets(
+                                        index,
+                                        "",
+                                        "",
+                                        "",
+                                        "",
+                                        text,
+                                        ""
+                                      );
+                                    }}
+                                    style={{
+                                      width: getWidth(30),
+                                      color: "white",
+                                    }}
+                                  />
+                                  <View style={styles.parameterCtn}>
+                                    {/* <Text style={styles.lbs}>
                                     {exercise?.sets[0].parameter}
                                   </Text> */}
-                                   <Text style={styles.lbs}>
-                                    miles
-                                  </Text>
+                                    <Text style={styles.lbs}>miles</Text>
+                                  </View>
                                 </View>
-                              </View>
-                            ) : null}
+                              ) : null
+                            }
                           </View>
                           <View
                             style={{
@@ -1488,17 +1769,123 @@ const CompleteWorkout = ({ route }) => {
                             <Text style={styles.count}>{index + 1}</Text>
                           </View>
                           <View style={styles.whiteCon}>
-                            {exercise?.task?.[nextIncompleteIndex]?.sets[0]
-                              ?.parameter == "reps lebs" ||
-                            exercise?.task?.[nextIncompleteIndex]?.sets[0]
-                              ?.parameter == "reps" ||
-                            exercise?.task?.[nextIncompleteIndex]?.sets[0]
-                              ?.parameter == "lebs" ? (
-                              <View style={styles.rowDirection}>
+                            {
+                              // exercise?.task?.[nextIncompleteIndex]?.sets[0]
+                              //   ?.parameter == "reps lebs" ||
+                              // exercise?.task?.[nextIncompleteIndex]?.sets[0]
+                              //   ?.parameter == "reps" ||
+                              // exercise?.task?.[nextIncompleteIndex]?.sets[0]
+                              //   ?.parameter == "lebs" ?
+                              //   (
+                              //   <View style={styles.rowDirection}>
+                              //     <View
+                              //       style={{
+                              //         justifyContent: "center",
+                              //         alignItems: "center",
+                              //       }}
+                              //     >
+                              //       <TextInput
+                              //         placeholder="Enter reps"
+                              //         placeholderTextColor={"white"}
+                              //         keyboardType="number-pad"
+                              //         onFocus={() =>
+                              //           setSelectedInputAdditional(index)
+                              //         }
+                              //         onBlur={() =>
+                              //           setSelectedInputAdditional(null)
+                              //         }
+                              //         onChangeText={(text) => {
+                              //           const updatedContent = [
+                              //             ...inputContentAdditional,
+                              //           ];
+                              //           updatedContent[index] = text;
+                              //           setInputContentAdditional(updatedContent);
+                              //           updateAdditionalSets(
+                              //             index,
+                              //             text,
+                              //             "",
+                              //             "",
+                              //             "",
+                              //             "",
+                              //             ""
+                              //           );
+                              //         }}
+                              //         style={{ color: "white" }}
+                              //       />
+                              //       <View
+                              //         style={{
+                              //           ...styles.parameterCtn,
+                              //           bottom:
+                              //             Platform.OS === "ios"
+                              //               ? getFontSize(0)
+                              //               : getFontSize(2),
+                              //         }}
+                              //       >
+                              //         <Text style={styles.lbs}>reps</Text>
+                              //       </View>
+                              //     </View>
+                              //     <View
+                              //       style={{
+                              //         justifyContent: "center",
+                              //         alignItems: "center",
+                              //       }}
+                              //     >
+                              //       <View style={styles.horizental}></View>
+                              //     </View>
+
+                              //     <View
+                              //       style={{
+                              //         justifyContent: "center",
+                              //         alignItems: "center",
+                              //       }}
+                              //     >
+                              //       <TextInput
+                              //         placeholder="Enter lebs"
+                              //         placeholderTextColor={"white"}
+                              //         keyboardType="number-pad"
+                              //         onFocus={() =>
+                              //           setSelectedInputAdditional(index)
+                              //         }
+                              //         onBlur={() =>
+                              //           setSelectedInputAdditional(null)
+                              //         }
+                              //         onChangeText={(text) => {
+                              //           const updatedContent = [
+                              //             ...inputContentAdditional,
+                              //           ];
+                              //           updatedContent[index] = text;
+                              //           setInputContentAdditional(updatedContent);
+                              //           updateAdditionalSets(
+                              //             index,
+                              //             "",
+                              //             text,
+                              //             "",
+                              //             "",
+                              //             "",
+                              //             ""
+                              //           );
+                              //         }}
+                              //         style={{ color: "white" }}
+                              //       />
+                              //       <View
+                              //         style={{
+                              //           ...styles.parameterCtn,
+                              //           bottom:
+                              //             Platform.OS === "ios"
+                              //               ? getFontSize(0)
+                              //               : getFontSize(2),
+                              //         }}
+                              //       >
+                              //         <Text style={styles.lbs}>lebs</Text>
+                              //       </View>
+                              //     </View>
+                              //   </View>
+                              // )
+                              exercise?.task?.[nextIncompleteIndex]?.sets[0]
+                                ?.parameter == "reps" ? (
                                 <View
                                   style={{
-                                    justifyContent: "center",
-                                    alignItems: "center",
+                                    ...styles.rowDirection,
                                   }}
                                 >
                                   <TextInput
@@ -1527,37 +1914,24 @@ const CompleteWorkout = ({ route }) => {
                                         ""
                                       );
                                     }}
-                                    style={{ color: "white" }}
-                                  />
-                                  <View
                                     style={{
-                                      ...styles.parameterCtn,
-                                      bottom:
-                                        Platform.OS === "ios"
-                                          ? getFontSize(0)
-                                          : getFontSize(2),
+                                      width: getWidth(30),
+                                      color: "white",
                                     }}
-                                  >
+                                  />
+                                  <View style={styles.parameterCtn}>
                                     <Text style={styles.lbs}>reps</Text>
                                   </View>
                                 </View>
+                              ) : exercise?.task?.[nextIncompleteIndex]?.sets[0]
+                                  ?.parameter == "reps" ? (
                                 <View
                                   style={{
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <View style={styles.horizental}></View>
-                                </View>
-
-                                <View
-                                  style={{
-                                    justifyContent: "center",
-                                    alignItems: "center",
+                                    ...styles.rowDirection,
                                   }}
                                 >
                                   <TextInput
-                                    placeholder="Enter lebs"
+                                    placeholder="Enter weight (lbs)"
                                     placeholderTextColor={"white"}
                                     keyboardType="number-pad"
                                     onFocus={() =>
@@ -1582,172 +1956,155 @@ const CompleteWorkout = ({ route }) => {
                                         ""
                                       );
                                     }}
-                                    style={{ color: "white" }}
-                                  />
-                                  <View
                                     style={{
-                                      ...styles.parameterCtn,
-                                      bottom:
-                                        Platform.OS === "ios"
-                                          ? getFontSize(0)
-                                          : getFontSize(2),
+                                      width: getWidth(30),
+                                      color: "white",
                                     }}
-                                  >
-                                    <Text style={styles.lbs}>lebs</Text>
+                                  />
+                                  <View style={styles.parameterCtn}>
+                                    <Text style={styles.lbs}>lbs</Text>
                                   </View>
                                 </View>
-                              </View>
-                            ) : exercise?.task?.[nextIncompleteIndex]?.sets[0]
-                                ?.parameter == "weight" ? (
-                              <View
-                                style={{
-                                  ...styles.rowDirection,
-                                }}
-                              >
-                                <TextInput
-                                  placeholder="Enter weight"
-                                  placeholderTextColor={"white"}
-                                  keyboardType="number-pad"
-                                  onFocus={() =>
-                                    setSelectedInputAdditional(index)
-                                  }
-                                  onBlur={() =>
-                                    setSelectedInputAdditional(null)
-                                  }
-                                  onChangeText={(text) => {
-                                    const updatedContent = [
-                                      ...inputContentAdditional,
-                                    ];
-                                    updatedContent[index] = text;
-                                    setInputContentAdditional(updatedContent);
-                                    updateAdditionalSets(
-                                      index,
-                                      "",
-                                      "",
-                                      text,
-                                      "",
-                                      "",
-                                      ""
-                                    );
-                                  }}
+                              ) : exercise?.task?.[nextIncompleteIndex]?.sets[0]
+                                  ?.parameter == "weight" ? (
+                                <View
                                   style={{
-                                    width: getWidth(30),
-                                    color: "white",
+                                    ...styles.rowDirection,
                                   }}
-                                />
-                                <View style={styles.parameterCtn}>
-                                  {/* <Text style={styles.lbs}>
-                                    {
-                                      exercise?.task?.[nextIncompleteIndex]
-                                        ?.sets[0]?.parameter
+                                >
+                                  <TextInput
+                                    placeholder="Enter weight"
+                                    placeholderTextColor={"white"}
+                                    keyboardType="number-pad"
+                                    onFocus={() =>
+                                      setSelectedInputAdditional(index)
                                     }
-                                  </Text> */}
-                                  <Text style={styles.lbs}>
-                                    kg
-                                  </Text>
+                                    onBlur={() =>
+                                      setSelectedInputAdditional(null)
+                                    }
+                                    onChangeText={(text) => {
+                                      const updatedContent = [
+                                        ...inputContentAdditional,
+                                      ];
+                                      updatedContent[index] = text;
+                                      setInputContentAdditional(updatedContent);
+                                      updateAdditionalSets(
+                                        index,
+                                        "",
+                                        "",
+                                        text,
+                                        "",
+                                        "",
+                                        ""
+                                      );
+                                    }}
+                                    style={{
+                                      width: getWidth(30),
+                                      color: "white",
+                                    }}
+                                  />
+                                  <View style={styles.parameterCtn}>
+                                    <Text style={styles.lbs}>kg</Text>
+                                  </View>
                                 </View>
-                              </View>
-                            ) : exercise?.task?.[nextIncompleteIndex]?.sets[0]
-                                ?.parameter == "seconds" ? (
-                              <View
-                                style={{
-                                  ...styles.rowDirection,
-                                }}
-                              >
-                                <TextInput
-                                  placeholder="Enter seconds"
-                                  placeholderTextColor={"white"}
-                                  keyboardType="number-pad"
-                                  onFocus={() =>
-                                    setSelectedInputAdditional(index)
-                                  }
-                                  onBlur={() =>
-                                    setSelectedInputAdditional(null)
-                                  }
-                                  onChangeText={(text) => {
-                                    const updatedContent = [
-                                      ...inputContentAdditional,
-                                    ];
-                                    updatedContent[index] = text;
-                                    setInputContentAdditional(updatedContent);
-                                    updateAdditionalSets(
-                                      index,
-                                      "",
-                                      "",
-                                      "",
-                                      text,
-                                      "",
-                                      ""
-                                    );
-                                  }}
+                              ) : exercise?.task?.[nextIncompleteIndex]?.sets[0]
+                                  ?.parameter == "seconds" ? (
+                                <View
                                   style={{
-                                    width: getWidth(30),
-                                    color: "white",
+                                    ...styles.rowDirection,
                                   }}
-                                />
-                                <View style={styles.parameterCtn}>
-                                  {/* <Text style={styles.lbs}>
+                                >
+                                  <TextInput
+                                    placeholder="Enter seconds"
+                                    placeholderTextColor={"white"}
+                                    keyboardType="number-pad"
+                                    onFocus={() =>
+                                      setSelectedInputAdditional(index)
+                                    }
+                                    onBlur={() =>
+                                      setSelectedInputAdditional(null)
+                                    }
+                                    onChangeText={(text) => {
+                                      const updatedContent = [
+                                        ...inputContentAdditional,
+                                      ];
+                                      updatedContent[index] = text;
+                                      setInputContentAdditional(updatedContent);
+                                      updateAdditionalSets(
+                                        index,
+                                        "",
+                                        "",
+                                        "",
+                                        text,
+                                        "",
+                                        ""
+                                      );
+                                    }}
+                                    style={{
+                                      width: getWidth(30),
+                                      color: "white",
+                                    }}
+                                  />
+                                  <View style={styles.parameterCtn}>
+                                    {/* <Text style={styles.lbs}>
                                     {
                                       exercise?.task?.[nextIncompleteIndex]
                                         ?.sets[0].parameter
                                     }
                                   </Text> */}
-                                  <Text style={styles.lbs}>
-                                   sec
-                                  </Text>
+                                    <Text style={styles.lbs}>sec</Text>
+                                  </View>
                                 </View>
-                              </View>
-                            ) : exercise?.task?.[nextIncompleteIndex]?.sets[0]
-                                ?.parameter == "distance" ? (
-                              <View
-                                style={{
-                                  ...styles.rowDirection,
-                                }}
-                              >
-                                <TextInput
-                                  placeholder="Enter distance"
-                                  placeholderTextColor={"white"}
-                                  keyboardType="number-pad"
-                                  onFocus={() =>
-                                    setSelectedInputAdditional(index)
-                                  }
-                                  onBlur={() =>
-                                    setSelectedInputAdditional(null)
-                                  }
-                                  onChangeText={(text) => {
-                                    const updatedContent = [
-                                      ...inputContentAdditional,
-                                    ];
-                                    updatedContent[index] = text;
-                                    setInputContentAdditional(updatedContent);
-                                    updateAdditionalSets(
-                                      index,
-                                      "",
-                                      "",
-                                      "",
-                                      "",
-                                      text,
-                                      ""
-                                    );
-                                  }}
+                              ) : exercise?.task?.[nextIncompleteIndex]?.sets[0]
+                                  ?.parameter == "distance" ? (
+                                <View
                                   style={{
-                                    width: getWidth(30),
-                                    color: "white",
+                                    ...styles.rowDirection,
                                   }}
-                                />
-                                <View style={styles.parameterCtn}>
-                                  {/* <Text style={styles.lbs}>
+                                >
+                                  <TextInput
+                                    placeholder="Enter distance"
+                                    placeholderTextColor={"white"}
+                                    keyboardType="number-pad"
+                                    onFocus={() =>
+                                      setSelectedInputAdditional(index)
+                                    }
+                                    onBlur={() =>
+                                      setSelectedInputAdditional(null)
+                                    }
+                                    onChangeText={(text) => {
+                                      const updatedContent = [
+                                        ...inputContentAdditional,
+                                      ];
+                                      updatedContent[index] = text;
+                                      setInputContentAdditional(updatedContent);
+                                      updateAdditionalSets(
+                                        index,
+                                        "",
+                                        "",
+                                        "",
+                                        "",
+                                        text,
+                                        ""
+                                      );
+                                    }}
+                                    style={{
+                                      width: getWidth(30),
+                                      color: "white",
+                                    }}
+                                  />
+                                  <View style={styles.parameterCtn}>
+                                    {/* <Text style={styles.lbs}>
                                     {
                                       exercise?.task?.[nextIncompleteIndex]
                                         ?.sets[0].parameter
                                     }
                                   </Text> */}
-                                   <Text style={styles.lbs}>
-                                    miles
-                                  </Text>
+                                    <Text style={styles.lbs}>miles</Text>
+                                  </View>
                                 </View>
-                              </View>
-                            ) : null}
+                              ) : null
+                            }
                           </View>
                           <View
                             style={{

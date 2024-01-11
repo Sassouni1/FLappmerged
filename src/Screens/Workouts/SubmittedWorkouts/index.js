@@ -41,7 +41,6 @@ const SubmittedWorkouts = ({ route }) => {
   const token = useSelector((state) => state.auth.userToken);
   const loader = useSelector((state) => state.gernal.loader);
 
- 
   const submittedTime =
     exercise?.sets?.length > 0
       ? exercise?.submitted_time
@@ -330,60 +329,83 @@ const SubmittedWorkouts = ({ route }) => {
                           <Text style={styles.count}>{index + 1}</Text>
                         </View>
                         <View style={styles.whiteCon}>
-                          {set?.parameter == "reps lebs" ||
-                          set?.parameter == "reps" ||
-                          set?.parameter == "lebs" ? (
-                            <View style={styles.rowDirection}>
-                              <View>
+                          {
+                            // set?.parameter == "reps lebs" ||
+                            // set?.parameter == "reps" ||
+                            // set?.parameter == "lebs" ?
+                            // (
+                            //   <View style={styles.rowDirection}>
+                            //     <View>
+                            //       <Text style={styles.numbr}>
+                            //         {set.reps} reps
+                            //         {/* {set.lebs} lebs */}
+                            //       </Text>
+                            //       <Text style={styles.lbs}>reps</Text>
+                            //     </View>
+                            //     <View style={styles.horizental}></View>
+
+                            //     <View>
+                            //       <Text style={styles.numbr}>
+                            //         {set.lebs} lebs
+                            //         {/* {set.lebs} lebs */}
+                            //       </Text>
+                            //       <Text style={styles.lbs}>lebs</Text>
+                            //     </View>
+                            //   </View>
+                            // )
+                            set?.parameter == "reps" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
+                                }}
+                              >
                                 <Text style={styles.numbr}>
                                   {set.reps} reps
-                                  {/* {set.lebs} lebs */}
                                 </Text>
-                                <Text style={styles.lbs}>reps</Text>
+                                <Text style={styles.lbs}>{set.parameter}</Text>
                               </View>
-                              <View style={styles.horizental}></View>
-
-                              <View>
+                            ) : set?.parameter == "lbs" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
+                                }}
+                              >
+                                <Text style={styles.numbr}>{set.lbs} lbs</Text>
+                                <Text style={styles.lbs}>{set.parameter}</Text>
+                              </View>
+                            ) : set?.parameter == "weight" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
+                                }}
+                              >
+                                <Text style={styles.numbr}>{set.weight}kg</Text>
+                                <Text style={styles.lbs}>{set.parameter}</Text>
+                              </View>
+                            ) : set?.parameter == "seconds" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
+                                }}
+                              >
                                 <Text style={styles.numbr}>
-                                  {set.lebs} lebs
-                                  {/* {set.lebs} lebs */}
+                                  {set.seconds}sec
                                 </Text>
-                                <Text style={styles.lbs}>lebs</Text>
+                                <Text style={styles.lbs}>{set.parameter}</Text>
                               </View>
-                            </View>
-                          ) : set?.parameter == "weight" ? (
-                            <View
-                              style={{
-                                ...styles.rowDirection,
-                                // marginTop: getFontSize(1),
-                              }}
-                            >
-                              <Text style={styles.numbr}>{set.weight}kg</Text>
-                              <Text style={styles.lbs}>{set.parameter}</Text>
-                            </View>
-                          ) : set?.parameter == "seconds" ? (
-                            <View
-                              style={{
-                                ...styles.rowDirection,
-                                // marginTop: getFontSize(1),
-                              }}
-                            >
-                              <Text style={styles.numbr}>{set.seconds}sec</Text>
-                              <Text style={styles.lbs}>{set.parameter}</Text>
-                            </View>
-                          ) : set?.parameter == "distance" ? (
-                            <View
-                              style={{
-                                ...styles.rowDirection,
-                                // marginTop: getFontSize(1),
-                              }}
-                            >
-                              <Text style={styles.numbr}>
-                                {set.distance}miles
-                              </Text>
-                              <Text style={styles.lbs}>{set.parameter}</Text>
-                            </View>
-                          ) : null}
+                            ) : set?.parameter == "distance" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
+                                }}
+                              >
+                                <Text style={styles.numbr}>
+                                  {set.distance}miles
+                                </Text>
+                                <Text style={styles.lbs}>{set.parameter}</Text>
+                              </View>
+                            ) : null
+                          }
                         </View>
                       </View>
                       {set?.rest_time != 0 ? (
@@ -500,70 +522,96 @@ const SubmittedWorkouts = ({ route }) => {
                                 <Text style={styles.count}>{setIndex + 1}</Text>
                               </View>
                               <View style={styles.whiteCon}>
-                                {set?.parameter == "reps lebs" ||
-                                set?.parameter == "reps" ||
-                                set?.parameter == "lebs" ? (
-                                  <View style={styles.rowDirection}>
-                                    <View>
+                                {
+                                  // set?.parameter == "reps lebs" ||
+                                  // set?.parameter == "reps" ||
+                                  // set?.parameter == "lebs" ? (
+                                  //   <View style={styles.rowDirection}>
+                                  //     <View>
+                                  //       <Text style={styles.numbr}>
+                                  //         {set.reps} reps
+                                  //         {/* {set.lebs} lebs */}
+                                  //       </Text>
+                                  //       <Text style={styles.lbs}>reps</Text>
+                                  //     </View>
+                                  //     <View style={styles.horizental}></View>
+
+                                  //     <View>
+                                  //       <Text style={styles.numbr}>
+                                  //         {set.lebs} lebs
+                                  //         {/* {set.lebs} lebs */}
+                                  //       </Text>
+                                  //       <Text style={styles.lbs}>lebs</Text>
+                                  //     </View>
+                                  //   </View>
+                                  // )
+                                  set?.parameter == "reps" ? (
+                                    <View
+                                      style={{
+                                        ...styles.rowDirection,
+                                      }}
+                                    >
                                       <Text style={styles.numbr}>
                                         {set.reps} reps
-                                        {/* {set.lebs} lebs */}
                                       </Text>
-                                      <Text style={styles.lbs}>reps</Text>
+                                      <Text style={styles.lbs}>
+                                        {set.parameter}
+                                      </Text>
                                     </View>
-                                    <View style={styles.horizental}></View>
-
-                                    <View>
+                                  ) : set?.parameter == "lbs" ? (
+                                    <View
+                                      style={{
+                                        ...styles.rowDirection,
+                                      }}
+                                    >
                                       <Text style={styles.numbr}>
-                                        {set.lebs} lebs
-                                        {/* {set.lebs} lebs */}
+                                        {set.lbs} lbs
                                       </Text>
-                                      <Text style={styles.lbs}>lebs</Text>
+                                      <Text style={styles.lbs}>
+                                        {set.parameter}
+                                      </Text>
                                     </View>
-                                  </View>
-                                ) : set?.parameter == "weight" ? (
-                                  <View
-                                    style={{
-                                      ...styles.rowDirection,
-                                      // marginTop: getFontSize(1),
-                                    }}
-                                  >
-                                    <Text style={styles.numbr}>
-                                      {set.weight}kg
-                                    </Text>
-                                    <Text style={styles.lbs}>
-                                      {set.parameter}
-                                    </Text>
-                                  </View>
-                                ) : set?.parameter == "seconds" ? (
-                                  <View
-                                    style={{
-                                      ...styles.rowDirection,
-                                      // marginTop: getFontSize(1),
-                                    }}
-                                  >
-                                    <Text style={styles.numbr}>
-                                      {set.seconds}sec
-                                    </Text>
-                                    <Text style={styles.lbs}>
-                                      {set.parameter}
-                                    </Text>
-                                  </View>
-                                ) : set?.parameter == "distance" ? (
-                                  <View
-                                    style={{
-                                      ...styles.rowDirection,
-                                      // marginTop: getFontSize(1),
-                                    }}
-                                  >
-                                    <Text style={styles.numbr}>
-                                      {set.distance}miles
-                                    </Text>
-                                    <Text style={styles.lbs}>
-                                      {set.parameter}
-                                    </Text>
-                                  </View>
-                                ) : null}
+                                  ) : set?.parameter == "weight" ? (
+                                    <View
+                                      style={{
+                                        ...styles.rowDirection,
+                                      }}
+                                    >
+                                      <Text style={styles.numbr}>
+                                        {set.weight}kg
+                                      </Text>
+                                      <Text style={styles.lbs}>
+                                        {set.parameter}
+                                      </Text>
+                                    </View>
+                                  ) : set?.parameter == "seconds" ? (
+                                    <View
+                                      style={{
+                                        ...styles.rowDirection,
+                                      }}
+                                    >
+                                      <Text style={styles.numbr}>
+                                        {set.seconds}sec
+                                      </Text>
+                                      <Text style={styles.lbs}>
+                                        {set.parameter}
+                                      </Text>
+                                    </View>
+                                  ) : set?.parameter == "distance" ? (
+                                    <View
+                                      style={{
+                                        ...styles.rowDirection,
+                                      }}
+                                    >
+                                      <Text style={styles.numbr}>
+                                        {set.distance}miles
+                                      </Text>
+                                      <Text style={styles.lbs}>
+                                        {set.parameter}
+                                      </Text>
+                                    </View>
+                                  ) : null
+                                }
                               </View>
                             </View>
                             {set?.rest_time != 0 ? (
@@ -694,60 +742,82 @@ const SubmittedWorkouts = ({ route }) => {
                           <Text style={styles.count}>{index + 1}</Text>
                         </View>
                         <View style={styles.whiteCon}>
-                          {set?.parameter == "reps lebs" ||
-                          set?.parameter == "reps" ||
-                          set?.parameter == "lebs" ? (
-                            <View style={styles.rowDirection}>
-                              <View>
+                          {
+                            // set?.parameter == "reps lebs" ||
+                            // set?.parameter == "reps" ||
+                            // set?.parameter == "lebs" ? (
+                            //   <View style={styles.rowDirection}>
+                            //     <View>
+                            //       <Text style={styles.numbr}>
+                            //         {set.reps} reps
+                            //         {/* {set.lebs} lebs */}
+                            //       </Text>
+                            //       <Text style={styles.lbs}>reps</Text>
+                            //     </View>
+                            //     <View style={styles.horizental}></View>
+
+                            //     <View>
+                            //       <Text style={styles.numbr}>
+                            //         {set.lebs} lebs
+                            //         {/* {set.lebs} lebs */}
+                            //       </Text>
+                            //       <Text style={styles.lbs}>lebs</Text>
+                            //     </View>
+                            //   </View>
+                            // )
+                            set?.parameter == "reps" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
+                                }}
+                              >
                                 <Text style={styles.numbr}>
                                   {set.reps} reps
-                                  {/* {set.lebs} lebs */}
                                 </Text>
-                                <Text style={styles.lbs}>reps</Text>
+                                <Text style={styles.lbs}>{set.parameter}</Text>
                               </View>
-                              <View style={styles.horizental}></View>
-
-                              <View>
+                            ) : set?.parameter == "lbs" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
+                                }}
+                              >
+                                <Text style={styles.numbr}>{set.lbs} lbs</Text>
+                                <Text style={styles.lbs}>{set.parameter}</Text>
+                              </View>
+                            ) : set?.parameter == "weight" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
+                                }}
+                              >
+                                <Text style={styles.numbr}>{set.weight}kg</Text>
+                                <Text style={styles.lbs}>{set.parameter}</Text>
+                              </View>
+                            ) : set?.parameter == "seconds" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
+                                }}
+                              >
                                 <Text style={styles.numbr}>
-                                  {set.lebs} lebs
-                                  {/* {set.lebs} lebs */}
+                                  {set.seconds}sec
                                 </Text>
-                                <Text style={styles.lbs}>lebs</Text>
+                                <Text style={styles.lbs}>{set.parameter}</Text>
                               </View>
-                            </View>
-                          ) : set?.parameter == "weight" ? (
-                            <View
-                              style={{
-                                ...styles.rowDirection,
-                                // marginTop: getFontSize(1),
-                              }}
-                            >
-                              <Text style={styles.numbr}>{set.weight}kg</Text>
-                              <Text style={styles.lbs}>{set.parameter}</Text>
-                            </View>
-                          ) : set?.parameter == "seconds" ? (
-                            <View
-                              style={{
-                                ...styles.rowDirection,
-                                // marginTop: getFontSize(1),
-                              }}
-                            >
-                              <Text style={styles.numbr}>{set.seconds}sec</Text>
-                              <Text style={styles.lbs}>{set.parameter}</Text>
-                            </View>
-                          ) : set?.parameter == "distance" ? (
-                            <View
-                              style={{
-                                ...styles.rowDirection,
-                                // marginTop: getFontSize(1),
-                              }}
-                            >
-                              <Text style={styles.numbr}>
-                                {set.distance}miles
-                              </Text>
-                              <Text style={styles.lbs}>{set.parameter}</Text>
-                            </View>
-                          ) : null}
+                            ) : set?.parameter == "distance" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
+                                }}
+                              >
+                                <Text style={styles.numbr}>
+                                  {set.distance}miles
+                                </Text>
+                                <Text style={styles.lbs}>{set.parameter}</Text>
+                              </View>
+                            ) : null
+                          }
                         </View>
                       </View>
                     </View>
@@ -824,70 +894,96 @@ const SubmittedWorkouts = ({ route }) => {
                                 <Text style={styles.count}>{setIndex + 1}</Text>
                               </View>
                               <View style={styles.whiteCon}>
-                                {set?.parameter == "reps lebs" ||
-                                set?.parameter == "reps" ||
-                                set?.parameter == "lebs" ? (
-                                  <View style={styles.rowDirection}>
-                                    <View>
+                                {
+                                  // set?.parameter == "reps lebs" ||
+                                  // set?.parameter == "reps" ||
+                                  // set?.parameter == "lebs" ? (
+                                  //   <View style={styles.rowDirection}>
+                                  //     <View>
+                                  //       <Text style={styles.numbr}>
+                                  //         {set.reps} reps
+                                  //         {/* {set.lebs} lebs */}
+                                  //       </Text>
+                                  //       <Text style={styles.lbs}>reps</Text>
+                                  //     </View>
+                                  //     <View style={styles.horizental}></View>
+
+                                  //     <View>
+                                  //       <Text style={styles.numbr}>
+                                  //         {set.lebs} lebs
+                                  //         {/* {set.lebs} lebs */}
+                                  //       </Text>
+                                  //       <Text style={styles.lbs}>lebs</Text>
+                                  //     </View>
+                                  //   </View>
+                                  // )
+                                  set?.parameter == "reps" ? (
+                                    <View
+                                      style={{
+                                        ...styles.rowDirection,
+                                      }}
+                                    >
                                       <Text style={styles.numbr}>
                                         {set.reps} reps
-                                        {/* {set.lebs} lebs */}
                                       </Text>
-                                      <Text style={styles.lbs}>reps</Text>
+                                      <Text style={styles.lbs}>
+                                        {set.parameter}
+                                      </Text>
                                     </View>
-                                    <View style={styles.horizental}></View>
-
-                                    <View>
+                                  ) : set?.parameter == "lbs" ? (
+                                    <View
+                                      style={{
+                                        ...styles.rowDirection,
+                                      }}
+                                    >
                                       <Text style={styles.numbr}>
-                                        {set.lebs} lebs
-                                        {/* {set.lebs} lebs */}
+                                        {set.lbs} lbs
                                       </Text>
-                                      <Text style={styles.lbs}>lebs</Text>
+                                      <Text style={styles.lbs}>
+                                        {set.parameter}
+                                      </Text>
                                     </View>
-                                  </View>
-                                ) : set?.parameter == "weight" ? (
-                                  <View
-                                    style={{
-                                      ...styles.rowDirection,
-                                      // marginTop: getFontSize(1),
-                                    }}
-                                  >
-                                    <Text style={styles.numbr}>
-                                      {set.weight}kg
-                                    </Text>
-                                    <Text style={styles.lbs}>
-                                      {set.parameter}
-                                    </Text>
-                                  </View>
-                                ) : set?.parameter == "seconds" ? (
-                                  <View
-                                    style={{
-                                      ...styles.rowDirection,
-                                      // marginTop: getFontSize(1),
-                                    }}
-                                  >
-                                    <Text style={styles.numbr}>
-                                      {set.seconds}sec
-                                    </Text>
-                                    <Text style={styles.lbs}>
-                                      {set.parameter}
-                                    </Text>
-                                  </View>
-                                ) : set?.parameter == "distance" ? (
-                                  <View
-                                    style={{
-                                      ...styles.rowDirection,
-                                      // marginTop: getFontSize(1),
-                                    }}
-                                  >
-                                    <Text style={styles.numbr}>
-                                      {set.distance}miles
-                                    </Text>
-                                    <Text style={styles.lbs}>
-                                      {set.parameter}
-                                    </Text>
-                                  </View>
-                                ) : null}
+                                  ) : set?.parameter == "weight" ? (
+                                    <View
+                                      style={{
+                                        ...styles.rowDirection,
+                                      }}
+                                    >
+                                      <Text style={styles.numbr}>
+                                        {set.weight}kg
+                                      </Text>
+                                      <Text style={styles.lbs}>
+                                        {set.parameter}
+                                      </Text>
+                                    </View>
+                                  ) : set?.parameter == "seconds" ? (
+                                    <View
+                                      style={{
+                                        ...styles.rowDirection,
+                                      }}
+                                    >
+                                      <Text style={styles.numbr}>
+                                        {set.seconds}sec
+                                      </Text>
+                                      <Text style={styles.lbs}>
+                                        {set.parameter}
+                                      </Text>
+                                    </View>
+                                  ) : set?.parameter == "distance" ? (
+                                    <View
+                                      style={{
+                                        ...styles.rowDirection,
+                                      }}
+                                    >
+                                      <Text style={styles.numbr}>
+                                        {set.distance}miles
+                                      </Text>
+                                      <Text style={styles.lbs}>
+                                        {set.parameter}
+                                      </Text>
+                                    </View>
+                                  ) : null
+                                }
                               </View>
                             </View>
                           </View>
@@ -1002,60 +1098,82 @@ const SubmittedWorkouts = ({ route }) => {
                           <Text style={styles.count}>{index + 1}</Text>
                         </View>
                         <View style={styles.whiteCon}>
-                          {set?.parameter == "reps lebs" ||
-                          set?.parameter == "reps" ||
-                          set?.parameter == "lebs" ? (
-                            <View style={styles.rowDirection}>
-                              <View>
+                          {
+                            // set?.parameter == "reps lebs" ||
+                            // set?.parameter == "reps" ||
+                            // set?.parameter == "lebs" ? (
+                            //   <View style={styles.rowDirection}>
+                            //     <View>
+                            //       <Text style={styles.numbr}>
+                            //         {set.reps} reps
+                            //         {/* {set.lebs} lebs */}
+                            //       </Text>
+                            //       <Text style={styles.lbs}>reps</Text>
+                            //     </View>
+                            //     <View style={styles.horizental}></View>
+
+                            //     <View>
+                            //       <Text style={styles.numbr}>
+                            //         {set.lebs} lebs
+                            //         {/* {set.lebs} lebs */}
+                            //       </Text>
+                            //       <Text style={styles.lbs}>lebs</Text>
+                            //     </View>
+                            //   </View>
+                            // )
+                            set?.parameter == "reps" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
+                                }}
+                              >
                                 <Text style={styles.numbr}>
                                   {set.reps} reps
-                                  {/* {set.lebs} lebs */}
                                 </Text>
-                                <Text style={styles.lbs}>reps</Text>
+                                <Text style={styles.lbs}>{set.parameter}</Text>
                               </View>
-                              <View style={styles.horizental}></View>
-
-                              <View>
+                            ) : set?.parameter == "lbs" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
+                                }}
+                              >
+                                <Text style={styles.numbr}>{set.lbs} lbs</Text>
+                                <Text style={styles.lbs}>{set.parameter}</Text>
+                              </View>
+                            ) : set?.parameter == "weight" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
+                                }}
+                              >
+                                <Text style={styles.numbr}>{set.weight}kg</Text>
+                                <Text style={styles.lbs}>{set.parameter}</Text>
+                              </View>
+                            ) : set?.parameter == "seconds" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
+                                }}
+                              >
                                 <Text style={styles.numbr}>
-                                  {set.lebs} lebs
-                                  {/* {set.lebs} lebs */}
+                                  {set.seconds}sec
                                 </Text>
-                                <Text style={styles.lbs}>lebs</Text>
+                                <Text style={styles.lbs}>{set.parameter}</Text>
                               </View>
-                            </View>
-                          ) : set?.parameter == "weight" ? (
-                            <View
-                              style={{
-                                ...styles.rowDirection,
-                                // marginTop: getFontSize(1),
-                              }}
-                            >
-                              <Text style={styles.numbr}>{set.weight}kg</Text>
-                              <Text style={styles.lbs}>{set.parameter}</Text>
-                            </View>
-                          ) : set?.parameter == "seconds" ? (
-                            <View
-                              style={{
-                                ...styles.rowDirection,
-                                // marginTop: getFontSize(1),
-                              }}
-                            >
-                              <Text style={styles.numbr}>{set.seconds}sec</Text>
-                              <Text style={styles.lbs}>{set.parameter}</Text>
-                            </View>
-                          ) : set?.parameter == "distance" ? (
-                            <View
-                              style={{
-                                ...styles.rowDirection,
-                                // marginTop: getFontSize(1),
-                              }}
-                            >
-                              <Text style={styles.numbr}>
-                                {set.distance}miles
-                              </Text>
-                              <Text style={styles.lbs}>{set.parameter}</Text>
-                            </View>
-                          ) : null}
+                            ) : set?.parameter == "distance" ? (
+                              <View
+                                style={{
+                                  ...styles.rowDirection,
+                                }}
+                              >
+                                <Text style={styles.numbr}>
+                                  {set.distance}miles
+                                </Text>
+                                <Text style={styles.lbs}>{set.parameter}</Text>
+                              </View>
+                            ) : null
+                          }
                         </View>
                       </View>
                     </View>
@@ -1142,28 +1260,57 @@ const SubmittedWorkouts = ({ route }) => {
                                 <Text style={styles.count}>{setIndex + 1}</Text>
                               </View>
                               <View style={styles.whiteCon}>
-                                {set?.parameter == "reps lebs" ||
-                                set?.parameter == "reps" ||
-                                set?.parameter == "lebs" ? (
-                                  <View style={styles.rowDirection}>
-                                    <View>
-                                      <Text style={styles.numbr}>
-                                        {set.reps} reps
-                                        {/* {set.lebs} lebs */}
-                                      </Text>
-                                      <Text style={styles.lbs}>reps</Text>
-                                    </View>
-                                    <View style={styles.horizental}></View>
+                                {
+                                // set?.parameter == "reps lebs" ||
+                                // set?.parameter == "reps" ||
+                                // set?.parameter == "lebs" ? (
+                                //   <View style={styles.rowDirection}>
+                                //     <View>
+                                //       <Text style={styles.numbr}>
+                                //         {set.reps} reps
+                                //         {/* {set.lebs} lebs */}
+                                //       </Text>
+                                //       <Text style={styles.lbs}>reps</Text>
+                                //     </View>
+                                //     <View style={styles.horizental}></View>
 
-                                    <View>
-                                      <Text style={styles.numbr}>
-                                        {set.lebs} lebs
-                                        {/* {set.lebs} lebs */}
-                                      </Text>
-                                      <Text style={styles.lbs}>lebs</Text>
-                                    </View>
+                                //     <View>
+                                //       <Text style={styles.numbr}>
+                                //         {set.lebs} lebs
+                                //         {/* {set.lebs} lebs */}
+                                //       </Text>
+                                //       <Text style={styles.lbs}>lebs</Text>
+                                //     </View>
+                                //   </View>
+                                // ) 
+                                set?.parameter == "reps" ? (
+                                  <View
+                                    style={{
+                                      ...styles.rowDirection,
+                                    }}
+                                  >
+                                    <Text style={styles.numbr}>
+                                      {set.reps} reps
+                                    </Text>
+                                    <Text style={styles.lbs}>
+                                      {set.parameter}
+                                    </Text>
                                   </View>
-                                ) : set?.parameter == "weight" ? (
+                                ) : set?.parameter == "lbs" ? (
+                                  <View
+                                    style={{
+                                      ...styles.rowDirection,
+                                    }}
+                                  >
+                                    <Text style={styles.numbr}>
+                                      {set.lbs} lbs
+                                    </Text>
+                                    <Text style={styles.lbs}>
+                                      {set.parameter}
+                                    </Text>
+                                  </View>
+                                )
+                                : set?.parameter == "weight" ? (
                                   <View
                                     style={{
                                       ...styles.rowDirection,

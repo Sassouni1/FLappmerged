@@ -19,6 +19,7 @@ export const styles = StyleSheet.create({
     height: getHeight(25),
     justifyContent: "center",
     alignItems: "center",
+    borderRadius:7
   },
   text: {
     fontSize: getFontSize(2.3),

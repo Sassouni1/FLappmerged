@@ -62,7 +62,7 @@ const ForgotPassword = () => {
 
         if (res?.status == "200") {
           navigation.navigate("OTP", { email });
-          console.log("res", res?.response);
+          //console.log("res", res?.response);
           SimpleToast.show(res?.response?.message);
           dispatch(setLoader(false));
         } else {
@@ -79,9 +79,6 @@ const ForgotPassword = () => {
         ...state,
         emailError,
       });
-      alert(
-        res?.response?.message ? res?.response?.message : res?.response?.error
-      );
     }
   };
   const changeHandler = (type, value) => setState({ ...state, [type]: value });
@@ -146,7 +143,8 @@ const ForgotPassword = () => {
               label={
                 <Text style={GernalStyle.inputLabelStyle}>Email address</Text>
               }
-              theme={{ roundness: 10 }}
+              //theme={{ roundness: 10 }}
+              theme={{ roundness: getFontSize(0.5) }}
               outlineColor="rgba(189, 189, 189, 1)"
               cursorColor="rgba(189, 189, 189, 1)"
               textColor="rgba(189, 189, 189, 1)"

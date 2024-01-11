@@ -6,50 +6,50 @@ export const enValidation = {
   },
   reps:{
 presence:{
-  message:'^please enter reps'
+  message:'^Please enter reps'
 },
 
   },
   equipmentName:{
     presence:{
-      message:'^please enter equipmentName'
+      message:'^Please enter equipmentName'
     },
   },
   category:{
     presence:{
-      message:'^please select equipment category'
+      message:'^Please select equipment category'
     },
   },
   task_comments:{
     presence:{
-      message:'^please enter comment'
+      message:'^Please enter comment'
     },
     
       },
       question:{
         presence:{
-          message:'^please enter question, concern or feedback'
+          message:'^Please enter question, concern or feedback'
         },
       },
   
 
   task_requirementError:{
     presence:{
-      message:'^please enter task_requirementError'
+      message:'^Please enter task_requirementError'
     },
  
       },
       feedback:{
     presence:{
-      message:'^please enter feedback'
+      message:'^Please enter feedback'
     },},
     reason:{
       presence:{
-        message:'^please enter reason'
+        message:'^Please enter reason'
       },},
   lebs:{
     presence:{
-      message:'^please enter lebs and reps'
+      message:'^Please enter lebs and reps'
     },
     
       },

@@ -60,6 +60,7 @@ const UpdateProfiles = () => {
       type: res?.data?.type,
       name: res?.data?.name,
     };
+    dispatch(setLoader(true));
     setPickerModalVisibile(false);
     setTimeout(function () {
       cropimage(imageObject?.uri);

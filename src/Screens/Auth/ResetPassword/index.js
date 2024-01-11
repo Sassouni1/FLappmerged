@@ -115,7 +115,8 @@ const ResetPassword = ({ navigation, route }) => {
           mode="outlined"
           // label="New password"
           label={<Text style={GernalStyle.inputLabelStyle}>New password</Text>}
-          theme={{ roundness: 10 }}
+          //theme={{ roundness: 10 }}
+          theme={{ roundness: getFontSize(0.5) }}
           outlineColor="rgba(189, 189, 189, 1)"
           cursorColor="rgba(189, 189, 189, 1)"
           textColor="rgba(189, 189, 189, 1)"
@@ -152,7 +153,7 @@ const ResetPassword = ({ navigation, route }) => {
           }
           blurOnSubmit={false}
         />
-        <Text style={{ ...GernalStyle.InputError, marginLeft: getWidth(7) }}>
+        <Text style={{ ...GernalStyle.InputError }}>
           {state.newPasswordError}
         </Text>
         <TextInput
@@ -163,7 +164,8 @@ const ResetPassword = ({ navigation, route }) => {
               Confirm new password
             </Text>
           }
-          theme={{ roundness: 10 }}
+          //theme={{ roundness: 10 }}
+          theme={{ roundness: getFontSize(0.5) }}
           outlineColor="rgba(189, 189, 189, 1)"
           cursorColor="rgba(189, 189, 189, 1)"
           textColor="rgba(189, 189, 189, 1)"
@@ -200,7 +202,7 @@ const ResetPassword = ({ navigation, route }) => {
           blurOnSubmit={false}
         />
 
-        <Text style={{ ...GernalStyle.InputError, marginLeft: getWidth(7) }}>
+        <Text style={{ ...GernalStyle.InputError }}>
           {state.cpasswordError}
         </Text>
       </KeyboardAwareScrollView>

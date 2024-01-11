@@ -45,8 +45,10 @@ export const GernalStyle = StyleSheet.create({
   InputError: {
     color: "red",
     fontFamily: "Ubuntu-Regular",
-    marginLeft: 10,
+    paddingLeft: 5,
     marginTop: 3,
+    width: getWidth(90),
+    alignSelf: "center" 
     // marginBottom: 2,
   },
   textinput: {

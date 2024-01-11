@@ -185,7 +185,7 @@ const ChangePassword = ({ navigation }) => {
             }
             blurOnSubmit={false}
           />
-          <Text style={{ ...GernalStyle.InputError, marginLeft: getWidth(8) }}>
+          <Text style={{ ...GernalStyle.InputError }}>
             {state.oldPasswordError}
           </Text>
         </View>
@@ -231,7 +231,7 @@ const ChangePassword = ({ navigation }) => {
             blurOnSubmit={false}
           />
 
-          <Text style={{ ...GernalStyle.InputError, marginLeft: getWidth(8) }}>
+          <Text style={{ ...GernalStyle.InputError }}>
             {state.newPasswordError}
           </Text>
         </View>
@@ -277,7 +277,7 @@ const ChangePassword = ({ navigation }) => {
             blurOnSubmit={false}
           />
 
-          <Text style={{ ...GernalStyle.InputError, marginLeft: getWidth(8) }}>
+          <Text style={{ ...GernalStyle.InputError }}>
             {state.cnfrPasswordError}
           </Text>
         </View>

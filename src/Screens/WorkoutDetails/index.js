@@ -202,6 +202,7 @@ const WorkoutDetails = () => {
                 <ImageBackground
                   source={{ uri: item?.program_Image }}
                   style={styles.image}
+                  resizeMode="cover"
                 >
                   <Text
                     style={{

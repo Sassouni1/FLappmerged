@@ -68,8 +68,10 @@ const WorkoutHistory = ({ route }) => {
       return `${set.seconds} seconds`;
     } else if (set.distance) {
       return `${set.distance} meters`;
-    } else if (set.reps) {
-      return `${set.reps} reps ${set.lebs} lebs`;
+    } else if (set.parameter == 'lbs') {
+      return `${set.lbs ? set.lbs : 0} lbs`;
+    } else if (set.parameter =='reps') {
+      return `${set.reps} reps`;
     } else {
       return "N/A"; // You can change this to a default value if needed
     }
@@ -435,7 +437,7 @@ const WorkoutHistory = ({ route }) => {
                 >
                   {item?.workoutName}
                 </Text>
-                <Text
+                {/* <Text
                   style={{
                     color: colors.graytext5,
                     fontFamily: fonts.URe,
@@ -443,7 +445,33 @@ const WorkoutHistory = ({ route }) => {
                   }}
                 >
                   {item?.exercise.length} exercises
-                </Text>
+                </Text> */}
+                <View
+                  style={{
+                    flexDirection: "column",
+                    alignItems: "center",
+                    marginTop: getHeight(0.5),
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: colors.graytext5,
+                      fontFamily: fonts.URe,
+                      fontSize: 10,
+                    }}
+                  >
+                    {item?.exercise.length} exercises
+                  </Text>
+                  <Text
+                    style={{
+                      color: colors.graytext5,
+                      fontFamily: fonts.URe,
+                      fontSize: 10,
+                    }}
+                  >
+                    {item?.calories} Calories
+                  </Text>
+                </View>
               </View>
               <Seprator
                 style={{

@@ -81,14 +81,27 @@ const Activity = () => {
     Sunday: 0,
   });
   const [monthlyWeightProgress, setMonthlyWeightProgess] = useState({
-    week1: 0,
-    week2: 0,
-    week3: 0,
-    week4: 0,
+    Week1: 0,
+    Week2: 0,
+    Week3: 0,
+    Week4: 0,
   });
   const [weightProgressThreeMonth, setWeightProgressThreeMonth] = useState([]);
   const [weightProgressSixMonth, setWeightProgressSixMonth] = useState([]);
-  const [weightProgressAllMonth, setWeightProgressAllMonth] = useState([]);
+  const [weightProgressAllMonth, setWeightProgressAllMonth] = useState({
+    Jan: 0,
+    Feb: 0,
+    Mar: 0,
+    Apr: 0,
+    May: 0,
+    Jun: 0,
+    Jul: 0,
+    Aug: 0,
+    Sep: 0,
+    Oct: 0,
+    Nov: 0,
+    Dec: 0,
+  });
 
 
   // all calories progress states
@@ -110,7 +123,20 @@ const Activity = () => {
   });
   const [caloriesProgressThreeMonth, setCaloriesProgressThreeMonth] = useState([]);
   const [caloriesProgressSixMonth, setCaloriesProgressSixMonth] = useState([]);
-  const [caloriesProgressAllMonth, setCaloriesProgressAllMonth] = useState([]);
+  const [caloriesProgressAllMonth, setCaloriesProgressAllMonth] = useState({
+    Jan: 0,
+    Feb: 0,
+    Mar: 0,
+    Apr: 0,
+    May: 0,
+    Jun: 0,
+    Jul: 0,
+    Aug: 0,
+    Sep: 0,
+    Oct: 0,
+    Nov: 0,
+    Dec: 0,
+  });
 
   // select type states by dropdown
   const [selectedTypes, setSelectedTypes] = useState([]);
@@ -347,6 +373,7 @@ const Activity = () => {
         verb: "get",
         token: token,
       });
+      console.log("getWeightProgress",res)
       if (res?.status == "200") {
         setWeightProgress(res?.response?.weeklyWeight);
         dispatch(setLoader(false));
@@ -366,7 +393,7 @@ const Activity = () => {
         verb: "get",
         token: token,
       });
-      console.log("response of weight", res?.response);
+      console.log("response of getWeightMonthProgress", res?.response);
 
       if (res?.status == "200") {
         setMonthlyWeightProgess(res?.response?.monthlyWeight);
@@ -387,7 +414,7 @@ const Activity = () => {
         verb: "get",
         token: token,
       });
-      console.log("response of weight", res?.response);
+      console.log("response of getWeightThreeMonthProgress", res?.response);
       if (res?.status == "200") {
         setWeightProgressThreeMonth(res?.response?.monthlyWeight);
         dispatch(setLoader(false));
@@ -407,7 +434,7 @@ const Activity = () => {
         verb: "get",
         token: token,
       });
-      console.log("response of weight", res?.response);
+      console.log("response of getWeightSixMonthProgress", res?.response);
 
       if (res?.status == "200") {
         setWeightProgressSixMonth(res?.response?.monthlyWeight);
@@ -428,7 +455,7 @@ const Activity = () => {
         verb: "get",
         token: token,
       });
-      console.log("response of weight", res?.response);
+      console.log("response of getWeightAllMonthProgress", res?.response);
 
       if (res?.status == "200") {
         setWeightProgressAllMonth(res?.response?.monthlyWeight);
@@ -449,11 +476,15 @@ const Activity = () => {
     try {
       const res = await ApiCall({
         route: `assignProgram/user_weekly_calories/${user?.user_id}`,
-        verb: "get",
+        verb: "post",
         token: token,
+        params: {
+          givenDate: new Date(),
+        },
       });
+      console.log('ressss',res?.response)
       if (res?.status == "200") {
-        setCaloriesProgress(res?.response?.weeklyWeight);
+        setCaloriesProgress(res?.response?.weeklyProgress);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -920,7 +951,7 @@ const Activity = () => {
   let monthNameOfThreeMonthWeight = [];
   if (weightProgressThreeMonth.length > 0) {
     monthNameOfThreeMonthWeight = weightProgressThreeMonth.map(
-      (item) => item.monthName
+      (item) => item.month
     );
   } else {
     monthNameOfThreeMonthWeight = [0, 0, 0];
@@ -940,7 +971,7 @@ const Activity = () => {
   let monthNameOfSixMonthWeight = [];
   if (weightProgressSixMonth.length > 0) {
     monthNameOfSixMonthWeight = weightProgressSixMonth.map(
-      (item) => item.monthName
+      (item) => item.month
     );
   } else {
     monthNameOfSixMonthWeight = [0, 0, 0, 0, 0, 0];
@@ -980,8 +1011,8 @@ const Activity = () => {
  }
 
  let percentageOfThreeMonthCalories = [];
- if (weightProgressThreeMonth.length > 0) {
-  percentageOfThreeMonthCalories = weightProgressThreeMonth.map(
+ if (caloriesProgressThreeMonth.length > 0) {
+  percentageOfThreeMonthCalories = caloriesProgressThreeMonth.map(
      (item) => item.percentage
    );
  } else {
@@ -1617,7 +1648,7 @@ const Activity = () => {
         </View>
 
         <View style={styles.spaceBet}>
-          <Text style={styles.activty}>TOTAL VOLUME LIFTED</Text>
+          <Text style={styles.activty}>STRENGTH PROGRESS</Text>
         </View>
         <View style={{ ...styles.graphCon, marginTop: getHeight(2) }}>
           <LineChart
@@ -1646,10 +1677,10 @@ const Activity = () => {
                     datasets: [
                       {
                         data: [
-                          monthlyWeightProgress.week1,
-                          monthlyWeightProgress.week2,
-                          monthlyWeightProgress.week3,
-                          monthlyWeightProgress.week4,
+                          monthlyWeightProgress.Week1,
+                          monthlyWeightProgress.Week2,
+                          monthlyWeightProgress.Week3,
+                          monthlyWeightProgress.Week4,
                         ],
                       },
                     ],
@@ -1713,18 +1744,18 @@ const Activity = () => {
                     datasets: [
                       {
                         data: [
-                          percentageOfAllMonthWeight[0],
-                          percentageOfAllMonthWeight[1],
-                          percentageOfAllMonthWeight[2],
-                          percentageOfAllMonthWeight[3],
-                          percentageOfAllMonthWeight[4],
-                          percentageOfAllMonthWeight[5],
-                          percentageOfAllMonthWeight[6],
-                          percentageOfAllMonthWeight[7],
-                          percentageOfAllMonthWeight[8],
-                          percentageOfAllMonthWeight[9],
-                          percentageOfAllMonthWeight[10],
-                          percentageOfAllMonthWeight[11],
+                          weightProgressAllMonth.Jan,
+                          weightProgressAllMonth.Feb,
+                          weightProgressAllMonth.Mar,
+                          weightProgressAllMonth.Apr,
+                          weightProgressAllMonth.May,
+                          weightProgressAllMonth.Jun,
+                          weightProgressAllMonth.Jul,
+                          weightProgressAllMonth.Aug,
+                          weightProgressAllMonth.Sep,
+                          weightProgressAllMonth.Oct,
+                          weightProgressAllMonth.Nov,
+                          weightProgressAllMonth.Dec,
                         ],
                       },
                     ],
@@ -1900,18 +1931,18 @@ const Activity = () => {
                     datasets: [
                       {
                         data: [
-                          percentageOfAllMonthCalories[0],
-                          percentageOfAllMonthCalories[1],
-                          percentageOfAllMonthCalories[2],
-                          percentageOfAllMonthCalories[3],
-                          percentageOfAllMonthCalories[4],
-                          percentageOfAllMonthCalories[5],
-                          percentageOfAllMonthCalories[6],
-                          percentageOfAllMonthCalories[7],
-                          percentageOfAllMonthCalories[8],
-                          percentageOfAllMonthCalories[9],
-                          percentageOfAllMonthCalories[10],
-                          percentageOfAllMonthCalories[11],
+                          caloriesProgressAllMonth.Jan,
+                          caloriesProgressAllMonth.Feb,
+                          caloriesProgressAllMonth.Mar,
+                          caloriesProgressAllMonth.Apr,
+                          caloriesProgressAllMonth.May,
+                          caloriesProgressAllMonth.Jun,
+                          caloriesProgressAllMonth.Jul,
+                          caloriesProgressAllMonth.Aug,
+                          caloriesProgressAllMonth.Sep,
+                          caloriesProgressAllMonth.Oct,
+                          caloriesProgressAllMonth.Nov,
+                          caloriesProgressAllMonth.Dec,
                         ],
                       },
                     ],

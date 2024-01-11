@@ -19,6 +19,7 @@ import { GernalStyle } from "../../../constants/GernalStyle";
 import { setLoader } from "../../../Redux/actions/GernalActions";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { colors } from "../../../constants/colors";
+import { useFocusEffect } from "@react-navigation/native";
 const Login = ({ navigation }) => {
   const dispatch = useDispatch();
   const inputRefs = {
@@ -31,6 +32,16 @@ const Login = ({ navigation }) => {
     password: "",
     passwordError: "",
   });
+  useFocusEffect(
+    React.useCallback(() => {
+      setState({
+        email: "",
+        emailError: "",
+        password: "",
+        passwordError: "",
+      });
+    }, [])
+  );
   const [hidePass, setHidePass] = useState(true);
   const login = async () => {
     const { email, password } = state;
@@ -76,7 +87,8 @@ const Login = ({ navigation }) => {
             label={
               <Text style={GernalStyle.inputLabelStyle}>Email address</Text>
             }
-            theme={{ roundness: 10 }}
+            //theme={{ roundness: 10 }}
+            theme={{ roundness: getFontSize(0.5) }}
             outlineColor="rgba(189, 189, 189, 1)"
             cursorColor="rgba(189, 189, 189, 1)"
             textColor="rgba(189, 189, 189, 1)"
@@ -102,7 +114,8 @@ const Login = ({ navigation }) => {
             mode="outlined"
             // label="Password"
             label={<Text style={GernalStyle.inputLabelStyle}>Password</Text>}
-            theme={{ roundness: 10 }}
+            //theme={{ roundness: 10 }}
+            theme={{ roundness: getFontSize(0.5) }}
             outlineColor="rgba(189, 189, 189, 1)"
             cursorColor="rgba(189, 189, 189, 1)"
             textColor="rgba(189, 189, 189, 1)"
@@ -138,8 +151,9 @@ const Login = ({ navigation }) => {
             }
             blurOnSubmit={false}
           />
-
-          <Text style={GernalStyle.InputError}>{state.passwordError}</Text>
+          {state.passwordError && (
+            <Text style={GernalStyle.InputError}>{state.passwordError}</Text>
+          )}
 
           <View style={styles.forgotView}>
             <TouchableOpacity

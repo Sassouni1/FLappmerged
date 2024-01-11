@@ -171,7 +171,7 @@ export const styles = StyleSheet.create({
     paddingBottom: 3,
     justifyContent: "flex-end",
     alignItems: "flex-end",
-    marginTop:getFontSize(-.5)
+    marginTop:getFontSize(1)
   },
   checkstyle: {
     flexDirection: "row",

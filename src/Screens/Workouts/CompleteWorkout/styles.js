@@ -35,10 +35,11 @@ export const styles = StyleSheet.create({
   },
   lbs: {
     fontSize: getFontSize(2),
-    color: colors.graytext4,
+    color: colors.gray8,
     fontFamily: fonts.URe,
     // marginTop: getHeight(0.5),
     textAlign: "center",
+    fontWeight:"600"
     //right:getFontSize(1.5)
   },
   dashes: {
