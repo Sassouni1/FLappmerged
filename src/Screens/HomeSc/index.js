@@ -6,8 +6,10 @@ import {
   Image,
   ScrollView,
   StatusBar,
+  Linking,
 } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
 import { styles } from "./styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -101,21 +103,21 @@ const HomeSc = ({ navigation, route }) => {
   const getAdminAlert = async () => {
     try {
       const res = await ApiCall({
-        route: `admin/get_alert`,
+        route: `auth/get-recent-alert`,
         verb: "get",
         token: token,
       });
 
       if (res?.status == "200") {
         console.log("admin response", res?.response);
-        setAdminAlert(res?.response?.admin);
+        setAdminAlert(res?.response?.event);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
         console.log("errorrrr in alert");
       }
     } catch (e) {
-      console.log("api get skill error -- ", e.toString());
+      console.log("api get admin alert error -- ", e.toString());
     }
   };
 
@@ -221,52 +223,68 @@ const HomeSc = ({ navigation, route }) => {
             <Text style={styles.welcome}>Welcome to FightLife</Text>
           </View>
         </View>
-        <View
-          style={{
-            width: getWidth(96),
-            backgroundColor: colors.homeConColor,
-            alignSelf: "center",
-            borderRadius: 7,
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: getFontSize(2),
-            paddingTop: getFontSize(1.5),
-            paddingBottom: getFontSize(1.5),
-          }}
-        >
-          {/* <Animated.View */}
-          <View
+        {adminAlert && (
+          <TouchableOpacity
+            onPress={() => {
+              if (new Date(adminAlert?.start) - new Date() <= 10 * 60 * 1000) {
+                if (Linking.canOpenURL(adminAlert?.link)) {
+                  Linking.openURL(adminAlert?.link);
+                } else {
+                  console.error("Cannot open URL");
+                }
+              }
+            }}
             style={{
-              flexDirection: "row",
-              alignItems: "center",
-              width: getWidth(80),
-              justifyContent: "center",
+              width: getWidth(96),
+              backgroundColor:
+                new Date(adminAlert?.start) - new Date() <= 10 * 60 * 1000
+                  ? colors.bluebtn
+                  : colors.homeConColor,
               alignSelf: "center",
-              // left: slideAnim,
+              borderRadius: 7,
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: getFontSize(2),
+              paddingTop: getFontSize(1.5),
+              paddingBottom: getFontSize(1.5),
             }}
           >
-            <Ionicons
-              size={20}
-              color={"white"}
-              name="calendar"
-              style={{ paddingRight: getFontSize(1) }}
-            />
-            <Text
-              onLayout={(event) => {
-                const { width } = event.nativeEvent.layout;
-                measureText(width);
-              }}
+            {/* <Animated.View */}
+            <View
               style={{
-                color: colors.white,
-                fontSize: getFontSize(2),
-                fontFamily: "ubuntu",
+                flexDirection: "row",
+                alignItems: "center",
+                width: getWidth(80),
+                justifyContent: "center",
+                alignSelf: "center",
               }}
             >
-              {adminAlert}
-            </Text>
-          </View>
-          {/* </Animated.View> */}
-        </View>
+              <Ionicons
+                size={20}
+                color={"white"}
+                name="calendar"
+                style={{ paddingRight: getFontSize(1) }}
+              />
+              <Text
+                onLayout={(event) => {
+                  const { width } = event.nativeEvent.layout;
+                  measureText(width);
+                }}
+                style={{
+                  color: colors.white,
+                  fontSize: getFontSize(2),
+                  fontFamily: "ubuntu",
+                }}
+              >
+                {console.log(adminAlert)}
+                {adminAlert?.title} (
+                {new Date(adminAlert?.start).toDateString()} ,
+                {new Date(adminAlert?.start).toLocaleTimeString()})
+              </Text>
+            </View>
+            {/* </Animated.View> */}
+          </TouchableOpacity>
+        )}
         <View style={{ flexDirection: "column" }}>
           <View
             style={{
@@ -278,10 +296,30 @@ const HomeSc = ({ navigation, route }) => {
             }}
           >
             <View>
-              <TouchableOpacity
-                onPress={isPaused ? playVideo : pauseVideo}
-                activeOpacity={1}
-              >
+              <View>
+                <TouchableOpacity
+                  onPress={isPaused ? playVideo : pauseVideo}
+                  activeOpacity={1}
+                  style={{
+                    flex: 1,
+                    height: getHeight(15),
+                    borderRadius: 7,
+                    width: getWidth(46.5),
+                    backgroundColor: isPaused
+                      ? "rgba(155,155,155,0.22825630252100846) 100%"
+                      : "rgba(255,255,255,0) 100%",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    position: "absolute",
+                    zIndex: 999,
+                  }}
+                >
+                  <AntDesign
+                    name={isPaused ? "caretright" : "pausecircleo"}
+                    size={25}
+                    color={colors.white}
+                  />
+                </TouchableOpacity>
                 <Video
                   ref={videoRef}
                   source={require("../../assets/images/background.mp4")}
@@ -290,14 +328,34 @@ const HomeSc = ({ navigation, route }) => {
                   style={styles.imgHome}
                   paused={isPaused}
                 />
-              </TouchableOpacity>
+              </View>
               <Text style={styles.VideoText}>Welcome to Fight Life</Text>
             </View>
             <View>
-              <TouchableOpacity
-                onPress={isPausedFaq ? playVideoFaq : pauseVideoFaq}
-                activeOpacity={1}
-              >
+              <View>
+                <TouchableOpacity
+                  onPress={isPausedFaq ? playVideoFaq : pauseVideoFaq}
+                  activeOpacity={1}
+                  style={{
+                    flex: 1,
+                    height: getHeight(15),
+                    borderRadius: 7,
+                    width: getWidth(46.5),
+                    backgroundColor: isPausedFaq
+                      ? "rgba(155,155,155,0.22825630252100846) 100%"
+                      : "rgba(255,255,255,0) 100%",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    position: "absolute",
+                    zIndex: 999,
+                  }}
+                >
+                  <AntDesign
+                    name={isPausedFaq ? "caretright" : "pausecircleo"}
+                    size={25}
+                    color={colors.white}
+                  />
+                </TouchableOpacity>
                 <Video
                   ref={videoRefFaq}
                   source={require("../../assets/images/background.mp4")}
@@ -306,7 +364,7 @@ const HomeSc = ({ navigation, route }) => {
                   style={styles.imgHome}
                   paused={isPausedFaq}
                 />
-              </TouchableOpacity>
+              </View>
               <Text style={styles.VideoText}>How to Use App</Text>
             </View>
           </View>
@@ -320,26 +378,66 @@ const HomeSc = ({ navigation, route }) => {
             }}
           >
             <View>
-              <TouchableOpacity
-                onPress={isPaused3 ? playVideo3 : pauseVideo3}
-                activeOpacity={1}
-              >
+              <View>
+                <TouchableOpacity
+                  onPress={isPaused3 ? playVideo3 : pauseVideo3}
+                  activeOpacity={1}
+                  style={{
+                    flex: 1,
+                    height: getHeight(15),
+                    borderRadius: 7,
+                    width: getWidth(46.5),
+                    backgroundColor: isPaused3
+                      ? "rgba(155,155,155,0.22825630252100846) 100%"
+                      : "rgba(255,255,255,0) 100%",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    position: "absolute",
+                    zIndex: 999,
+                  }}
+                >
+                  <AntDesign
+                    name={isPaused3 ? "caretright" : "pausecircleo"}
+                    size={25}
+                    color={colors.white}
+                  />
+                </TouchableOpacity>
                 <Video
                   ref={videoRef3}
                   source={require("../../assets/images/background.mp4")}
                   resizeMode="cover"
-                  repeat={false}
+                  repeat={true}
                   style={styles.imgHome}
                   paused={isPaused3}
                 />
-              </TouchableOpacity>
+              </View>
               <Text style={styles.VideoText}>Meet your Strength Coach</Text>
             </View>
             <View>
-              <TouchableOpacity
-                onPress={isPaused4 ? playVideo4 : pauseVideo4}
-                activeOpacity={1}
-              >
+              <View>
+                <TouchableOpacity
+                  onPress={isPaused4 ? playVideo4 : pauseVideo4}
+                  activeOpacity={1}
+                  style={{
+                    flex: 1,
+                    height: getHeight(15),
+                    borderRadius: 7,
+                    width: getWidth(46.5),
+                    backgroundColor: isPaused4
+                      ? "rgba(155,155,155,0.22825630252100846) 100%"
+                      : "rgba(255,255,255,0) 100%",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    position: "absolute",
+                    zIndex: 999,
+                  }}
+                >
+                  <AntDesign
+                    name={isPaused4 ? "caretright" : "pausecircleo"}
+                    size={25}
+                    color={colors.white}
+                  />
+                </TouchableOpacity>
                 <Video
                   ref={videoRef4}
                   source={require("../../assets/images/background.mp4")}
@@ -348,7 +446,7 @@ const HomeSc = ({ navigation, route }) => {
                   style={styles.imgHome}
                   paused={isPaused4}
                 />
-              </TouchableOpacity>
+              </View>
               <Text style={styles.VideoText}>Everything You Need to Know</Text>
             </View>
           </View>

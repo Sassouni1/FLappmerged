@@ -62,12 +62,14 @@ export const ApiCall = async ({params, route, verb, token, baseurl}) => {
     }
 
     if (response) {
+   
       return await {status: 200, response: response.data};
     } else {
       return response;
     }
   } catch (e) {
     // handle error
+    console.log('ress',e?.response)
 
     return {
       status: 400,

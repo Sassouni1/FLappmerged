@@ -144,7 +144,7 @@ const FolderVideo = ({ route }) => {
                     {index > 0 && <Seprator />}
                     <TouchableOpacity
                       onPress={() =>
-                        navigation.navigate("VideoSkills", {
+                        navigation.navigate("videoScreen", {
                           video: item?.video,
                           name: item?.title,
                         })

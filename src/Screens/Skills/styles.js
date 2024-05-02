@@ -56,9 +56,10 @@ export const styles = StyleSheet.create({
   thumbnail: {
     backgroundColor: colors.white,
     justifyContent: "center",
-    height: getHeight(6),
-    width: getWidth(18),
+    height: getHeight(7),
+    width: getWidth(14),
     borderRadius: getFontSize(1),
     alignItems: "center",
+    resizeMode: "contain",
   },
 });

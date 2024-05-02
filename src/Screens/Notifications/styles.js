@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   paragraph: {
     fontSize: getFontSize(2),
     fontFamily: "Rubik-Regular",
-    padding: 5,
+    //padding: 5,
     paddingVertical: 0,
     width: getWidth(69),
     color: colors.white,
@@ -69,8 +69,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   Time: {
-    padding: 5,
-    fontSize: getFontSize(2),
+    paddingTop: 5,
+    paddingBottom:5,
+    fontSize: getFontSize(1.5),
     color: colors.buttonColor,
   },
   sildeView: {

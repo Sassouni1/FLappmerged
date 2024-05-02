@@ -32,7 +32,6 @@ const SubFolder = ({ route }) => {
   const [filteredData, setFilteredData] = useState([]);
   const [invalidEntry, setInvalidEntry] = useState(false);
 
-
   useEffect(() => {
     const filtered = folder.filter((item) =>
       item.folder_title.toUpperCase().includes(searchQuery.toUpperCase())
@@ -47,7 +46,6 @@ const SubFolder = ({ route }) => {
   }, [searchQuery, folder]);
 
   const handleRefresh = () => {
-    //dispatch(setLoader(true));
     folder;
   };
 

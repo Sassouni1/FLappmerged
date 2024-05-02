@@ -2,10 +2,7 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
-  ScrollView,
   FlatList,
-  Alert,
   Image,
 } from "react-native";
 import React, { useEffect, useState } from "react";
@@ -21,10 +18,6 @@ import {
 } from "../../../../utils/ResponsiveFun";
 import {
   AngelDown,
-  StrechSvg,
-  CrunchSvg,
-  RopeSvg,
-  IconWhite,
   AngelUp,
   PlayerSvg,
 } from "../../../assets/images";
@@ -67,7 +60,11 @@ const WorkoutHistory = ({ route }) => {
     } else if (set.seconds) {
       return `${set.seconds} seconds`;
     } else if (set.distance) {
-      return `${set.distance} meters`;
+      return `${set.distance} miles`;
+    } else if (set.yards) {
+      return `${set.yards} yards`;
+    }  else if (set.meters) {
+      return `${set.meters} meters`;
     } else if (set.parameter == 'lbs') {
       return `${set.lbs ? set.lbs : 0} lbs`;
     } else if (set.parameter =='reps') {
@@ -495,6 +492,8 @@ const WorkoutHistory = ({ route }) => {
                         workoutId: assigWorkout?._id,
                         innerWorkoutId: item?._id,
                         exerciseId: ex?._id,
+                        calories: item?.calories,
+                        given_sets: ex?.sets
                       });
                     }
                   }}

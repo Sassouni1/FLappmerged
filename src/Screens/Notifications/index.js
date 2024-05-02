@@ -230,14 +230,16 @@ const Notification = ({ navigation }) => {
                     />
                   </View>
                   <View>
-                    <Text numberOfLines={1} style={styles.heading}>
+                    {/* <Text numberOfLines={1} style={styles.heading}>
                       {item?.type}
-                    </Text>
+                    </Text> */}
                     <Text numberOfLines={2} style={styles.paragraph}>
                       {item?.notification}
                     </Text>
                     <Text style={styles.Time}>
-                      {moment(item?.createdAt).format("YYYY-MM-DD")}
+                      {moment(item?.createdAt).format(
+                        "dddd, MMMM Do YYYY [at] h:mm:ss a"
+                      )}
                     </Text>
                   </View>
                   <View style={styles.active} />

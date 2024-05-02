@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../Redux/actions/GernalActions";
 import { LineChart } from "react-native-chart-kit";
 import SelectDropdown from "react-native-select-dropdown";
-// import Entypo from "react-native-vector-icons/Entypo";
+import CircularProgress from "../../Components/CircularProgress";
 
 const Activity = () => {
   const navigation = useNavigation();
@@ -62,13 +62,39 @@ const Activity = () => {
   const [weekDataProgress, setWeekDataProgress] = useState({});
 
   // all messages progress states
-  const [messagesProgress, setMessagesProgress] = useState([]);
-  const [messagesProgressMonth, setMessagesProgressMonth] = useState([]);
+  const [messagesProgress, setMessagesProgress] = useState({
+    Monday: 0,
+    Tuesday: 0,
+    Wednesday: 0,
+    Thursday: 0,
+    Friday: 0,
+    Saturday: 0,
+    Sunday: 0,
+  });
+  const [messagesProgressMonth, setMessagesProgressMonth] = useState({
+    Week1: 0,
+    Week2: 0,
+    Week3: 0,
+    Week4: 0,
+  });
   const [messagesProgressThreeMonth, setMessagesProgressThreeMonth] = useState(
     []
   );
   const [messagesProgressSixMonth, setMessagesProgressSixMonth] = useState([]);
-  const [messagesProgressAllMonth, setMessagesProgressAllMonth] = useState([]);
+  const [messagesProgressAllMonth, setMessagesProgressAllMonth] = useState({
+    Jan: 0,
+    Feb: 0,
+    Mar: 0,
+    Apr: 0,
+    May: 0,
+    Jun: 0,
+    Jul: 0,
+    Aug: 0,
+    Sep: 0,
+    Oct: 0,
+    Nov: 0,
+    Dec: 0,
+  });
 
   // all weight progress states
   const [weightProgress, setWeightProgress] = useState({
@@ -103,9 +129,7 @@ const Activity = () => {
     Dec: 0,
   });
 
-
   // all calories progress states
-
   const [caloriesProgress, setCaloriesProgress] = useState({
     Monday: 0,
     Tuesday: 0,
@@ -121,7 +145,9 @@ const Activity = () => {
     Week3: 0,
     Week4: 0,
   });
-  const [caloriesProgressThreeMonth, setCaloriesProgressThreeMonth] = useState([]);
+  const [caloriesProgressThreeMonth, setCaloriesProgressThreeMonth] = useState(
+    []
+  );
   const [caloriesProgressSixMonth, setCaloriesProgressSixMonth] = useState([]);
   const [caloriesProgressAllMonth, setCaloriesProgressAllMonth] = useState({
     Jan: 0,
@@ -270,8 +296,9 @@ const Activity = () => {
         verb: "get",
         token: token,
       });
+      console.log("setMessagesProgress", res?.response);
       if (res?.status == "200") {
-        setMessagesProgress(res?.response?.totalMessages);
+        setMessagesProgress(res?.response?.weeklyProgress);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -291,7 +318,7 @@ const Activity = () => {
       });
       console.log("response of month", res?.response);
       if (res?.status == "200") {
-        setMessagesProgressMonth(res?.response?.totalMessages);
+        setMessagesProgressMonth(res?.response?.weeklyProgress);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -309,8 +336,9 @@ const Activity = () => {
         verb: "get",
         token: token,
       });
+      console.log("last_three_monthly_messages", res?.response);
       if (res?.status == "200") {
-        setMessagesProgressThreeMonth(res?.response?.totalMessages);
+        setMessagesProgressThreeMonth(res?.response?.monthlyProgress);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -331,9 +359,9 @@ const Activity = () => {
         verb: "get",
         token: token,
       });
-
+      console.log("response of last_six_monthly_messages", res?.response);
       if (res?.status == "200") {
-        setMessagesProgressSixMonth(res?.response?.totalMessages);
+        setMessagesProgressSixMonth(res?.response?.monthlyProgress);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -351,9 +379,9 @@ const Activity = () => {
         verb: "get",
         token: token,
       });
-
+      console.log("response of all_monthly_messages", res?.response);
       if (res?.status == "200") {
-        setMessagesProgressAllMonth(res?.response?.totalMessages);
+        setMessagesProgressAllMonth(res?.response?.yearlyProgress);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -373,7 +401,7 @@ const Activity = () => {
         verb: "get",
         token: token,
       });
-      console.log("getWeightProgress",res)
+      console.log("getWeightProgress", res);
       if (res?.status == "200") {
         setWeightProgress(res?.response?.weeklyWeight);
         dispatch(setLoader(false));
@@ -469,8 +497,7 @@ const Activity = () => {
     }
   };
 
-
- // all Calories progress apis functions
+  // all Calories progress apis functions
 
   const getCaloriesProgress = async () => {
     try {
@@ -482,7 +509,7 @@ const Activity = () => {
           givenDate: new Date(),
         },
       });
-      console.log('ressss',res?.response)
+      console.log("ressss", res?.response);
       if (res?.status == "200") {
         setCaloriesProgress(res?.response?.weeklyProgress);
         dispatch(setLoader(false));
@@ -578,8 +605,6 @@ const Activity = () => {
     }
   };
 
-
-
   // all calender progress apis functions
 
   const getSingleExcercise = async (selectedDate) => {
@@ -628,15 +653,6 @@ const Activity = () => {
     }
   };
 
-  // useEffect(() => {
-  //   dispatch(setLoader(true));
-  //   getSingleExcercise(date);
-  //   exerciseWeekProgress(date);
-  //   getMessagesProgress();
-  //   exerciseProgress();
-  //   getWeightProgress();
-  // }, []);
-
   useFocusEffect(
     React.useCallback(() => {
       dispatch(setLoader(true));
@@ -645,7 +661,7 @@ const Activity = () => {
       getMessagesProgress();
       exerciseProgress();
       getWeightProgress();
-      getCaloriesProgress()
+      getCaloriesProgress();
     }, [])
   );
 
@@ -813,7 +829,7 @@ const Activity = () => {
       exerciseProgress();
       getMessagesProgress();
       getWeightProgress();
-      getCaloriesProgress()
+      getCaloriesProgress();
     } else if (selectedType == "This Month") {
       dispatch(setLoader(true));
       getExerciseMonthProgress();
@@ -843,28 +859,12 @@ const Activity = () => {
     }
   };
 
-  //Last 7 Days percentage of messages
-  let percentages = [];
-  if (messagesProgress.length > 0) {
-    percentages = messagesProgress.map((item) => item.percentage);
-  } else {
-    percentages = [0, 0, 0, 0, 0, 0, 0];
-  }
-
-  // This Month percentage and names of messages
-  let percentagesOfMonth = [];
-  if (messagesProgressMonth.length > 0) {
-    percentagesOfMonth = messagesProgressMonth.map((item) => item.percentage);
-  } else {
-    percentagesOfMonth = [0, 0, 0, 0];
-  }
-
   // three month names and their percentages of messages
 
   let monthNameOfThreeMonth = [];
   if (messagesProgressThreeMonth.length > 0) {
     monthNameOfThreeMonth = messagesProgressThreeMonth.map(
-      (item) => item.monthName
+      (item) => item.month
     );
   } else {
     monthNameOfThreeMonth = [0, 0, 0];
@@ -883,9 +883,7 @@ const Activity = () => {
 
   let monthNameOfSixMonth = [];
   if (messagesProgressSixMonth.length > 0) {
-    monthNameOfSixMonth = messagesProgressSixMonth.map(
-      (item) => item.monthName
-    );
+    monthNameOfSixMonth = messagesProgressSixMonth.map((item) => item.month);
   } else {
     monthNameOfSixMonth = [0, 0, 0, 0, 0, 0];
   }
@@ -897,16 +895,6 @@ const Activity = () => {
     );
   } else {
     percentageOfSixMonth = [0, 0, 0, 0, 0, 0];
-  }
-
-  // All month percentages of messages
-  let percentageOfAllMonth = [];
-  if (messagesProgressAllMonth.length > 0) {
-    percentageOfAllMonth = messagesProgressAllMonth.map(
-      (item) => item.percentage
-    );
-  } else {
-    percentageOfAllMonth = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   }
 
   // progress of three month of progress
@@ -986,71 +974,45 @@ const Activity = () => {
     percentageOfSixMonthWeight = [0, 0, 0, 0, 0, 0];
   }
 
-  // All month percentages of weight
-  let percentageOfAllMonthWeight = [];
-  if (weightProgressAllMonth.length > 0) {
-    percentageOfAllMonthWeight = weightProgressAllMonth.map(
+  // three month names and their percentages of weight
+
+  let monthNameOfThreeMonthCalories = [];
+  if (caloriesProgressThreeMonth.length > 0) {
+    monthNameOfThreeMonthCalories = caloriesProgressThreeMonth.map(
+      (item) => item.month
+    );
+  } else {
+    monthNameOfThreeMonthCalories = [0, 0, 0];
+  }
+
+  let percentageOfThreeMonthCalories = [];
+  if (caloriesProgressThreeMonth.length > 0) {
+    percentageOfThreeMonthCalories = caloriesProgressThreeMonth.map(
       (item) => item.percentage
     );
   } else {
-    percentageOfAllMonthWeight = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    percentageOfThreeMonthCalories = [0, 0, 0];
   }
 
+  // Six month names and their percentages of weight
 
+  let monthNameOfSixMonthCalories = [];
+  if (caloriesProgressSixMonth.length > 0) {
+    monthNameOfSixMonthCalories = caloriesProgressSixMonth.map(
+      (item) => item.month
+    );
+  } else {
+    monthNameOfSixMonthCalories = [0, 0, 0, 0, 0, 0];
+  }
 
-
- // three month names and their percentages of weight
-
- let monthNameOfThreeMonthCalories = [];
- if (caloriesProgressThreeMonth.length > 0) {
-   monthNameOfThreeMonthCalories = caloriesProgressThreeMonth.map(
-     (item) => item.month
-   );
- } else {
-  monthNameOfThreeMonthCalories = [0, 0, 0];
- }
-
- let percentageOfThreeMonthCalories = [];
- if (caloriesProgressThreeMonth.length > 0) {
-  percentageOfThreeMonthCalories = caloriesProgressThreeMonth.map(
-     (item) => item.percentage
-   );
- } else {
-  percentageOfThreeMonthCalories = [0, 0, 0];
- }
-
- // Six month names and their percentages of weight
-
- let monthNameOfSixMonthCalories = [];
- if (caloriesProgressSixMonth.length > 0) {
-   monthNameOfSixMonthCalories = caloriesProgressSixMonth.map(
-     (item) => item.month
-   );
- } else {
-   monthNameOfSixMonthCalories = [0, 0, 0, 0, 0, 0];
- }
-
- let percentageOfSixMonthCalories = [];
- if (caloriesProgressSixMonth.length > 0) {
-   percentageOfSixMonthCalories = caloriesProgressSixMonth.map(
-     (item) => item.percentage
-   );
- } else {
-   percentageOfSixMonthCalories = [0, 0, 0, 0, 0, 0];
- }
-
- // All month percentages of weight
- let percentageOfAllMonthCalories = [];
- if (caloriesProgressAllMonth.length > 0) {
-   percentageOfAllMonthCalories = caloriesProgressAllMonth.map(
-     (item) => item.percentage
-   );
- } else {
-   percentageOfAllMonthCalories = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
- }
-
-
-
+  let percentageOfSixMonthCalories = [];
+  if (caloriesProgressSixMonth.length > 0) {
+    percentageOfSixMonthCalories = caloriesProgressSixMonth.map(
+      (item) => item.percentage
+    );
+  } else {
+    percentageOfSixMonthCalories = [0, 0, 0, 0, 0, 0];
+  }
 
   // tooltip for progress
   const [tooltip, setTooltip] = useState(null);
@@ -1073,7 +1035,7 @@ const Activity = () => {
   });
   const [isVisibleWeight, setIsVisibleWeight] = useState(false);
 
- // tooltip for CALORIES
+  // tooltip for CALORIES
   const [tooltipCalories, setTooltipCalories] = useState(null);
   const [tooltipPositionCalories, setTooltipPositionCalories] = useState({
     left: 0,
@@ -1197,6 +1159,13 @@ const Activity = () => {
           }}
         >
           <Ellipse height={getHeight(21)} width={getWidth(58)} />
+          {/* <CircularProgress
+            percentage={assigWorkout?.progress}
+            radius={35}
+            strokeWidth={10}
+            progressColor="#00FF00" // Green color for progress
+            bgColor="#FF0000" // Red color for background
+          /> */}
           {assigWorkout?.progress ? (
             <Text style={styles.fourtyper}>
               {(assigWorkout?.progress).toFixed(0)}%
@@ -1472,13 +1441,13 @@ const Activity = () => {
                     datasets: [
                       {
                         data: [
-                          percentages[0],
-                          percentages[1],
-                          percentages[2],
-                          percentages[3],
-                          percentages[4],
-                          percentages[5],
-                          percentages[6],
+                          messagesProgress.Monday,
+                          messagesProgress.Tuesday,
+                          messagesProgress.Wednesday,
+                          messagesProgress.Thursday,
+                          messagesProgress.Friday,
+                          messagesProgress.Saturday,
+                          messagesProgress.Sunday,
                         ],
                       },
                     ],
@@ -1489,10 +1458,10 @@ const Activity = () => {
                     datasets: [
                       {
                         data: [
-                          percentagesOfMonth[0],
-                          percentagesOfMonth[1],
-                          percentagesOfMonth[2],
-                          percentagesOfMonth[3],
+                          messagesProgressMonth.Week1,
+                          messagesProgressMonth.Week2,
+                          messagesProgressMonth.Week3,
+                          messagesProgressMonth.Week4,
                         ],
                       },
                     ],
@@ -1556,18 +1525,18 @@ const Activity = () => {
                     datasets: [
                       {
                         data: [
-                          percentageOfAllMonth[0],
-                          percentageOfAllMonth[1],
-                          percentageOfAllMonth[2],
-                          percentageOfAllMonth[3],
-                          percentageOfAllMonth[4],
-                          percentageOfAllMonth[5],
-                          percentageOfAllMonth[6],
-                          percentageOfAllMonth[7],
-                          percentageOfAllMonth[8],
-                          percentageOfAllMonth[9],
-                          percentageOfAllMonth[10],
-                          percentageOfAllMonth[11],
+                          messagesProgressAllMonth.Jan,
+                          messagesProgressAllMonth.Feb,
+                          messagesProgressAllMonth.Mar,
+                          messagesProgressAllMonth.Apr,
+                          messagesProgressAllMonth.May,
+                          messagesProgressAllMonth.Jun,
+                          messagesProgressAllMonth.Jul,
+                          messagesProgressAllMonth.Aug,
+                          messagesProgressAllMonth.Sep,
+                          messagesProgressAllMonth.Oct,
+                          messagesProgressAllMonth.Nov,
+                          messagesProgressAllMonth.Dec,
                         ],
                       },
                     ],
@@ -1577,13 +1546,13 @@ const Activity = () => {
                     datasets: [
                       {
                         data: [
-                          percentages[0],
-                          percentages[1],
-                          percentages[2],
-                          percentages[3],
-                          percentages[4],
-                          percentages[5],
-                          percentages[6],
+                          messagesProgress.Monday,
+                          messagesProgress.Tuesday,
+                          messagesProgress.Wednesday,
+                          messagesProgress.Thursday,
+                          messagesProgress.Friday,
+                          messagesProgress.Saturday,
+                          messagesProgress.Sunday,
                         ],
                       },
                     ],
@@ -1974,7 +1943,7 @@ const Activity = () => {
                 setIsVisibleCalories
               )
             }
-            yAxisSuffix="%"
+           // yAxisSuffix="%"
             withHorizontalLines={false}
             withVerticalLines={false}
             chartConfig={{
@@ -2020,7 +1989,6 @@ const Activity = () => {
             </TouchableOpacity>
           )}
         </View>
-
       </ScrollView>
     </View>
   );

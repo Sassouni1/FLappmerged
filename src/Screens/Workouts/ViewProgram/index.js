@@ -30,6 +30,9 @@ import { PlayerSvg } from "../../../assets/images";
 const ViewProgram = ({ route }) => {
   const navigation = useNavigation();
   const { _id } = route?.params?.passData;
+  const url = route?.params?.url;
+  console.log("Url from view screen", url);
+  console.log("from view programs", _id);
   const [program, setProgram] = useState(null);
   const [data, setData] = useState(null);
 
@@ -41,7 +44,7 @@ const ViewProgram = ({ route }) => {
     try {
       const res = await ApiCall({
         params: { category_name: "skill" },
-        route: "program/detail_program/" + _id,
+        route: url + _id,
         verb: "get",
         token: token,
       });
@@ -90,7 +93,7 @@ const ViewProgram = ({ route }) => {
           marginBottom: Platform.OS === "ios" ? 3 : 0,
           fontFamily: "Russo_One",
           fontWeight: "600",
-          textAlign:"center"
+          textAlign: "center",
         }}
         //  onPress={() => navigation.goBack()}
         LeftIcon={
@@ -172,9 +175,7 @@ const ViewProgram = ({ route }) => {
                       )}
                       {/* {console.log('ex',ex)} */}
                       <View style={{ marginLeft: getWidth(2) }}>
-                        <Text style={styles.heading}>
-                          {ex?.exercise_name}
-                        </Text>
+                        <Text style={styles.heading}>{ex?.exercise_name}</Text>
                         <Text
                           style={{ ...styles.total, marginTop: getHeight(0.6) }}
                         >

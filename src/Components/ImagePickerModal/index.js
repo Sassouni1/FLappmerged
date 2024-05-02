@@ -1,38 +1,43 @@
-import React, {useState} from 'react';
-import {Text} from 'react-native';
-import {View} from 'react-native';
-import {TouchableOpacity} from 'react-native';
-import {StyleSheet} from 'react-native';
-import Modal from 'react-native-modal';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import React, { useState } from "react";
+import { Text } from "react-native";
+import { View } from "react-native";
+import { TouchableOpacity } from "react-native";
+import { StyleSheet } from "react-native";
+import Modal from "react-native-modal";
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
 
-// import { getWidth } from '../../../utils/ResponsiveFun';
-import {getFontSize, getHeight, getWidth} from '../../../utils/ResponsiveFun';
-
-const ImagePickerModal = props => {
+const ImagePickerModal = (props) => {
   return (
     <Modal
       backdropOpacity={0.3}
       isVisible={props.visible}
       onBackdropPress={() => props.hideVisible()}
       onSwipeComplete={() => props.hideVisible()}
-      swipeDirection={['down']}
+      swipeDirection={["down"]}
       style={styles.bottomView}
-      onRequestClose={() => props.hideVisible()}>
+      onRequestClose={() => props.hideVisible()}
+    >
       <View style={styles.content2}>
         <View style={styles.headLine} />
         <View style={styles.container}>
           <TouchableOpacity style={styles.boxes} onPress={props.galleryImage}>
-            <FontAwesome6 name="photo-film" size={40} color="#182d4a" style={{marginTop:getFontSize(2)}}/>
+            <FontAwesome6
+              name="photo-film"
+              size={40}
+              color="#182d4a"
+              style={{ marginTop: getFontSize(2) }}
+            />
             <Text
               style={{
-                width: '53%',
-                textAlign: 'center',
+                width: "53%",
+                textAlign: "center",
                 marginTop: getHeight(1),
-                color:'#182d4a',
-                fontFamily:'Ubuntu-Regular',
-              }}>
+                color: "#182d4a",
+                fontFamily: "Ubuntu-Regular",
+              }}
+            >
               Choose From Gallery
             </Text>
           </TouchableOpacity>
@@ -41,12 +46,13 @@ const ImagePickerModal = props => {
             <MaterialIcons name="photo-camera" size={45} color="#182d4a" />
             <Text
               style={{
-                width: '50%',
-                textAlign: 'center',
+                width: "50%",
+                textAlign: "center",
                 marginTop: getHeight(1),
-                color:'#182d4a',
-                fontFamily:'Ubuntu-Regular',
-              }}>
+                color: "#182d4a",
+                fontFamily: "Ubuntu-Regular",
+              }}
+            >
               Open Camera
             </Text>
           </TouchableOpacity>
@@ -59,37 +65,37 @@ const ImagePickerModal = props => {
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    backgroundColor: 'rgba( 0, 0, 0, 0.6 )',
+    backgroundColor: "rgba( 0, 0, 0, 0.6 )",
   },
   buttonView: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
     marginTop: 8,
   },
   IconClose: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
     marginTop: 8,
   },
   boxesview: {
-    justifyContent: 'space-around',
+    justifyContent: "space-around",
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   boxes: {
     width: getWidth(50),
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   bottomView: {
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     margin: 0,
   },
   content2: {
-    backgroundColor: 'white',
-    alignItems: 'center',
+    backgroundColor: "white",
+    alignItems: "center",
     padding: 13,
     borderTopRightRadius: 17,
     borderTopLeftRadius: 17,
@@ -99,15 +105,15 @@ const styles = StyleSheet.create({
     height: 6,
     width: 55,
     borderRadius: 5,
-    backgroundColor: '#EAEAEA',
+    backgroundColor: "#EAEAEA",
     marginBottom: 5,
   },
   container: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
 
-    flexDirection: 'row',
-    backgroundColor: 'white',
+    flexDirection: "row",
+    backgroundColor: "white",
   },
   modalView: {
     borderTopWidth: 3,
@@ -116,13 +122,13 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 10,
     borderTopRightRadius: 30,
     borderTopLeftRadius: 30,
-    borderTopColor: '#DF4B38',
-    borderRightColor: '#DF4B38',
-    borderLeftColor: '#DF4B38',
-    backgroundColor: 'white',
-    width: '100%',
-    height: '27%',
-    position: 'absolute',
+    borderTopColor: "#DF4B38",
+    borderRightColor: "#DF4B38",
+    borderLeftColor: "#DF4B38",
+    backgroundColor: "white",
+    width: "100%",
+    height: "27%",
+    position: "absolute",
     bottom: 0,
   },
   button: {
@@ -131,19 +137,19 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   buttonOpen: {
-    backgroundColor: '#F194FF',
+    backgroundColor: "#F194FF",
   },
   buttonClose: {
-    backgroundColor: '#2196F3',
+    backgroundColor: "#2196F3",
   },
   textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   modalText: {
     marginBottom: 15,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
 

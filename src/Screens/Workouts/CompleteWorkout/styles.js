@@ -33,13 +33,79 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  submitCon: {
+    height: getHeight(3),
+    width: getHeight(3),
+    borderRadius: 22.5,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  parameterCon: {
+    color: colors.whiteOp20,
+    fontSize: getFontSize(2),
+    marginTop: getFontSize(0.5),
+    fontFamily: fonts.URe,
+  },
+  setName: {
+    color: "white",
+    fontWeight: "700",
+    fontSize: getFontSize(2.2),
+    fontFamily: fonts.URe,
+  },
+  setCon: {
+    flexDirection: "column",
+    width: getWidth(57),
+    marginLeft: getFontSize(1),
+  },
+  setParameter: {
+    width: getWidth(17),
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexDirection: "row",
+  },
+  setView: {
+    backgroundColor: colors.whiteOp20,
+    height: getHeight(6),
+    width: getWidth(14),
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: getFontSize(1),
+  },
+  setText: {
+    fontSize: getFontSize(1.7),
+    position: 'absolute', alignSelf: 'center', top: getHeight(2),
+    marginRight: getWidth(0),
+    color: colors.white,
+    fontFamily: fonts.URe,
+  },
+  setContainer: {
+    backgroundColor: colors.whiteOp20,
+    height: getHeight(6),
+    width: getWidth(14),
+    alignItems: "center",
+    borderRadius: getFontSize(0.75)
+  },
+  setParams: {
+    width: getWidth(14),
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: getFontSize(1),
+    backgroundColor: colors.greenlight,
+  },
+  exerciseParamas: {
+    //flexDirection: "row",
+    //alignItems: "center",
+    //justifyContent: "space-between",
+    width: getWidth(90),
+    //marginTop: getFontSize(1),
+  },
   lbs: {
     fontSize: getFontSize(2),
     color: colors.gray8,
     fontFamily: fonts.URe,
     // marginTop: getHeight(0.5),
     textAlign: "center",
-    fontWeight:"600"
+    fontWeight: "600",
     //right:getFontSize(1.5)
   },
   dashes: {
@@ -289,6 +355,7 @@ export const styles = StyleSheet.create({
     paddingTop: getFontSize(1.5),
     paddingBottom: getFontSize(1.5),
     borderRadius: getFontSize(0.5),
+    marginBottom:getFontSize(1)
   },
   additionalSet: {
     marginTop: getFontSize(2),
@@ -301,7 +368,7 @@ export const styles = StyleSheet.create({
     // paddingBottom:getFontSize(1.5),
     borderRadius: getFontSize(0.5),
     borderWidth: 1,
-    borderColor: colors.gray1, 
+    borderColor: colors.gray1,
     borderStyle: "dashed",
   },
 });

@@ -24,7 +24,7 @@ const Workouts = ({ route }) => {
   const [focusedTab, setfocusedTab] = useState(0);
 
   const [routes] = useState([
-    { key: "tab1", title: "S&C Programs" },
+    { key: "tab1", title: "Programs" },
     { key: "tab2", title: "My Calendar" },
   ]);
 

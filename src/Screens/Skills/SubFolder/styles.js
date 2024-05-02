@@ -58,11 +58,12 @@ export const styles = StyleSheet.create({
     marginTop: getHeight(0.5),
   },
   thumbnail: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.secondary,
     justifyContent: "center",
-    height: getHeight(6),
-    width: getWidth(18),
+    height: getHeight(7),
+    width: getWidth(14),
     borderRadius: getFontSize(1),
     alignItems: "center",
+    resizeMode: "cover",
   },
 });

@@ -32,6 +32,7 @@ import { useWindowDimensions } from "react-native";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import Notification from "../../Screens/Notifications";
 import { colors } from "../../constants/colors";
+import Events from "../../Screens/Events/Events";
 
 const Drawer = createDrawerNavigator();
 function NavHeader(props) {
@@ -116,14 +117,14 @@ function CustomDrawerContent(props) {
   // const marginBo = Platform.OS === "android" ? getHeight(-0.5) : height * 0.03;
 
   const logoutFun = () => {
-      Alert.alert("", " Do you want to logout?", [
-        {
-          text: "No",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "destructive",
-        },
-        { text: "Yes", onPress: () => dispatch(logout()), style: "default" },
-      ]);
+    Alert.alert("", " Do you want to logout?", [
+      {
+        text: "No",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "destructive",
+      },
+      { text: "Yes", onPress: () => dispatch(logout()), style: "default" },
+    ]);
   };
 
   return (
@@ -220,7 +221,12 @@ export default function MyDrawer() {
           drawerActiveTintColor: "#333333",
           drawerActiveBackgroundColor: "white",
           drawerIcon: ({ color, size, focuced }) => (
-            <Fontisto name={"home"} size={getFontSize(2.3)} color={color}  style={{ marginLeft: getFontSize(-0.4)}} />
+            <Fontisto
+              name={"home"}
+              size={getFontSize(2.3)}
+              color={color}
+              style={{ marginLeft: getFontSize(-0.4) }}
+            />
           ),
           drawerLabelStyle: {
             fontFamily: "Ubuntu",
@@ -230,6 +236,29 @@ export default function MyDrawer() {
         }}
         name="Home"
         component={BottomTab}
+      />
+      <Drawer.Screen
+        options={{
+          headerShown: false,
+          drawerInactiveTintColor: "white",
+          drawerActiveTintColor: "#333333",
+          drawerActiveBackgroundColor: "white",
+          drawerIcon: ({ color, size, focuced }) => (
+            <MaterialIcons
+              name={"emoji-events"}
+              size={getFontSize(3.3)}
+              color={color}
+              style={{ marginLeft: getFontSize(-0.4) }}
+            />
+          ),
+          drawerLabelStyle: {
+            fontFamily: "Ubuntu",
+            fontSize: getFontSize(1.7),
+            marginLeft: getFontSize(0.3),
+          },
+        }}
+        name="Events"
+        component={Events}
       />
       <Drawer.Screen
         options={{
@@ -311,9 +340,11 @@ export default function MyDrawer() {
           drawerIcon: ({ color, size, focuced }) => (
             <FontAwesome name="envelope" size={18} color={"white"} />
           ),
-          drawerLabelStyle:{ fontFamily: "Ubuntu",  fontSize: getFontSize(1.7),
-          marginLeft: getFontSize(0.1), 
-        }
+          drawerLabelStyle: {
+            fontFamily: "Ubuntu",
+            fontSize: getFontSize(1.7),
+            marginLeft: getFontSize(0.1),
+          },
         }}
         name="Contact Us"
         component={ContactUs}
@@ -332,9 +363,11 @@ export default function MyDrawer() {
               color={colors.white}
             />
           ),
-          drawerLabelStyle:{ fontFamily: "Ubuntu",  fontSize: getFontSize(1.7),
-          //marginLeft: getFontSize(-0.3), 
-        }
+          drawerLabelStyle: {
+            fontFamily: "Ubuntu",
+            fontSize: getFontSize(1.7),
+            //marginLeft: getFontSize(-0.3),
+          },
         }}
         // style={{ fontFamily: "Ubuntu-Bold", fontSize: 12 }}
         name="Notifications"

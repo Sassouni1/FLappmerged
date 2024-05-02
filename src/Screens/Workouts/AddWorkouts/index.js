@@ -44,7 +44,11 @@ const AddWorkouts = () => {
     } else if (set.seconds) {
       return `${set.seconds} seconds`;
     } else if (set.distance) {
-      return `${set.distance} meters`;
+      return `${set.distance} miles`;
+    } else if (set.yards) {
+      return `${set.yards} yards`;
+    } else if (set.meters) {
+      return `${set.meters} meters`;
     } else if (set.parameter == "lbs") {
       return `${set.lbs ? set.lbs : 0} lbs`;
     } else if (set.parameter == "reps") {
@@ -67,7 +71,7 @@ const AddWorkouts = () => {
       if (res?.status == "200") {
         console.log(
           "respone of add workoutss",
-          res?.response?.Workout[0].innerWorkout
+          res?.response?.Workout[0]?.innerWorkout[0]?.exercise
         );
         setAssigWorkout(res?.response?.Workout[0]);
         dispatch(setLoader(false));
@@ -98,7 +102,6 @@ const AddWorkouts = () => {
           res?.response?.weeklyProgress,
           selectedDate
         );
-        // setWeeklyProgress(res?.response?.weeklyProgress);
         setWeekDataProgress({ ...res?.response?.weeklyProgress });
         dispatch(setLoader(false));
       } else {
@@ -298,8 +301,6 @@ const AddWorkouts = () => {
         calendarColor={colors.primary}
         iconContainer={{ flex: 0.05 }}
       />
-      {/* )
-      } */}
 
       <FlatList
         data={assigWorkout?.innerWorkout}
@@ -438,6 +439,7 @@ const AddWorkouts = () => {
                         workoutId: assigWorkout?._id,
                         innerWorkoutId: item?._id,
                         exerciseId: ex?._id,
+                        exerciseName: ex?.exercise_name,
                       });
                     } else {
                       navigation.navigate("CompleteWorkout", {
@@ -445,6 +447,8 @@ const AddWorkouts = () => {
                         innerWorkoutId: item?._id,
                         exerciseId: ex?._id,
                         calories: item?.calories,
+                        given_sets: ex?.sets,
+                        exerciseName: ex?.exercise_name,
                       });
                     }
                   }}
@@ -473,11 +477,13 @@ const AddWorkouts = () => {
                                   ></View>
                                 </View>
                               )}
+
                               <Image
                                 source={{ uri: ex?.video_thumbnail }}
                                 style={styles.thumbnail}
                                 resizeMode="cover"
                               ></Image>
+                              {console.log("thunmbnail", ex?.video_thumbnail)}
                             </View>
                           ) : (
                             <View>
@@ -567,6 +573,7 @@ const AddWorkouts = () => {
                         marginTop: getHeight(2),
                       }}
                     >
+                      {/* {console.log("thunmbnail2", ex?.video_thumbnail)} */}
                       {ex?.video_thumbnail ? (
                         <Image
                           source={{ uri: ex?.video_thumbnail }}
@@ -639,23 +646,47 @@ const AddWorkouts = () => {
       {assigWorkout?.innerWorkout &&
       assigWorkout?.innerWorkout.length > 0 &&
       assigWorkout?.progress !== 100 ? (
-        <Button
-          //text={"Start workout"}
-          text={assigWorkout?.progress > 0 ? "Resume workout" : "Start workout"}
-          onPress={() =>
-            navigation.navigate("StartWorkout", {
-              workoutId: assigWorkout?._id,
-            })
-          }
-          btnStyle={{
-            ...GernalStyle.btn,
-            width: getWidth(60),
-            backgroundColor: colors.greenlight,
+        <View
+          style={{
             position: "absolute",
             bottom: getHeight(2),
+            flexDirection: "row",
+            justifyContent: "space-around",
+            alignItems: "center",
+            alignSelf: "center",
+            width: getWidth(100),
           }}
-          btnTextStyle={GernalStyle.btnText}
-        />
+        >
+          <Button
+            text={"Add Aditional workout"}
+            onPress={() =>
+              navigation.navigate("AditionalWorkout", {
+                targetWorkout: assigWorkout,
+              })
+            }
+            btnStyle={{
+              ...GernalStyle.btn,
+              width: getWidth(60),
+              backgroundColor: colors.greenlight,
+            }}
+            btnTextStyle={GernalStyle.btnText}
+          />
+          <Button
+            //text={"Start workout"}
+            text={assigWorkout?.progress > 0 ? "Resume" : "Start"}
+            onPress={() =>
+              navigation.navigate("StartWorkout", {
+                workoutId: assigWorkout?._id,
+              })
+            }
+            btnStyle={{
+              ...GernalStyle.btn,
+              width: getWidth(30),
+              backgroundColor: colors.buttonColor,
+            }}
+            btnTextStyle={GernalStyle.btnText}
+          />
+        </View>
       ) : null}
     </View>
   );

@@ -37,7 +37,17 @@ export const GernalStyle = StyleSheet.create({
     color: "white",
     justifyContent: "center",
     fontSize: getFontSize(1.6),
-    // lineHeight:20,
+    fontFamily: "Ubuntu-Regular",
+    alignSelf: "center",
+    paddingLeft: 5,
+  },
+  input_payment: {
+    height: getHeight(6),
+    width: getWidth(90),
+    backgroundColor: "rgba(79, 79, 79, 1)",
+    color: "white",
+    justifyContent: "center",
+    fontSize: getFontSize(1.6),
     fontFamily: "Ubuntu-Regular",
     alignSelf: "center",
     paddingLeft: 5,
@@ -48,8 +58,7 @@ export const GernalStyle = StyleSheet.create({
     paddingLeft: 5,
     marginTop: 3,
     width: getWidth(90),
-    alignSelf: "center" 
-    // marginBottom: 2,
+    alignSelf: "center",
   },
   textinput: {
     marginTop: getHeight(2.5),

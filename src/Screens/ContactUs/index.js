@@ -95,16 +95,6 @@ const ContactUs = () => {
       setState({ ...state, emailError, fullnameError, questionError });
     }
   };
-  useEffect(() => {
-    setState({
-      email: "",
-      emailError: "",
-      fullname: "",
-      fullnameError: "",
-      question: "",
-      questionError: "",
-    });
-  }, []);
 
   return (
     <View
@@ -157,7 +147,6 @@ const ContactUs = () => {
           <Text
             style={[
               GernalStyle.InputError,
-              { width: getWidth(90), alignSelf: "center" },
             ]}
           >
             {state.fullnameError}
@@ -192,7 +181,6 @@ const ContactUs = () => {
           <Text
             style={[
               GernalStyle.InputError,
-              { width: getWidth(90), alignSelf: "center" },
             ]}
           >
             {state.emailError}
@@ -228,7 +216,6 @@ const ContactUs = () => {
           <Text
             style={[
               GernalStyle.InputError,
-              { width: getWidth(90), alignSelf: "center" },
             ]}
           >
             {state.questionError}

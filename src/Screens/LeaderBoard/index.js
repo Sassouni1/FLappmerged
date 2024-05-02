@@ -34,7 +34,7 @@ const LeaderBoard = () => {
   const topItemsWeight = showAllWeight ? dataWeight : dataWeight.slice(0, 5);
 
   const handleSeeMoreWeight = () => {
-    setShowAllWeight(!showAll);
+    setShowAllWeight(true);
   };
   const handleSeeLessWeight = () => {
     setShowAllWeight(false);
@@ -46,7 +46,7 @@ const LeaderBoard = () => {
     : dataMessages.slice(0, 5);
 
   const handleSeeMoreMessages = () => {
-    setShowAllMessages(!showAll);
+    setShowAllMessages(true);
   };
   const handleSeeLessMessages = () => {
     setShowAllMessages(false);
@@ -111,435 +111,432 @@ const LeaderBoard = () => {
       />
       {/* {loader ? null : (
         <> */}
-          <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+        <View
+          style={{
+            backgroundColor: colors.secondary1,
+            marginTop: getFontSize(8),
+            margin: getFontSize(1),
+          }}
+        >
+          <View style={{ flex: 1 }}>
             <View
               style={{
-                backgroundColor: colors.secondary1,
-                marginTop: getFontSize(8),
-                margin: getFontSize(1),
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: getFontSize(2),
+                marginBottom: getFontSize(2),
               }}
             >
-              <View style={{ flex: 1 }}>
+              <Text style={styles.txt}>MOST CONSISTENT USER</Text>
+            </View>
+
+            {topItems.map((item, index) => (
+              <View key={index}>
                 <View
                   style={{
                     justifyContent: "center",
                     alignItems: "center",
-                    marginTop: getFontSize(2),
-                    marginBottom: getFontSize(2),
+                    marginBottom: getFontSize(1),
                   }}
                 >
-                  <Text style={styles.txt}>MOST CONSISTENT USER</Text>
-                </View>
-
-                {topItems.map((item, index) => (
-                  <View key={index}>
+                  <View
+                    style={{
+                      width: getWidth(90),
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: "white",
+                      //height: getHeight(8),
+                    }}
+                  >
                     <View
                       style={{
-                        justifyContent: "center",
+                        flexDirection: "row",
                         alignItems: "center",
-                        marginBottom: getFontSize(1),
+                        margin: getFontSize(1.3),
                       }}
                     >
-                      <View
-                        style={{
-                          width: getWidth(90),
-                          justifyContent: "center",
-                          alignItems: "center",
-                          backgroundColor: "white",
-                          height: getHeight(8),
-                        }}
-                      >
+                      <View style={{ flex: 1 }}>
                         <View
                           style={{
                             flexDirection: "row",
                             alignItems: "center",
-                            margin: getFontSize(2),
+                            justifyContent: "space-between",
                           }}
                         >
-                          <View style={{ flex: 1 }}>
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              {item?.userImage && item?.userImage != "" ? (
-                                <View>
-                                  <Image
-                                    source={{ uri: item?.userImage }}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              ) : (
-                                <View>
-                                  <Image
-                                    source={require("../../assets/images/Pimg.jpeg")}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              )}
-                              <View
-                                style={{ flexDirection: "column", flex: 1 }}
-                              >
-                                <Text style={styles.text}>
-                                  {item.username} #{index + 1}
-                                </Text>
-                                <Text
-                                  style={styles.descriptionText}
-                                  numberOfLines={2}
-                                >
-                                  {item?.totalCompletedExercises} consective
-                                  days
-                                </Text>
-                              </View>
-                              {index == 0 ? (
-                                <View>
-                                  <Image
-                                    source={require("../../assets/images/first1.png")}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              ) : index == 1 ? (
-                                <View>
-                                  <Image
-                                    source={require("../../assets/images/second2.png")}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              ) : index == 2 ? (
-                                <View>
-                                  <Image
-                                    source={require("../../assets/images/third3.png")}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              ) : index > 2 ? (
-                                <View>
-                                  <Image
-                                    source={require("../../assets/images/rest4.png")}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              ) : null}
+                          {item?.userImage && item?.userImage != "" ? (
+                            <View>
+                              <Image
+                                source={{ uri: item?.userImage }}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
                             </View>
+                          ) : (
+                            <View>
+                              <Image
+                                source={require("../../assets/images/Pimg.jpeg")}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
+                            </View>
+                          )}
+                          <View style={{ flexDirection: "column", flex: 1 }}>
+                            <Text style={styles.text}>
+                              {item.username} #{index + 1}
+                            </Text>
+                            <Text
+                              style={styles.descriptionText}
+                              numberOfLines={2}
+                            >
+                              {item?.totalCompletedExercises} consective days
+                            </Text>
                           </View>
+                          {index == 0 ? (
+                            <View>
+                              <Image
+                                source={require("../../assets/images/first1.png")}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
+                            </View>
+                          ) : index == 1 ? (
+                            <View>
+                              <Image
+                                source={require("../../assets/images/second2.png")}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
+                            </View>
+                          ) : index == 2 ? (
+                            <View>
+                              <Image
+                                source={require("../../assets/images/third3.png")}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
+                            </View>
+                          ) : index > 2 ? (
+                            <View>
+                              <Image
+                                source={require("../../assets/images/rest4.png")}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
+                            </View>
+                          ) : null}
                         </View>
                       </View>
                     </View>
                   </View>
-                ))}
-                {!showAll && data.length > 5 && (
-                  <TouchableOpacity
-                    onPress={handleSeeMore}
-                    style={{ margin: getFontSize(3) }}
-                  >
-                    <Text style={styles.txt}>SEE MORE</Text>
-                  </TouchableOpacity>
-                )}
-                {showAll && (
-                  <TouchableOpacity
-                    onPress={handleSeeLess}
-                    style={{ margin: getFontSize(3) }}
-                  >
-                    <Text style={styles.txt}>SEE LESS</Text>
-                  </TouchableOpacity>
-                )}
+                </View>
               </View>
-            </View>
+            ))}
+            {!showAll && data.length > 5 && (
+              <TouchableOpacity
+                onPress={handleSeeMore}
+                style={{ margin: getFontSize(3) }}
+              >
+                <Text style={styles.txt}>SEE MORE</Text>
+              </TouchableOpacity>
+            )}
+            {showAll && (
+              <TouchableOpacity
+                onPress={handleSeeLess}
+                style={{ margin: getFontSize(3) }}
+              >
+                <Text style={styles.txt}>SEE LESS</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+        <View
+          style={{
+            backgroundColor: colors.secondary1,
+            marginTop: getFontSize(5),
+            margin: getFontSize(1),
+            marginBottom: getFontSize(1),
+          }}
+        >
+          <View style={{ flex: 1 }}>
             <View
               style={{
-                backgroundColor: colors.secondary1,
-                marginTop: getFontSize(5),
-                margin: getFontSize(1),
-                marginBottom: getFontSize(1),
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: getFontSize(2),
+                marginBottom: getFontSize(2),
               }}
             >
-              <View style={{ flex: 1 }}>
+              <Text style={styles.txt}>MOST ENGAGED USER ON CHAT</Text>
+            </View>
+
+            {topItemsMessages.map((item, index) => (
+              <View key={index}>
                 <View
                   style={{
                     justifyContent: "center",
                     alignItems: "center",
-                    marginTop: getFontSize(2),
-                    marginBottom: getFontSize(2),
+                    marginBottom: getFontSize(1),
                   }}
                 >
-                  <Text style={styles.txt}>MOST ENGAGED USER ON CHAT</Text>
-                </View>
-
-                {topItemsMessages.map((item, index) => (
-                  <View key={index}>
+                  <View
+                    style={{
+                      width: getWidth(90),
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: "white",
+                      //height: getHeight(8),
+                    }}
+                  >
                     <View
                       style={{
-                        justifyContent: "center",
+                        flexDirection: "row",
                         alignItems: "center",
-                        marginBottom: getFontSize(1),
+                        margin: getFontSize(1.3),
                       }}
                     >
-                      <View
-                        style={{
-                          width: getWidth(90),
-                          justifyContent: "center",
-                          alignItems: "center",
-                          backgroundColor: "white",
-                          height: getHeight(8),
-                        }}
-                      >
+                      <View style={{ flex: 1 }}>
                         <View
                           style={{
                             flexDirection: "row",
                             alignItems: "center",
-                            margin: getFontSize(2),
+                            justifyContent: "space-between",
                           }}
                         >
-                          <View style={{ flex: 1 }}>
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              {item?.userDetails?.profile_image &&
-                              item?.userDetails?.profile_image != "" ? (
-                                <View>
-                                  <Image
-                                    source={{
-                                      uri: item?.userDetails?.profile_image,
-                                    }}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              ) : (
-                                <View>
-                                  <Image
-                                    source={require("../../assets/images/Pimg.jpeg")}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              )}
-                              <View
-                                style={{ flexDirection: "column", flex: 1 }}
-                              >
-                                <Text style={styles.text}>
-                                  {item?.userDetails?.full_name} #{index + 1}
-                                </Text>
-                                <Text
-                                  style={styles.descriptionText}
-                                  numberOfLines={2}
-                                >
-                                  {item?.totalMessages} messages
-                                </Text>
-                              </View>
-                              {index == 0 ? (
-                                <View>
-                                  <Image
-                                    source={require("../../assets/images/first1.png")}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              ) : index == 1 ? (
-                                <View>
-                                  <Image
-                                    source={require("../../assets/images/second2.png")}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              ) : index == 2 ? (
-                                <View>
-                                  <Image
-                                    source={require("../../assets/images/third3.png")}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              ) : index > 2 ? (
-                                <View>
-                                  <Image
-                                    source={require("../../assets/images/rest4.png")}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              ) : null}
+                          {item?.userDetails?.profile_image &&
+                          item?.userDetails?.profile_image != "" ? (
+                            <View>
+                              <Image
+                                source={{
+                                  uri: item?.userDetails?.profile_image,
+                                }}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
                             </View>
+                          ) : (
+                            <View>
+                              <Image
+                                source={require("../../assets/images/Pimg.jpeg")}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
+                            </View>
+                          )}
+                          <View style={{ flexDirection: "column", flex: 1 }}>
+                            <Text style={styles.text}>
+                              {item?.userDetails?.full_name} #{index + 1}
+                            </Text>
+                            <Text
+                              style={styles.descriptionText}
+                              numberOfLines={2}
+                            >
+                              {item?.totalMessages} messages
+                            </Text>
                           </View>
+                          {index == 0 ? (
+                            <View>
+                              <Image
+                                source={require("../../assets/images/first1.png")}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
+                            </View>
+                          ) : index == 1 ? (
+                            <View>
+                              <Image
+                                source={require("../../assets/images/second2.png")}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
+                            </View>
+                          ) : index == 2 ? (
+                            <View>
+                              <Image
+                                source={require("../../assets/images/third3.png")}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
+                            </View>
+                          ) : index > 2 ? (
+                            <View>
+                              <Image
+                                source={require("../../assets/images/rest4.png")}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
+                            </View>
+                          ) : null}
                         </View>
                       </View>
                     </View>
                   </View>
-                ))}
-                {!showAllMessages && dataWeight.length > 5 && (
-                  <TouchableOpacity
-                    onPress={handleSeeMoreMessages}
-                    style={{ margin: getFontSize(3) }}
-                  >
-                    <Text style={styles.txt}>SEE MORE</Text>
-                  </TouchableOpacity>
-                )}
-                {showAllMessages && (
-                  <TouchableOpacity
-                    onPress={handleSeeLessMessages}
-                    style={{ margin: getFontSize(3) }}
-                  >
-                    <Text style={styles.txt}>SEE LESS</Text>
-                  </TouchableOpacity>
-                )}
+                </View>
               </View>
-            </View>
+            ))}
+            {!showAllMessages && dataMessages.length > 5 && (
+              <TouchableOpacity
+                onPress={handleSeeMoreMessages}
+                style={{ margin: getFontSize(3) }}
+              >
+                <Text style={styles.txt}>SEE MORE</Text>
+              </TouchableOpacity>
+            )}
+            {showAllMessages && (
+              <TouchableOpacity
+                onPress={handleSeeLessMessages}
+                style={{ margin: getFontSize(3) }}
+              >
+                <Text style={styles.txt}>SEE LESS</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
 
+        <View
+          style={{
+            backgroundColor: colors.secondary1,
+            marginTop: getFontSize(5),
+            margin: getFontSize(1),
+            marginBottom: getFontSize(4),
+          }}
+        >
+          <View style={{ flex: 1 }}>
             <View
               style={{
-                backgroundColor: colors.secondary1,
-                marginTop: getFontSize(5),
-                margin: getFontSize(1),
-                marginBottom: getFontSize(4),
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: getFontSize(2),
+                marginBottom: getFontSize(2),
               }}
             >
-              <View style={{ flex: 1 }}>
+              <Text style={styles.txt}>HEAVIEST SQUAT</Text>
+            </View>
+            {topItemsWeight.map((item, index) => (
+              <View key={index}>
                 <View
                   style={{
                     justifyContent: "center",
                     alignItems: "center",
-                    marginTop: getFontSize(2),
-                    marginBottom: getFontSize(2),
+                    marginBottom: getFontSize(1),
                   }}
                 >
-                  <Text style={styles.txt}>HEAVIEST SQUAT</Text>
-                </View>
-                {topItemsWeight.map((item, index) => (
-                  <View key={index}>
+                  <View
+                    style={{
+                      width: getWidth(90),
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: "white",
+                      // height: getHeight(8),
+                    }}
+                  >
                     <View
                       style={{
-                        justifyContent: "center",
+                        flexDirection: "row",
                         alignItems: "center",
-                        marginBottom: getFontSize(1),
+                        margin: getFontSize(1.3),
                       }}
                     >
-                      <View
-                        style={{
-                          width: getWidth(90),
-                          justifyContent: "center",
-                          alignItems: "center",
-                          backgroundColor: "white",
-                          height: getHeight(8),
-                        }}
-                      >
+                      <View style={{ flex: 1 }}>
                         <View
                           style={{
                             flexDirection: "row",
                             alignItems: "center",
-                            margin: getFontSize(2),
+                            justifyContent: "space-between",
                           }}
                         >
-                          <View style={{ flex: 1 }}>
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              {item?.userImage && item?.userImage != "" ? (
-                                <View>
-                                  <Image
-                                    source={{ uri: item?.userImage }}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              ) : (
-                                <View>
-                                  <Image
-                                    source={require("../../assets/images/Pimg.jpeg")}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              )}
-                              <View
-                                style={{ flexDirection: "column", flex: 1 }}
-                              >
-                                <Text style={styles.text}>
-                                  {item.username} #{index + 1}
-                                </Text>
-                                <Text
-                                  style={styles.descriptionText}
-                                  numberOfLines={2}
-                                >
-                                  {item?.totalWeight} consective days
-                                </Text>
-                              </View>
-                              {index == 0 ? (
-                                <View>
-                                  <Image
-                                    source={require("../../assets/images/first1.png")}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              ) : index == 1 ? (
-                                <View>
-                                  <Image
-                                    source={require("../../assets/images/second2.png")}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              ) : index == 2 ? (
-                                <View>
-                                  <Image
-                                    source={require("../../assets/images/third3.png")}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              ) : index > 2 ? (
-                                <View>
-                                  <Image
-                                    source={require("../../assets/images/rest4.png")}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  ></Image>
-                                </View>
-                              ) : null}
+                          {item?.userImage && item?.userImage != "" ? (
+                            <View>
+                              <Image
+                                source={{ uri: item?.userImage }}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
                             </View>
+                          ) : (
+                            <View>
+                              <Image
+                                source={require("../../assets/images/Pimg.jpeg")}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
+                            </View>
+                          )}
+                          <View style={{ flexDirection: "column", flex: 1 }}>
+                            <Text style={styles.text}>
+                              {item.username} #{index + 1}
+                            </Text>
+                            <Text
+                              style={styles.descriptionText}
+                              numberOfLines={2}
+                            >
+                              {item?.totalWeight &&
+                                (typeof item?.totalWeight === "number"
+                                  ? (item?.totalWeight).toFixed(0)
+                                  : item?.totalWeight)}{" "}
+                              weight lift
+                            </Text>
                           </View>
+                          {index == 0 ? (
+                            <View>
+                              <Image
+                                source={require("../../assets/images/first1.png")}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
+                            </View>
+                          ) : index == 1 ? (
+                            <View>
+                              <Image
+                                source={require("../../assets/images/second2.png")}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
+                            </View>
+                          ) : index == 2 ? (
+                            <View>
+                              <Image
+                                source={require("../../assets/images/third3.png")}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
+                            </View>
+                          ) : index > 2 ? (
+                            <View>
+                              <Image
+                                source={require("../../assets/images/rest4.png")}
+                                style={styles.thumbnail}
+                                resizeMode="cover"
+                              ></Image>
+                            </View>
+                          ) : null}
                         </View>
                       </View>
                     </View>
                   </View>
-                ))}
-                {!showAllWeight && dataWeight.length > 5 && (
-                  <TouchableOpacity
-                    onPress={handleSeeMoreWeight}
-                    style={{ margin: getFontSize(3) }}
-                  >
-                    <Text style={styles.txt}>SEE MORE</Text>
-                  </TouchableOpacity>
-                )}
-                {showAllWeight && (
-                  <TouchableOpacity
-                    onPress={handleSeeLessWeight}
-                    style={{ margin: getFontSize(3) }}
-                  >
-                    <Text style={styles.txt}>SEE LESS</Text>
-                  </TouchableOpacity>
-                )}
+                </View>
               </View>
-            </View>
-          </ScrollView>
-        {/* </>
+            ))}
+            {!showAllWeight && dataWeight.length > 5 && (
+              <TouchableOpacity
+                onPress={handleSeeMoreWeight}
+                style={{ margin: getFontSize(3) }}
+              >
+                <Text style={styles.txt}>SEE MORE</Text>
+              </TouchableOpacity>
+            )}
+            {showAllWeight && (
+              <TouchableOpacity
+                onPress={handleSeeLessWeight}
+                style={{ margin: getFontSize(3) }}
+              >
+                <Text style={styles.txt}>SEE LESS</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      </ScrollView>
+      {/* </>
       )} */}
     </View>
   );

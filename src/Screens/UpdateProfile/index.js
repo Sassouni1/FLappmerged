@@ -279,7 +279,6 @@ const UpdateProfiles = () => {
           <Text
             style={[
               GernalStyle.InputError,
-              { width: getWidth(90), alignSelf: "center" },
             ]}
           >
             {state.fullnameError}
@@ -323,7 +322,6 @@ const UpdateProfiles = () => {
           <Text
             style={[
               GernalStyle.InputError,
-              { width: getWidth(90), alignSelf: "center" },
             ]}
           >
             {state.weightError}
@@ -340,7 +338,6 @@ const UpdateProfiles = () => {
           style={{
             ...GernalStyle.input,
             marginTop: getHeight(2),
-            marginBottom: getFontSize(2),
           }}
           ref={inputRefs.height}
           value={state.height.toString()}
@@ -360,7 +357,6 @@ const UpdateProfiles = () => {
           <Text
             style={[
               GernalStyle.InputError,
-              { width: getWidth(90), alignSelf: "center" },
             ]}
           >
             {state.heightError}

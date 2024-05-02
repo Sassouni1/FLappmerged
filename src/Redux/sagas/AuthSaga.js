@@ -5,6 +5,7 @@ import {logout, setLoginData, setSingleUser} from '../actions/AuthActions';
 import {setChats, setCounts, setLoader} from '../actions/GernalActions';
 import Toast from 'react-native-simple-toast';
 import { panGestureHandlerCustomNativeProps } from 'react-native-gesture-handler/lib/typescript/handlers/PanGestureHandler';
+import { Alert, Linking } from 'react-native';
 
 function* loginRequest(params) { try {
     const res = yield ApiCall({
@@ -19,12 +20,22 @@ function* loginRequest(params) { try {
 
       yield put(setLoader(false));
     } else {
-      console.log('errorrrererer', res.response);
+      console.log('errorrrererer', res?.response);
       yield put(setLoader(false));
-
-      alert(res?.response?.message, [
-        {text: 'OK', onPress: () => console.log('OK Pressed')},
-      ]);
+      res?.response?.link? Alert.alert('Error', res?.response?.message, [
+       
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Payment', onPress: () => {if (Linking.canOpenURL("https://buy.stripe.com/test_fZe2c73Wv74lfVm5km")) {
+          // Open the link in the default browser
+          Linking.openURL("https://buy.stripe.com/test_fZe2c73Wv74lfVm5km");
+        } else {
+          console.error('Cannot open URL');
+        }}},]):
+      alert(res?.response?.message);
     }
   } catch (e) {
     console.log('saga login error -- ', e.toString());

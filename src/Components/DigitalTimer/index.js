@@ -8,9 +8,6 @@ import Fontisto from "react-native-vector-icons/Fontisto";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import AntDesign from "react-native-vector-icons/AntDesign";
 
-
-import { PlayerSvg, StopSvg } from "../../assets/images/index";
-
 const DigitalTimer = () => {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
@@ -66,9 +63,9 @@ const DigitalTimer = () => {
         </View>
         <TouchableOpacity style={styles.button} onPress={toggleTimer}>
           {isRunning ? (
-            <FontAwesome6 name={"pause"} size={20} color={'white'}/>
+            <FontAwesome6 name={"pause"} size={20} color={"white"} />
           ) : (
-            <AntDesign name={"caretright"} size={22} color={'white'}/>
+            <AntDesign name={"caretright"} size={22} color={"white"} />
           )}
 
           <Text style={styles.buttonText}>{isRunning ? "Pause" : "Start"}</Text>
@@ -84,13 +81,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   header: {
-    //flex:1,
     flexDirection: "column",
     alignItems: "center",
     marginRight: 38,
   },
   headerTime: {
-    //flex:1,
     flexDirection: "row",
     marginTop: 5,
   },

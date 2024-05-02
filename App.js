@@ -1,13 +1,13 @@
-import React, {useEffect, useState} from 'react';
-import {Provider} from 'react-redux';
-import {PersistGate} from 'redux-persist/integration/react';
-import {persistor, store} from './src/Redux/store';
-import Main from './src/Navigation/Main';
-import SplashScreen from 'react-native-splash-screen';
-import { Platform } from 'react-native';
+import React, { useEffect, useState } from "react";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistor, store } from "./src/Redux/store";
+import Main from "./src/Navigation/Main";
+import SplashScreen from "react-native-splash-screen";
+import { Platform } from "react-native";
 const App = () => {
   useEffect(() => {
-   // if(Platform.OS==="android")
+    // if(Platform.OS==="android")
     SplashScreen.hide(); //hides the splash screen on app load.
   }, []);
   return (

@@ -7,6 +7,7 @@ import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
 import { useNavigation } from "@react-navigation/native";
 import { styles } from "./styles";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import HeaderBottom from "../../Components/HeaderBottom";
 import Video from "react-native-video";
 
@@ -77,10 +78,30 @@ const Help = () => {
           <View style={styles.btnCon}>
             <Text style={styles.text}>How to use app?</Text>
           </View>
-          <TouchableOpacity
-            onPress={isPaused ? playVideo : pauseVideo}
-            activeOpacity={1}
-          >
+          <View>
+            <TouchableOpacity
+              onPress={isPaused ? playVideo : pauseVideo}
+              activeOpacity={1}
+              style={{
+                flex: 1,
+                borderRadius: 7,
+                width: getWidth(92),
+                height: getHeight(25),
+                backgroundColor: isPaused
+                  ? "rgba(155,155,155,0.22825630252100846) 100%"
+                  : "rgba(255,255,255,0) 100%",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "absolute",
+                zIndex: 999,
+              }}
+            >
+              <AntDesign
+                name={isPaused ? "caretright" : "pausecircleo"}
+                size={25}
+                color={colors.white}
+              />
+            </TouchableOpacity>
             <Video
               ref={videoRef}
               source={require("../../assets/images/background.mp4")}
@@ -89,16 +110,37 @@ const Help = () => {
               style={{ ...styles.img }}
               paused={isPaused}
             />
-          </TouchableOpacity>
+          </View>
         </View>
         <View style={{ paddingHorizontal: getWidth(4) }}>
           <View style={{ ...styles.btnCon, marginTop: getHeight(6) }}>
             <Text style={styles.text}>Important FAQs</Text>
           </View>
-          <TouchableOpacity
-            onPress={isPausedFaq ? playVideoFaq : pauseVideoFaq}
-            activeOpacity={1}
-          >
+
+          <View>
+            <TouchableOpacity
+              onPress={isPausedFaq ? playVideoFaq : pauseVideoFaq}
+              activeOpacity={1}
+              style={{
+                flex: 1,
+                borderRadius: 7,
+                width: getWidth(92),
+                height: getHeight(25),
+                backgroundColor: isPausedFaq
+                  ? "rgba(155,155,155,0.22825630252100846) 100%"
+                  : "rgba(255,255,255,0) 100%",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "absolute",
+                zIndex: 999,
+              }}
+            >
+              <AntDesign
+                name={isPausedFaq ? "caretright" : "pausecircleo"}
+                size={25}
+                color={colors.white}
+              />
+            </TouchableOpacity>
             <Video
               ref={videoRefFaq}
               source={require("../../assets/images/background.mp4")}
@@ -107,7 +149,7 @@ const Help = () => {
               style={{ ...styles.img }}
               paused={isPausedFaq}
             />
-          </TouchableOpacity>
+          </View>
         </View>
       </KeyboardAwareScrollView>
     </View>

@@ -45,7 +45,11 @@ const StartWorkout = ({ route }) => {
     } else if (set.seconds) {
       return `${set.seconds} seconds`;
     } else if (set.distance) {
-      return `${set.distance} meters`;
+      return `${set.distance} miles`;
+    } else if (set.yards) {
+      return `${set.yards} yards`;
+    }  else if (set.meters) {
+      return `${set.meters} meters`;
     } else if (set.parameter == 'lbs') {
       return `${set.lbs ? set.lbs : 0} lbs`;
     } else if (set.parameter =='reps') {
@@ -244,6 +248,8 @@ const StartWorkout = ({ route }) => {
                           workoutId: data?._id,
                           innerWorkoutId: item?._id,
                           exerciseId: ex?._id,
+                          calories: item?.calories,
+                          given_sets: ex?.sets
                         });
                       }
                     }}
