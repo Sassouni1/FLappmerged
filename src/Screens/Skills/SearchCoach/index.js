@@ -1,4 +1,4 @@
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import React, { useState } from "react";
 import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -10,39 +10,14 @@ import { colors } from "../../../constants/colors";
 import { fonts } from "../../../constants/fonts";
 import CKeyBoardAvoidWrapper from "../../../Components/Common/CKeyBoardAvoidWrapper";
 
-export default function SkillsTraining({ navigation }) {
-  const [selectedTab, setSelectedTab] = useState(0);
+export default function SearchCoach({ navigation }) {
+  const [search, setSearch] = useState("");
 
-  const onPressTab = (id) => setSelectedTab(id);
+  const onChangeSearch = (text) => setSearch(text);
 
-  const onPressSearch = () => navigation.navigate("SearchWorkout");
+  const onPressBack = () => navigation.goBack();
 
   const onPressDetail = () => navigation.navigate("CoachDetail");
-
-  const RenderTab = ({ title, id }) => {
-    return (
-      <TouchableOpacity
-        onPress={() => onPressTab(id)}
-        style={[
-          styles.tabContainerStyle,
-          {
-            backgroundColor: selectedTab !== id ? colors.darkGray : colors.white,
-          },
-        ]}
-      >
-        <Text
-          style={[
-            styles.topTabTextStyle,
-            {
-              color: selectedTab !== id ? colors.white : colors.darkGray,
-            },
-          ]}
-        >
-          {title}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
 
   const RenderItem = ({ item }) => {
     return (
@@ -60,14 +35,14 @@ export default function SkillsTraining({ navigation }) {
               <View style={styles.rowContainer}>
                 <Entypo name="star" size={getFontSize(2)} color={colors.orange} />
                 <Text numberOfLines={1} style={styles.lessonTextStyle}>
-                  37 lessons
+                  12 lessons
                 </Text>
               </View>
               <Text style={styles.lessonTextStyle}>•</Text>
               <View style={styles.rowContainer}>
                 <Ionicons name="person" size={getFontSize(2)} color={colors.darkBlue} />
                 <Text numberOfLines={1} style={styles.lessonTextStyle}>
-                  5 Coaches
+                  3 Coaches
                 </Text>
               </View>
             </View>
@@ -80,79 +55,45 @@ export default function SkillsTraining({ navigation }) {
     );
   };
 
-  const RenderPopularSkills = () => {
-    return (
-      <View style={styles.container1Style}>
-        <Image source={require("../../../assets/images/home1.png")} style={styles.imageSTyle} />
-        <View style={{ flex: 1, gap: getHeight(1.5) }}>
-          <Text style={styles.titleSTyle} numberOfLines={1}>
-            Category
-          </Text>
-          <View style={styles.outerProgressStyle}>
-            <View style={styles.innerProgressStyle} />
-          </View>
-          <View style={[styles.descRowContainer, { flex: 0 }]}>
-            <View style={styles.rowContainer}>
-              <Ionicons name="document-text" size={getFontSize(2)} color={colors.slateGray} />
-              <Text numberOfLines={1} style={styles.lessonTextStyle}>
-                Movement 4
-              </Text>
-            </View>
-            <Text style={styles.lessonTextStyle}>•</Text>
-            <View style={styles.rowContainer}>
-              <Ionicons name="person" size={getFontSize(2)} color={colors.darkBlue} />
-              <Text numberOfLines={1} style={styles.lessonTextStyle}>
-                5 Coaches
-              </Text>
-            </View>
-          </View>
-        </View>
-      </View>
-    );
-  };
-
   return (
     <View style={styles.root}>
-      <View style={styles.topContainer}>
-        <GeneralStatusBar
-          barStyle="light-content"
-          hidden={false}
-          backgroundColor={colors.darkGray}
-          translucent={true}
-        />
-        <View>
-          <Text style={styles.headerTextStyles}>Skills Training</Text>
-        </View>
-        <View style={styles.topTabContainer}>
-          <RenderTab title="Skill Learning" id={0} />
-          <RenderTab title="Skill Workouts" id={1} />
-        </View>
-        <TouchableOpacity onPress={onPressSearch} style={styles.searchContainerStyle}>
-          <Text style={styles.searchInputStyle}>Search Full Database</Text>
-          <Entypo name="magnifying-glass" size={getFontSize(3)} color={colors.white} />
-        </TouchableOpacity>
-      </View>
-      <CKeyBoardAvoidWrapper>
-        <FlatList
-          data={[1, 2, 3]}
-          renderItem={RenderItem}
-          keyExtractor={(item) => item.toString()}
-          scrollEnabled={false}
-        />
-
-        <View style={styles.subHeaderStyle}>
-          <Text style={styles.titleSTyle}>Popular Skills</Text>
-          <TouchableOpacity>
-            <Text style={styles.viewAllTextStyle}>See All</Text>
+      <View style={styles.root}>
+        <View style={styles.topContainer}>
+          <GeneralStatusBar
+            barStyle="light-content"
+            hidden={false}
+            backgroundColor={colors.darkGray}
+            translucent={true}
+          />
+          <TouchableOpacity onPress={onPressBack} style={{ paddingHorizontal: getWidth(4) }}>
+            <Ionicons name="chevron-back" size={getFontSize(4)} color={colors.white} />
           </TouchableOpacity>
+          <Text style={styles.headerTextStyles}>Search Workout</Text>
+          <View style={styles.searchContainerStyle}>
+            <TextInput
+              style={styles.searchInputStyle}
+              placeholder="Search Full Database"
+              placeholderTextColor={colors.white}
+              value={search}
+              onChangeText={onChangeSearch}
+            />
+            <Entypo name="magnifying-glass" size={getFontSize(3)} color={colors.white} />
+          </View>
         </View>
-        <FlatList
-          data={[1, 2, 3, 4, 5]}
-          renderItem={RenderPopularSkills}
-          keyExtractor={(item) => item.toString()}
-          scrollEnabled={false}
-        />
-      </CKeyBoardAvoidWrapper>
+        <CKeyBoardAvoidWrapper>
+          <Text style={styles.subHeaderTestStyle}>Choose Your Coach</Text>
+          <Text style={styles.viewAllTextStyle}>Ready to learn? ️</Text>
+          <FlatList
+            data={[1, 2, 3]}
+            renderItem={RenderItem}
+            keyExtractor={(item) => item.toString()}
+            scrollEnabled={false}
+          />
+        </CKeyBoardAvoidWrapper>
+      </View>
+      <TouchableOpacity onPress={onPressBack} style={styles.goBackBtnStyle}>
+        <Text style={styles.backBtnTextStyle}>No, Go Back</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -173,29 +114,10 @@ const styles = StyleSheet.create({
     fontSize: getFontSize(3.5),
     fontFamily: fonts.UBo,
     paddingLeft: getWidth(5),
-  },
-  topTabContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginHorizontal: getWidth(6),
-    marginVertical: getWidth(3),
-  },
-  tabContainerStyle: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: colors.white,
-    height: getFontSize(6),
-    width: "49%",
-    borderRadius: 14,
-  },
-  topTabTextStyle: {
-    color: colors.black,
-    fontSize: getFontSize(2),
-    fontFamily: fonts.UMe,
+    marginTop: getHeight(1),
   },
   searchInputStyle: {
+    height: getFontSize(6),
     paddingRight: getWidth(5),
     fontSize: getFontSize(2),
     fontFamily: fonts.UMe,
@@ -208,7 +130,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginHorizontal: getWidth(8),
     paddingHorizontal: getWidth(5),
-    paddingVertical: getHeight(1.3),
     marginTop: getWidth(3),
     flexDirection: "row",
     alignItems: "center",
@@ -226,7 +147,7 @@ const styles = StyleSheet.create({
   },
   rowContainer: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
     flex: 1,
   },
@@ -274,20 +195,56 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: getWidth(5),
     marginVertical: getWidth(2),
+    marginTop: getWidth(3),
   },
   viewAllTextStyle: {
-    color: colors.orange,
+    color: colors.darkGray1,
     fontSize: getFontSize(1.7),
     fontFamily: fonts.UMe,
+    paddingHorizontal: getWidth(5),
+    textAlign: "center",
+    marginTop: getHeight(1),
   },
-  outerProgressStyle: {
-    backgroundColor: colors.gray1,
-    height: getWidth(2),
-    width: "100%",
+  subHeaderTestStyle: {
+    color: colors.black,
+    fontSize: getFontSize(3.5),
+    fontFamily: fonts.UBo,
+    marginTop: getHeight(3),
+    paddingHorizontal: getWidth(5),
+    textAlign: "center",
   },
-  innerProgressStyle: {
-    backgroundColor: colors.darkGray1,
-    height: getWidth(2),
-    width: "70%",
+  popularityStyle: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: getWidth(1),
+  },
+  goBackBtnStyle: {
+    backgroundColor: colors.black,
+    paddingVertical: getWidth(4),
+    alignItems: "center",
+    alignSelf: "center",
+    borderRadius: 19,
+    width: "90%",
+    marginVertical: getWidth(5),
+  },
+  coachBtnStyle: {
+    backgroundColor: colors.black,
+    paddingVertical: getWidth(4),
+    alignItems: "center",
+    alignSelf: "center",
+    borderRadius: 19,
+    width: "90%",
+    marginTop: getWidth(5),
+  },
+  backBtnTextStyle: {
+    color: colors.white,
+    fontSize: getFontSize(2.2),
+    fontFamily: fonts.UMe,
+  },
+  playBtnStyle: {
+    backgroundColor: colors.orange,
+    padding: getWidth(2.5),
+    borderRadius: 16,
   },
 });
