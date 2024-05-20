@@ -13,7 +13,7 @@ function* loginRequest(params) { try {
       route: 'auth/login',
       verb: 'post',
     });
-
+    console.log('res of login1', res);
     if (res?.status == '200') {
       console.log('res of login', res);
       yield put(setLoginData(res));
@@ -22,7 +22,7 @@ function* loginRequest(params) { try {
     } else {
       console.log('errorrrererer', res?.response);
       yield put(setLoader(false));
-      res?.response?.link? Alert.alert('Error', res?.response?.message, [
+      res?.response?.link? Alert.alert('Error', 'test', [
        
         {
           text: 'Cancel',
@@ -60,9 +60,9 @@ function* ContactUsRequest(params) { try {
     console.log('error', res.response);
     yield put(setLoader(false));
 
-    alert(res?.response?.message, [
-      {text: 'OK', onPress: () => console.log('OK Pressed')},
-    ]);
+    // alert(res?.response?.message, [
+    //   {text: 'OK', onPress: () => console.log('OK Pressed')},
+    // ]);
   }
 } catch (e) {
   console.log('saga login error -- ', e.toString());

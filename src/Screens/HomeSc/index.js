@@ -158,6 +158,9 @@ const HomeSc = ({ navigation, route }) => {
   const Workout = ({ paragraphtext, headingText, subheading }) => {
     return (
       <View style={{ ...styles.eliteCon, marginBottom: getHeight(1.5) }}>
+        <TouchableOpacity onPress={() => navigation.navigate('Fitnesssurvey')} activeOpacity={0.8}>
+    <Text>navigate</Text>
+    </TouchableOpacity>
         <View style={{ ...styles.eliteCon, marginBottom: getHeight(1.5) }}>
           <View style={styles.imageCon}>
             <Image

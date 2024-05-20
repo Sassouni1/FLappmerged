@@ -29,6 +29,8 @@ import SubFolder from "../../Screens/Skills/SubFolder";
 import { useSelector } from "react-redux";
 import AditionalWorkout from "../../Screens/AditionalWorkout";
 import RestTimeScreen from "../../Screens/Workouts/RestTimeScreen";
+import Fitnesssurvey from "../../Screens/Fitnesssurvey";
+
 
 const stack = createNativeStackNavigator();
 const HomeStack = () => {
@@ -51,6 +53,14 @@ const HomeStack = () => {
         name="VideoSkills"
         component={VideoSkills}
       />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="Fitnesssurvey"
+        component={Fitnesssurvey}
+      />
+   
       <stack.Screen
         options={{
           headerShown: false,
