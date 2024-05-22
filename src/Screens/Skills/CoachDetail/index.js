@@ -1,12 +1,4 @@
-import {
-  FlatList,
-  Image,
-  ImageBackground,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -60,40 +52,38 @@ export default function CoachDetail({ navigation }) {
   };
 
   return (
-    <View style={styles.root}>
-      <ImageBackground
-        source={require("../../../assets/images/home1.png")}
-        style={styles.topContainer}
-      >
-        <GeneralStatusBar
-          barStyle="light-content"
-          hidden={false}
-          backgroundColor={colors.darkGray}
-          translucent={true}
-        />
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            paddingHorizontal: getWidth(4),
-          }}
-        >
-          <TouchableOpacity onPress={onPressBack} style={styles.headerBtnStyle}>
-            <Ionicons name="chevron-back" size={getFontSize(2.5)} color={colors.white} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.headerBtnStyle}>
-            <Ionicons name="settings-outline" size={getFontSize(2.5)} color={colors.white} />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.categoryTitleContainer}>
-          <Text style={styles.cTextStyle}>Boxing Lessons</Text>
-        </View>
-        <Text style={styles.headerTextStyles}>Jeff Mayweather</Text>
-        <Text style={styles.beginSTyle}>Let’s Begin</Text>
-      </ImageBackground>
-      <View style={styles.bottomContainer}>
-        <CKeyBoardAvoidWrapper containerStyle={{ flexGrow: 1 }}>
+    <CKeyBoardAvoidWrapper containerStyle={{ flexGrow: 1 }}>
+      <View style={styles.root}>
+        <ImageBackground source={require("../../../assets/images/home1.png")} style={styles.topContainer}>
+          <GeneralStatusBar
+            barStyle="light-content"
+            hidden={false}
+            backgroundColor={colors.darkGray}
+            translucent={true}
+          />
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              paddingHorizontal: getWidth(4),
+              marginTop: getHeight(2),
+            }}
+          >
+            <TouchableOpacity onPress={onPressBack} style={styles.headerBtnStyle}>
+              <Ionicons name="chevron-back" size={getFontSize(2.5)} color={colors.white} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.headerBtnStyle}>
+              <Ionicons name="settings-outline" size={getFontSize(2.5)} color={colors.white} />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.categoryTitleContainer}>
+            <Text style={styles.cTextStyle}>Boxing Lessons</Text>
+          </View>
+          <Text style={styles.headerTextStyles}>Jeff Mayweather</Text>
+          <Text style={styles.beginSTyle}>Let’s Begin</Text>
+        </ImageBackground>
+        <View style={styles.bottomContainer}>
           <Text style={styles.descTextStyle}>
             Here you will learn how to master the foundations & the art of boxing.
           </Text>
@@ -106,20 +96,20 @@ export default function CoachDetail({ navigation }) {
             keyExtractor={(item) => item.toString()}
             scrollEnabled={false}
           />
-        </CKeyBoardAvoidWrapper>
-        <TouchableOpacity onPress={onPressStart} style={styles.nextBtnStyle}>
-          <Text style={styles.backBtnTextStyle}>Start Lesson</Text>
-          <Ionicons
-            name="alarm"
-            size={getFontSize(2.7)}
-            style={{
-              marginLeft: getWidth(2),
-            }}
-            color={colors.white}
-          />
-        </TouchableOpacity>
+          <TouchableOpacity onPress={onPressStart} style={styles.nextBtnStyle}>
+            <Text style={styles.backBtnTextStyle}>Start Lesson</Text>
+            <Ionicons
+              name="alarm"
+              size={getFontSize(2.7)}
+              style={{
+                marginLeft: getWidth(2),
+              }}
+              color={colors.white}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </CKeyBoardAvoidWrapper>
   );
 }
 
@@ -142,7 +132,7 @@ const styles = StyleSheet.create({
   headerTextStyles: {
     color: colors.white,
     fontSize: getFontSize(3.5),
-    fontFamily: fonts.UBo,
+    fontFamily: fonts.WB,
     paddingHorizontal: getWidth(5),
     marginTop: getHeight(1),
     textAlign: "center",
@@ -151,7 +141,7 @@ const styles = StyleSheet.create({
     color: colors.paleGray,
     marginTop: getHeight(1),
     fontSize: getFontSize(2.3),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
     textAlign: "center",
   },
   container1Style: {
@@ -178,17 +168,17 @@ const styles = StyleSheet.create({
   titleSTyle: {
     color: colors.black,
     fontSize: getFontSize(2.5),
-    fontFamily: fonts.UBo,
+    fontFamily: fonts.WB,
   },
   lessonTextStyle: {
     color: colors.slateGray,
     fontSize: getFontSize(1.8),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
   },
   timeTextStyle: {
     color: colors.black,
     fontSize: getFontSize(1.8),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
     marginLeft: getWidth(0.8),
   },
   subHeaderStyle: {
@@ -210,7 +200,7 @@ const styles = StyleSheet.create({
   subHeaderTestStyle: {
     color: colors.black,
     fontSize: getFontSize(2),
-    fontFamily: fonts.UBo,
+    fontFamily: fonts.WB,
   },
   playBtnStyle: {
     backgroundColor: colors.orange,
@@ -228,13 +218,13 @@ const styles = StyleSheet.create({
   cTextStyle: {
     color: colors.white,
     fontSize: getFontSize(1.8),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
     textTransform: "uppercase",
   },
   descTextStyle: {
     color: colors.slateGray,
     fontSize: getFontSize(1.8),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
     marginHorizontal: getWidth(5),
     marginBottom: getWidth(2),
     textAlign: "center",
@@ -253,6 +243,6 @@ const styles = StyleSheet.create({
   backBtnTextStyle: {
     color: colors.white,
     fontSize: getFontSize(2.2),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
   },
 });

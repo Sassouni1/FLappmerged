@@ -13,12 +13,7 @@ export default function LessonComplete({ navigation }) {
 
   return (
     <View style={styles.root}>
-      <GeneralStatusBar
-        barStyle="dark-content"
-        hidden={false}
-        backgroundColor={colors.white}
-        translucent={true}
-      />
+      <GeneralStatusBar barStyle="dark-content" hidden={false} backgroundColor={colors.white} translucent={true} />
       <View
         style={{
           flexDirection: "row",
@@ -73,7 +68,7 @@ const styles = StyleSheet.create({
   headerTextStyles: {
     color: colors.black,
     fontSize: getFontSize(3.5),
-    fontFamily: fonts.UBo,
+    fontFamily: fonts.WB,
     paddingHorizontal: getWidth(5),
     marginTop: getHeight(1),
     textAlign: "center",
@@ -82,13 +77,13 @@ const styles = StyleSheet.create({
     color: colors.black,
     marginTop: getHeight(1),
     fontSize: getFontSize(2.3),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
     textAlign: "center",
   },
   titleSTyle: {
     color: colors.black,
     fontSize: getFontSize(2.5),
-    fontFamily: fonts.UBo,
+    fontFamily: fonts.WB,
   },
   nextBtnStyle: {
     backgroundColor: colors.orange,
@@ -104,6 +99,6 @@ const styles = StyleSheet.create({
   backBtnTextStyle: {
     color: colors.white,
     fontSize: getFontSize(2.2),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
   },
 });

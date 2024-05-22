@@ -13,11 +13,20 @@ import CKeyBoardAvoidWrapper from "../../../Components/Common/CKeyBoardAvoidWrap
 export default function SkillsTraining({ navigation }) {
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const onPressTab = (id) => setSelectedTab(id);
+  const onPressTab = (id) => {
+    if (id == 1) {
+      navigation.navigate("TrainingStats");
+    }
+    setSelectedTab(id);
+  };
 
   const onPressSearch = () => navigation.navigate("SearchWorkout");
 
   const onPressDetail = () => navigation.navigate("CoachDetail");
+
+  const onPressAchievement = () => {
+    navigation.navigate("Achievements");
+  };
 
   const RenderTab = ({ title, id }) => {
     return (
@@ -133,6 +142,9 @@ export default function SkillsTraining({ navigation }) {
         </TouchableOpacity>
       </View>
       <CKeyBoardAvoidWrapper>
+        <TouchableOpacity onPress={onPressAchievement}>
+          <Text style={styles.achievementsStyle}>Achievements</Text>
+        </TouchableOpacity>
         <FlatList
           data={[1, 2, 3]}
           renderItem={RenderItem}
@@ -171,7 +183,7 @@ const styles = StyleSheet.create({
   headerTextStyles: {
     color: colors.white,
     fontSize: getFontSize(3.5),
-    fontFamily: fonts.UBo,
+    fontFamily: fonts.WB,
     paddingLeft: getWidth(5),
   },
   topTabContainer: {
@@ -193,12 +205,12 @@ const styles = StyleSheet.create({
   topTabTextStyle: {
     color: colors.black,
     fontSize: getFontSize(2),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
   },
   searchInputStyle: {
     paddingRight: getWidth(5),
     fontSize: getFontSize(2),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
     color: colors.white,
   },
   searchContainerStyle: {
@@ -247,18 +259,18 @@ const styles = StyleSheet.create({
   categoryTextStyle: {
     color: colors.black,
     fontSize: getFontSize(1.7),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
     textTransform: "uppercase",
   },
   titleSTyle: {
     color: colors.black,
     fontSize: getFontSize(2.5),
-    fontFamily: fonts.UBo,
+    fontFamily: fonts.WB,
   },
   lessonTextStyle: {
     color: colors.slateGray,
     fontSize: getFontSize(1.8),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
     marginLeft: getWidth(0.8),
   },
   descRowContainer: {
@@ -278,7 +290,7 @@ const styles = StyleSheet.create({
   viewAllTextStyle: {
     color: colors.orange,
     fontSize: getFontSize(1.7),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
   },
   outerProgressStyle: {
     backgroundColor: colors.gray1,
@@ -289,5 +301,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.darkGray1,
     height: getWidth(2),
     width: "70%",
+  },
+  achievementsStyle: {
+    color: colors.orange,
+    fontSize: getFontSize(2.5),
+    fontFamily: fonts.WB,
+    marginLeft: getWidth(5),
+    marginTop: getWidth(3),
   },
 });

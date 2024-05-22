@@ -26,6 +26,9 @@
 		DCE749A9C8BD4DBFA64E1DA9 /* .ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1D09A433A8C64E32960C3925 /* .ttf */; };
 		E87B42AE98B14136B9463699 /* Ubuntu-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CEDA8D01BF2B45D7AF9EA8C4 /* Ubuntu-MediumItalic.ttf */; };
 		F2560869D5934F57B6A85A18 /* Ubuntu-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F394F70219864FDD83E780C0 /* Ubuntu-Bold.ttf */; };
+		F01868CDA7404463920AEA51 /* WorkSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0527EDF570F24741BE954AA9 /* WorkSans-Bold.ttf */; };
+		4F23BAA326FA4E998C6E89C4 /* WorkSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DBE0D36CC9654175BADA89C1 /* WorkSans-Medium.ttf */; };
+		5CF24008A3FC4BEFB1F2DA6A /* WorkSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4031E5B800AA4AE4A8B06081 /* WorkSans-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +72,9 @@
 		CEDA8D01BF2B45D7AF9EA8C4 /* Ubuntu-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Ubuntu-MediumItalic.ttf"; path = "../src/assets/fonts/Ubuntu-MediumItalic.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F394F70219864FDD83E780C0 /* Ubuntu-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Ubuntu-Bold.ttf"; path = "../src/assets/fonts/Ubuntu-Bold.ttf"; sourceTree = "<group>"; };
+		0527EDF570F24741BE954AA9 /* WorkSans-Bold.ttf */ = {isa = PBXFileReference; name = "WorkSans-Bold.ttf"; path = "../src/assets/fonts/WorkSans-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		DBE0D36CC9654175BADA89C1 /* WorkSans-Medium.ttf */ = {isa = PBXFileReference; name = "WorkSans-Medium.ttf"; path = "../src/assets/fonts/WorkSans-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		4031E5B800AA4AE4A8B06081 /* WorkSans-Regular.ttf */ = {isa = PBXFileReference; name = "WorkSans-Regular.ttf"; path = "../src/assets/fonts/WorkSans-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +153,9 @@
 				CEDA8D01BF2B45D7AF9EA8C4 /* Ubuntu-MediumItalic.ttf */,
 				19273D04FDD3464994252F18 /* Ubuntu-Regular.ttf */,
 				1D09A433A8C64E32960C3925 /* .ttf */,
+				0527EDF570F24741BE954AA9 /* WorkSans-Bold.ttf */,
+				DBE0D36CC9654175BADA89C1 /* WorkSans-Medium.ttf */,
+				4031E5B800AA4AE4A8B06081 /* WorkSans-Regular.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -302,6 +311,9 @@
 				A65B59804AF3426097CD40CD /* Ubuntu-Regular.ttf in Resources */,
 				DCE749A9C8BD4DBFA64E1DA9 /* .ttf in Resources */,
 				18601C382B0B400800E3801C /* GoogleService-Info.plist in Resources */,
+				F01868CDA7404463920AEA51 /* WorkSans-Bold.ttf in Resources */,
+				4F23BAA326FA4E998C6E89C4 /* WorkSans-Medium.ttf in Resources */,
+				5CF24008A3FC4BEFB1F2DA6A /* WorkSans-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

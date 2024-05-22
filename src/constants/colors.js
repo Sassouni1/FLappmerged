@@ -42,4 +42,11 @@ export const colors = {
   darkBlue: "#256CD0",
   darkGray1: "#393C43",
   darkGray2: "#50535B",
+  orange20: "#FFC2A4",
+  orange30: "#FF9F6B",
+  green: "#55A047",
+  rulesColor: "#D7D8D9",
+  axisColor: "#BABBBE",
+  grayText: "#393C43",
+  grayText1: "#676C75",
 };

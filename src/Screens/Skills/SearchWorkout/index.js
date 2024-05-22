@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   headerTextStyles: {
     color: colors.white,
     fontSize: getFontSize(3.5),
-    fontFamily: fonts.UBo,
+    fontFamily: fonts.WB,
     paddingLeft: getWidth(5),
     marginTop: getHeight(1),
   },
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     height: getFontSize(6),
     paddingRight: getWidth(5),
     fontSize: getFontSize(2),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
     color: colors.white,
   },
   searchContainerStyle: {
@@ -181,17 +181,17 @@ const styles = StyleSheet.create({
   titleSTyle: {
     color: colors.black,
     fontSize: getFontSize(2.5),
-    fontFamily: fonts.UBo,
+    fontFamily: fonts.WB,
   },
   lessonTextStyle: {
     color: colors.slateGray,
     fontSize: getFontSize(1.8),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
   },
   timeTextStyle: {
     color: colors.black,
     fontSize: getFontSize(1.8),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
     marginLeft: getWidth(0.8),
   },
   descRowContainer: {
@@ -212,12 +212,12 @@ const styles = StyleSheet.create({
   viewAllTextStyle: {
     color: colors.darkGray1,
     fontSize: getFontSize(1.7),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
   },
   subHeaderTestStyle: {
     color: colors.black,
     fontSize: getFontSize(2),
-    fontFamily: fonts.UBo,
+    fontFamily: fonts.WMe,
   },
   popularityStyle: {
     flexDirection: "row",
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
   backBtnTextStyle: {
     color: colors.white,
     fontSize: getFontSize(2.2),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
   },
   playBtnStyle: {
     backgroundColor: colors.orange,

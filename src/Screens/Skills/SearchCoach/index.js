@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   headerTextStyles: {
     color: colors.white,
     fontSize: getFontSize(3.5),
-    fontFamily: fonts.UBo,
+    fontFamily: fonts.WB,
     paddingLeft: getWidth(5),
     marginTop: getHeight(1),
   },
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     height: getFontSize(6),
     paddingRight: getWidth(5),
     fontSize: getFontSize(2),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
     color: colors.white,
   },
   searchContainerStyle: {
@@ -168,18 +168,18 @@ const styles = StyleSheet.create({
   categoryTextStyle: {
     color: colors.black,
     fontSize: getFontSize(1.7),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
     textTransform: "uppercase",
   },
   titleSTyle: {
     color: colors.black,
     fontSize: getFontSize(2.5),
-    fontFamily: fonts.UBo,
+    fontFamily: fonts.WMe,
   },
   lessonTextStyle: {
     color: colors.slateGray,
     fontSize: getFontSize(1.8),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
     marginLeft: getWidth(0.8),
   },
   descRowContainer: {
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   viewAllTextStyle: {
     color: colors.darkGray1,
     fontSize: getFontSize(1.7),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
     paddingHorizontal: getWidth(5),
     textAlign: "center",
     marginTop: getHeight(1),
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   subHeaderTestStyle: {
     color: colors.black,
     fontSize: getFontSize(3.5),
-    fontFamily: fonts.UBo,
+    fontFamily: fonts.WB,
     marginTop: getHeight(3),
     paddingHorizontal: getWidth(5),
     textAlign: "center",
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
   backBtnTextStyle: {
     color: colors.white,
     fontSize: getFontSize(2.2),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
   },
   playBtnStyle: {
     backgroundColor: colors.orange,

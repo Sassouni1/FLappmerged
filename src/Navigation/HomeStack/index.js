@@ -34,6 +34,8 @@ import WorkoutDetail from "../../Screens/Skills/WorkoutDetail";
 import CoachDetail from "../../Screens/Skills/CoachDetail";
 import LessonComplete from "../../Screens/Skills/LessonComplete";
 import SearchCoach from "../../Screens/Skills/SearchCoach";
+import TrainingStats from "../../Screens/TrainingStats";
+import Achievements from "../../Screens/Achievements";
 
 const stack = createNativeStackNavigator();
 const HomeStack = () => {
@@ -273,6 +275,20 @@ const HomeStack = () => {
         }}
         name="SearchCoach"
         component={SearchCoach}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="TrainingStats"
+        component={TrainingStats}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="Achievements"
+        component={Achievements}
       />
     </stack.Navigator>
   );

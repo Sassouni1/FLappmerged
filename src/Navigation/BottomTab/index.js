@@ -87,7 +87,6 @@ export default function BottomTab() {
         component={SkillsTraining}
         options={{
           headerShown: false,
-
           title: "Skills",
           tabBarIcon: ({ focused, color, size }) => (
             <FontAwesome5

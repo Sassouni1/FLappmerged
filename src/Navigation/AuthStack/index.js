@@ -1,24 +1,18 @@
-import React from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Login from '../../Screens/Auth/Login';
+import React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Login from "../../Screens/Auth/Login";
 
-import ForgotPassword from '../../Screens/Auth/ForgotPassword';
+import ForgotPassword from "../../Screens/Auth/ForgotPassword";
 
-import MyDrawer from '../drawer';
+import MyDrawer from "../drawer";
 
-import ResetPassword from '../../Screens/Auth/ResetPassword';
-import OTP from '../../Screens/Auth/OTP';
-
+import ResetPassword from "../../Screens/Auth/ResetPassword";
+import OTP from "../../Screens/Auth/OTP";
 
 const stack = createNativeStackNavigator();
 const AuthStack = () => {
-
-
   return (
-    <stack.Navigator
-      initialRouteName={'Login'}
-      screenOptions={{headerShown: false}}>
-      
+    <stack.Navigator initialRouteName={"Login"} screenOptions={{ headerShown: false }}>
       <stack.Screen
         options={{
           headerShown: false,
@@ -26,7 +20,7 @@ const AuthStack = () => {
         name="Login"
         component={Login}
       />
-<stack.Screen
+      <stack.Screen
         options={{
           headerShown: false,
         }}
@@ -42,20 +36,19 @@ const AuthStack = () => {
         component={ForgotPassword}
       />
       <stack.Screen
-       options={{
-        headerShown: false,
-      }}
-      name="ResetPassword"
-      component={ResetPassword}
+        options={{
+          headerShown: false,
+        }}
+        name="ResetPassword"
+        component={ResetPassword}
       />
       <stack.Screen
-       options={{
-        headerShown: false,
-      }}
-      name="OTP"
-      component={OTP}
+        options={{
+          headerShown: false,
+        }}
+        name="OTP"
+        component={OTP}
       />
-      
     </stack.Navigator>
   );
 };

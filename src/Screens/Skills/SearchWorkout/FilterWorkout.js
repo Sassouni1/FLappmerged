@@ -74,12 +74,7 @@ export default function FilterWorkout({ SheetRef }) {
             setValue(item.value);
           }}
           renderLeftIcon={() => (
-            <Feather
-              style={styles.icon}
-              color={colors.black}
-              name="bar-chart-2"
-              size={getFontSize(3)}
-            />
+            <Feather style={styles.icon} color={colors.black} name="bar-chart-2" size={getFontSize(3)} />
           )}
         />
         <Text style={styles.descTextStyle}>251 results found for “Cardio workout”</Text>
@@ -140,14 +135,14 @@ const styles = StyleSheet.create({
   titleSTyle: {
     color: colors.black,
     fontSize: getFontSize(3),
-    fontFamily: fonts.UBo,
+    fontFamily: fonts.WB,
     alignSelf: "center",
     marginBottom: getHeight(3),
   },
   subHeaderTestStyle: {
     color: colors.black,
     fontSize: getFontSize(2.3),
-    fontFamily: fonts.UBo,
+    fontFamily: fonts.WB,
   },
   dropdown: {
     height: getHeight(6),
@@ -163,12 +158,12 @@ const styles = StyleSheet.create({
   placeholderStyle: {
     fontSize: getFontSize(2),
     color: colors.black,
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
   },
   selectedTextStyle: {
     fontSize: getFontSize(2),
     color: colors.black,
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
   },
   iconStyle: {
     width: getWidth(5),
@@ -177,13 +172,13 @@ const styles = StyleSheet.create({
   descTextStyle: {
     color: colors.graytext4,
     fontSize: getFontSize(1.8),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
     marginTop: getHeight(1),
   },
   sportTypeStyle: {
     color: colors.black,
     fontSize: getFontSize(2.3),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
     marginTop: getHeight(3),
   },
   selectContainer: {
@@ -215,6 +210,6 @@ const styles = StyleSheet.create({
   backBtnTextStyle: {
     color: colors.white,
     fontSize: getFontSize(2.2),
-    fontFamily: fonts.UMe,
+    fontFamily: fonts.WMe,
   },
 });
