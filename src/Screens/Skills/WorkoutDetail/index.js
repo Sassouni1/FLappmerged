@@ -1,7 +1,13 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import Video from "react-native-video";
+import VideoPlayer from "react-native-video-player";
 
 // Local Imports
 import GeneralStatusBar from "../../../Components/GeneralStatusBar";
@@ -16,6 +22,7 @@ import CKeyBoardAvoidWrapper from "../../../Components/Common/CKeyBoardAvoidWrap
 
 export default function WorkoutDetail({ navigation }) {
   const onPressBack = () => navigation.goBack();
+  const { height, width } = Dimensions.get("window");
 
   return (
     <View style={styles.root}>
@@ -47,12 +54,20 @@ export default function WorkoutDetail({ navigation }) {
           positive tone for the day ahead.
         </Text>
         <Text style={styles.subHeaderTestStyle}>Video</Text>
-        <View style={{ flex: 1 }}>
-          <Video
+        <View style={styles.videoStyle}>
+          {/* <Video
             source={require("../../../assets/images/background.mp4")}
             resizeMode="cover"
             repeat={true}
             style={styles.videoStyle}
+          /> */}
+
+          <VideoPlayer
+            video={require("../../../assets/images/background.mp4")}
+            videoWidth={width - getWidth(10)}
+            videoHeight={getHeight(25)}
+            thumbnail={{ uri: "https://i.picsum.photos/id/866/1600/900.jpg" }}
+            showDuration={true}
           />
         </View>
         <Text style={styles.subHeaderTestStyle}>Notes:</Text>

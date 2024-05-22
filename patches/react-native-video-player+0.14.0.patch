@@ -1,0 +1,479 @@
+diff --git a/node_modules/react-native-video-player/index.js b/node_modules/react-native-video-player/index.js
+index ed9965b..750c2c4 100644
+--- a/node_modules/react-native-video-player/index.js
++++ b/node_modules/react-native-video-player/index.js
+@@ -1,9 +1,21 @@
+-import React, { Component } from 'react';
+-import PropTypes from 'prop-types';
+-import { Image, ImageBackground, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+-import { ViewPropTypes, ImagePropTypes } from 'deprecated-react-native-prop-types';
+-import Icon from 'react-native-vector-icons/MaterialIcons';
+-import Video from 'react-native-video'; // eslint-disable-line
++import React, { Component } from "react";
++import PropTypes from "prop-types";
++import {
++  Image,
++  ImageBackground,
++  Platform,
++  StyleSheet,
++  Text,
++  TextInput,
++  TouchableOpacity,
++  View,
++} from "react-native";
++import {
++  ViewPropTypes,
++  ImagePropTypes,
++} from "deprecated-react-native-prop-types";
++import Icon from "react-native-vector-icons/MaterialIcons";
++import Video from "react-native-video"; // eslint-disable-line
+ 
+ const BackgroundImage = ImageBackground || Image; // fall back to Image if RN < 0.46
+ 
+@@ -16,10 +28,12 @@ if (ViewPropTypes) {
+ }
+ 
+ const getDurationTime = (duration) => {
+-  const padTimeValueString = (value) => value.toString().padStart(2, '0');
++  const padTimeValueString = (value) => value.toString().padStart(2, "0");
+ 
+-  if (!Number.isFinite(duration)) return '';
+-  let seconds = Math.floor(duration % 60), minutes = Math.floor((duration / 60) % 60), hours = Math.floor((duration / (60 * 60)) % 24);
++  if (!Number.isFinite(duration)) return "";
++  let seconds = Math.floor(duration % 60),
++    minutes = Math.floor((duration / 60) % 60),
++    hours = Math.floor((duration / (60 * 60)) % 24);
+ 
+   const isHrsZero = hours === 0;
+   hours = isHrsZero ? 0 : padTimeValueString(hours);
+@@ -27,57 +41,67 @@ const getDurationTime = (duration) => {
+   seconds = padTimeValueString(seconds);
+ 
+   if (isHrsZero) {
+-    return minutes + ':' + seconds;
++    return minutes + ":" + seconds;
+   }
+ 
+-  return hours + ':' + minutes + ':' + seconds;
++  return hours + ":" + minutes + ":" + seconds;
+ };
+ 
+ const styles = StyleSheet.create({
+   preloadingPlaceholder: {
+-    backgroundColor: 'black',
+-    justifyContent: 'center',
+-    alignItems: 'center',
++    backgroundColor: "black",
++    justifyContent: "center",
++    alignItems: "center",
+   },
+   thumbnail: {
+-    backgroundColor: 'black',
+-    justifyContent: 'center',
+-    alignItems: 'center',
++    backgroundColor: "black",
++    justifyContent: "center",
++    alignItems: "center",
++    borderRadius: 30,
+   },
+   playButton: {
+-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
++    backgroundColor: "rgba(0, 0, 0, 0.6)",
+     width: 64,
+     height: 64,
+     borderRadius: 32,
+-    justifyContent: 'center',
+-    alignItems: 'center',
++    justifyContent: "center",
++    alignItems: "center",
+   },
+   playArrow: {
+-    color: 'white',
+-  },
+-  video: Platform.Version >= 24 ? {} : {
+-    backgroundColor: 'black',
++    color: "white",
+   },
++  video:
++    Platform.Version >= 24
++      ? {}
++      : {
++          backgroundColor: "black",
++          borderRadius: 30,
++        },
+   controls: {
+-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
++    backgroundColor: "#FFF",
+     height: 48,
+-    marginTop: -48,
+-    flexDirection: 'row',
+-    alignItems: 'center',
++    width: "90%",
++    justifyContent: "center",
++    marginTop: -60,
++    flexDirection: "row",
++    alignItems: "center",
++    alignSelf: "center",
++    borderRadius: 22,
++    paddingRight: 15,
+   },
+   playControl: {
+-    color: 'white',
++    color: "#111214",
+     padding: 8,
+   },
+   extraControl: {
+-    color: 'white',
++    color: "#111214",
+     padding: 8,
+   },
+   seekBar: {
+-    alignItems: 'center',
++    alignItems: "center",
+     height: 30,
+     flexGrow: 1,
+-    flexDirection: 'row',
++    flexDirection: "row",
+     paddingHorizontal: 10,
+     marginLeft: -10,
+     marginRight: -5,
+@@ -90,8 +114,9 @@ const styles = StyleSheet.create({
+     height: 3,
+   },
+   seekBarProgress: {
+-    height: 3,
+-    backgroundColor: '#F00',
++    height: 6,
++    borderRadius: 3,
++    backgroundColor: "#393C43",
+   },
+   seekBarKnob: {
+     width: 20,
+@@ -99,26 +124,27 @@ const styles = StyleSheet.create({
+     marginHorizontal: -8,
+     marginVertical: -10,
+     borderRadius: 10,
+-    backgroundColor: '#F00',
++    backgroundColor: "#393C43",
+     transform: [{ scale: 0.8 }],
+     zIndex: 1,
+   },
+   seekBarBackground: {
+-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+-    height: 3,
++    backgroundColor: "#11121430",
++    height: 6,
++    borderRadius: 3,
+   },
+   overlayButton: {
+     flex: 1,
+   },
+   activeDurationText: {
+     paddingLeft: 8,
+-    paddingRight:0,
++    paddingRight: 0,
+     paddingBottom: 0,
+-    paddingTop: 0
++    paddingTop: 0,
+   },
+   durationText: {
+-    color: 'white'
+-  }
++    color: "black",
++  },
+ });
+ 
+ export default class VideoPlayer extends Component {
+@@ -183,7 +209,7 @@ export default class VideoPlayer extends Component {
+       this.props.onStart();
+     }
+ 
+-    this.setState(state => ({
++    this.setState((state) => ({
+       isPlaying: true,
+       isStarted: true,
+       hasEnded: false,
+@@ -201,9 +227,12 @@ export default class VideoPlayer extends Component {
+       this.props.onProgress(event);
+     }
+     this.setState({
+-      progress: event.currentTime / (this.props.duration || this.state.duration),
++      progress:
++        event.currentTime / (this.props.duration || this.state.duration),
++    });
++    this.currentTime?.setNativeProps({
++      text: getDurationTime(event.currentTime),
+     });
+-    this.currentTime?.setNativeProps({ text: getDurationTime(event.currentTime) })
+   }
+ 
+   onEnd(event) {
+@@ -227,7 +256,9 @@ export default class VideoPlayer extends Component {
+       this.player.seek(0);
+     }
+ 
+-    this.currentTime?.setNativeProps({ text: getDurationTime(this.state.duration) })
++    this.currentTime?.setNativeProps({
++      text: getDurationTime(this.state.duration),
++    });
+   }
+ 
+   onLoad(event) {
+@@ -259,7 +290,6 @@ export default class VideoPlayer extends Component {
+       isMuted,
+     });
+     this.showControls();
+-
+   }
+ 
+   onToggleFullScreen() {
+@@ -290,7 +320,7 @@ export default class VideoPlayer extends Component {
+   }
+ 
+   onSeekGrant(e) {
+-    this.props.onSeekGrant && this.props.onSeekGrant()
++    this.props.onSeekGrant && this.props.onSeekGrant();
+     this.seekTouchStart = e.nativeEvent.pageX;
+     this.seekProgressStart = this.state.progress;
+     this.wasPlayingBeforeSeek = this.state.isPlaying;
+@@ -301,7 +331,7 @@ export default class VideoPlayer extends Component {
+   }
+ 
+   onSeekRelease() {
+-    this.props.onSeekRelease && this.props.onSeekRelease()
++    this.props.onSeekRelease && this.props.onSeekRelease();
+     this.setState({
+       isSeeking: false,
+       isPlaying: this.wasPlayingBeforeSeek,
+@@ -312,7 +342,7 @@ export default class VideoPlayer extends Component {
+   onSeek(e) {
+     const diff = e.nativeEvent.pageX - this.seekTouchStart;
+     const ratio = 100 / this.seekBarWidth;
+-    const progress = this.seekProgressStart + ((ratio * diff) / 100);
++    const progress = this.seekProgressStart + (ratio * diff) / 100;
+ 
+     this.setState({
+       progress,
+@@ -322,7 +352,7 @@ export default class VideoPlayer extends Component {
+   }
+ 
+   onSeekEvent(e) {
+-    this.currentTime?.setNativeProps({ text: getDurationTime(e.currentTime) })
++    this.currentTime?.setNativeProps({ text: getDurationTime(e.currentTime) });
+   }
+ 
+   getSizeStyles() {
+@@ -378,9 +408,10 @@ export default class VideoPlayer extends Component {
+   }
+ 
+   pause() {
+-    this.player && this.player.setNativeProps({
+-      paused: true
+-    })
++    this.player &&
++      this.player.setNativeProps({
++        paused: true,
++      });
+     this.setState({
+       isPlaying: false,
+     });
+@@ -409,7 +440,11 @@ export default class VideoPlayer extends Component {
+         style={[styles.playButton, customStyles.playButton]}
+         onPress={this.onStartPress}
+       >
+-        <Icon style={[styles.playArrow, customStyles.playArrow]} name="play-arrow" size={42} />
++        <Icon
++          style={[styles.playArrow, customStyles.playArrow]}
++          name="play-arrow"
++          size={42}
++        />
+       </TouchableOpacity>
+     );
+   }
+@@ -451,7 +486,7 @@ export default class VideoPlayer extends Component {
+             customStyles.seekBarProgress,
+           ]}
+         />
+-        { !fullWidth && !disableSeek ? (
++        {!fullWidth && !disableSeek ? (
+           <View
+             style={[
+               styles.seekBarKnob,
+@@ -467,12 +502,14 @@ export default class VideoPlayer extends Component {
+             onResponderRelease={this.onSeekRelease}
+             onResponderTerminate={this.onSeekRelease}
+           />
+-        ) : null }
+-        <View style={[
+-          styles.seekBarBackground,
+-          { flexGrow: 1 - this.state.progress },
+-          customStyles.seekBarBackground,
+-        ]} />
++        ) : null}
++        <View
++          style={[
++            styles.seekBarBackground,
++            { flexGrow: 1 - this.state.progress },
++            customStyles.seekBarBackground,
++          ]}
++        />
+       </View>
+     );
+   }
+@@ -486,20 +523,33 @@ export default class VideoPlayer extends Component {
+           style={[customStyles.controlButton, customStyles.playControl]}
+         >
+           <Icon
+-            style={[styles.playControl, customStyles.controlIcon, customStyles.playIcon]}
+-            name={this.state.isPlaying ? 'pause' : 'play-arrow'}
++            style={[
++              styles.playControl,
++              customStyles.controlIcon,
++              customStyles.playIcon,
++            ]}
++            name={this.state.isPlaying ? "pause" : "play-arrow"}
+             size={32}
+           />
+         </TouchableOpacity>
+         {this.renderSeekBar()}
+         {showDuration && (
+           <>
+-            <TextInput style={[styles.durationText, styles.activeDurationText, customStyles.durationText]} editable={false} ref={e=> this.currentTime=e} value={getDurationTime(0)}/>
+-            <Text style={[styles.durationText, customStyles.durationText]}>/</Text>
+-            <Text style={[styles.durationText, customStyles.durationText]}>{getDurationTime(this.state.duration)}</Text>
++            <TextInput
++              style={[
++                styles.durationText,
++                styles.activeDurationText,
++                customStyles.durationText,
++              ]}
++              editable={false}
++              ref={(e) => (this.currentTime = e)}
++              value={getDurationTime(0)}
++            />
++            {/* <Text style={[styles.durationText, customStyles.durationText]}>/</Text>
++            <Text style={[styles.durationText, customStyles.durationText]}>{getDurationTime(this.state.duration)}</Text> */}
+           </>
+         )}
+-        {this.props.muted ? null : (
++        {/* {this.props.muted ? null : (
+           <TouchableOpacity onPress={this.onMutePress} style={customStyles.controlButton}>
+             <Icon
+               style={[styles.extraControl, customStyles.controlIcon]}
+@@ -507,8 +557,8 @@ export default class VideoPlayer extends Component {
+               size={24}
+             />
+           </TouchableOpacity>
+-        )}
+-        {(Platform.OS === 'android' || this.props.disableFullscreen) ? null : (
++        )} */}
++        {/* {(Platform.OS === 'android' || this.props.disableFullscreen) ? null : (
+           <TouchableOpacity onPress={this.onToggleFullScreen} style={customStyles.controlButton}>
+             <Icon
+               style={[styles.extraControl, customStyles.controlIcon]}
+@@ -516,7 +566,7 @@ export default class VideoPlayer extends Component {
+               size={32}
+             />
+           </TouchableOpacity>
+-        )}
++        )} */}
+       </View>
+     );
+   }
+@@ -541,16 +591,20 @@ export default class VideoPlayer extends Component {
+             style,
+             customStyles.video,
+           ]}
+-          ref={p => { this.player = p; }}
++          ref={(p) => {
++            this.player = p;
++          }}
+           muted={this.props.muted || this.state.isMuted}
+-          paused={this.props.paused
+-            ? this.props.paused || !this.state.isPlaying
+-            : !this.state.isPlaying}
++          paused={
++            this.props.paused
++              ? this.props.paused || !this.state.isPlaying
++              : !this.state.isPlaying
++          }
+           onProgress={this.onProgress}
+           onEnd={this.onEnd}
+           onLoad={this.onLoad}
+           source={video}
+-          resizeMode={resizeMode}
++          resizeMode={"cover"}
+           onSeek={this.onSeekEvent}
+         />
+         <View
+@@ -563,17 +617,17 @@ export default class VideoPlayer extends Component {
+             style={styles.overlayButton}
+             onPress={() => {
+               this.showControls();
+-              if (pauseOnPress)
+-                this.onPlayPress();
++              if (pauseOnPress) this.onPlayPress();
+             }}
+             onLongPress={() => {
+-              if (fullScreenOnLongPress && Platform.OS !== 'android')
++              if (fullScreenOnLongPress && Platform.OS !== "android")
+                 this.onToggleFullScreen();
+             }}
+           />
+         </View>
+-        {((!this.state.isPlaying) || this.state.isControlsVisible)
+-          ? this.renderControls() : this.renderSeekBar(true)}
++        {/* {((!this.state.isPlaying) || this.state.isControlsVisible) */}
++        {this.renderControls()}
++        {/* : this.renderSeekBar(true)} */}
+       </View>
+     );
+   }
+@@ -584,12 +638,13 @@ export default class VideoPlayer extends Component {
+ 
+     if (hasEnded && endThumbnail) {
+       return this.renderThumbnail(endThumbnail);
+-    }
+-    else if (!isStarted && thumbnail) {
++    } else if (!isStarted && thumbnail) {
+       return this.renderThumbnail(thumbnail);
+     } else if (!isStarted) {
+       return (
+-        <View style={[styles.preloadingPlaceholder, this.getSizeStyles(), style]}>
++        <View
++          style={[styles.preloadingPlaceholder, this.getSizeStyles(), style]}
++        >
+           {this.renderStartButton()}
+         </View>
+       );
+@@ -646,7 +701,7 @@ VideoPlayer.propTypes = {
+     thumbnail: ImagePropTypes.style,
+     playButton: ViewPropTypesVar.style,
+     playArrow: Icon.propTypes.style,
+-    durationText: ViewPropTypesVar.style
++    durationText: ViewPropTypesVar.style,
+   }),
+   onEnd: PropTypes.func,
+   onProgress: PropTypes.func,
+@@ -656,7 +711,7 @@ VideoPlayer.propTypes = {
+   onHideControls: PropTypes.func,
+   onShowControls: PropTypes.func,
+   onMutePress: PropTypes.func,
+-  showDuration: PropTypes.bool
++  showDuration: PropTypes.bool,
+ };
+ 
+ VideoPlayer.defaultProps = {
+@@ -665,10 +720,10 @@ VideoPlayer.defaultProps = {
+   autoplay: false,
+   controlsTimeout: 2000,
+   loop: false,
+-  resizeMode: 'contain',
++  resizeMode: "contain",
+   disableSeek: false,
+   pauseOnPress: false,
+   fullScreenOnLongPress: false,
+   customStyles: {},
+-  showDuration: false
++  showDuration: false,
+ };
