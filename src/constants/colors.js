@@ -49,4 +49,5 @@ export const colors = {
   axisColor: "#BABBBE",
   grayText: "#393C43",
   grayText1: "#676C75",
+  grayText2: "#81858D",
 };

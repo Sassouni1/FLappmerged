@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-video-player/index.js b/node_modules/react-native-video-player/index.js
-index ed9965b..750c2c4 100644
+index ed9965b..e3db55f 100644
 --- a/node_modules/react-native-video-player/index.js
 +++ b/node_modules/react-native-video-player/index.js
 @@ -1,9 +1,21 @@
@@ -46,7 +46,7 @@ index ed9965b..750c2c4 100644
  
    const isHrsZero = hours === 0;
    hours = isHrsZero ? 0 : padTimeValueString(hours);
-@@ -27,57 +41,67 @@ const getDurationTime = (duration) => {
+@@ -27,57 +41,68 @@ const getDurationTime = (duration) => {
    seconds = padTimeValueString(seconds);
  
    if (isHrsZero) {
@@ -74,7 +74,8 @@ index ed9965b..750c2c4 100644
 +    backgroundColor: "black",
 +    justifyContent: "center",
 +    alignItems: "center",
-+    borderRadius: 30,
++    borderRadius: 32,
++    resizeMode: "cover",
    },
    playButton: {
 -    backgroundColor: 'rgba(0, 0, 0, 0.6)',
@@ -137,7 +138,7 @@ index ed9965b..750c2c4 100644
      paddingHorizontal: 10,
      marginLeft: -10,
      marginRight: -5,
-@@ -90,8 +114,9 @@ const styles = StyleSheet.create({
+@@ -90,8 +115,9 @@ const styles = StyleSheet.create({
      height: 3,
    },
    seekBarProgress: {
@@ -149,7 +150,7 @@ index ed9965b..750c2c4 100644
    },
    seekBarKnob: {
      width: 20,
-@@ -99,26 +124,27 @@ const styles = StyleSheet.create({
+@@ -99,26 +125,27 @@ const styles = StyleSheet.create({
      marginHorizontal: -8,
      marginVertical: -10,
      borderRadius: 10,
@@ -184,7 +185,7 @@ index ed9965b..750c2c4 100644
  });
  
  export default class VideoPlayer extends Component {
-@@ -183,7 +209,7 @@ export default class VideoPlayer extends Component {
+@@ -183,7 +210,7 @@ export default class VideoPlayer extends Component {
        this.props.onStart();
      }
  
@@ -193,7 +194,7 @@ index ed9965b..750c2c4 100644
        isPlaying: true,
        isStarted: true,
        hasEnded: false,
-@@ -201,9 +227,12 @@ export default class VideoPlayer extends Component {
+@@ -201,9 +228,12 @@ export default class VideoPlayer extends Component {
        this.props.onProgress(event);
      }
      this.setState({
@@ -208,7 +209,7 @@ index ed9965b..750c2c4 100644
    }
  
    onEnd(event) {
-@@ -227,7 +256,9 @@ export default class VideoPlayer extends Component {
+@@ -227,7 +257,9 @@ export default class VideoPlayer extends Component {
        this.player.seek(0);
      }
  
@@ -219,7 +220,7 @@ index ed9965b..750c2c4 100644
    }
  
    onLoad(event) {
-@@ -259,7 +290,6 @@ export default class VideoPlayer extends Component {
+@@ -259,7 +291,6 @@ export default class VideoPlayer extends Component {
        isMuted,
      });
      this.showControls();
@@ -227,7 +228,7 @@ index ed9965b..750c2c4 100644
    }
  
    onToggleFullScreen() {
-@@ -290,7 +320,7 @@ export default class VideoPlayer extends Component {
+@@ -290,7 +321,7 @@ export default class VideoPlayer extends Component {
    }
  
    onSeekGrant(e) {
@@ -236,7 +237,7 @@ index ed9965b..750c2c4 100644
      this.seekTouchStart = e.nativeEvent.pageX;
      this.seekProgressStart = this.state.progress;
      this.wasPlayingBeforeSeek = this.state.isPlaying;
-@@ -301,7 +331,7 @@ export default class VideoPlayer extends Component {
+@@ -301,7 +332,7 @@ export default class VideoPlayer extends Component {
    }
  
    onSeekRelease() {
@@ -245,7 +246,7 @@ index ed9965b..750c2c4 100644
      this.setState({
        isSeeking: false,
        isPlaying: this.wasPlayingBeforeSeek,
-@@ -312,7 +342,7 @@ export default class VideoPlayer extends Component {
+@@ -312,7 +343,7 @@ export default class VideoPlayer extends Component {
    onSeek(e) {
      const diff = e.nativeEvent.pageX - this.seekTouchStart;
      const ratio = 100 / this.seekBarWidth;
@@ -254,7 +255,7 @@ index ed9965b..750c2c4 100644
  
      this.setState({
        progress,
-@@ -322,7 +352,7 @@ export default class VideoPlayer extends Component {
+@@ -322,7 +353,7 @@ export default class VideoPlayer extends Component {
    }
  
    onSeekEvent(e) {
@@ -263,7 +264,7 @@ index ed9965b..750c2c4 100644
    }
  
    getSizeStyles() {
-@@ -378,9 +408,10 @@ export default class VideoPlayer extends Component {
+@@ -378,9 +409,10 @@ export default class VideoPlayer extends Component {
    }
  
    pause() {
@@ -277,7 +278,7 @@ index ed9965b..750c2c4 100644
      this.setState({
        isPlaying: false,
      });
-@@ -409,7 +440,11 @@ export default class VideoPlayer extends Component {
+@@ -409,7 +441,11 @@ export default class VideoPlayer extends Component {
          style={[styles.playButton, customStyles.playButton]}
          onPress={this.onStartPress}
        >
@@ -290,7 +291,29 @@ index ed9965b..750c2c4 100644
        </TouchableOpacity>
      );
    }
-@@ -451,7 +486,7 @@ export default class VideoPlayer extends Component {
+@@ -417,7 +453,7 @@ export default class VideoPlayer extends Component {
+   renderThumbnail(thumbnail) {
+     const { style, customStyles, ...props } = this.props;
+     return (
+-      <BackgroundImage
++      <ImageBackground
+         {...props}
+         style={[
+           styles.thumbnail,
+@@ -425,10 +461,11 @@ export default class VideoPlayer extends Component {
+           style,
+           customStyles.thumbnail,
+         ]}
++        imageStyle={styles.thumbnail}
+         source={thumbnail}
+       >
+         {this.renderStartButton()}
+-      </BackgroundImage>
++      </ImageBackground>
+     );
+   }
+ 
+@@ -451,7 +488,7 @@ export default class VideoPlayer extends Component {
              customStyles.seekBarProgress,
            ]}
          />
@@ -299,7 +322,7 @@ index ed9965b..750c2c4 100644
            <View
              style={[
                styles.seekBarKnob,
-@@ -467,12 +502,14 @@ export default class VideoPlayer extends Component {
+@@ -467,12 +504,14 @@ export default class VideoPlayer extends Component {
              onResponderRelease={this.onSeekRelease}
              onResponderTerminate={this.onSeekRelease}
            />
@@ -320,7 +343,7 @@ index ed9965b..750c2c4 100644
        </View>
      );
    }
-@@ -486,20 +523,33 @@ export default class VideoPlayer extends Component {
+@@ -486,20 +525,33 @@ export default class VideoPlayer extends Component {
            style={[customStyles.controlButton, customStyles.playControl]}
          >
            <Icon
@@ -360,7 +383,7 @@ index ed9965b..750c2c4 100644
            <TouchableOpacity onPress={this.onMutePress} style={customStyles.controlButton}>
              <Icon
                style={[styles.extraControl, customStyles.controlIcon]}
-@@ -507,8 +557,8 @@ export default class VideoPlayer extends Component {
+@@ -507,8 +559,8 @@ export default class VideoPlayer extends Component {
                size={24}
              />
            </TouchableOpacity>
@@ -371,7 +394,7 @@ index ed9965b..750c2c4 100644
            <TouchableOpacity onPress={this.onToggleFullScreen} style={customStyles.controlButton}>
              <Icon
                style={[styles.extraControl, customStyles.controlIcon]}
-@@ -516,7 +566,7 @@ export default class VideoPlayer extends Component {
+@@ -516,7 +568,7 @@ export default class VideoPlayer extends Component {
                size={32}
              />
            </TouchableOpacity>
@@ -380,7 +403,7 @@ index ed9965b..750c2c4 100644
        </View>
      );
    }
-@@ -541,16 +591,20 @@ export default class VideoPlayer extends Component {
+@@ -541,16 +593,20 @@ export default class VideoPlayer extends Component {
              style,
              customStyles.video,
            ]}
@@ -406,7 +429,7 @@ index ed9965b..750c2c4 100644
            onSeek={this.onSeekEvent}
          />
          <View
-@@ -563,17 +617,17 @@ export default class VideoPlayer extends Component {
+@@ -563,17 +619,17 @@ export default class VideoPlayer extends Component {
              style={styles.overlayButton}
              onPress={() => {
                this.showControls();
@@ -429,7 +452,7 @@ index ed9965b..750c2c4 100644
        </View>
      );
    }
-@@ -584,12 +638,13 @@ export default class VideoPlayer extends Component {
+@@ -584,12 +640,13 @@ export default class VideoPlayer extends Component {
  
      if (hasEnded && endThumbnail) {
        return this.renderThumbnail(endThumbnail);
@@ -446,7 +469,7 @@ index ed9965b..750c2c4 100644
            {this.renderStartButton()}
          </View>
        );
-@@ -646,7 +701,7 @@ VideoPlayer.propTypes = {
+@@ -646,7 +703,7 @@ VideoPlayer.propTypes = {
      thumbnail: ImagePropTypes.style,
      playButton: ViewPropTypesVar.style,
      playArrow: Icon.propTypes.style,
@@ -455,7 +478,7 @@ index ed9965b..750c2c4 100644
    }),
    onEnd: PropTypes.func,
    onProgress: PropTypes.func,
-@@ -656,7 +711,7 @@ VideoPlayer.propTypes = {
+@@ -656,7 +713,7 @@ VideoPlayer.propTypes = {
    onHideControls: PropTypes.func,
    onShowControls: PropTypes.func,
    onMutePress: PropTypes.func,
@@ -464,7 +487,7 @@ index ed9965b..750c2c4 100644
  };
  
  VideoPlayer.defaultProps = {
-@@ -665,10 +720,10 @@ VideoPlayer.defaultProps = {
+@@ -665,10 +722,10 @@ VideoPlayer.defaultProps = {
    autoplay: false,
    controlsTimeout: 2000,
    loop: false,

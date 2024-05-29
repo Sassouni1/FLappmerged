@@ -13,7 +13,12 @@ export default function LessonComplete({ navigation }) {
 
   return (
     <View style={styles.root}>
-      <GeneralStatusBar barStyle="dark-content" hidden={false} backgroundColor={colors.white} translucent={true} />
+      <GeneralStatusBar
+        barStyle="dark-content"
+        hidden={false}
+        backgroundColor={colors.white}
+        translucent={true}
+      />
       <View
         style={{
           flexDirection: "row",
@@ -23,11 +28,21 @@ export default function LessonComplete({ navigation }) {
         }}
       >
         <TouchableOpacity onPress={onPressBack} style={styles.headerBtnStyle}>
-          <Ionicons name="chevron-back" size={getFontSize(2.5)} color={colors.white} />
+          <Ionicons
+            name="chevron-back"
+            size={getFontSize(2.5)}
+            color={colors.white}
+          />
         </TouchableOpacity>
         <Text style={styles.titleSTyle}>Lesson Complete</Text>
-        <TouchableOpacity style={styles.headerBtnStyle}>
-          <Ionicons name="settings-outline" size={getFontSize(2.5)} color={colors.white} />
+        <TouchableOpacity
+          style={styles.headerBtnStyle}
+        >
+          <Ionicons
+            name="settings-outline"
+            size={getFontSize(2.5)}
+            color={colors.white}
+          />
         </TouchableOpacity>
       </View>
       <View

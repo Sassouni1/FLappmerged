@@ -24,6 +24,8 @@ export default function SkillsTraining({ navigation }) {
 
   const onPressDetail = () => navigation.navigate("CoachDetail");
 
+  const onPressCategory = () => navigation.navigate("Squat");
+
   const onPressAchievement = () => {
     navigation.navigate("Achievements");
   };
@@ -35,7 +37,8 @@ export default function SkillsTraining({ navigation }) {
         style={[
           styles.tabContainerStyle,
           {
-            backgroundColor: selectedTab !== id ? colors.darkGray : colors.white,
+            backgroundColor:
+              selectedTab !== id ? colors.darkGray : colors.white,
           },
         ]}
       >
@@ -57,7 +60,10 @@ export default function SkillsTraining({ navigation }) {
     return (
       <TouchableOpacity onPress={onPressDetail} style={styles.container1Style}>
         <View style={styles.rowContainer}>
-          <Image source={require("../../../assets/images/home1.png")} style={styles.imageSTyle} />
+          <Image
+            source={require("../../../assets/images/home1.png")}
+            style={styles.imageSTyle}
+          />
           <View style={{ gap: getHeight(1), flex: 1 }}>
             <View style={styles.categoryContainer}>
               <Text style={styles.categoryTextStyle}>Category</Text>
@@ -67,14 +73,22 @@ export default function SkillsTraining({ navigation }) {
             </Text>
             <View style={styles.descRowContainer}>
               <View style={styles.rowContainer}>
-                <Entypo name="star" size={getFontSize(2)} color={colors.orange} />
+                <Entypo
+                  name="star"
+                  size={getFontSize(2)}
+                  color={colors.orange}
+                />
                 <Text numberOfLines={1} style={styles.lessonTextStyle}>
                   37 lessons
                 </Text>
               </View>
               <Text style={styles.lessonTextStyle}>•</Text>
               <View style={styles.rowContainer}>
-                <Ionicons name="person" size={getFontSize(2)} color={colors.darkBlue} />
+                <Ionicons
+                  name="person"
+                  size={getFontSize(2)}
+                  color={colors.darkBlue}
+                />
                 <Text numberOfLines={1} style={styles.lessonTextStyle}>
                   5 Coaches
                 </Text>
@@ -83,7 +97,11 @@ export default function SkillsTraining({ navigation }) {
           </View>
         </View>
         <TouchableOpacity>
-          <Ionicons name="chevron-forward-outline" size={getFontSize(4)} color={colors.slateGray} />
+          <Ionicons
+            name="chevron-forward-outline"
+            size={getFontSize(4)}
+            color={colors.slateGray}
+          />
         </TouchableOpacity>
       </TouchableOpacity>
     );
@@ -91,8 +109,14 @@ export default function SkillsTraining({ navigation }) {
 
   const RenderPopularSkills = () => {
     return (
-      <View style={styles.container1Style}>
-        <Image source={require("../../../assets/images/home1.png")} style={styles.imageSTyle} />
+      <TouchableOpacity
+        onPress={onPressCategory}
+        style={styles.container1Style}
+      >
+        <Image
+          source={require("../../../assets/images/home1.png")}
+          style={styles.imageSTyle}
+        />
         <View style={{ flex: 1, gap: getHeight(1.5) }}>
           <Text style={styles.titleSTyle} numberOfLines={1}>
             Category
@@ -102,21 +126,29 @@ export default function SkillsTraining({ navigation }) {
           </View>
           <View style={[styles.descRowContainer, { flex: 0 }]}>
             <View style={styles.rowContainer}>
-              <Ionicons name="document-text" size={getFontSize(2)} color={colors.slateGray} />
+              <Ionicons
+                name="document-text"
+                size={getFontSize(2)}
+                color={colors.slateGray}
+              />
               <Text numberOfLines={1} style={styles.lessonTextStyle}>
                 Movement 4
               </Text>
             </View>
             <Text style={styles.lessonTextStyle}>•</Text>
             <View style={styles.rowContainer}>
-              <Ionicons name="person" size={getFontSize(2)} color={colors.darkBlue} />
+              <Ionicons
+                name="person"
+                size={getFontSize(2)}
+                color={colors.darkBlue}
+              />
               <Text numberOfLines={1} style={styles.lessonTextStyle}>
                 5 Coaches
               </Text>
             </View>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 

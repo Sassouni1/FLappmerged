@@ -55,13 +55,6 @@ export default function WorkoutDetail({ navigation }) {
         </Text>
         <Text style={styles.subHeaderTestStyle}>Video</Text>
         <View style={styles.videoStyle}>
-          {/* <Video
-            source={require("../../../assets/images/background.mp4")}
-            resizeMode="cover"
-            repeat={true}
-            style={styles.videoStyle}
-          /> */}
-
           <VideoPlayer
             video={require("../../../assets/images/background.mp4")}
             videoWidth={width - getWidth(10)}

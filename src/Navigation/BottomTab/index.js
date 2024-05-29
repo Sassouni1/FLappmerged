@@ -63,7 +63,9 @@ export default function BottomTab() {
         name="Workouts"
         // component={user?.plan_id?WorkoutHistory:Workouts}
         component={user?.isAssigned === true ? Workouts : Workouts}
-        initialParams={user?.isAssigned === true ? { data: "tab2" } : { data: "tab1" }}
+        initialParams={
+          user?.isAssigned === true ? { data: "tab2" } : { data: "tab1" }
+        }
         options={{
           headerShown: false,
 
@@ -83,14 +85,32 @@ export default function BottomTab() {
       />
       <Tab.Screen
         name="Skills"
-        // component={Skills}
-        component={SkillsTraining}
+        component={Skills}
         options={{
           headerShown: false,
           title: "Skills",
           tabBarIcon: ({ focused, color, size }) => (
             <FontAwesome5
               name="hand-rock"
+              size={getFontSize(2.5)}
+              style={{ marginTop: getFontSize(1) }}
+              color={focused ? "#F79300" : "white"}
+            />
+          ),
+          tabBarItemStyle: {
+            right: getFontSize(1.5),
+          },
+        }}
+      />
+      <Tab.Screen
+        name="SkillsTraining"
+        component={SkillsTraining}
+        options={{
+          headerShown: false,
+          title: "New Skills",
+          tabBarIcon: ({ focused, color, size }) => (
+            <FontAwesome5
+              name="speakap"
               size={getFontSize(2.5)}
               style={{ marginTop: getFontSize(1) }}
               color={focused ? "#F79300" : "white"}

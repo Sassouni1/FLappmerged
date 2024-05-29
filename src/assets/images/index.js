@@ -50,6 +50,10 @@ import TickBlack from "./tickB.svg";
 import InvalidSearch from "./invalidSearch.svg";
 import Calendar from "./calendar.svg";
 import Heartbeat from "./heartbeat.svg";
+import TimeIcon from "./timeIcon.svg";
+import VolumeIcon from "./volumeIcon.svg";
+import CalBurnIcon from "./calBurnIcon.svg";
+import LearningIcon from "./learningIcon.svg";
 
 export {
   TickBlack,
@@ -104,4 +108,8 @@ export {
   InvalidSearch,
   Calendar,
   Heartbeat,
+  TimeIcon,
+  VolumeIcon,
+  CalBurnIcon,
+  LearningIcon,
 };

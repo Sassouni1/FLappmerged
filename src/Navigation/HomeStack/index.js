@@ -36,11 +36,18 @@ import LessonComplete from "../../Screens/Skills/LessonComplete";
 import SearchCoach from "../../Screens/Skills/SearchCoach";
 import TrainingStats from "../../Screens/TrainingStats";
 import Achievements from "../../Screens/Achievements";
+import LearningCenter from "../../Screens/SquatComponet/LearningCenter";
+import WorkoutComplete from "../../Screens/SquatComponet/WorkoutComplete";
+import ResetTimer from "../../Screens/SquatComponet/ResetTimer";
+import Squat from "../../Screens/SquatComponet/Squat";
 
 const stack = createNativeStackNavigator();
 const HomeStack = () => {
   return (
-    <stack.Navigator initialRouteName={"Home"} screenOptions={{ headerShown: false }}>
+    <stack.Navigator
+      initialRouteName={"Home"}
+      screenOptions={{ headerShown: false }}
+    >
       <stack.Screen
         options={{
           headerShown: false,
@@ -289,6 +296,34 @@ const HomeStack = () => {
         }}
         name="Achievements"
         component={Achievements}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="LearningCenter"
+        component={LearningCenter}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="WorkoutComplete"
+        component={WorkoutComplete}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="ResetTimer"
+        component={ResetTimer}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="Squat"
+        component={Squat}
       />
     </stack.Navigator>
   );
