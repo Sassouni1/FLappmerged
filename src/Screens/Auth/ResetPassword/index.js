@@ -1,234 +1,271 @@
-import React, { useState, useRef } from "react";
-import { SafeAreaView, Text, View, TouchableOpacity } from "react-native";
-import { TextInput } from "react-native-paper";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import LinearGradient from "react-native-linear-gradient";
-import Button from "../../../Components/Button";
-import { validateFields } from "../../../../utils/validation/validate-fields";
-import GeneralStatusBar from "../../../Components/GeneralStatusBar";
-import { styles } from "./styles";
-import {
-  getFontSize,
-  getHeight,
-  getWidth,
-} from "../../../../utils/ResponsiveFun";
-import { useDispatch, useSelector } from "react-redux";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { loginRequest } from "../../../Redux/actions/AuthActions";
-import validator from "../../../../utils/validation/validator";
-import { GernalStyle } from "../../../constants/GernalStyle";
-import { setLoader } from "../../../Redux/actions/GernalActions";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { ApiCall } from "../../../Services/Apis";
-import Header from "../../../Components/Header";
-import HeaderBottom from "../../../Components/HeaderBottom";
-import { colors } from "../../../constants/colors";
-const ResetPassword = ({ navigation, route }) => {
-  const dispatch = useDispatch();
-  const { email } = route?.params;
-  console.log("route", route);
-  const inputRefs = {
-    newPassword: useRef(null),
-    cpassword: useRef(null),
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, Pressable, TouchableOpacity } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+const App = ({ navigation }) => {
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
+  const handleNewPasswordChange = (value) => {
+    setNewPassword(value);
   };
-  const [state, setState] = useState({
-    newPassword: "",
-    newPasswordError: "",
-    cpassword: "",
-    cpasswordError: "",
-  });
-  const [hidePass, setHidePass] = useState(true);
-  const [hidePass2, setHidePass2] = useState(true);
-  const Reset = async () => {
-    const { newPassword, cpassword } = state;
-    const newPasswordError = await validator("newPassword", newPassword);
-    const cpasswordError = await validator("cpassword", cpassword);
-    if (!newPasswordError && !cpasswordError && newPassword == cpassword) {
-      dispatch(setLoader(true));
-      try {
-        const res = await ApiCall({
-          params: {
-            email: email,
-            password: newPassword,
-            confirm_password: cpassword,
-          },
-          route: "auth/reset_password",
-          verb: "put",
-        });
 
-        if (res?.status == "200") {
-          navigation.navigate("Login");
-          console.log("res", res?.response);
-          alert(res?.response?.message);
-          dispatch(setLoader(false));
-        } else {
-          console.log("error", res.response);
-          alert(res?.response?.message);
-          dispatch(setLoader(false));
-        }
-      } catch (e) {
-        console.log("saga reset password error -- ", e.toString());
-      }
-      // dispatch(loginRequest({newPassword: newPassword, cpassword: cpassword}));
-    } else {
-      dispatch(setLoader(false));
-      if (newPasswordError || cpasswordError) {
-        setState({ ...state, newPasswordError, cpasswordError });
+  const togglePasswordVisibility = () => {
+    setShowPassword(prevShowPassword => !prevShowPassword);
+  };
 
-        return;
-      } else {
-        setState({ ...state, cpasswordError: "Both Password not matched!" });
-      }
+  const toggleNewPasswordVisibility = () => {
+    setShowNewPassword(prevShowNewPassword => !prevShowNewPassword);
+  };
+
+  const getPasswordStrengthColor = () => {
+    switch (getPasswordStrength(newPassword)) {
+      case 'none':
+        return '#e54f5d'; // Red for weak
+      case 'Moderate':
+        return '#eeb045'; // Yellow for moderate
+      case 'Strong':
+        return '#4fe568'; // Green for strong
+      default:
+        return '#FFFFFF'; // White for no password entered
     }
   };
-  const changeHandler = (type, value) => setState({ ...state, [type]: value });
+
+  const getProgressBarWidth = () => {
+    const passwordLength = newPassword.length;
+    if (passwordLength === 0) {
+      return '0%'; // No width for no password entered
+    } else if (passwordLength < 6) {
+      return '25%'; // 25% width for weak passwords
+    } else if (passwordLength >= 6 && passwordLength < 8) {
+      return '50%'; // 50% width for moerate passwords
+    } else if (passwordLength >= 8) {
+      return '100%'; // 100% width for strong passwords
+    }
+  };
+
+  const getPasswordStrength = (password) => {
+    if (!password) return 'None';
+    const length = password.length;
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (length < 6) return 'Weak';
+    if (length >= 6 && (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecialChar)) return 'Moderate';
+    if (length >= 8 && hasUppercase && hasLowercase && hasNumber && hasSpecialChar) return 'Strong';
+    return 'None';
+  };
+
   return (
-    <View style={styles.contaner}>
-      <GeneralStatusBar
-        barStyle="light-content"
-        hidden={false}
-        backgroundColor="rgba(51, 51, 51, 1)"
-        translucent={true}
-      />
-
-      <HeaderBottom
-        title={"Reset password"}
-        LeftIcon={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons
-              style={{ alignSelf: "center", marginRight: getWidth(2) }}
-              name={"arrow-back"}
-              size={25}
-              color={"white"}
-            />
-          </TouchableOpacity>
-        }
-        RightIcon={<View style={{ marginRight: getFontSize(4.5) }} />}
-      />
-
-      <Text style={styles.stxt}>Reset your password</Text>
-      <KeyboardAwareScrollView
-        contentContainerStyle={{ height: getHeight(70) }}
-        showsVerticalScrollIndicator={false}
+    <View style={styles.container}>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.backBtn}
       >
-        <TextInput
-          mode="outlined"
-          // label="New password"
-          label={<Text style={GernalStyle.inputLabelStyle}>New password</Text>}
-          //theme={{ roundness: 10 }}
-          theme={{ roundness: getFontSize(0.5) }}
-          outlineColor="rgba(189, 189, 189, 1)"
-          cursorColor="rgba(189, 189, 189, 1)"
-          textColor="rgba(189, 189, 189, 1)"
-          activeUnderlineColor="rgba(189, 189, 189, 1)"
-          activeOutlineColor="rgba(189, 189, 189, 1)"
-          style={GernalStyle.input}
-          ref={inputRefs.newPassword}
-          value={state.newPassword}
-          returnKeyType={"next"}
-          keyboardType="default"
-          onFocus={() => setState({ ...state, newPasswordError: "" })}
-          secureTextEntry={hidePass2 ? true : false}
-          right={
-            <TextInput.Icon
-              icon={() => (
-                <MaterialCommunityIcons
-                  name={hidePass2 ? "eye-off-outline" : "eye-outline"}
-                  size={getFontSize(3)}
-                  color={"#ffff"}
-                  style={styles.icon}
-                  onPress={() => setHidePass2(!hidePass2)}
-                />
-              )}
-            />
-          }
-          onBlur={() =>
-            validateFields(state.newPassword, "newPassword", (error) =>
-              setState({ ...state, newPasswordError: error })
-            )
-          }
-          onSubmitEditing={() => inputRefs["cpassword"].current.focus()}
-          onChangeText={(newPassword) =>
-            changeHandler("newPassword", newPassword.trim())
-          }
-          blurOnSubmit={false}
-        />
-        <Text style={{ ...GernalStyle.InputError }}>
-          {state.newPasswordError}
-        </Text>
-        <TextInput
-          mode="outlined"
-          // label="Confirm new password"
-          label={
-            <Text style={GernalStyle.inputLabelStyle}>
-              Confirm new password
-            </Text>
-          }
-          //theme={{ roundness: 10 }}
-          theme={{ roundness: getFontSize(0.5) }}
-          outlineColor="rgba(189, 189, 189, 1)"
-          cursorColor="rgba(189, 189, 189, 1)"
-          textColor="rgba(189, 189, 189, 1)"
-          activeUnderlineColor="rgba(189, 189, 189, 1)"
-          activeOutlineColor="rgba(189, 189, 189, 1)"
-          style={GernalStyle.input}
-          ref={inputRefs.cpassword}
-          value={state.cpassword}
-          returnKeyType={"send"}
-          secureTextEntry={hidePass ? true : false}
-          right={
-            <TextInput.Icon
-              icon={() => (
-                <MaterialCommunityIcons
-                  name={hidePass ? "eye-off-outline" : "eye-outline"}
-                  size={getFontSize(3)}
-                  color={"#fff"}
-                  style={styles.icon}
-                  onPress={() => setHidePass(!hidePass)}
-                />
-              )}
-            />
-          }
-          onFocus={() => setState({ ...state, cpasswordError: "" })}
-          onBlur={() =>
-            validateFields(state.cpassword, "cpassword", (error) =>
-              setState({ ...state, cpasswordError: error })
-            )
-          }
-          onSubmitEditing={() => Reset()}
-          onChangeText={(cpassword) =>
-            changeHandler("cpassword", cpassword.trim())
-          }
-          blurOnSubmit={false}
-        />
+        <MaterialCommunityIcons name="chevron-left" size={30} color="#393C43" />
+      </TouchableOpacity>
 
-        <Text style={{ ...GernalStyle.InputError }}>
-          {state.cpasswordError}
-        </Text>
-      </KeyboardAwareScrollView>
+      {/* Input Fields */}
+      <View style={styles.inputFieldsContainer}>
+        <View style={styles.inputFieldContainer}>
+          <Text style={styles.inputLabel}>Create New Password</Text>
+          <View style={styles.inputField}>
+            <View style={styles.inputContent}>
+              <TextInput
+                style={styles.inputText}
+                value={newPassword}
+                onChangeText={handleNewPasswordChange}
+                placeholder="*************"
+                placeholderTextColor="#393C43"
+                secureTextEntry={!showNewPassword}
+              />
+              <Pressable onPress={toggleNewPasswordVisibility}>
+                <MaterialCommunityIcons
+                  name={showNewPassword ? "eye-off-outline" : "eye-outline"}
+                  size={24}
+                  color="#393C43"
+                />
+              </Pressable>
+            </View>
+          </View>
+        </View>
 
-      {/* <Button
-        onPress={() => Reset()}
-        text="Reset password"
-        btnStyle={{
-          ...GernalStyle.btn,
-          position: "absolute",
-          bottom: getHeight(5),
-        }}
-        btnTextStyle={GernalStyle.btnText}
-      /> */}
-      <Button
-        onPress={() => Reset()}
-        text="Reset password"
-        btnStyle={{
-          ...GernalStyle.btn,
-          position: "absolute",
-          bottom: getHeight(5),
-          backgroundColor:colors.buttonColor
-        }}
-        btnTextStyle={GernalStyle.btnText}
-      />
+        <View style={styles.inputFieldContainer}>
+          <Text style={styles.inputLabel}>Confirm Password</Text>
+          <View style={styles.inputField}>
+            <View style={styles.inputContent}>
+              <TextInput
+                style={styles.inputText}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                placeholder="*************"
+                placeholderTextColor="#393C43"
+                secureTextEntry={!showPassword}
+              />
+              <Pressable onPress={togglePasswordVisibility}>
+                <MaterialCommunityIcons
+                  name={showPassword ? "eye-off-outline" : "eye-outline"}
+                  size={24}
+                  color="#393C43"
+                />
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </View>
+
+      {/* Password Strength */}
+      <Text style={styles.passwordStrength}>Password Strength</Text>
+      <View style={[styles.progressBar, { backgroundColor: '#FFFFFF' }]}>
+        <View style={[styles.progressBarFill, { width: getProgressBarWidth(), backgroundColor: getPasswordStrengthColor() }]} />
+      </View>
+      <Text style={styles.weakStrength}>{getPasswordStrength(newPassword) === 'Weak' ? 'Weak Increase strength' : getPasswordStrength(newPassword)}</Text>
+
+      {/* Button Primary Icon */}
+      <Pressable style={styles.primaryButton}>
+        <View style={styles.buttonContent}>
+          <Text style={styles.buttonText}>Change Password</Text>
+          <MaterialCommunityIcons name="arrow-right" size={24} color="#FFFFFF" />
+        </View>
+      </Pressable>
+
+      {/* Home Indicator */}
+      <View style={styles.homeIndicator} />
     </View>
   );
 };
-export default ResetPassword;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingVertical: 50,
+  },
+  backBtn: {
+    position: 'absolute',
+    top: 60,
+    left: 30,
+  },
+  inputFieldsContainer: {
+    marginHorizontal: 16,
+    marginTop: 80,
+    gap: 10,
+    paddingBottom: 24, // Add some padding at the bottom
+  },
+  inputFieldContainer: {
+    marginBottom: 16,
+    gap: 10,
+  },
+  inputLabel: {
+    fontFamily: 'Work Sans',
+    fontWeight: '700',
+    fontSize: 14,
+    lineHeight: 16,
+    letterSpacing: -0.002,
+    color: '#111214',
+  },
+  inputField: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    padding: 16,
+    gap: 10,
+    width: '100%',
+    height: 56,
+    backgroundColor: '#F3F3F4',
+    borderRadius: 19,
+  },
+  inputContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 134,
+    width: 311,
+    height: 24,
+  },
+  inputText: {
+    fontFamily: 'Work Sans',
+    fontWeight: '500',
+    fontSize: 16,
+    lineHeight: 19,
+    letterSpacing: 1,
+    color: '#393C43',
+    flex: 1,
+  },
+  passwordStrength: {
+    fontFamily: 'Work Sans',
+    fontWeight: '700',
+    fontSize: 18,
+    lineHeight: 21,
+    textAlign: 'center',
+    letterSpacing: -0.004,
+    color: '#393C43',
+    marginTop: -6, // Decrease the marginTop value
+  },
+  progressBar: {
+    width: 342,
+    height: 10,
+    marginHorizontal: 16,
+    marginTop: 8,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    borderRadius: 6,
+  },
+  progressBarFill: {
+    height: 10,
+    borderRadius: 3,
+  },
+  weakStrength: {
+    fontFamily: 'Work Sans',
+    fontWeight: '500',
+    fontSize: 16,
+    lineHeight: 19,
+    textAlign: 'center',
+    letterSpacing: -0.003,
+    color: '#393C43',
+    marginTop: 8,
+  },
+  primaryButton: {
+    marginLeft: 8, // Adjust the left margin
+    marginRight: 200, // Auto margin on the right to push the button left
+    marginTop: 24,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    width: '95%', // Slightly reduce the button width
+    height: 56,
+    backgroundColor: '#111214',
+    borderRadius: 19,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10,
+  },
+  buttonText: {
+    fontFamily: 'Work Sans',
+    fontWeight: '600',
+    fontSize: 16, // Increase the font size if needed
+    lineHeight: 19, // Adjust the line height if needed
+    letterSpacing: -0.003,
+    color: '#FFFFFF',
+  },
+  arrowIcon: {
+    width: 24,
+    height: 24,
+    borderColor: '#FFFFFF',
+    borderWidth: 2,
+  },
+});
+
+export default App;

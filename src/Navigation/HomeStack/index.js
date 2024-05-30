@@ -29,6 +29,10 @@ import SubFolder from "../../Screens/Skills/SubFolder";
 import { useSelector } from "react-redux";
 import AditionalWorkout from "../../Screens/AditionalWorkout";
 import RestTimeScreen from "../../Screens/Workouts/RestTimeScreen";
+
+import Fitnesssurvey from "../../Screens/Fitnesssurvey";
+
+
 import SearchWorkout from "../../Screens/Skills/SearchWorkout";
 import WorkoutDetail from "../../Screens/Skills/WorkoutDetail";
 import CoachDetail from "../../Screens/Skills/CoachDetail";
@@ -40,6 +44,7 @@ import LearningCenter from "../../Screens/SquatComponet/LearningCenter";
 import WorkoutComplete from "../../Screens/SquatComponet/WorkoutComplete";
 import ResetTimer from "../../Screens/SquatComponet/ResetTimer";
 import Squat from "../../Screens/SquatComponet/Squat";
+
 
 const stack = createNativeStackNavigator();
 const HomeStack = () => {
@@ -62,6 +67,14 @@ const HomeStack = () => {
         name="VideoSkills"
         component={VideoSkills}
       />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="Fitnesssurvey"
+        component={Fitnesssurvey}
+      />
+   
       <stack.Screen
         options={{
           headerShown: false,

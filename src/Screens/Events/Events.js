@@ -16,7 +16,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { colors } from "../../constants/colors";
 import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
 import Seprator from "../../Components/Seprator";
-import RNDateTimePicker from "@react-native-community/datetimepicker";
+// import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation } from "@react-navigation/native";
 import { GernalStyle } from "../../constants/GernalStyle";
 import { useDispatch, useSelector } from "react-redux";
