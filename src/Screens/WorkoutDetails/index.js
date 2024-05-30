@@ -1,12 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  View,
-  FlatList,
-  TouchableOpacity,
-  Text,
-  ImageBackground,
-  Alert,
-} from "react-native";
+import { View, FlatList, TouchableOpacity, Text, ImageBackground, Alert } from "react-native";
 import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
 import { Calendar } from "react-native-calendars";
 import { useState } from "react";
@@ -46,9 +39,7 @@ const WorkoutDetails = () => {
     console.log("double tap screen", item);
     navigation.navigate("ViewProgram", {
       passData: item,
-      url: betweenTwoHandles
-        ? "cont_program/detail_cont_program/"
-        : "program/detail_program/",
+      url: betweenTwoHandles ? "cont_program/detail_cont_program/" : "program/detail_program/",
     });
   };
 
@@ -66,7 +57,7 @@ const WorkoutDetails = () => {
   };
   const getContinuousProgram = async () => {
     dispatch(setLoader(true));
-    setData([])
+    setData([]);
 
     try {
       const res = await ApiCall({
@@ -81,9 +72,7 @@ const WorkoutDetails = () => {
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        Alert.alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        Alert.alert(res?.response?.message, [{ text: "OK", onPress: () => console.log("OK Pressed") }]);
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
@@ -91,7 +80,7 @@ const WorkoutDetails = () => {
   };
   const getAllProgram = async () => {
     dispatch(setLoader(true));
-setData([])
+    setData([]);
     try {
       const res = await ApiCall({
         route: "program/all_programs",
@@ -105,9 +94,7 @@ setData([])
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        Alert.alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        Alert.alert(res?.response?.message, [{ text: "OK", onPress: () => console.log("OK Pressed") }]);
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
@@ -127,9 +114,7 @@ setData([])
           startDate: selectedDate,
           programId: selectedItemId,
         },
-        route: betweenTwoHandles
-          ? "assignProgram/assign-continuous-program"
-          : "assignProgram/assign_Program",
+        route: betweenTwoHandles ? "assignProgram/assign-continuous-program" : "assignProgram/assign_Program",
         verb: "post",
         token: token,
       });
@@ -141,9 +126,7 @@ setData([])
       } else {
         dispatch(setLoader(false));
 
-        Alert.alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        Alert.alert(res?.response?.message, [{ text: "OK", onPress: () => console.log("OK Pressed") }]);
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
@@ -175,9 +158,7 @@ setData([])
       } else {
         dispatch(setLoader(false));
 
-        alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        alert(res?.response?.message, [{ text: "OK", onPress: () => console.log("OK Pressed") }]);
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
@@ -186,9 +167,7 @@ setData([])
 
   useEffect(() => {
     const fetchSelectedItemId = async () => {
-      const latestSelectedItemId = await AsyncStorage.getItem(
-        "latestSelectedItemId"
-      );
+      const latestSelectedItemId = await AsyncStorage.getItem("latestSelectedItemId");
       if (latestSelectedItemId) {
         setSelectedItemId(latestSelectedItemId);
       }
@@ -202,9 +181,7 @@ setData([])
     let prevSelectedItems = await AsyncStorage.getItem("selectedItems");
     prevSelectedItems = JSON.parse(prevSelectedItems) || [];
 
-    const index = prevSelectedItems.findIndex(
-      (selectedItem) => selectedItem._id === item._id
-    );
+    const index = prevSelectedItems.findIndex((selectedItem) => selectedItem._id === item._id);
 
     if (index !== -1) {
       prevSelectedItems.splice(index, 1);
@@ -212,10 +189,7 @@ setData([])
       prevSelectedItems.push(item);
     }
 
-    await AsyncStorage.setItem(
-      "selectedItems",
-      JSON.stringify(prevSelectedItems)
-    );
+    await AsyncStorage.setItem("selectedItems", JSON.stringify(prevSelectedItems));
     // Update the latest selected program ID in AsyncStorage
     await AsyncStorage.setItem("latestSelectedItemId", item._id);
     setSelectedItemId(item._id);
@@ -272,9 +246,7 @@ setData([])
         />
         <SelectDropdown
           defaultButtonText="Select an Program"
-          renderDropdownIcon={() => (
-            <AntDesign name="caretdown" size={20} color={colors.white} />
-          )}
+          renderDropdownIcon={() => <AntDesign name="caretdown" size={20} color={colors.white} />}
           defaultValueByIndex={0}
           dropdownStyle={{ width: getWidth(35) }}
           buttonTextStyle={{ color: "white", fontSize: 12 }}
@@ -288,31 +260,24 @@ setData([])
           }}
           data={["S&C Program", "Year Round Program"]}
           onSelect={(index) => {
-          
             handleSelect(index);
           }}
         />
       </View>
       <FlatList
         data={data}
-        ListFooterComponent={() => (
-          <View style={{ height: getHeight(8) }}></View>
-        )}
+        ListFooterComponent={() => <View style={{ height: getHeight(8) }}></View>}
         showsVerticalScrollIndicator={false}
         renderItem={({ item, index }) => {
           return (
             <View>
               <TouchableOpacity onPress={() => handleDoubleTap(item)}>
-                <ImageBackground
-                  source={{ uri: item?.program_Image }}
-                  style={styles.image}
-                  resizeMode="cover"
-                >
+                <ImageBackground source={{ uri: item?.program_Image }} style={styles.image} resizeMode="cover">
                   <Text
                     style={{
                       fontSize: getFontSize(1.9),
                       color: colors.white,
-                      fontFamily: fonts.UBo,
+                      fontFamily: fonts.WB,
                       position: "absolute",
                       bottom: getHeight(2),
                       alignSelf: "center",
@@ -328,21 +293,14 @@ setData([])
                       height: getWidth(8),
                       justifyContent: "center",
                       alignItems: "center",
-                      backgroundColor:
-                        selectedItemId === item._id
-                          ? colors.buttonColor
-                          : colors.whiteOp40,
+                      backgroundColor: selectedItemId === item._id ? colors.buttonColor : colors.whiteOp40,
                       position: "absolute",
                       top: getHeight(1),
                       right: getWidth(3),
                       borderRadius: 25,
                     }}
                   >
-                    <Ionicons
-                      name="checkmark-sharp"
-                      size={20}
-                      color={colors.white}
-                    />
+                    <Ionicons name="checkmark-sharp" size={20} color={colors.white} />
                   </TouchableOpacity>
                 </ImageBackground>
               </TouchableOpacity>
@@ -375,7 +333,7 @@ setData([])
             style={{
               fontSize: getFontSize(1.5),
               color: colors.white,
-              fontFamily: fonts.UBo,
+              fontFamily: fonts.WB,
               fontWeight: "bold",
             }}
           >
@@ -384,15 +342,9 @@ setData([])
         </TouchableOpacity>
       ) : null}
 
-      <Modal
-        isVisible={isModalVisible}
-        onBackdropPress={() => setModalVisible(false)}
-      >
+      <Modal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)}>
         <View style={styles.modalContainer}>
-          <TouchableOpacity
-            onPress={() => setModalVisible(false)}
-            style={styles.closeButton}
-          >
+          <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
             <Text style={{ color: "red" }}>Close</Text>
           </TouchableOpacity>
 
@@ -422,7 +374,7 @@ setData([])
               style={{
                 fontSize: 14,
                 color: colors.white,
-                fontFamily: fonts.UBo,
+                fontFamily: fonts.WB,
               }}
             >
               Done

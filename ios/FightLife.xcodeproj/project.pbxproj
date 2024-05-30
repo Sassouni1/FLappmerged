@@ -17,14 +17,17 @@
 		1CC61E7F6384357EAEA3B43D /* libPods-FightLife-FightLifeTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2138BCE72475B1F0CF91404C /* libPods-FightLife-FightLifeTests.a */; };
 		200352ED6BA144FD9EAF4F9D /* Ubuntu-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 93D7F4A16F884797B0081987 /* Ubuntu-Italic.ttf */; };
 		417F2C2923FC488E9F321A44 /* Ubuntu-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A5AF45E1DE5143F4BB83E1C6 /* Ubuntu-Medium.ttf */; };
+		4F23BAA326FA4E998C6E89C4 /* WorkSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DBE0D36CC9654175BADA89C1 /* WorkSans-Medium.ttf */; };
 		512B773AB5B346E8A487ACCA /* Ubuntu-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CAE02712402F4A6F90B7D743 /* Ubuntu-LightItalic.ttf */; };
 		58ABB3486E2449609283AE31 /* Ubuntu-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 95635F615CF849329FD8F9D3 /* Ubuntu-Light.ttf */; };
+		5CF24008A3FC4BEFB1F2DA6A /* WorkSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4031E5B800AA4AE4A8B06081 /* WorkSans-Regular.ttf */; };
 		6ED4DB45044943FEA55F289A /* Ubuntu-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A9AA85BC63FB45D596F2561C /* Ubuntu-BoldItalic.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		A65B59804AF3426097CD40CD /* Ubuntu-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 19273D04FDD3464994252F18 /* Ubuntu-Regular.ttf */; };
 		B5EDDED62B7F46A2A00E0B81 /* Russo_One.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1861613D2F614EB68705FACE /* Russo_One.ttf */; };
 		DCE749A9C8BD4DBFA64E1DA9 /* .ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1D09A433A8C64E32960C3925 /* .ttf */; };
 		E87B42AE98B14136B9463699 /* Ubuntu-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CEDA8D01BF2B45D7AF9EA8C4 /* Ubuntu-MediumItalic.ttf */; };
+		F01868CDA7404463920AEA51 /* WorkSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0527EDF570F24741BE954AA9 /* WorkSans-Bold.ttf */; };
 		F2560869D5934F57B6A85A18 /* Ubuntu-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F394F70219864FDD83E780C0 /* Ubuntu-Bold.ttf */; };
 /* End PBXBuildFile section */
 
@@ -42,6 +45,7 @@
 		00E356EE1AD99517003FC87E /* FightLifeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FightLifeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* FightLifeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FightLifeTests.m; sourceTree = "<group>"; };
+		0527EDF570F24741BE954AA9 /* WorkSans-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "WorkSans-Bold.ttf"; path = "../src/assets/fonts/WorkSans-Bold.ttf"; sourceTree = "<group>"; };
 		0FA8EF4A16E52AC6E3E15FDC /* Pods-FightLife-FightLifeTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FightLife-FightLifeTests.release.xcconfig"; path = "Target Support Files/Pods-FightLife-FightLifeTests/Pods-FightLife-FightLifeTests.release.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* FightLife.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FightLife.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = FightLife/AppDelegate.h; sourceTree = "<group>"; };
@@ -57,6 +61,7 @@
 		19273D04FDD3464994252F18 /* Ubuntu-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Ubuntu-Regular.ttf"; path = "../src/assets/fonts/Ubuntu-Regular.ttf"; sourceTree = "<group>"; };
 		1D09A433A8C64E32960C3925 /* .ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = .ttf; path = ../src/assets/fonts/.ttf; sourceTree = "<group>"; };
 		2138BCE72475B1F0CF91404C /* libPods-FightLife-FightLifeTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FightLife-FightLifeTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4031E5B800AA4AE4A8B06081 /* WorkSans-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "WorkSans-Regular.ttf"; path = "../src/assets/fonts/WorkSans-Regular.ttf"; sourceTree = "<group>"; };
 		4AD350EDCB0028FDB2071E5A /* Pods-FightLife-FightLifeTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FightLife-FightLifeTests.debug.xcconfig"; path = "Target Support Files/Pods-FightLife-FightLifeTests/Pods-FightLife-FightLifeTests.debug.xcconfig"; sourceTree = "<group>"; };
 		6ED932028B028BF55EFBCA0B /* Pods-FightLife.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FightLife.release.xcconfig"; path = "Target Support Files/Pods-FightLife/Pods-FightLife.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = FightLife/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -67,6 +72,7 @@
 		A9AA85BC63FB45D596F2561C /* Ubuntu-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Ubuntu-BoldItalic.ttf"; path = "../src/assets/fonts/Ubuntu-BoldItalic.ttf"; sourceTree = "<group>"; };
 		CAE02712402F4A6F90B7D743 /* Ubuntu-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Ubuntu-LightItalic.ttf"; path = "../src/assets/fonts/Ubuntu-LightItalic.ttf"; sourceTree = "<group>"; };
 		CEDA8D01BF2B45D7AF9EA8C4 /* Ubuntu-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Ubuntu-MediumItalic.ttf"; path = "../src/assets/fonts/Ubuntu-MediumItalic.ttf"; sourceTree = "<group>"; };
+		DBE0D36CC9654175BADA89C1 /* WorkSans-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "WorkSans-Medium.ttf"; path = "../src/assets/fonts/WorkSans-Medium.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F394F70219864FDD83E780C0 /* Ubuntu-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Ubuntu-Bold.ttf"; path = "../src/assets/fonts/Ubuntu-Bold.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -147,6 +153,9 @@
 				CEDA8D01BF2B45D7AF9EA8C4 /* Ubuntu-MediumItalic.ttf */,
 				19273D04FDD3464994252F18 /* Ubuntu-Regular.ttf */,
 				1D09A433A8C64E32960C3925 /* .ttf */,
+				0527EDF570F24741BE954AA9 /* WorkSans-Bold.ttf */,
+				DBE0D36CC9654175BADA89C1 /* WorkSans-Medium.ttf */,
+				4031E5B800AA4AE4A8B06081 /* WorkSans-Regular.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -303,6 +312,9 @@
 				A65B59804AF3426097CD40CD /* Ubuntu-Regular.ttf in Resources */,
 				DCE749A9C8BD4DBFA64E1DA9 /* .ttf in Resources */,
 				18601C382B0B400800E3801C /* GoogleService-Info.plist in Resources */,
+				F01868CDA7404463920AEA51 /* WorkSans-Bold.ttf in Resources */,
+				4F23BAA326FA4E998C6E89C4 /* WorkSans-Medium.ttf in Resources */,
+				5CF24008A3FC4BEFB1F2DA6A /* WorkSans-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

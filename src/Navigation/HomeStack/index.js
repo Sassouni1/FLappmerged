@@ -29,7 +29,21 @@ import SubFolder from "../../Screens/Skills/SubFolder";
 import { useSelector } from "react-redux";
 import AditionalWorkout from "../../Screens/AditionalWorkout";
 import RestTimeScreen from "../../Screens/Workouts/RestTimeScreen";
+
 import Fitnesssurvey from "../../Screens/Fitnesssurvey";
+
+
+import SearchWorkout from "../../Screens/Skills/SearchWorkout";
+import WorkoutDetail from "../../Screens/Skills/WorkoutDetail";
+import CoachDetail from "../../Screens/Skills/CoachDetail";
+import LessonComplete from "../../Screens/Skills/LessonComplete";
+import SearchCoach from "../../Screens/Skills/SearchCoach";
+import TrainingStats from "../../Screens/TrainingStats";
+import Achievements from "../../Screens/Achievements";
+import LearningCenter from "../../Screens/SquatComponet/LearningCenter";
+import WorkoutComplete from "../../Screens/SquatComponet/WorkoutComplete";
+import ResetTimer from "../../Screens/SquatComponet/ResetTimer";
+import Squat from "../../Screens/SquatComponet/Squat";
 
 
 const stack = createNativeStackNavigator();
@@ -68,7 +82,7 @@ const HomeStack = () => {
         name="AditionalWorkout"
         component={AditionalWorkout}
       />
-    
+
       <stack.Screen
         options={{
           headerShown: false,
@@ -191,7 +205,7 @@ const HomeStack = () => {
         name="CompleteWorkout"
         component={CompleteWorkout}
       />
-       <stack.Screen
+      <stack.Screen
         options={{
           headerShown: false,
         }}
@@ -246,6 +260,83 @@ const HomeStack = () => {
         }}
         name="OTP"
         component={OTP}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="SearchWorkout"
+        component={SearchWorkout}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="WorkoutDetail"
+        component={WorkoutDetail}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="CoachDetail"
+        component={CoachDetail}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="LessonComplete"
+        component={LessonComplete}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="SearchCoach"
+        component={SearchCoach}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="TrainingStats"
+        component={TrainingStats}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="Achievements"
+        component={Achievements}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="LearningCenter"
+        component={LearningCenter}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="WorkoutComplete"
+        component={WorkoutComplete}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="ResetTimer"
+        component={ResetTimer}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="Squat"
+        component={Squat}
       />
     </stack.Navigator>
   );
