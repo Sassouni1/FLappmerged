@@ -6,7 +6,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import Foundation from "react-native-vector-icons/Foundation";
 import { getFontSize, getHeight } from "../../../utils/ResponsiveFun";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import MaterialCommunityIcons  from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Message from "../../Screens/Message";
 import HomeSc from "../../Screens/HomeSc";
 import ConversationScreen from "../../Screens/Message/conversation";
@@ -19,6 +19,7 @@ import { useSelector } from "react-redux";
 import AddWorkouts from "../../Screens/Workouts/AddWorkouts";
 import WorkoutHistory from "../../Screens/Workouts/WorkoutHistory";
 import LeaderBoard from "../../Screens/LeaderBoard";
+import SkillsTraining from "../../Screens/Skills/SkillsTraining";
 
 const Tab = createBottomTabNavigator();
 
@@ -77,9 +78,9 @@ export default function BottomTab() {
               color={focused ? "#F79300" : "white"}
             />
           ),
-          tabBarItemStyle:{
-            right:getFontSize(0.8)
-          }
+          tabBarItemStyle: {
+            right: getFontSize(0.8),
+          },
         }}
       />
       <Tab.Screen
@@ -87,7 +88,6 @@ export default function BottomTab() {
         component={Skills}
         options={{
           headerShown: false,
-
           title: "Skills",
           tabBarIcon: ({ focused, color, size }) => (
             <FontAwesome5
@@ -97,9 +97,28 @@ export default function BottomTab() {
               color={focused ? "#F79300" : "white"}
             />
           ),
-          tabBarItemStyle:{
-            right:getFontSize(1.5)
-          }
+          tabBarItemStyle: {
+            right: getFontSize(1.5),
+          },
+        }}
+      />
+      <Tab.Screen
+        name="SkillsTraining"
+        component={SkillsTraining}
+        options={{
+          headerShown: false,
+          title: "New Skills",
+          tabBarIcon: ({ focused, color, size }) => (
+            <FontAwesome5
+              name="speakap"
+              size={getFontSize(2.5)}
+              style={{ marginTop: getFontSize(1) }}
+              color={focused ? "#F79300" : "white"}
+            />
+          ),
+          tabBarItemStyle: {
+            right: getFontSize(1.5),
+          },
         }}
       />
       <Tab.Screen
@@ -117,9 +136,9 @@ export default function BottomTab() {
               color={focused ? "#F79300" : "white"}
             />
           ),
-          tabBarItemStyle:{
-            right:getFontSize(2)
-          }
+          tabBarItemStyle: {
+            right: getFontSize(2),
+          },
         }}
       />
       <Tab.Screen
@@ -132,13 +151,13 @@ export default function BottomTab() {
             <Entypo
               name="message"
               size={getFontSize(3)}
-              style={{ marginTop: getFontSize(1), }}
+              style={{ marginTop: getFontSize(1) }}
               color={focused ? "#F79300" : "white"}
             />
           ),
-          tabBarItemStyle:{
-            right:getFontSize(1.5)
-          }
+          tabBarItemStyle: {
+            right: getFontSize(1.5),
+          },
         }}
       />
 
@@ -156,9 +175,9 @@ export default function BottomTab() {
               color={focused ? "#F79300" : "white"}
             />
           ),
-          tabBarItemStyle:{
-            right:getFontSize(0.5)
-          }
+          tabBarItemStyle: {
+            right: getFontSize(0.5),
+          },
         }}
       />
 
@@ -176,9 +195,9 @@ export default function BottomTab() {
               color={focused ? "#F79300" : "white"}
             />
           ),
-          tabBarItemStyle:{
-            right:getFontSize(0.2)
-          }
+          tabBarItemStyle: {
+            right: getFontSize(0.2),
+          },
         }}
       />
     </Tab.Navigator>

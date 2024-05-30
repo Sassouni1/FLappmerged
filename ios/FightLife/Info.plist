@@ -27,6 +27,13 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
+<dict>
+  <!--Include to allow all connections (DANGER)-->
+  <key>NSAllowsArbitraryLoads</key>
+      <true/>
+</dict>
+
+	<!-- <key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
@@ -36,7 +43,7 @@
 				<true/>
 			</dict>
 		</dict>
-	</dict>
+	</dict> -->
 	<key>NSCameraUsageDescription</key>
 	<string/>
 	<key>NSAppleMusicUsageDescription</key>
@@ -73,6 +80,9 @@
 		<string>Ubuntu-Medium.ttf</string>
 		<string>Ubuntu-MediumItalic.ttf</string>
 		<string>Ubuntu-Regular.ttf</string>
+		<string>WorkSans-Bold.ttf</string>
+		<string>WorkSans-Medium.ttf</string>
+		<string>WorkSans-Regular.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
