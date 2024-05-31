@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react'
 import {
   View,
@@ -30,6 +31,7 @@ import { TextInput } from 'react-native-paper'
 import { GernalStyle } from '../../constants/GernalStyle'
 import SelectDropdown from 'react-native-select-dropdown'
 
+
 const WorkoutDetails = () => {
   const navigation = useNavigation()
   const [isModalVisible, setModalVisible] = useState(false)
@@ -49,11 +51,13 @@ const WorkoutDetails = () => {
     console.log('double tap screen', item)
     navigation.navigate('ViewProgram', {
       passData: item,
+
       url: betweenTwoHandles
         ? 'cont_program/detail_cont_program/'
         : 'program/detail_program/',
     })
   }
+
 
   const handleDayPress = (day) => {
     setSelectedDate(day.dateString)
@@ -68,8 +72,10 @@ const WorkoutDetails = () => {
     }
   }
   const getContinuousProgram = async () => {
+
     dispatch(setLoader(true))
     setData([])
+
 
     try {
       const res = await ApiCall({
@@ -83,18 +89,22 @@ const WorkoutDetails = () => {
         setData(res?.response?.detail?.filter((el) => !el?.isDeleted))
         dispatch(setLoader(false))
       } else {
+
         dispatch(setLoader(false))
         Alert.alert(res?.response?.message, [
           { text: 'OK', onPress: () => console.log('OK Pressed') },
         ])
+
       }
     } catch (e) {
       console.log('api get skill error -- ', e.toString())
     }
   }
   const getAllProgram = async () => {
+
     dispatch(setLoader(true))
     setData([])
+
     try {
       const res = await ApiCall({
         route: 'program/all_programs',
@@ -107,10 +117,12 @@ const WorkoutDetails = () => {
         setData(res?.response?.detail?.filter((el) => !el?.isDeleted))
         dispatch(setLoader(false))
       } else {
+
         dispatch(setLoader(false))
         Alert.alert(res?.response?.message, [
           { text: 'OK', onPress: () => console.log('OK Pressed') },
         ])
+
       }
     } catch (e) {
       console.log('api get skill error -- ', e.toString())
@@ -130,10 +142,12 @@ const WorkoutDetails = () => {
           startDate: selectedDate,
           programId: selectedItemId,
         },
+
         route: betweenTwoHandles
           ? 'assignProgram/assign-continuous-program'
           : 'assignProgram/assign_Program',
         verb: 'post',
+
         token: token,
       })
       if (res?.status == '200') {
@@ -144,9 +158,11 @@ const WorkoutDetails = () => {
       } else {
         dispatch(setLoader(false))
 
+
         Alert.alert(res?.response?.message, [
           { text: 'OK', onPress: () => console.log('OK Pressed') },
         ])
+
       }
     } catch (e) {
       console.log('api get skill error -- ', e.toString())
@@ -178,9 +194,11 @@ const WorkoutDetails = () => {
       } else {
         dispatch(setLoader(false))
 
+
         alert(res?.response?.message, [
           { text: 'OK', onPress: () => console.log('OK Pressed') },
         ])
+
       }
     } catch (e) {
       console.log('api get skill error -- ', e.toString())
@@ -189,9 +207,11 @@ const WorkoutDetails = () => {
 
   useEffect(() => {
     const fetchSelectedItemId = async () => {
+
       const latestSelectedItemId = await AsyncStorage.getItem(
         'latestSelectedItemId'
       )
+
       if (latestSelectedItemId) {
         setSelectedItemId(latestSelectedItemId)
       }
@@ -205,9 +225,11 @@ const WorkoutDetails = () => {
     let prevSelectedItems = await AsyncStorage.getItem('selectedItems')
     prevSelectedItems = JSON.parse(prevSelectedItems) || []
 
+
     const index = prevSelectedItems.findIndex(
       (selectedItem) => selectedItem._id === item._id
     )
+
 
     if (index !== -1) {
       prevSelectedItems.splice(index, 1)
@@ -215,10 +237,12 @@ const WorkoutDetails = () => {
       prevSelectedItems.push(item)
     }
 
+
     await AsyncStorage.setItem(
       'selectedItems',
       JSON.stringify(prevSelectedItems)
     )
+
     // Update the latest selected program ID in AsyncStorage
     await AsyncStorage.setItem('latestSelectedItemId', item._id)
     setSelectedItemId(item._id)
@@ -253,6 +277,7 @@ const WorkoutDetails = () => {
             objectFit: 'contain',
           }}
         />
+
       </TouchableOpacity>
       <TouchableOpacity
         style={{
@@ -417,12 +442,15 @@ const WorkoutDetails = () => {
                       color: 'white',
                       fontWeight: '600',
                       fontSize: 12,
+
                     }}
                   >
                     START
                   </Text>
+
                 </View>
               </View>
+
             </View>
           </View>
         </View>
@@ -470,7 +498,9 @@ const WorkoutDetails = () => {
 
           <Text
             style={{
+
               color: 'darkorange',
+
             }}
           >
             See all
@@ -486,6 +516,7 @@ const WorkoutDetails = () => {
           <View
             style={{
               padding: 14,
+
 
               flexDirection: 'row',
               gap: 10,
@@ -613,6 +644,7 @@ const WorkoutDetails = () => {
           <View
             style={{
               padding: 14,
+
 
               flexDirection: 'row',
               gap: 10,
@@ -749,6 +781,7 @@ const WorkoutDetails = () => {
             <Image
               source={require('../../assets/images/workoutsyoga.png')}
               style={{
+
                 width: 60,
                 height: 60,
               }}
@@ -758,6 +791,7 @@ const WorkoutDetails = () => {
                 flexDirection: 'column',
                 gap: 6,
                 width: '75%',
+
               }}
             >
               <View

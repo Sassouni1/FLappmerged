@@ -54,3 +54,9 @@ const styles = StyleSheet.create({
   },
 });
 export default Main;
+
+
+
+
+
+//created and coded by Chris Sassouni/Fight Life

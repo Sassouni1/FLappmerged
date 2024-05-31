@@ -4,29 +4,31 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
-} from "react-native";
-import React, { useEffect, useState } from "react";
-import { colors } from "../../constants/colors";
-import Entypo from "react-native-vector-icons/Entypo";
-import { getHeight, getWidth, getFontSize } from "../../../utils/ResponsiveFun";
-import { Ellipse } from "../../assets/images";
-import { styles } from "./styles";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import GeneralStatusBar from "../../Components/GeneralStatusBar";
-import HeaderBottom from "../../Components/HeaderBottom";
-import ReactNativeCalendarStrip from "react-native-calendar-strip";
-import { ApiCall } from "../../Services/Apis";
-import { useDispatch, useSelector } from "react-redux";
-import { setLoader } from "../../Redux/actions/GernalActions";
-import { LineChart } from "react-native-chart-kit";
-import SelectDropdown from "react-native-select-dropdown";
-import CircularProgress from "../../Components/CircularProgress";
-
-const Activity = () => {
+ } from "react-native";
+ import React, { useEffect, useState } from "react";
+ import { colors } from "../../constants/colors";
+ import Entypo from "react-native-vector-icons/Entypo";
+ import { getHeight, getWidth, getFontSize } from "../../../utils/ResponsiveFun";
+ import { Ellipse } from "../../assets/images";
+ import { styles } from "./styles";
+ import { useFocusEffect, useNavigation } from "@react-navigation/native";
+ import GeneralStatusBar from "../../Components/GeneralStatusBar";
+ import HeaderBottom from "../../Components/HeaderBottom";
+ import ReactNativeCalendarStrip from "react-native-calendar-strip";
+ import { ApiCall } from "../../Services/Apis";
+ import { useDispatch, useSelector } from "react-redux";
+ import { setLoader } from "../../Redux/actions/GernalActions";
+ import { LineChart } from "react-native-chart-kit";
+ import SelectDropdown from "react-native-select-dropdown";
+ import CircularProgress from "../../Components/CircularProgress";
+ 
+ 
+ const Activity = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [date, setDate] = useState(new Date());
-
+ 
+ 
   // all progress states
   const [weeklyProgress, setWeeklyProgress] = useState({
     Monday: 0,
@@ -60,7 +62,8 @@ const Activity = () => {
     Dec: 0,
   });
   const [weekDataProgress, setWeekDataProgress] = useState({});
-
+ 
+ 
   // all messages progress states
   const [messagesProgress, setMessagesProgress] = useState({
     Monday: 0,
@@ -95,7 +98,8 @@ const Activity = () => {
     Nov: 0,
     Dec: 0,
   });
-
+ 
+ 
   // all weight progress states
   const [weightProgress, setWeightProgress] = useState({
     Monday: 0,
@@ -128,7 +132,8 @@ const Activity = () => {
     Nov: 0,
     Dec: 0,
   });
-
+ 
+ 
   // all calories progress states
   const [caloriesProgress, setCaloriesProgress] = useState({
     Monday: 0,
@@ -163,7 +168,8 @@ const Activity = () => {
     Nov: 0,
     Dec: 0,
   });
-
+ 
+ 
   // select type states by dropdown
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [allTypes, setAllTypes] = useState([
@@ -173,11 +179,13 @@ const Activity = () => {
     "Last 6 Months",
     "All Time",
   ]);
-
+ 
+ 
   const [assigWorkout, setAssigWorkout] = useState([]);
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
-
+ 
+ 
   // calender apis call fun
   const handleDateChange = (selectedDate) => {
     setDate(selectedDate);
@@ -185,7 +193,8 @@ const Activity = () => {
     getSingleExcercise(selectedDate);
     exerciseWeekProgress(selectedDate);
   };
-
+ 
+ 
   // all exercise progress apis functions
   const exerciseProgress = async () => {
     try {
@@ -197,7 +206,8 @@ const Activity = () => {
           givenDate: new Date(),
         },
       });
-
+ 
+ 
       if (res?.status == "200") {
         setWeeklyProgress(res?.response?.weeklyProgress);
         dispatch(setLoader(false));
@@ -209,7 +219,8 @@ const Activity = () => {
       console.log("api get user_progress error -- ", e.toString());
     }
   };
-
+ 
+ 
   const getExerciseMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -229,7 +240,8 @@ const Activity = () => {
       console.log("api gettttt monthly_progress error -- ", e.toString());
     }
   };
-
+ 
+ 
   const getExerciseThreeMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -248,7 +260,8 @@ const Activity = () => {
       console.log("api get last_three_months_progress error -- ", e.toString());
     }
   };
-
+ 
+ 
   const getExerciseSixMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -267,7 +280,8 @@ const Activity = () => {
       console.log("api get last_six_months_progress error -- ", e.toString());
     }
   };
-
+ 
+ 
   const getExerciseAllMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -286,9 +300,11 @@ const Activity = () => {
       console.log("api gettt all_months_progress error -- ", e.toString());
     }
   };
-
+ 
+ 
   // all messages progress apis functions
-
+ 
+ 
   const getMessagesProgress = async () => {
     try {
       const res = await ApiCall({
@@ -308,7 +324,8 @@ const Activity = () => {
       console.log("api get totalMessages error -- ", e.toString());
     }
   };
-
+ 
+ 
   const getMessagesMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -328,7 +345,8 @@ const Activity = () => {
       console.log("api get monthlyMessages error -- ", e.toString());
     }
   };
-
+ 
+ 
   const getMessagesThreeMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -351,7 +369,8 @@ const Activity = () => {
       );
     }
   };
-
+ 
+ 
   const getMessagesSixMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -371,7 +390,8 @@ const Activity = () => {
       console.log("api get last_six_monthly_messages error -- ", e.toString());
     }
   };
-
+ 
+ 
   const getMessagesAllMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -391,9 +411,11 @@ const Activity = () => {
       console.log("api get all_monthly_messages error -- ", e.toString());
     }
   };
-
+ 
+ 
   // all weight progress apis functions
-
+ 
+ 
   const getWeightProgress = async () => {
     try {
       const res = await ApiCall({
@@ -413,7 +435,8 @@ const Activity = () => {
       console.log("api get weeklyWeight error -- ", e.toString());
     }
   };
-
+ 
+ 
   const getWeightMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -422,7 +445,8 @@ const Activity = () => {
         token: token,
       });
       console.log("response of getWeightMonthProgress", res?.response);
-
+ 
+ 
       if (res?.status == "200") {
         setMonthlyWeightProgess(res?.response?.monthlyWeight);
         dispatch(setLoader(false));
@@ -434,7 +458,8 @@ const Activity = () => {
       console.log("api get monthlyWeight error -- ", e.toString());
     }
   };
-
+ 
+ 
   const getWeightThreeMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -454,7 +479,8 @@ const Activity = () => {
       console.log("api get lastThreeMonthWeight error -- ", e.toString());
     }
   };
-
+ 
+ 
   const getWeightSixMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -463,7 +489,8 @@ const Activity = () => {
         token: token,
       });
       console.log("response of getWeightSixMonthProgress", res?.response);
-
+ 
+ 
       if (res?.status == "200") {
         setWeightProgressSixMonth(res?.response?.monthlyWeight);
         dispatch(setLoader(false));
@@ -475,7 +502,8 @@ const Activity = () => {
       console.log("api get lastSixMonthWeight error -- ", e.toString());
     }
   };
-
+ 
+ 
   const getWeightAllMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -484,7 +512,8 @@ const Activity = () => {
         token: token,
       });
       console.log("response of getWeightAllMonthProgress", res?.response);
-
+ 
+ 
       if (res?.status == "200") {
         setWeightProgressAllMonth(res?.response?.monthlyWeight);
         dispatch(setLoader(false));
@@ -496,9 +525,11 @@ const Activity = () => {
       console.log("api get allMonthsWeight error -- ", e.toString());
     }
   };
-
+ 
+ 
   // all Calories progress apis functions
-
+ 
+ 
   const getCaloriesProgress = async () => {
     try {
       const res = await ApiCall({
@@ -521,7 +552,8 @@ const Activity = () => {
       console.log("api get weeklyWeight error -- ", e.toString());
     }
   };
-
+ 
+ 
   const getCaloriesMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -530,7 +562,8 @@ const Activity = () => {
         token: token,
       });
       console.log("response of weight", res?.response);
-
+ 
+ 
       if (res?.status == "200") {
         setMonthlyCaloriesProgess(res?.response?.weeklyProgress);
         dispatch(setLoader(false));
@@ -542,7 +575,8 @@ const Activity = () => {
       console.log("api get monthlyWeight error -- ", e.toString());
     }
   };
-
+ 
+ 
   const getCaloriesThreeMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -562,7 +596,8 @@ const Activity = () => {
       console.log("api get lastThreeMonthWeight error -- ", e.toString());
     }
   };
-
+ 
+ 
   const getCaloriesSixMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -571,7 +606,8 @@ const Activity = () => {
         token: token,
       });
       console.log("response of weightHJJH", res?.response);
-
+ 
+ 
       if (res?.status == "200") {
         setCaloriesProgressSixMonth(res?.response?.monthlyProgress);
         dispatch(setLoader(false));
@@ -583,7 +619,8 @@ const Activity = () => {
       console.log("api get lastSixMonthWeight error -- ", e.toString());
     }
   };
-
+ 
+ 
   const getCaloriesAllMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -592,7 +629,8 @@ const Activity = () => {
         token: token,
       });
       console.log("response of weightJKJK", res?.response);
-
+ 
+ 
       if (res?.status == "200") {
         setCaloriesProgressAllMonth(res?.response?.yearlyProgress);
         dispatch(setLoader(false));
@@ -604,9 +642,11 @@ const Activity = () => {
       console.log("api get allMonthsWeight error -- ", e.toString());
     }
   };
-
+ 
+ 
   // all calender progress apis functions
-
+ 
+ 
   const getSingleExcercise = async (selectedDate) => {
     try {
       const res = await ApiCall({
@@ -616,7 +656,8 @@ const Activity = () => {
         verb: "get",
         token: token,
       });
-
+ 
+ 
       if (res?.status == "200") {
         setAssigWorkout(res?.response?.Workout[0]);
         dispatch(setLoader(false));
@@ -629,7 +670,8 @@ const Activity = () => {
       console.log("api get skill error -- ", e.toString());
     }
   };
-
+ 
+ 
   const exerciseWeekProgress = async (selectedDate) => {
     try {
       const res = await ApiCall({
@@ -640,7 +682,8 @@ const Activity = () => {
           givenDate: selectedDate,
         },
       });
-
+ 
+ 
       if (res?.status == "200") {
         setWeekDataProgress(res?.response?.weeklyProgress);
         dispatch(setLoader(false));
@@ -652,7 +695,8 @@ const Activity = () => {
       console.log("api get skill error -- ", e.toString());
     }
   };
-
+ 
+ 
   useFocusEffect(
     React.useCallback(() => {
       dispatch(setLoader(true));
@@ -664,7 +708,8 @@ const Activity = () => {
       getCaloriesProgress();
     }, [])
   );
-
+ 
+ 
   // logic for calender days changing
   let weekProgress = {
     Monday: weekDataProgress?.Monday,
@@ -675,7 +720,8 @@ const Activity = () => {
     Saturday: weekDataProgress?.Saturday,
     Sunday: weekDataProgress?.Sunday,
   };
-
+ 
+ 
   let customDatesStyles = [];
   const startDate = new Date(date);
   const endDate = new Date(date);
@@ -686,7 +732,8 @@ const Activity = () => {
     startDate.setDate(startDate.getDate() - diff);
   }
   endDate.setDate(startDate.getDate() + 6);
-
+ 
+ 
   const dayOfWeekMap = {
     0: "Sunday",
     1: "Monday",
@@ -696,16 +743,19 @@ const Activity = () => {
     5: "Friday",
     6: "Saturday",
   };
-
+ 
+ 
   const selectedDayOfWeek = new Date(date).getDay();
   const selectedDayName = dayOfWeekMap[selectedDayOfWeek];
-
+ 
+ 
   for (let i = 0; i < 7; i++) {
     const currentDate = new Date(startDate);
     currentDate.setDate(startDate.getDate() + i);
     const dayOfWeek = currentDate.getDay();
     const dayName = dayOfWeekMap[dayOfWeek];
-
+ 
+ 
     if (dayName == selectedDayName) {
       customDatesStyles.push({
         startDate: currentDate,
@@ -821,7 +871,8 @@ const Activity = () => {
       }
     }
   }
-
+ 
+ 
   // select api function from dropdown
   const toggleTypeSelection = (selectedType) => {
     if (selectedType == "Last 7 Days") {
@@ -858,9 +909,11 @@ const Activity = () => {
       console.log("NO select type selected");
     }
   };
-
+ 
+ 
   // three month names and their percentages of messages
-
+ 
+ 
   let monthNameOfThreeMonth = [];
   if (messagesProgressThreeMonth.length > 0) {
     monthNameOfThreeMonth = messagesProgressThreeMonth.map(
@@ -869,7 +922,8 @@ const Activity = () => {
   } else {
     monthNameOfThreeMonth = [0, 0, 0];
   }
-
+ 
+ 
   let percentageOfThreeMonth = [];
   if (messagesProgressThreeMonth.length > 0) {
     percentageOfThreeMonth = messagesProgressThreeMonth.map(
@@ -878,16 +932,19 @@ const Activity = () => {
   } else {
     percentageOfThreeMonth = [0, 0, 0];
   }
-
+ 
+ 
   // Six month names and their percentages of messages
-
+ 
+ 
   let monthNameOfSixMonth = [];
   if (messagesProgressSixMonth.length > 0) {
     monthNameOfSixMonth = messagesProgressSixMonth.map((item) => item.month);
   } else {
     monthNameOfSixMonth = [0, 0, 0, 0, 0, 0];
   }
-
+ 
+ 
   let percentageOfSixMonth = [];
   if (messagesProgressSixMonth.length > 0) {
     percentageOfSixMonth = messagesProgressSixMonth.map(
@@ -896,7 +953,8 @@ const Activity = () => {
   } else {
     percentageOfSixMonth = [0, 0, 0, 0, 0, 0];
   }
-
+ 
+ 
   // progress of three month of progress
   let monthNameOfThreeMonthProgress = [];
   if (progressThreeMonth.length > 0) {
@@ -906,7 +964,8 @@ const Activity = () => {
   } else {
     monthNameOfThreeMonthProgress = [0, 0, 0];
   }
-
+ 
+ 
   let percentageOfThreeMonthProgress = [];
   if (progressThreeMonth.length > 0) {
     percentageOfThreeMonthProgress = progressThreeMonth.map(
@@ -915,16 +974,19 @@ const Activity = () => {
   } else {
     percentageOfThreeMonthProgress = [0, 0, 0];
   }
-
+ 
+ 
   // Six month names progress and their percentages of progress
-
+ 
+ 
   let monthNameOfSixMonthProgress = [];
   if (progressSixMonth.length > 0) {
     monthNameOfSixMonthProgress = progressSixMonth.map((item) => item.month);
   } else {
     monthNameOfSixMonthProgress = [0, 0, 0, 0, 0, 0];
   }
-
+ 
+ 
   let percentageOfSixMonthProgress = [];
   if (progressSixMonth.length > 0) {
     percentageOfSixMonthProgress = progressSixMonth.map(
@@ -933,9 +995,11 @@ const Activity = () => {
   } else {
     percentageOfSixMonthProgress = [0, 0, 0, 0, 0, 0];
   }
-
+ 
+ 
   // three month names and their percentages of weight
-
+ 
+ 
   let monthNameOfThreeMonthWeight = [];
   if (weightProgressThreeMonth.length > 0) {
     monthNameOfThreeMonthWeight = weightProgressThreeMonth.map(
@@ -944,7 +1008,8 @@ const Activity = () => {
   } else {
     monthNameOfThreeMonthWeight = [0, 0, 0];
   }
-
+ 
+ 
   let percentageOfThreeMonthWeight = [];
   if (weightProgressThreeMonth.length > 0) {
     percentageOfThreeMonthWeight = weightProgressThreeMonth.map(
@@ -953,9 +1018,11 @@ const Activity = () => {
   } else {
     percentageOfThreeMonthWeight = [0, 0, 0];
   }
-
+ 
+ 
   // Six month names and their percentages of weight
-
+ 
+ 
   let monthNameOfSixMonthWeight = [];
   if (weightProgressSixMonth.length > 0) {
     monthNameOfSixMonthWeight = weightProgressSixMonth.map(
@@ -964,7 +1031,8 @@ const Activity = () => {
   } else {
     monthNameOfSixMonthWeight = [0, 0, 0, 0, 0, 0];
   }
-
+ 
+ 
   let percentageOfSixMonthWeight = [];
   if (weightProgressSixMonth.length > 0) {
     percentageOfSixMonthWeight = weightProgressSixMonth.map(
@@ -973,9 +1041,11 @@ const Activity = () => {
   } else {
     percentageOfSixMonthWeight = [0, 0, 0, 0, 0, 0];
   }
-
+ 
+ 
   // three month names and their percentages of weight
-
+ 
+ 
   let monthNameOfThreeMonthCalories = [];
   if (caloriesProgressThreeMonth.length > 0) {
     monthNameOfThreeMonthCalories = caloriesProgressThreeMonth.map(
@@ -984,7 +1054,8 @@ const Activity = () => {
   } else {
     monthNameOfThreeMonthCalories = [0, 0, 0];
   }
-
+ 
+ 
   let percentageOfThreeMonthCalories = [];
   if (caloriesProgressThreeMonth.length > 0) {
     percentageOfThreeMonthCalories = caloriesProgressThreeMonth.map(
@@ -993,9 +1064,11 @@ const Activity = () => {
   } else {
     percentageOfThreeMonthCalories = [0, 0, 0];
   }
-
+ 
+ 
   // Six month names and their percentages of weight
-
+ 
+ 
   let monthNameOfSixMonthCalories = [];
   if (caloriesProgressSixMonth.length > 0) {
     monthNameOfSixMonthCalories = caloriesProgressSixMonth.map(
@@ -1004,7 +1077,8 @@ const Activity = () => {
   } else {
     monthNameOfSixMonthCalories = [0, 0, 0, 0, 0, 0];
   }
-
+ 
+ 
   let percentageOfSixMonthCalories = [];
   if (caloriesProgressSixMonth.length > 0) {
     percentageOfSixMonthCalories = caloriesProgressSixMonth.map(
@@ -1013,12 +1087,14 @@ const Activity = () => {
   } else {
     percentageOfSixMonthCalories = [0, 0, 0, 0, 0, 0];
   }
-
+ 
+ 
   // tooltip for progress
   const [tooltip, setTooltip] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ left: 0, top: 0 });
   const [isVisible, setIsVisible] = useState(false);
-
+ 
+ 
   // tooltip for messages
   const [tooltipMessages, setTooltipMessages] = useState(null);
   const [tooltipPositionMessages, setTooltipPositionMessages] = useState({
@@ -1026,7 +1102,8 @@ const Activity = () => {
     top: 0,
   });
   const [isVisibleMessages, setIsVisibleMessages] = useState(false);
-
+ 
+ 
   // tooltip for weight
   const [tooltipWeight, setTooltipWeight] = useState(null);
   const [tooltipPositionWeight, setTooltipPositionWeight] = useState({
@@ -1034,7 +1111,8 @@ const Activity = () => {
     top: 0,
   });
   const [isVisibleWeight, setIsVisibleWeight] = useState(false);
-
+ 
+ 
   // tooltip for CALORIES
   const [tooltipCalories, setTooltipCalories] = useState(null);
   const [tooltipPositionCalories, setTooltipPositionCalories] = useState({
@@ -1042,7 +1120,8 @@ const Activity = () => {
     top: 0,
   });
   const [isVisibleCalories, setIsVisibleCalories] = useState(false);
-
+ 
+ 
   const handleDataPointClick = (
     data,
     setTooltipFunc,
@@ -1056,20 +1135,24 @@ const Activity = () => {
       (typeof data.value === "number" || typeof data.value === "string")
     ) {
       const { x, y, value } = data;
-
+ 
+ 
       // Store tooltip content and position
       const tooltipValue = typeof value === "number" ? value.toFixed(2) : value;
       setTooltipFunc(tooltipValue);
       setTooltipPositionFunc({ left: x, top: y });
-
+ 
+ 
       setIsVisibleFunc(true);
-
+ 
+ 
       setTimeout(() => {
         setIsVisibleFunc(false);
       }, 3000);
     }
   };
-
+ 
+ 
   const numValues =
     selectedTypes === "Last 7 Days"
       ? 7
@@ -1089,7 +1172,8 @@ const Activity = () => {
       ? 7
       : 7; // Default to 7 if no specific count is available
   const chartWidth = getWidth(95) * (numValues / 7);
-
+ 
+ 
   return (
     <View style={styles.contaner}>
       <GeneralStatusBar
@@ -1133,7 +1217,8 @@ const Activity = () => {
       />
       <ScrollView showsVerticalScrollIndicator={false}>
         <Text style={styles.progress}>Your Progress</Text>
-
+ 
+ 
         <ReactNativeCalendarStrip
           showMonth={false}
           selectedDate={date}
@@ -1150,7 +1235,8 @@ const Activity = () => {
           calendarColor={colors.primary}
           iconContainer={{ flex: 0.05 }}
         />
-
+ 
+ 
         <View
           style={{
             justifyContent: "center",
@@ -1428,7 +1514,8 @@ const Activity = () => {
             </TouchableOpacity>
           )}
         </View>
-
+ 
+ 
         <View style={styles.spaceBet}>
           <Text style={styles.activty}>INDIVIDUAL EXERCISE</Text>
         </View>
@@ -1615,7 +1702,8 @@ const Activity = () => {
             </TouchableOpacity>
           )}
         </View>
-
+ 
+ 
         <View style={styles.spaceBet}>
           <Text style={styles.activty}>STRENGTH PROGRESS</Text>
         </View>
@@ -1625,7 +1713,8 @@ const Activity = () => {
               selectedTypes === "Last 7 Days"
                 ? {
                     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-
+ 
+ 
                     datasets: [
                       {
                         data: [
@@ -1802,7 +1891,8 @@ const Activity = () => {
             </TouchableOpacity>
           )}
         </View>
-
+ 
+ 
         <View style={styles.spaceBet}>
           <Text style={styles.activty}>CALORIES BURNED</Text>
         </View>
@@ -1812,7 +1902,8 @@ const Activity = () => {
               selectedTypes === "Last 7 Days"
                 ? {
                     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-
+ 
+ 
                     datasets: [
                       {
                         data: [
@@ -1992,5 +2083,11 @@ const Activity = () => {
       </ScrollView>
     </View>
   );
-};
-export default Activity;
+ };
+ export default Activity;
+ 
+ 
+ 
+ 
+ 
+ 

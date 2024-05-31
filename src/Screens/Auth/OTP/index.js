@@ -1,38 +1,21 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from 'react';
 import {
-  ScrollView,
-  Text,
   View,
-  StatusBar,
-  TouchableOpacity,
+  Text,
   Image,
-  ImageBackground,
+  TouchableOpacity,
   StyleSheet,
-} from "react-native";
-// import OtpInputs from 'react-native-otp-inputs';
-import { TextInput } from "react-native-paper";
-import Button from "../../../Components/Button";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import OTPInputView from "@twotalltotems/react-native-otp-input";
-import { useNavigation } from "@react-navigation/native";
+  Alert,
+} from 'react-native';
+import OTPInputView from '@twotalltotems/react-native-otp-input';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
+import validator from '../../../../utils/validation/validator';
+import { setLoader } from '../../../Redux/actions/GernalActions';
+import { useDispatch } from 'react-redux';
+import { ApiCall } from '../../../Services/Apis';
+import SimpleToast from 'react-native-simple-toast';
 import { validateFields } from "../../../../utils/validation/validate-fields";
-import { GernalStyle } from "../../../constants/GernalStyle";
-import { useDispatch } from "react-redux";
-import { ApiCall } from "../../../Services/Apis";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { setLoader } from "../../../Redux/actions/GernalActions";
-import validator from "../../../../utils/validation/validator";
-import { Forgot_Password } from "../../../Redux/actions/AuthActions";
-import {
-  getFontSize,
-  getHeight,
-  getWidth,
-} from "../../../../utils/ResponsiveFun";
-import Header from "../../../Components/Header";
-import GeneralStatusBar from "../../../Components/GeneralStatusBar";
-import HeaderBottom from "../../../Components/HeaderBottom";
-import { colors } from "../../../constants/colors";
 
 const OTPverify = ({ route }) => {
   const { email } = route?.params;
@@ -43,171 +26,339 @@ const OTPverify = ({ route }) => {
   };
 
   const [state, setState] = useState({
-    codeError: "",
+    code: '',
+    codeError: '',
+    email: email,
+    emailError: '',
   });
-  const verify = async () => {
-    const { code } = state;
-    const codeError = await validator("code", code);
 
-    if (!codeError) {
+  const [countdown, setCountdown] = useState(30);
+  const [isResendingCode, setIsResendingCode] = useState(false);
+
+  useEffect(() => {
+    let timer;
+    if (countdown > 0 && !isResendingCode) {
+      timer = setInterval(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+      }, 1000);
+    }
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [countdown, isResendingCode]);
+
+  const handleResendCode = async () => {
+    const { email } = state;
+    const emailError = await validator('email', email);
+
+    if (!emailError) {
+      setIsResendingCode(true);
       dispatch(setLoader(true));
-      // const params = {
-      //   email: email,
-      //   OTP: code,
-      // };
-      try {
-        dispatch(setLoader(true));
 
+      const params = {
+        email: email,
+      };
+
+      try {
         const res = await ApiCall({
-          params: {email:email,verification_code:code},
-          route: 'auth/code_verification',
-          verb: 'post',
+          route: 'auth/email_verification',
+          verb: 'put',
+          params: params,
         });
-    
+
         if (res?.status == '200') {
-          navigation.navigate('ResetPassword',{email:email})
-        
+          
+          SimpleToast.show(res?.response?.message);
+          setCountdown(30);
+          setIsResendingCode(false);
+          inputRefs.code.current.clear(); // Clear the OTP input field
           dispatch(setLoader(false));
         } else {
           console.log('error', res.response);
           dispatch(setLoader(false));
-    
-          alert(res?.response?.message, [
-            {text: 'OK', onPress: () => console.log('OK Pressed')},
-          ]);
+          SimpleToast.show(res?.response?.message);
+          setIsResendingCode(false);
         }
       } catch (e) {
-        console.log("saga get language error -- ", e.toString());
+        console.log('saga get language error -- ', e.toString());
+        dispatch(setLoader(false));
+        SimpleToast.show('An error occurred while resending the code');
+        setIsResendingCode(false);
       }
     } else {
       dispatch(setLoader(false));
       setState({
         ...state,
-        codeError,
+        emailError,
       });
-      alert(
-        res?.response?.message ? res?.response?.message : res?.response?.error
-      );
     }
   };
-  const otpInput = useRef(null);
-  const changeHandler = (type, value) => setState({ ...state, [type]: value });
+
+  const verify = async () => {
+    const { code } = state;
+    const codeError = await validator('code', code);
+
+    if (!codeError) {
+      dispatch(setLoader(true));
+      try {
+        dispatch(setLoader(true));
+        const res = await ApiCall({
+          params: { email:email, verification_code:code },
+          route: 'auth/code_verification',
+          verb: 'post',
+        });
+
+        if (res?.status == '200') {
+          navigation.navigate('ResetPassword', { email: email });
+          dispatch(setLoader(false));
+        } else {
+          console.log('error', res.response);
+         
+          dispatch(setLoader(false));
+          Alert.alert('Error', res?.response?.message);
+        }
+      } catch (e) {
+        console.log('saga get language error -- ', e.toString());
+        dispatch(setLoader(false));
+        Alert.alert('Error', 'An error occurred while verifying the code');
+      }
+    } else {
+      dispatch(setLoader(false));
+      inputRefs.code.current.clear();
+      setState({
+        ...state,
+        codeError,
+      });
+      Alert.alert('Error', 'Invalid code');
+    }
+  };
+
+  const changeHandler = (code) => setState({ ...state, code });
+
+  console.log(state.code)
 
   return (
-    <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
-      <GeneralStatusBar
-        barStyle="light-content"
-        hidden={false}
-        backgroundColor="rgba(51, 51, 51, 1)"
-      />
-      <HeaderBottom
-        title={"Forgot password?"}
-        LeftIcon={
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons
-              style={{ alignSelf: "center", marginRight: getWidth(2) }}
-              name={"arrow-back"}
-              size={25}
-              color={"white"}
-            />
-          </TouchableOpacity>
-        }
-        RightIcon={<View style={{marginRight:getFontSize(4.5)}}/>}
+    <View style={styles.container}>
+      <Image
+        source={require('../../../assets/images/silverpadlockwithkeymiddle.png')}
+        style={styles.padlockImage}
       />
 
-      <KeyboardAwareScrollView
-        contentContainerStyle={{ height: getHeight(70) }}
-        showsVerticalScrollIndicator={false}
-      >
-        <Text style={styles.stxt}>
-          An OTP has been sent to your email address{`\n`}
-          <Text style={{ color: "rgba(247, 147, 0, 1)" }}>"{email}" </Text>
+      <View style={styles.topNav}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.buttonContainer}
+        >
+          <Image
+            source={require('../../../assets/images/Monotonechevronleft.png')}
+          />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.frame}>
+        <Text style={styles.heading}>
+          Password Sent!{' '}
+          <Image
+            source={require('../../../assets/images/greencheck.png')}
+            style={styles.checkIcon}
+          />
+        </Text>
+        <Text style={styles.description}>
+          We've sent the password to {'\n'}
+          {email}
         </Text>
 
+        {countdown > 0 ? (
+          <Text style={styles.timerText}>
+            Didn't receive it? Retry in {countdown}s
+          </Text>
+        ) : (
+          <TouchableOpacity
+            onPress={handleResendCode}
+            disabled={isResendingCode}
+          >
+            <Text style={styles.resendCodeText}>
+              {isResendingCode ? 'Resending code...' : 'Resend Code'}
+            </Text>
+          </TouchableOpacity>
+        )}
+
         <OTPInputView
-          title="code"
-          keyboardAppearance="default"
-          editable={true}
-          style={{
-            width: "90%",
-            height: 90,
-            justifyContent: "center",
-            alignSelf: "center",
-          }}
+          ref={inputRefs.code}
+          style={styles.otpInputStyle}
           pinCount={6}
-          code={state.code} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
-          onCodeChanged={(code) => {
-            setState({ code });
-          }}
+          code={state.code}
+          onCodeChanged={(code) => changeHandler(code)}
           autoFocusOnLoad
-          value={state.code}
           codeInputFieldStyle={styles.underlineStyleBase}
           codeInputHighlightStyle={styles.underlineStyleHighLighted}
-          keyboardType={"number-pad"}
+          keyboardType={'number-pad'}
           onBlur={() =>
-            validateFields(state.code, "code", (error) =>
+            validator('code', state.code, (error) =>
               setState({ ...state, codeError: error })
             )
           }
-          onChangeText={(code) => changeHandler("code", code.trim())}
-          onCodeFilled={(code) => {
-            console.log(`Code is ${code}, you are good to go!`);
-          }}
+          value={state.code}
         />
-      </KeyboardAwareScrollView>
 
-      <Button
-        onPress={() => verify()}
-        text="Reset password"
-        btnStyle={{
-          ...GernalStyle.btn,
-          position: "absolute",
-          bottom: getHeight(5),
-          backgroundColor: colors.buttonColor,
-        }}
-        btnTextStyle={GernalStyle.btnText}
-      />
+        <TouchableOpacity
+          style={styles.buttonPrimaryIcon}
+          onPress={() => verify()}
+        >
+          <Text style={styles.buttonText}>Verify</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.homeIndicator} />
     </View>
   );
 };
-const styles = StyleSheet.create({
-  borderStyleBase: {
-    width: 30,
-    height: 45,
-    backgroundColor: "red",
-  },
 
-  borderStyleHighLighted: {
-    borderColor: "#182d4a",
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  stxt: {
-    color: "white",
-    marginTop: getHeight(5),
-    marginLeft: getWidth(5),
-    fontSize: getFontSize(1.8),
-    // textAlign: 'justify',
-    lineHeight: 19,
-    fontFamily: "Ubuntu-Bold",
-    width: getWidth(80),
+  padlockImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
-  stxtview: {
-    width: getWidth(90),
-    marginTop: getHeight(2.5),
-    color: "#182d4a",
-    alignSelf: "center",
+  topNav: {
+    position: 'absolute',
+    top: 70,
+    left: 40,
+    zIndex: 1,
+  },
+  buttonContainer: {
+    width: 50,
+    height: 50,
+    backgroundColor: '#F3F3F4',
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  frame: {
+    alignItems: 'center',
+    gap: 12,
+    width: '100%',
+    paddingBottom: 150,
+    backgroundColor: 'rgba(255, 255, 255, 255)',
+    borderRadius: 40,
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    zIndex: 1,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    marginTop: 400,
+  },
+  checkIcon: {
+    width: 24,
+    height: 24,
+  },
+  heading: {
+    fontFamily: 'Work Sans',
+    fontWeight: '700',
+    fontSize: 24,
+    lineHeight: 28,
+    textAlign: 'center',
+    letterSpacing: -0.008,
+    color: '#111214',
+    marginBottom: 4,
+    marginTop: 50,
+  },
+  description: {
+    fontFamily: 'Work Sans',
+    fontWeight: '400',
+    fontSize: 16,
+    lineHeight: 22,
+    textAlign: 'center',
+    letterSpacing: -0.003,
+    color: '#676C75',
+    marginBottom: 10,
+  },
+  timerText: {
+    fontFamily: 'Work Sans',
+    fontWeight: '400',
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center',
+    letterSpacing: -0.003,
+    color: '#676C75',
+    marginBottom: 16,
+  },
+  resendCodeText: {
+    fontFamily: 'Work Sans',
+    fontWeight: '600',
+    fontSize: 16,
+    lineHeight: 22,
+    textAlign: 'center',
+    letterSpacing: -0.003,
+    color: '#111214',
+    marginBottom: 16,
+  },
+  otpInputStyle: {
+    width: '90%',
+    height: 90,
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
   underlineStyleBase: {
-    width: 55,
-    height: 55,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderBottomWidth: 1,
-    color: "white",
-    borderColor: "white",
+    width: 48,
+    height: 48,
+    borderWidth: 1.5,
+    borderRadius: 13,
+    backgroundColor: 'white',
+    color: 'black',
+    borderColor: '#CCCCCC',
   },
-
   underlineStyleHighLighted: {
-    borderColor: "white",
+    borderColor: '#CCCCCC',
+  },
+  underlineStyleHighLighted: {
+    borderColor: '#CCCCCC',
+  },
+  underlineStyleHighLighted: {
+    borderColor: 'black',
+  },
+  buttonPrimaryIcon: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 16,
+    width: '100%',
+    backgroundColor: '#ef8749',
+    borderRadius: 19,
+  },
+  buttonText: {
+    fontFamily: 'Work Sans',
+    fontWeight: '600',
+    fontSize: 16,
+    lineHeight: 19,
+    letterSpacing: -0.003,
+    color: '#FFFFFF',
+  },
+  homeIndicator: {
+    position: 'absolute',
+    width: 50,
+    height: 6,
+    bottom: 40,
+    backgroundColor: '#FFFFFF',
   },
 });
 

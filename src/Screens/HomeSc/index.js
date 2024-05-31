@@ -49,6 +49,7 @@ const HomeSc = ({ navigation, route }) => {
     getAdminAlert()
   }, [])
 
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -58,6 +59,7 @@ const HomeSc = ({ navigation, route }) => {
         />
         <View style={styles.headerInfo}>
           <View style={styles.profilePicture}>
+
             <Image
               source={require('../../assets/images/ProfilePicture.png')}
               style={styles.profileImage}
