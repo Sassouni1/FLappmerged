@@ -18,9 +18,6 @@ import Screen5 from '../../Screens/Onboarding/Screen5';
 
 
 
-import ResetPassword from "../../Screens/Auth/ResetPassword";
-import OTP from "../../Screens/Auth/OTP";
-
 const stack = createNativeStackNavigator();
 const AuthStack = () => {
   return (
