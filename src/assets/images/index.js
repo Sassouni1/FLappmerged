@@ -54,6 +54,11 @@ import TimeIcon from "./timeIcon.svg";
 import VolumeIcon from "./volumeIcon.svg";
 import CalBurnIcon from "./calBurnIcon.svg";
 import LearningIcon from "./learningIcon.svg";
+import SpeakIcon from "./speakIcon.svg";
+import CameraPicker from "./cameraPicker.svg";
+import SendMsg from "./sendMsg.svg";
+import UserChat from "./userchat.svg";
+import BotChat from "./botchat.svg";
 
 export {
   TickBlack,
@@ -112,4 +117,9 @@ export {
   VolumeIcon,
   CalBurnIcon,
   LearningIcon,
+  SpeakIcon,
+  CameraPicker,
+  SendMsg,
+  UserChat,
+  BotChat,
 };

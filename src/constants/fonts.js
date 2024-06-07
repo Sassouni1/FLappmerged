@@ -8,6 +8,8 @@ export const fonts = {
   UBIt: "Ubuntu-BoldItalic",
   UMIt: "Ubuntu-MediumItalic",
   WB: "WorkSans-Bold",
-  WRe: "WorkSans-Regular",
-  WMe: "WorkSans-Medium",
+  WL: "WorkSans-Light",
+  WM: "WorkSans-Medium",
+  WR: "WorkSan-Regular",
+  WSB: "WorkSan-SemiBolf",
 };

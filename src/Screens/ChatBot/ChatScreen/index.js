@@ -1,398 +1,72 @@
-import React, {useState,  useCallback, useEffect, useRef} from 'react'
+import React, {useState} from 'react'
 import {StyleSheet, Text, View, TouchableOpacity, Image, TextInput, StatusBar, Platform, Pressable} from 'react-native'
 import {Bubble, GiftedChat} from 'react-native-gifted-chat'
 import {getStatusBarHeight} from 'react-native-safearea-height'
-import {useDispatch, useSelector} from 'react-redux'
+import {useSelector} from 'react-redux'
 import {SvgUri} from 'react-native-svg'
 import SimpleToast from 'react-native-simple-toast'
 import ImageModal from 'react-native-image-modal'
 import moment from 'moment'
 import fs from 'react-native-fs'
-import { CameraIcon, PdfIcon, SendIcon } from "../../assets/images";
 
-import {
-  getChats,
-  setAllSms,
-  setLoader,
-} from "../../Redux/actions/GernalActions";
-import { IMAGE_URL, SOCKET_URL } from "../../Services/Constants";
-
-import {GernalStyle} from '../../constants/GernalStyle'
-import {colors} from '../../constants/colors'
-import {CameraPicker, SendMsg, SpeakIcon, UserChat, BotChat} from '../../assets/images'
-import {getFontSize, getHeight, getWidth} from '../../../utils/ResponsiveFun'
-import {fonts} from '../../constants/fonts'
-import ImagePickerModal from '../../Components/ImagePickerModal'
-import {captureImage, chooseImageGallery} from '../../../utils/ImageAndCamera'
-import HeaderChatBot from '../../Components/HeaderChatBot'
-
-const { io } = require("socket.io-client");
-const socket = io(SOCKET_URL);
+import {GernalStyle} from '../../../constants/GernalStyle'
+import {colors} from '../../../constants/colors'
+import {CameraPicker, SendMsg, SpeakIcon, UserChat, BotChat} from '../../../assets/images'
+import {getFontSize, getHeight, getWidth} from '../../../../utils/ResponsiveFun'
+import {fonts} from '../../../constants/fonts'
+import ImagePickerModal from '../../../Components/ImagePickerModal'
+import {captureImage, chooseImageGallery} from '../../../../utils/ImageAndCamera'
+import HeaderChatBot from '../../../Components/HeaderChatBot'
 
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? getStatusBarHeight(true) : StatusBar.currentHeight
 
 const BotChatScreen = ({navigation, route}) => {
-  const { channelId, channelName, reciver, sender, chatRoomType } =
-    route.params
-
-    const dispatch = useDispatch()
-    const messagesAll = useSelector((state) => state.gernal.allSms);
-    const token = useSelector((state) => state.auth.userToken);
     const user = useSelector((state) => state.auth.userData)
-    const [messages, setMessages] = useState([]);
     const [pickerModalVisibile, setPickerModalVisibile] = useState(false)
     const [sms, setSms] = useState('')
-  
-
     const sendChat = async (sms) => {
-      console.log("socket emit sms", sms);
-      const date = new Date();
-      if (chatRoomType == "groupChat") {
-        socket.emit("group-chat", {
-          text: sms,
-          groupChatId: channelId,
-          senderId: sender?._id,
-          date: date,
-        });
-      } else if (chatRoomType == "chat") {
-        socket.emit("chat", {
-          text: sms,
-          chatroomId: channelId,
-          senderId: sender?._id,
-          date: date,
-        });
-      }
-  
-      setSms("");
-    };
+        setSms('')
 
-    const UploadFile = async () => {
-      try {
-        const res = await DocumentPicker.pickSingle({
-          type: [DocumentPicker.types.pdf],
-        });
-        const uri =
-          Platform.OS === "ios" ? res.uri.replace("file://", "") : res.uri;
-        const Base64 = await fs.readFile(uri, "base64");
-  
-        if (chatRoomType == "groupChat") {
-          socket.emit(
-            "mob-upload-groupchat",
-            Base64,
-            res?.name,
-            res?.type,
-            sender?._id,
-            channelId,
-            (status) => {
-              console.log("file...", status);
-            }
-          );
-        } else if (chatRoomType == "chat") {
-          socket.emit(
-            "mob-upload",
-            Base64,
-            res?.name,
-            res?.type,
-            sender?._id,
-            channelId,
-            (status) => {
-              console.log("file...", status);
-            }
-          );
-        }
-      } catch (err) {
-        console.log("ERROR is ", err);
-        if (DocumentPicker.isCancel(err)) {
-        } else {
-          throw err;
-        }
-      }
-    };
+        navigation.navigate('TestChatSceen')
+    }
 
     const uploadFromCamera = async () => {
-      const res = await captureImage();
-      if (res.status == false) {
-        SimpleToast.show(res.error);
-        return;
-      }
-      const uri =
-        Platform.OS === "ios"
-          ? res?.data?.uri.replace("file://", "")
-          : res?.data?.uri;
-      const Base64 = await fs.readFile(uri, "base64");
-  
-      const imageObject = {
-        uri: res.data.uri,
-        type: res.data.type,
-        name: res.data.name,
-      };
-  
-      setPickerModalVisibile(false);
-      if (chatRoomType == "groupChat") {
-        socket.emit(
-          "mob-upload-groupchat",
-          Base64,
-          imageObject?.name,
-          imageObject?.type,
-          sender?._id,
-          channelId,
-          (status) => {
-            console.log("image", status);
-          }
-        );
-      } else if (chatRoomType == "chat") {
-        socket.emit(
-          "mob-upload",
-          Base64,
-          imageObject?.name,
-          imageObject?.type,
-          sender?._id,
-          channelId,
-          (status) => {
-            console.log("image", status);
-          }
-        );
-      }
-    };
+        const res = await captureImage()
+        if (res.status == false) {
+            SimpleToast.show(res.error)
+            return
+        }
+        const uri = Platform.OS === 'ios' ? res?.data?.uri.replace('file://', '') : res?.data?.uri
+        const Base64 = await fs.readFile(uri, 'base64')
+
+        const imageObject = {
+            uri: res.data.uri,
+            type: res.data.type,
+            name: res.data.name
+        }
+
+        setPickerModalVisibile(false)
+    }
 
     const uploadFromGallry = async () => {
-      const res = await chooseImageGallery();
-  
-      if (res.status == false) {
-        SimpleToast.show(res.error);
-        return;
-      }
-      console.log("image response", res);
-      const uri =
-        Platform.OS === "ios"
-          ? res?.data?.uri.replace("file://", "")
-          : res?.data?.uri;
-      const Base64 = await fs.readFile(uri, "base64");
-      const imageObject = {
-        uri: res.data.uri,
-        type: res.data.type,
-        name: res.data.name,
-      };
-      console.log("imageObject", imageObject);
-  
-      setPickerModalVisibile(false);
-      console.log("started");
-      if (chatRoomType == "groupChat") {
-        socket.emit(
-          "mob-upload-groupchat",
-          Base64,
-          //imageObject?.uri,
-          imageObject?.name,
-          imageObject?.type,
-          sender?._id,
-          channelId,
-          (status) => {
-            console.log("image", status);
-          }
-        );
-      } else if (chatRoomType == "chat") {
-        socket.emit(
-          "mob-upload",
-          Base64,
-          //imageObject?.uri,
-          imageObject?.name,
-          imageObject?.type,
-          sender?._id,
-          channelId,
-          (status) => {
-            console.log("image", status);
-          }
-        );
-      }
-  
-      console.log("image end");
-    };
+        const res = await chooseImageGallery()
+        if (res.status == false) {
+            SimpleToast.show(res.error)
+            return
+        }
+        console.log('image response', res)
+        const uri = Platform.OS === 'ios' ? res?.data?.uri.replace('file://', '') : res?.data?.uri
+        const Base64 = await fs.readFile(uri, 'base64')
+        const imageObject = {
+            uri: res.data.uri,
+            type: res.data.type,
+            name: res.data.name
+        }
+        console.log('imageObject', imageObject)
 
-    const getAllSms = async (item) => {
-      try {
-        dispatch(setLoader(true));
-        let res = null;
-        if (chatRoomType == "groupChat") {
-          res = await ApiCall({
-            route: `groupChat/group_chat_detail/${channelId}`,
-            verb: "get",
-            token: token,
-          });
-        } else if (chatRoomType == "chat") {
-          res = await ApiCall({
-            route: `chat/chat_detail/${channelId}`,
-            verb: "get",
-            token: token,
-          });
-        }
-  
-        if (res?.status == "200") {
-          dispatch(setLoader(false));
-          console.log("responses of message", res?.response);
-  
-          const newArrayOfObj = res?.response?.chat?.messages.map(
-            ({ sender: user, message: text, ...rest }) => ({
-              user,
-              text,
-              ...rest,
-            })
-          );
-          dispatch(setAllSms(newArrayOfObj));
-        } else {
-          console.log("error", res);
-          dispatch(setLoader(false));
-        }
-      } catch (e) {
-        dispatch(setLoader(false));
-  
-        console.log("saga error -- ", e.toString());
-      }
-    };
-    useEffect(() => {
-      getAllSms();
-    }, []);
-    useEffect(() => {
-      socket.emit("join", {
-        senderId: sender?._id,
-        chatroomId: channelId,
-      });
-      if (chatRoomType == "groupChat") {
-        socket.on("group-chat", (payload) => {
-          console.log("payload there", payload);
-  
-          const newArray = [payload].map((item) =>
-            item?.sender == sender?._id
-              ? {
-                  PdfFile: IMAGE_URL + item?.file?.url,
-                  fileType: item?.file?.file_type,
-                  user: sender,
-                  reciver: reciver,
-                  text: item?.message,
-                  createdAt: item?.date,
-                  _id: item?._id,
-                }
-              : {
-                  PdfFile: IMAGE_URL + item?.file?.url,
-                  fileType: item?.file?.file_type,
-                  user: reciver,
-                  reciver: sender,
-                  text: item?.message,
-                  createdAt: item?.date,
-                  _id: item?._id,
-                }
-          );
-          setMessages((previousMessages) =>
-            GiftedChat.append(previousMessages, newArray)
-          );
-        });
-      } else if (chatRoomType == "chat") {
-        socket.on("chat", (payload) => {
-          console.log("payload there", payload);
-  
-          const newArray = [payload].map((item) =>
-            item?.sender == sender?._id
-              ? {
-                  PdfFile: IMAGE_URL + item?.file?.url,
-                  fileType: item?.file?.file_type,
-                  user: sender,
-                  reciver: reciver,
-                  text: item?.message,
-                  createdAt: item?.date,
-                  _id: item?._id,
-                }
-              : {
-                  PdfFile: IMAGE_URL + item?.file?.url,
-                  fileType: item?.file?.file_type,
-                  user: reciver,
-                  reciver: sender,
-                  text: item?.message,
-                  createdAt: item?.date,
-                  _id: item?._id,
-                }
-          );
-          setMessages((previousMessages) =>
-            GiftedChat.append(previousMessages, newArray)
-          );
-        });
-      }
-  
-      return () => {
-        dispatch(setAllSms([]));
-        // socket.disconnect();
-        // socket.emit('end');
-      };
-    }, []);
-    useEffect(() => {
-      const sorted = messagesAll.sort(function (a, b) {
-        return b.date.localeCompare(a.date);
-      });
-  
-      const newArray = sorted.map((item) =>
-        item?.user == sender?._id
-          ? {
-              PdfFile: IMAGE_URL + item?.file?.url,
-              fileType: item?.file?.file_type,
-              user: sender,
-              reciver: reciver,
-              text: item?.text,
-              createdAt: item?.date,
-              _id: item?._id,
-            }
-          : {
-              PdfFile: IMAGE_URL + item?.file?.url,
-              fileType: item?.file?.file_type,
-              user: reciver,
-              reciver: sender,
-              text: item?.text,
-              createdAt: item?.date,
-              _id: item?._id,
-            }
-      );
-  
-      setMessages(newArray);
-    }, [messagesAll]);
-  
-    const renderAvatar = (props) => {
-      const { currentMessage } = props;
-      //console.log("currentMessage", currentMessage);
-      const user = currentMessage.user;
-      const profileImage = user && user.profile_image;
-  
-      return (
-        // <Avatar
-        //   {...props}
-        //   source={{ uri: profileImage }}
-        //   imageStyle={{
-        //     left: { backgroundColor: 'blue' ,}, // Style for left (receiver) avatar
-        //     right: { backgroundColor: 'green' }, // Style for right (sender) avatar
-        //   }}
-        // />
-        <>
-          {profileImage !== "" ? (
-            <ImageModal
-              source={{ uri: profileImage }}
-              resizeMode="cover"
-              modalImageResizeMode="contain"
-              style={{
-                width: getWidth(10),
-                height: getHeight(4.5),
-                borderRadius: getWidth(5),
-              }}
-            />
-          ) : (
-            <Image
-              resizeMode="cover"
-              style={{
-                width: getWidth(10),
-                height: getHeight(4.5),
-                borderRadius: getWidth(5),
-              }}
-              source={require("../../assets/images/Pimg.jpeg")}
-            />
-          )}
-        </>
-      );
-    };
+        setPickerModalVisibile(false)
+        console.log('started')
+    }
 
     const backHandler = () => navigation.goBack()
 
@@ -410,19 +84,18 @@ const BotChatScreen = ({navigation, route}) => {
                 containerStyle={styles.headerContainer}
                 LeftIcon={
                     <Pressable style={styles.headerIconWraaper} onPress={backHandler}>
-                        <Image source={require('../../assets/images/Monotonechevronleft.png')} style={styles.headerIcons} />
+                        <Image source={require('../../../assets/images/Monotonechevronleft.png')} style={styles.headerIcons} />
                     </Pressable>
                 }
                 RightIcon={
                     <Pressable style={styles.headerIconWraaper} onPress={() => navigation.navigate('BotAllChatScreen')}>
-                        <Image source={require('../../assets/images/settings.png')} style={styles.headerIcons} />
+                        <Image source={require('../../../assets/images/settings.png')} style={styles.headerIcons} />
                     </Pressable>
                 }
             />
-      
             <View style={styles.chatContainer}>
                 <GiftedChat
-                    renderAvatar={renderAvatar}
+                    renderAvatar={(props) => null}
                     renderBubble={(props) => {
                         return <Bubble {...props} wrapperStyle={{right: styles.rightBuble, left: styles.leftBuble}} textStyle={{left: styles.leftBubleText, right: styles.rightBubleText}} />
                     }}
@@ -452,46 +125,40 @@ const BotChatScreen = ({navigation, route}) => {
                         )
                     }}
                     renderInputToolbar={() => {
-                      return (
-                        // null
-                        <View style={{ ...styles.inputCon }}>
-                          <View style={styles.textinputCon}>
-                            <TextInput
-                              style={{
-                                ...GernalStyle.textInputMessage,
-                                width: getWidth(60),
-                                marginTop: 0,
-                                paddingLeft: getWidth(3),
-                              }}
-                              value={sms}
-                              onChangeText={(e) => setSms(e)}
-                              onSubmitEditing={() => sendChat(sms)}
-                              placeholder="Type a message..."
-                              placeholderTextColor={colors.graytext4}
-                            />
-                            <TouchableOpacity
-                              onPress={() => setPickerModalVisibile(true)}
-                            >
-                              <CameraIcon height={20} width={20} />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => UploadFile()}>
-                              <PdfIcon
-                                height={25}
-                                width={25}
-                                style={{ marginLeft: getWidth(2.5) }}
-                              />
-                            </TouchableOpacity>
-                          </View>
-                          <TouchableOpacity
-                            onPress={() => {
-                              sms == "" ? null : sendChat(sms);
-                            }}
-                            style={styles.sendBtn}
-                          >
-                            <SendIcon height={25} width={25} />
-                          </TouchableOpacity>
-                        </View>
-                      );
+                        return (
+                            <View style={{...styles.inputCon}}>
+                                <View style={styles.textinputCon}>
+                                    <TouchableOpacity onPress={() => null}>
+                                        <SpeakIcon height={25} width={25} style={{marginLeft: getWidth(2.5)}} />
+                                    </TouchableOpacity>
+                                    <TextInput
+                                        style={{
+                                            ...GernalStyle.textInputMessage,
+                                            width: getWidth(60),
+                                            marginTop: 0,
+                                            paddingLeft: getWidth(3),
+                                            backgroundColor: colors.greyLight
+                                        }}
+                                        value={sms}
+                                        onChangeText={(e) => setSms(e)}
+                                        onSubmitEditing={() => sendChat(sms)}
+                                        placeholder="Type to start chatting..."
+                                        placeholderTextColor={colors.textDark}
+                                    />
+                                    <TouchableOpacity onPress={() => setPickerModalVisibile(false)}>
+                                        <CameraPicker height={20} width={20} />
+                                    </TouchableOpacity>
+                                </View>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        // sms == "" ? null : sendChat(sms);
+                                        navigation.navigate('TestChatSceen')
+                                    }}
+                                    style={styles.sendBtn}>
+                                    <SendMsg height={25} width={25} />
+                                </TouchableOpacity>
+                            </View>
+                        )
                     }}
                     renderDay={(props) => {
                         return (
@@ -520,12 +187,7 @@ const BotChatScreen = ({navigation, route}) => {
                     }}
                 />
             </View>
-            <ImagePickerModal
-        visible={pickerModalVisibile}
-        hideVisible={() => setPickerModalVisibile(false)}
-        galleryImage={() => uploadFromGallry()}
-        cameraImage={() => uploadFromCamera("image")}
-      />
+            <ImagePickerModal visible={pickerModalVisibile} hideVisible={() => setPickerModalVisibile(false)} galleryImage={() => uploadFromGallry()} cameraImage={() => uploadFromCamera('image')} />
         </View>
     )
 }

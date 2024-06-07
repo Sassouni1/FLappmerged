@@ -50,4 +50,13 @@ export const colors = {
   grayText: "#393C43",
   grayText1: "#676C75",
   grayText2: "#81858D",
+  
+    greyLight: '#F3F3F4',
+    blueColor: '#256CD0',
+    textDark: '#393C43',
+    greyBg: '#D7D8D9',
+    greyMedium: '#BABBBE',
+    orange: '#FF8036',
+    lightRed: '#F83E59',
+    lightGreen: '#6DB100'
 };

@@ -15,7 +15,7 @@ import Screen3 from '../../Screens/Onboarding/Screen3';
 import Screen4 from '../../Screens/Onboarding/Screen4';
 import Screen5 from '../../Screens/Onboarding/Screen5';
 
-
+import WelcomeChatScreen from "../../Screens/ChatBot/WelcomeChat";
 
 
 const stack = createNativeStackNavigator();

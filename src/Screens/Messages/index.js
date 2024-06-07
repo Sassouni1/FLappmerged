@@ -1,424 +1,237 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  FlatList,
-} from "react-native";
-import React, { useEffect, useState } from "react";
-import { colors } from "../../constants/colors";
-import { GernalStyle } from "../../constants/GernalStyle";
-import GeneralStatusBar from "../../Components/GeneralStatusBar";
-// import AppHeader from '../../Components/AppHeader';
-import Entypo from "react-native-vector-icons/Entypo";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import React, {useState, useEffect} from 'react'
+import {StyleSheet, Text, View, TouchableOpacity, Image, TextInput, StatusBar, Platform, Pressable, SectionList} from 'react-native'
+import {Bubble, GiftedChat} from 'react-native-gifted-chat'
+import {getStatusBarHeight} from 'react-native-safearea-height'
+import {useSelector, useDispatch} from 'react-redux'
+import {SvgUri} from 'react-native-svg'
+import SimpleToast from 'react-native-simple-toast'
+import ImageModal from 'react-native-image-modal'
+import moment from 'moment'
+import fs from 'react-native-fs'
 
-import {
-  getFontSize,
-  getHeight,
-  getWidth,
-  timeSince,
-} from "../../../utils/ResponsiveFun";
-import { ChatUser1, ChatUserBtn } from "../../assets/images";
-import Userb from "../../assets/images/userb.svg";
-import { useNavigation } from "@react-navigation/native";
-import { styles } from "./styles";
-import { setLoader } from "../../Redux/actions/GernalActions";
-import { useDispatch, useSelector } from "react-redux";
-import { ApiCall } from "../../Services/Apis";
-import HeaderBottom from "../../Components/HeaderBottom";
-import Seprator from "../../Components/Seprator";
-import ImageModal from "react-native-image-modal";
+import {GernalStyle} from '../../../constants/GernalStyle'
+import {colors} from '../../constants/colors'
+import {CameraPicker, SendMsg, SpeakIcon, UserChat, BotChat} from '../../../assets/images'
+import {getFontSize, getHeight, getWidth, timeSince} from '../../../utils/ResponsiveFun'
+import {fonts} from '../../constants/fonts'
+import ChatsCard from '../../Components/Chats/ChatsCard'
+import {captureImage, chooseImageGallery} from '../../../utils/ImageAndCamera'
+import HeaderChatBot from '../../Components/HeaderChatBot'
+import {ApiCall} from '../../Services/Apis'
+import {setLoader} from '../../Redux/actions/GernalActions'
 
-const Messages = () => {
-  const navigation = useNavigation();
-  const dispatch = useDispatch();
-  const [users, setAllUser] = useState([]);
-  const [admin, setAdmin] = useState([]);
-  const [community, setCommunity] = useState([]);
+const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? getStatusBarHeight(true) : StatusBar.currentHeight
 
-  const token = useSelector((state) => state.auth.userToken);
-  const user = useSelector((state) => state.auth.userData);
-  const loader = useSelector((state) => state.gernal.loader);
+const BotAllChatScreen = ({navigation, route}) => {
+    const user = useSelector((state) => state.auth.userData)
+    const token = useSelector((state) => state.auth.userToken)
+    const loader = useSelector((state) => state.gernal.loader)
+    const dispatch = useDispatch()
+    const [admin, setAdmin] = useState([])
+    const [community, setCommunity] = useState([])
 
-  const ChatroomUser = async () => {
-    try {
-      const res = await ApiCall({
-        params: { category_name: "skill" },
-        route: "chat/all_chatrooms_users",
-        verb: "get",
-        token: token,
-      });
+    useEffect(() => {
+        dispatch(setLoader(true))
+        ChatroomUser()
+    }, [])
 
-      if (res?.status == "200") {
-        console.log("chat Romms", res?.response?.chatrooms?.community);
+    const ChatroomUser = async () => {
+        try {
+            const res = await ApiCall({
+                params: {category_name: 'skill'},
+                route: 'chat/all_chatrooms_users',
+                verb: 'get',
+                token: token
+            })
 
-        setAllUser(res?.response?.chatrooms?.member);
-        // console.log("all user images", res?.response?.chatrooms?.member);
-        setAdmin(res?.response?.chatrooms?.admin);
-        setCommunity(res?.response?.chatrooms?.community);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-
-        alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
-      }
-    } catch (e) {
-      console.log("api get chatrooms error -- ", e.toString());
-    }
-  };
-  useEffect(() => {
-    dispatch(setLoader(true));
-
-    ChatroomUser();
-  }, []);
-  const HeadingText = ({ style, buttontext }) => {
-    return (
-      <View style={[styles.heading, style]}>
-        <Text style={styles.headingtext}>{buttontext}</Text>
-      </View>
-    );
-  };
-
-  return (
-    <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
-      <GeneralStatusBar
-        barStyle="light-content"
-        hidden={false}
-        backgroundColor="rgba(51, 51, 51, 1)"
-      />
-      <HeaderBottom
-        title={"Chats"}
-        LeftIcon={
-          <Entypo
-            size={30}
-            color={"white"}
-            onPress={() => navigation.openDrawer()}
-            name="menu"
-            style={{
-              alignSelf: "flex-start",
-              //marginLeft:getFontSize(-1.5)
-            }}
-          />
+            if (res?.status == '200') {
+                setAdmin(res?.response?.chatrooms?.admin)
+                setCommunity(res?.response?.chatrooms?.community)
+                dispatch(setLoader(false))
+            } else {
+                dispatch(setLoader(false))
+                alert(res?.response?.message, [{text: 'OK', onPress: () => console.log('OK Pressed')}])
+            }
+        } catch (e) {
+            console.log('api get chatrooms error -- ', e.toString())
         }
-        RightIcon={<View style={{ marginRight: getFontSize(3.5) }} />}
-      />
-      {loader ? null : (
-        <>
-          <HeadingText buttontext={"App"} />
-          {/* {console.log("admin", admin)} */}
-          {admin.map((item) => (
-            <View
-              style={{
-                width: getWidth(95),
-                alignSelf: "center",
-                alignItems: "center",
-              }}
-            >
-              <TouchableOpacity
+    }
+
+    const backHandler = () => {
+        navigation.goBack()
+    }
+
+    const renderItem = ({item, index}) => {
+        return (
+            <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate("ConversationScreen", {
-                    channelId: item._id,
-                    channelName: item?.admin?.full_name,
-                    reciver: item?.admin,
-                    sender: item?.customer,
-                    chatRoomType: "chat",
-                  })
+                    navigation.navigate('ConversationScreen', {
+                        channelId: item._id,
+                        channelName: item.title,
+                        reciver: item.subText === 'GPT-4' ? {} : item.admin,
+                        sender: user,
+                        chatRoomType: item.subText === 'GPT-4' ? 'groupChat' : 'chat'
+                    })
                 }
-                style={{ ...styles.row, marginTop: 5 }}
-              >
-                <View
-                  style={{
-                    ...styles.logoCon,
-                    marginLeft: getWidth(5),
-                    marginTop: 5,
-                    backgroundColor: colors.gray8,
-                  }}
-                >
-                  {item?.admin?.profile_image == "" ? (
-                    <Userb height={getFontSize(7)} width={getFontSize(7)} />
-                  ) : (
-                    <ImageModal
-                      resizeMode="cover"
-                      modalImageResizeMode="contain"
-                      style={{
-                        height: getFontSize(7),
-                        width: getFontSize(7),
-                        borderRadius: getFontSize(0.5),
-                      }}
-                      source={{ uri: item?.admin?.profile_image }}
-                    />
-                  )}
-                </View>
-                <View>
-                  <View style={styles.userCon}>
-                    <Text style={styles.username}>
-                      {item?.admin?.full_name}
-                    </Text>
-                    <Text style={styles.time}>
-                      {item?.messages.length > 0
-                        ? timeSince(
-                            new Date(
-                              item?.messages[item?.messages.length - 1].date
-                            )
-                          )
-                        : null}
-                    </Text>
-                  </View>
-                  <Text style={styles.lastmsg}>
-                    {item?.messages.length > 0
-                      ? item?.messages[item?.messages.length - 1].sender ==
-                        user?._id
-                        ? "You:" +
-                          item?.messages[item?.messages.length - 1].message
-                        : item?.customer?.full_name +
-                          ":" +
-                          item?.messages[item?.messages.length - 1].message
-                      : "Tap there and start conversation"}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </>
-      )}
-
-      {loader ? null : (
-        <>
-          <HeadingText
-            buttontext={"Community"}
-            style={{ marginTop: getHeight(1) }}
-          />
-
-          {community?.map((item) => (
-            <View
-              style={{
-                width: getWidth(95),
-                alignSelf: "center",
-                alignItems: "center",
-              }}
             >
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("ConversationScreen", {
-                    channelId: item._id,
-                    channelName: "App Community",
-                    reciver: {},
-                    sender: user,
-                    chatRoomType: "groupChat",
-                  })
+                <ChatsCard item={item} index={index} />
+            </TouchableOpacity>
+        )
+    }
+
+    return (
+        <View style={styles.container}>
+            <StatusBar barStyle="light-content" style={{backgroundColor: colors.white}} />
+            <HeaderChatBot
+                title={'My Chats'}
+                titelStyle={styles.headerTitle}
+                containerStyle={styles.headerContainer}
+                LeftIcon={
+                    <Pressable style={styles.headerIconWraaper} onPress={backHandler}>
+                        <Image source={require('../../assets/images/Monotonechevronleft.png')} style={styles.headerIcons} />
+                    </Pressable>
                 }
-                style={{ ...styles.row, marginTop: 5 }}
-              >
-                <View
-                  style={{
-                    ...styles.logoCon,
-                    marginLeft: getWidth(5),
-                    marginTop: 5,
-                    backgroundColor: colors.gray8,
-                  }}
-                >
-                  <ChatUser1 height={30} width={30} />
-                </View>
-                <View>
-                  <View style={styles.userCon}>
-                    <Text style={styles.username}>{"App Community"}</Text>
-                    <Text style={styles.time}>
-                      {item?.messages
-                        ? timeSince(new Date(item?.last_message?.date))
-                        : null}
-                    </Text>
-                  </View>
-                  <Text style={styles.lastmsg}>
-                    {item?.last_message
-                      ? item?.last_message?.sender == user?._id
-                        ? "You:" + item?.last_message.message
-                        : "Other:" + item?.last_message.message
-                      : "Tap there and start conversation"}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </>
-      )}
-
-      {loader ? null : (
-        <>
-          <HeadingText
-            buttontext={"Members"}
-            style={{ marginTop: getHeight(1) }}
-          />
-          <View style={{ alignSelf: "center", flex: 1 }}>
-            <FlatList
-              // data={users}
-              data={users
-                .filter(item => item !== null) // Filter out null items
-                .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))}
-              showsVerticalScrollIndicator={false}
-              refreshing={false}
-              onRefresh={() => ChatroomUser()}
-              ListFooterComponent={() => (
-                <View style={{ height: getHeight(10) }} />
-              )}
-              ItemSeparatorComponent={() => (
-                <View style={{ height: getHeight(0.5) }} />
-              )}
-              renderItem={({ item, index }) => {
-                return (
-                  <View
-                    style={{
-                      width: getWidth(95),
-                      alignSelf: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    {index > 0 && <Seprator />}
-                    <TouchableOpacity
-                      onPress={() =>
-                        navigation.navigate("ConversationScreen", {
-                          channelId: item._id,
-                          channelName:
-                            user?._id == item?.user?._id
-                              ? item?.customer?.full_name
-                              : item?.user?.full_name,
-                          reciver:
-                            user?._id == item?.user?._id
-                              ? item?.customer
-                              : item?.user,
-                          sender:
-                            user?._id == item?.user?._id
-                              ? item?.user
-                              : item?.customer,
-                          chatRoomType: "chat",
-                        })
-                      }
-                      style={{ ...styles.row, marginTop: 5, marginBottom: 5 }}
-                    >
-                      <View
-                        style={{
-                          ...styles.logoCon,
-                          marginLeft: getWidth(5),
-                          marginTop: getFontSize(1),
-                          //   backgroundColor: colors.gray8,
-                        }}
-                      >
-                        {user?._id === item?.user?._id  ? 
-                        (
-                          item?.customer?.profile_image == "" ? (
-                            <ImageModal
-                              resizeMode="cover"
-                              modalImageResizeMode="contain"
-                              style={{
-                                height: getFontSize(7),
-                                width: getFontSize(7),
-                                borderRadius: getFontSize(0.5),
-                              }}
-                              source={require("../../assets/images/Pimg.jpeg")}
-                            />
-                          ) : (
-                            <ImageModal
-                              resizeMode="cover"
-                              modalImageResizeMode="contain"
-                              style={{
-                                height: getFontSize(7),
-                                width: getFontSize(7),
-                                borderRadius: getFontSize(0.5),
-                              }}
-                              source={{ uri: item?.customer?.profile_image }}
-                            />
-                          )
-                        ) : null}
-
-                        {user?._id === item?.customer?._id  ? 
-                        (
-                          item?.user?.profile_image == "" ? (
-                            <ImageModal
-                              resizeMode="cover"
-                              modalImageResizeMode="contain"
-                              style={{
-                                height: getFontSize(7),
-                                width: getFontSize(7),
-                                borderRadius: getFontSize(0.5),
-                              }}
-                              source={require("../../assets/images/Pimg.jpeg")}
-                            />
-                          ) : (
-                            <ImageModal
-                              resizeMode="cover"
-                              modalImageResizeMode="contain"
-                              style={{
-                                height: getFontSize(7),
-                                width: getFontSize(7),
-                                borderRadius: getFontSize(0.5),
-                              }}
-                              source={{ uri: item?.user?.profile_image }}
-                            />
-                          )
-                        ) : null}
-                      </View>
-                      <View>
-                        <View style={styles.userCon}>
-                          <Text style={styles.username}>
-                            {user?._id == item?.user?._id
-                              ? item?.customer?.full_name
-                              : item?.user?.full_name}
-                          </Text>
-                          <Text style={styles.time}>
-                            {item?.messages.length > 0
-                              ? timeSince(
-                                  new Date(
-                                    item?.messages[
-                                      item?.messages.length - 1
-                                    ].date
-                                  )
-                                )
-                              : null}
-                          </Text>
-                        </View>
-                        <Text style={styles.lastmsg}>
-                          {item?.messages.length > 0
-                            ? item?.messages[item?.messages.length - 1]
-                                .sender == user?._id
-                              ? "You:" +
-                                item?.messages[item?.messages.length - 1]
-                                  .message
-                              : item?.customer?.full_name +
-                                ":" +
-                                item?.messages[item?.messages.length - 1]
-                                  .message
-                            : "Tap there and start conversation"}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                );
-              }}
             />
-          </View>
-        </>
-      )}
-      <TouchableOpacity
-        onPress={() => navigation.navigate("AllMember")}
-        style={{
-          height: getHeight(7),
-          width: getWidth(15),
-          borderRadius: 9,
-          justifyContent: "center",
-          alignItems: "center",
-          right: getWidth(3),
-          bottom: getHeight(2.5),
-          position: "absolute",
-          backgroundColor: colors.greenlight,
-        }}
-      >
-        <ChatUserBtn height={25} width={25} />
-      </TouchableOpacity>
-    </View>
-  );
-};
+            {loader ? null : (
+                <SectionList
+                className="mt-4 pl-4"
+                sections={[
+                    {
+                        title: 'Chats',
+                        data: [
+                          ...community.map((item) => ({
+                            _id: item._id,
+                            title: 'Fight Life Team',
+                            subText: 'GPT-4',
+                            msgCount: item?.messages ? item?.messages.length.toString() : '0',
+                            iconUrl: require('../../assets/images/support.png'),
+                            colors: colors.greenlight
+                        })),
+                            {
+                              
+                                _id: 'team',
+                                title: 'Coach Jarvis.AI',
+                                subText: 'Team',
+                                msgCount: '1.7K',
+                                iconUrl: require('../../assets/images/teamIcon.png'),
+                                colors: colors.lightBlue
+                            },
+                            ...admin.map((item) => ({
+                                _id: item._id,
+                                title: item?.admin?.full_name, 
+                                subText: 'My AI Coach',
+                                msgCount: item?.messages ? item?.messages.length.toString() : '0',
+                                iconUrl: require('../../assets/images/aiIcon.png'),
+                                colors: colors.lightRed,
+                                admin: item?.admin
+                            })),
+                            
+                        ]
+                    }
+                ]}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={renderItem}
+                renderSectionHeader={({section: {title}}) => (
+                    <View style={styles.titleWrapperRow}>
+                        <Text style={styles.headingText}>{title}</Text>
+                        <Text style={[styles.sellAllText]}>{'See all'}</Text>
+                    </View>
+                    )}
+                />
+            )}
+        </View>
+    )
+}
 
-export default Messages;
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: colors.white
+    },
+    headerContainer: {
+        paddingTop: STATUSBAR_HEIGHT,
+        borderBottomLeftRadius: getWidth(10),
+        borderBottomRightRadius: getWidth(10),
+        alignItems: 'flex-start',
+        flexDirection: 'column',
+        backgroundColor: '#000000',
+        width: getWidth(100),
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 1
+        },
+        shadowOpacity: 0,
+        shadowRadius: 2.65,
+        elevation: 2,
+        paddingHorizontal: getWidth(4),
+        marginTop: 0,
+        paddingBottom: getHeight(2)
+    },
+    headerIconWraaper: {
+        marginTop: getHeight(4),
+        backgroundColor: colors.black,
+        height: getWidth(12),
+        width: getWidth(12),
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: getWidth(4)
+    },
+    headerIcons: {
+        height: getWidth(8),
+        width: getWidth(8),
+        tintColor: colors.white
+    },
+    headerTitle: {
+        paddingTop: getHeight(2),
+        color: colors.white,
+        fontSize: 30,
+        fontFamily: fonts.WB,
+        fontWeight: '700',
+        textAlign: 'left',
+        alignSelf: 'flex-start',
+        paddingBottom: getHeight(2)
+    },
+    titleWrapper: {
+        width: getWidth(91.2),
+        alignItems: 'flex-start',
+        alignSelf: 'center'
+    },
+    titleWrapperRow: {
+        width: getWidth(91.2),
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        alignSelf: 'center'
+    },
+    headingText: {
+        paddingTop: getHeight(2),
+        color: colors.black,
+        fontSize: 16,
+        fontFamily: fonts.WB,
+        textAlign: 'left',
+        alignSelf: 'flex-start'
+    },
+    sellAllText: {
+        paddingTop: getHeight(2),
+        color: colors.orange,
+        fontSize: getFontSize(2),
+        fontFamily: fonts.WM
+    }
+})
+
+export default BotAllChatScreen
+
+const DATA = [
+    {
+        title: 'Chats',
+        data: [
+            {title: 'Fight Life Team', subText: 'Team', msgCount: '1.7K'},
+            {title: 'Coach Jarvis.AI', subText: 'My AI Coach', msgCount: '870', iconUrl: require('../../assets/images/aiIcon.png'), colors: colors.lightRed}
+        ]
+    },
+    {
+        title: 'Customer Support',
+        data: [{title: 'Customer Support', subText: 'GPT-4', msgCount: '875', iconUrl: require('../../assets/images/support.png'), colors: colors.greenlight}]
+    }
+]

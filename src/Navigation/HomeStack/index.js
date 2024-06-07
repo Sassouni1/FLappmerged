@@ -31,6 +31,10 @@ import AditionalWorkout from "../../Screens/AditionalWorkout";
 import RestTimeScreen from "../../Screens/Workouts/RestTimeScreen";
 
 import Fitnesssurvey from "../../Screens/Fitnesssurvey";
+import ChatScreen from '../../Screens/ChatBot/ChatScreen'
+import BotAllChatScreen from '../../Screens/ChatBot/AllChats'
+import CreateChatScreen from '../../Screens/ChatBot/CreateChat'
+import TestChatSceen from '../../Screens/ChatBot/Testing'
 
 
 import SearchWorkout from "../../Screens/Skills/SearchWorkout";
@@ -338,6 +342,34 @@ const HomeStack = () => {
         name="Squat"
         component={Squat}
       />
+      <stack.Screen
+                options={{
+                    headerShown: false
+                }}
+                name="ChatScreen"
+                component={ChatScreen}
+            />
+            <stack.Screen
+                options={{
+                    headerShown: false
+                }}
+                name="BotAllChatScreen"
+                component={BotAllChatScreen}
+            />
+            <stack.Screen
+                options={{
+                    headerShown: false
+                }}
+                name="CreateChatScreen"
+                component={CreateChatScreen}
+            />
+            <stack.Screen
+                options={{
+                    headerShown: false
+                }}
+                name="TestChatSceen"
+                component={TestChatSceen}
+            />
     </stack.Navigator>
   );
 };

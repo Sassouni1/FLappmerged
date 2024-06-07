@@ -34,6 +34,13 @@ import Notification from "../../Screens/Notifications";
 import { colors } from "../../constants/colors";
 import Events from "../../Screens/Events/Events";
 
+import WelcomeChatScreen from "../../Screens/ChatBot/WelcomeChat";
+import AllChats from "../../Screens/ChatBot/AllChats";
+import ChatScreen from "../../Screens/ChatBot/ChatScreen";
+import CreateChat from "../../Screens/ChatBot/CreateChat";
+
+
+
 const Drawer = createDrawerNavigator();
 function NavHeader(props) {
   const user = useSelector((state) => state.auth.userData);
@@ -156,36 +163,36 @@ function CustomDrawerContent(props) {
           labelStyle={{ color: "#7B7A7A" }}
           activeBackgroundColor={"#7B7A7A"}
         /> */}
+        
         <DrawerItem
           //style={{ marginTop: getHeight(-1) }}
           label={"Privacy Policy"}
-          labelStyle={{ fontFamily: "Ubuntu-Bold" }}
+          labelStyle={{ fontFamily: "Ubuntu-Bold", color: "#7B7A7A" }}
           onPress={() => navigation.navigate("PrivacyPolicy")}
           inactiveTintColor={"#7B7A7A"}
           activeTintColor={"#7B7A7A"}
-          labelStyle={{ color: "#7B7A7A" }}
           activeBackgroundColor={"#7B7A7A"}
         />
 
         <DrawerItem
           style={{ marginTop: getHeight(-1) }}
           label={"Term of Use"}
-          labelStyle={{ fontFamily: "Ubuntu-Bold" }}
+          labelStyle={{ fontFamily: "Ubuntu-Bold", color: "#7B7A7A" }}
           onPress={() => navigation.navigate("TermOfUse")}
           inactiveTintColor={"#7B7A7A"}
           activeTintColor={"#7B7A7A"}
-          labelStyle={{ color: "#7B7A7A" }}
+          
           activeBackgroundColor={"#7B7A7A"}
         />
 
         <DrawerItem
           style={{ marginTop: getHeight(-1), marginBottom: getHeight(2) }}
           label={"About this app"}
-          labelStyle={{ fontFamily: "Ubuntu-Bold" }}
+          labelStyle={{ fontFamily: "Ubuntu-Bold", color: "#7B7A7A" }}
           onPress={() => navigation.navigate("About")}
           inactiveTintColor={"#7B7A7A"}
           activeTintColor={"#7B7A7A"}
-          labelStyle={{ color: "#7B7A7A" }}
+         
           activeBackgroundColor={"#7B7A7A"}
         />
         <View style={{ height: marginTop }}>
@@ -193,11 +200,11 @@ function CustomDrawerContent(props) {
         </View>
         <DrawerItem
           label={"Logout"}
-          labelStyle={{ fontFamily: "Ubuntu-Bold" }}
+          labelStyle={{ fontFamily: "Ubuntu-Bold", color: "#EB5757" }}
           onPress={() => logoutFun()}
           inactiveTintColor={"#EB5757"}
           activeTintColor={"#EB5757"}
-          labelStyle={{ color: "#EB5757" }}
+         
           activeBackgroundColor={"#EB5757"}
           icon={({ color, size, focuced }) => (
             <MaterialIcons name={"logout"} size={20} color={"#EB5757"} />
@@ -236,6 +243,98 @@ export default function MyDrawer() {
         }}
         name="Home"
         component={BottomTab}
+      />
+      <Drawer.Screen
+        options={{
+          headerShown: false,
+          drawerInactiveTintColor: "white",
+          drawerActiveTintColor: "#333333",
+          drawerActiveBackgroundColor: "white",
+          drawerIcon: ({ color, size, focuced }) => (
+            <MaterialIcons
+              name={"chat"}
+              size={getFontSize(3.3)}
+              color={color}
+              style={{ marginLeft: getFontSize(-0.4) }}
+            />
+          ),
+          drawerLabelStyle: {
+            fontFamily: "Ubuntu",
+            fontSize: getFontSize(1.7),
+            marginLeft: getFontSize(0.3),
+          },
+        }}
+        name='Ai ChatBot'
+        component={WelcomeChatScreen}
+      />
+      <Drawer.Screen
+        options={{
+          headerShown: false,
+          drawerInactiveTintColor: "white",
+          drawerActiveTintColor: "#333333",
+          drawerActiveBackgroundColor: "white",
+          drawerIcon: ({ color, size, focuced }) => (
+            <MaterialIcons
+              name={"chat"}
+              size={getFontSize(3.3)}
+              color={color}
+              style={{ marginLeft: getFontSize(-0.4) }}
+            />
+          ),
+          drawerLabelStyle: {
+            fontFamily: "Ubuntu",
+            fontSize: getFontSize(1.7),
+            marginLeft: getFontSize(0.3),
+          },
+        }}
+        name='All Chats'
+        component={AllChats}
+      />
+      <Drawer.Screen
+        options={{
+          headerShown: false,
+          drawerInactiveTintColor: "white",
+          drawerActiveTintColor: "#333333",
+          drawerActiveBackgroundColor: "white",
+          drawerIcon: ({ color, size, focuced }) => (
+            <MaterialIcons
+              name={"chat"}
+              size={getFontSize(3.3)}
+              color={color}
+              style={{ marginLeft: getFontSize(-0.4) }}
+            />
+          ),
+          drawerLabelStyle: {
+            fontFamily: "Ubuntu",
+            fontSize: getFontSize(1.7),
+            marginLeft: getFontSize(0.3),
+          },
+        }}
+        name='Chat Screen'
+        component={ChatScreen}
+      />
+      <Drawer.Screen
+        options={{
+          headerShown: false,
+          drawerInactiveTintColor: "white",
+          drawerActiveTintColor: "#333333",
+          drawerActiveBackgroundColor: "white",
+          drawerIcon: ({ color, size, focuced }) => (
+            <MaterialIcons
+              name={"chat"}
+              size={getFontSize(3.3)}
+              color={color}
+              style={{ marginLeft: getFontSize(-0.4) }}
+            />
+          ),
+          drawerLabelStyle: {
+            fontFamily: "Ubuntu",
+            fontSize: getFontSize(1.7),
+            marginLeft: getFontSize(0.3),
+          },
+        }}
+        name='Create Chat'
+        component={CreateChat}
       />
       <Drawer.Screen
         options={{

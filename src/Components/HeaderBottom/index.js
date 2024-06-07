@@ -5,9 +5,10 @@ import {
 } from 'react-native';
 import {styles} from './style';
 
+
 const HeaderBottom = ({title, LeftIcon, RightIcon, TitelStyle}) => {
   return (
-    <View style={styles.headerview}>
+    <View style={[styles.headerview, styles.containerStyle]}>
        {LeftIcon}
      
        
