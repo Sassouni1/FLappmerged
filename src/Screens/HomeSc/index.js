@@ -966,7 +966,8 @@ const styles = StyleSheet.create({
   },
   calendarMockup: {
     width: '95%',
-    objectFit: 'contain',
+    objectFit: 'scale-down',
+    marginVertical: -500,
   },
 })
 
