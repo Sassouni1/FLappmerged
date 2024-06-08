@@ -64,7 +64,7 @@ export default function BottomTab() {
         // component={user?.plan_id?WorkoutHistory:Workouts}
         component={user?.isAssigned === true ? Workouts : Workouts}
         initialParams={
-          user?.isAssigned === true ? { data: "tab2" } : { data: "tab1" }
+          user?.isAssigned !== true ? { data: "tab2" } : { data: "tab1" }
         }
         options={{
           headerShown: false,
