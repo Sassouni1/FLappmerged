@@ -35,18 +35,16 @@ const WorkoutDetails = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [data, setData] = useState([]);
+  const [program, setProgram] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState();
   const [betweenTwoHandles, setbetweenTwoHandles] = useState(false);
   const token = useSelector((state) => state.auth.userToken);
   const user = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
   const toggleModal = () => {
-    console.log("Opening modal");
     setModalVisible(true);
-    console.log("Opened modal");
   };
   const handleDoubleTap = (item) => {
-    console.log("double tap screen", item);
     navigation.navigate("ViewProgram", {
       passData: item,
 
@@ -55,7 +53,9 @@ const WorkoutDetails = () => {
         : "program/detail_program/",
     });
   };
-
+  useEffect(() => {
+    getContinuousProgram();
+  }, []);
   const handleDayPress = (day) => {
     setSelectedDate(day.dateString);
   };
@@ -80,7 +80,6 @@ const WorkoutDetails = () => {
       });
 
       if (res?.status == "200") {
-        console.log("programsss", res?.response);
         setData(res?.response?.detail?.filter((el) => !el?.isDeleted));
         dispatch(setLoader(false));
       } else {
@@ -105,8 +104,7 @@ const WorkoutDetails = () => {
       });
 
       if (res?.status == "200") {
-        console.log("programsss", res?.response);
-        setData(res?.response?.detail?.filter((el) => !el?.isDeleted));
+        setProgram(res?.response?.detail?.filter((el) => !el?.isDeleted));
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -119,77 +117,78 @@ const WorkoutDetails = () => {
     }
   };
   useEffect(() => {
-    getAllProgram(0);
+    getAllProgram();
   }, []);
+  console.log(data[0], "program");
 
-  const AssignProgram = async () => {
-    dispatch(setLoader(true));
-    const today = new Date();
-    today.setDate(today.getDate() + 7);
-    try {
-      const res = await ApiCall({
-        params: {
-          startDate: selectedDate,
-          programId: selectedItemId,
-        },
+  // const AssignProgram = async () => {
+  //   dispatch(setLoader(true));
+  //   const today = new Date();
+  //   today.setDate(today.getDate() + 7);
+  //   try {
+  //     const res = await ApiCall({
+  //       params: {
+  //         startDate: selectedDate,
+  //         programId: selectedItemId,
+  //       },
 
-        route: betweenTwoHandles
-          ? "assignProgram/assign-continuous-program"
-          : "assignProgram/assign_Program",
-        verb: "post",
+  //       route: betweenTwoHandles
+  //         ? "assignProgram/assign-continuous-program"
+  //         : "assignProgram/assign_Program",
+  //       verb: "post",
 
-        token: token,
-      });
-      if (res?.status == "200") {
-        dispatch(Assprogram(res?.response?.Assigned_Program));
-        dispatch(getSingleUser(token));
-        dispatch(setLoader(false));
-        navigation.navigate("WorkoutSucessfully", { selectDate: selectedDate });
-      } else {
-        dispatch(setLoader(false));
+  //       token: token,
+  //     });
+  //     if (res?.status == "200") {
+  //       dispatch(Assprogram(res?.response?.Assigned_Program));
+  //       dispatch(getSingleUser(token));
+  //       dispatch(setLoader(false));
+  //       navigation.navigate("WorkoutSucessfully", { selectDate: selectedDate });
+  //     } else {
+  //       dispatch(setLoader(false));
 
-        Alert.alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
-      }
-    } catch (e) {
-      console.log("api get skill error -- ", e.toString());
-    }
-  };
+  //       Alert.alert(res?.response?.message, [
+  //         { text: "OK", onPress: () => console.log("OK Pressed") },
+  //       ]);
+  //     }
+  //   } catch (e) {
+  //     console.log("api get skill error -- ", e.toString());
+  //   }
+  // };
 
-  const SwitchProgram = async () => {
-    dispatch(setLoader(true));
-    const today = new Date();
-    today.setDate(today.getDate() + 7);
+  // const SwitchProgram = async () => {
+  //   dispatch(setLoader(true));
+  //   const today = new Date();
+  //   today.setDate(today.getDate() + 7);
 
-    try {
-      const res = await ApiCall({
-        params: {
-          startDate: selectedDate,
-          programId: selectedItemId,
-          planId: user?.plan_id,
-          isContinuous: betweenTwoHandles ? "true" : "false",
-        },
-        route: "assignProgram/switch_assign_Program",
-        verb: "post",
-        token: token,
-      });
-      if (res?.status == "200") {
-        dispatch(Assprogram(res?.response?.Assigned_Program));
-        dispatch(getSingleUser(token));
-        dispatch(setLoader(false));
-        navigation.navigate("WorkoutSucessfully", { selectDate: selectedDate });
-      } else {
-        dispatch(setLoader(false));
+  //   try {
+  //     const res = await ApiCall({
+  //       params: {
+  //         startDate: selectedDate,
+  //         programId: selectedItemId,
+  //         planId: user?.plan_id,
+  //         isContinuous: betweenTwoHandles ? "true" : "false",
+  //       },
+  //       route: "assignProgram/switch_assign_Program",
+  //       verb: "post",
+  //       token: token,
+  //     });
+  //     if (res?.status == "200") {
+  //       dispatch(Assprogram(res?.response?.Assigned_Program));
+  //       dispatch(getSingleUser(token));
+  //       dispatch(setLoader(false));
+  //       navigation.navigate("WorkoutSucessfully", { selectDate: selectedDate });
+  //     } else {
+  //       dispatch(setLoader(false));
 
-        alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
-      }
-    } catch (e) {
-      console.log("api get skill error -- ", e.toString());
-    }
-  };
+  //       alert(res?.response?.message, [
+  //         { text: "OK", onPress: () => console.log("OK Pressed") },
+  //       ]);
+  //     }
+  //   } catch (e) {
+  //     console.log("api get skill error -- ", e.toString());
+  //   }
+  // };
 
   useEffect(() => {
     const fetchSelectedItemId = async () => {
@@ -303,137 +302,144 @@ const WorkoutDetails = () => {
             See all
           </Text>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate("ViewProgram")}>
-          <View
-            style={{
-              borderRadius: 30,
-            }}
-          >
-            <Image
-              source={require("../../assets/images/homevidthumb.png")}
-              style={{
-                width: "100%",
-                objectFit: "cover",
-                borderRadius: 30,
-                position: "absolute",
-                top: 0,
-                left: 0,
-                bottom: 0,
-                right: 0,
-              }}
-            />
-            <View
-              style={{
-                padding: 20,
-                justifyContent: "space-between",
-                height: 220,
-              }}
+        {program.length > 0 &&
+          program.map((item, index) => (
+            <TouchableOpacity
+              onPress={() => navigation.navigate("ViewProgram")}
             >
               <View
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 10,
+                  borderRadius: 30,
+                  marginBottom: 10,
                 }}
               >
-                <View
+                <Image
+                  source={{ uri: item?.program_Image }}
                   style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 6,
-                  }}
-                >
-                  <Image
-                    source={require("../../assets/images/homeclockicon.png")}
-                  />
-                  <Text
-                    style={{
-                      color: "white",
-                    }}
-                  >
-                    All Equipment
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    height: 5,
-                    width: 5,
-                    backgroundColor: "gray",
-                    borderRadius: 10,
+                    width: "100%",
+                    objectFit: "cover",
+                    borderRadius: 30,
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    right: 0,
+                    opacity: 0.8,
                   }}
                 />
                 <View
                   style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 6,
+                    padding: 20,
+                    justifyContent: "space-between",
+                    height: 220,
                   }}
                 >
-                  <Image
-                    source={require("../../assets/images/homefireicon.png")}
-                  />
-                  <Text
-                    style={{
-                      color: "white",
-                    }}
-                  >
-                    For Everyone
-                  </Text>
-                </View>
-              </View>
-              <View
-                style={{
-                  flexDirection: "column",
-                  gap: 6,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 22,
-                    color: "white",
-                    fontWeight: "700",
-                  }}
-                >
-                  Testing Week
-                </Text>
-
-                <View
-                  style={{
-                    flexDirection: "row",
-                    gap: 8,
-                    alignItems: "center",
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "white",
-                    }}
-                  >
-                    Get your base line numbers
-                  </Text>
                   <View
                     style={{
-                      backgroundColor: "rgba(170, 170, 170, 0.42)",
-                      paddingVertical: 6,
-                      paddingHorizontal: 10,
-                      borderRadius: 12,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 10,
+                    }}
+                  >
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 6,
+                      }}
+                    >
+                      <Image
+                        source={require("../../assets/images/homeclockicon.png")}
+                      />
+                      <Text
+                        style={{
+                          color: "white",
+                        }}
+                      >
+                        All Equipment
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        height: 5,
+                        width: 5,
+                        backgroundColor: "gray",
+                        borderRadius: 10,
+                      }}
+                    />
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 6,
+                      }}
+                    >
+                      <Image
+                        source={require("../../assets/images/homefireicon.png")}
+                      />
+                      <Text
+                        style={{
+                          color: "white",
+                        }}
+                      >
+                        For Everyone
+                      </Text>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "column",
+                      gap: 6,
                     }}
                   >
                     <Text
                       style={{
+                        fontSize: 22,
                         color: "white",
-                        fontWeight: "600",
-                        fontSize: 12,
+                        fontWeight: "700",
                       }}
                     >
-                      START
+                      {item?.title}
                     </Text>
+
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        gap: 8,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "white",
+                        }}
+                      >
+                        {item?.description}
+                      </Text>
+                      <View
+                        style={{
+                          backgroundColor: "rgba(170, 170, 170, 0.42)",
+                          paddingVertical: 6,
+                          paddingHorizontal: 10,
+                          borderRadius: 12,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: "white",
+                            fontWeight: "600",
+                            fontSize: 12,
+                          }}
+                        >
+                          START
+                        </Text>
+                      </View>
+                    </View>
                   </View>
                 </View>
               </View>
-            </View>
-          </View>
-        </TouchableOpacity>
+            </TouchableOpacity>
+          ))}
       </View>
       <View
         style={{
@@ -472,7 +478,7 @@ const WorkoutDetails = () => {
                 color: "gray",
               }}
             >
-              (4)
+              {`(${data.length})`}
             </Text>
           </View>
 
@@ -484,133 +490,136 @@ const WorkoutDetails = () => {
             See all
           </Text>
         </View>
-        <TouchableOpacity
-          style={{
-            borderRadius: 30,
-            backgroundColor: "#e8ebed",
-          }}
-        >
-          <View
-            style={{
-              padding: 14,
-
-              flexDirection: "row",
-              gap: 10,
-            }}
-          >
-            <Image
-              source={require("../../assets/images/workoutsyoga.png")}
+        {data.length > 0 &&
+          data.map((item, index) => (
+            <TouchableOpacity
               style={{
-                width: 60,
-                height: 60,
-              }}
-            />
-            <View
-              style={{
-                flexDirection: "column",
-                gap: 6,
-                width: "75%",
+                borderRadius: 30,
+                backgroundColor: "#e8ebed",
               }}
             >
               <View
                 style={{
-                  flexDirection: "row",
-                  gap: 8,
-                  alignItems: "center",
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 20,
-                    color: "black",
-                    fontWeight: "700",
-                  }}
-                >
-                  Zen Flow Yoga
-                </Text>
-                <View
-                  style={{
-                    padding: 6,
-                    borderWidth: 1,
-                    borderRadius: 10,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 10,
-                      color: "black",
-                      fontWeight: "600",
-                    }}
-                  >
-                    YOGA
-                  </Text>
-                </View>
-              </View>
-              <View
-                style={{
-                  width: "100%",
-                  backgroundColor: "lightgray",
-                  height: 6,
-                }}
-              />
-              <View
-                style={{
+                  padding: 14,
+
                   flexDirection: "row",
                   gap: 10,
-                  alignItems: "center",
-                  marginTop: 4,
                 }}
               >
+                <Image
+                  source={require("../../assets/images/workoutsyoga.png")}
+                  style={{
+                    width: 60,
+                    height: 60,
+                  }}
+                />
                 <View
                   style={{
-                    flexDirection: "row",
-                    gap: 4,
-                    alignItems: "center",
-                    marginTop: 4,
+                    flexDirection: "column",
+                    gap: 6,
+                    width: "75%",
                   }}
                 >
-                  <Image
-                    source={require("../../assets/images/workoutdocicon.png")}
+                  <View
                     style={{
-                      width: 16,
-                      height: 16,
-                    }}
-                  />
-                  <Text
-                    style={{
-                      color: "black",
+                      flexDirection: "row",
+                      gap: 8,
+                      alignItems: "center",
                     }}
                   >
-                    Movement 4
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    gap: 4,
-                    alignItems: "center",
-                    marginTop: 4,
-                  }}
-                >
-                  <Image
-                    source={require("../../assets/images/workoutstopwatchicon.png")}
+                    <Text
+                      style={{
+                        fontSize: 18,
+                        color: "black",
+                        fontWeight: "700",
+                      }}
+                    >
+                      {item?.title}
+                    </Text>
+                    <View
+                      style={{
+                        padding: 6,
+                        borderWidth: 1,
+                        borderRadius: 10,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          color: "black",
+                          fontWeight: "600",
+                        }}
+                      >
+                        YOGA
+                      </Text>
+                    </View>
+                  </View>
+                  <View
                     style={{
-                      width: 16,
-                      height: 16,
+                      width: "100%",
+                      backgroundColor: "lightgray",
+                      height: 6,
                     }}
                   />
-                  <Text
+                  <View
                     style={{
-                      color: "black",
+                      flexDirection: "row",
+                      gap: 10,
+                      alignItems: "center",
+                      marginTop: 4,
                     }}
                   >
-                    87%
-                  </Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        gap: 4,
+                        alignItems: "center",
+                        marginTop: 4,
+                      }}
+                    >
+                      <Image
+                        source={require("../../assets/images/workoutdocicon.png")}
+                        style={{
+                          width: 16,
+                          height: 16,
+                        }}
+                      />
+                      <Text
+                        style={{
+                          color: "black",
+                        }}
+                      >
+                        Movement 4
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        gap: 4,
+                        alignItems: "center",
+                        marginTop: 4,
+                      }}
+                    >
+                      <Image
+                        source={require("../../assets/images/workoutstopwatchicon.png")}
+                        style={{
+                          width: 16,
+                          height: 16,
+                        }}
+                      />
+                      <Text
+                        style={{
+                          color: "black",
+                        }}
+                      >
+                        87%
+                      </Text>
+                    </View>
+                  </View>
                 </View>
               </View>
-            </View>
-          </View>
-        </TouchableOpacity>
+            </TouchableOpacity>
+          ))}
       </View>
     </ScrollView>
   );
