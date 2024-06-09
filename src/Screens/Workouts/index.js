@@ -1,25 +1,21 @@
-import React, { useEffect } from 'react'
-import {
- View,
- Text,
- StyleSheet,
- Dimensions,
- Image,
- TouchableOpacity,
-} from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import React, { useEffect, useState } from 'react'
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import { SceneMap, TabBar, TabView } from 'react-native-tab-view'
+import { getFontSize, getHeight, getWidth } from '../../../utils/ResponsiveFun'
+import GeneralStatusBar from '../../Components/GeneralStatusBar'
 import { colors } from '../../constants/colors'
 import { fonts } from '../../constants/fonts'
-import { getHeight, getFontSize, getWidth } from '../../../utils/ResponsiveFun'
 import WorkoutDetails from '../WorkoutDetails'
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view'
-import { useState } from 'react'
 import AddWorkouts from './AddWorkouts'
-import GeneralStatusBar from '../../Components/GeneralStatusBar'
-import HeaderBottom from '../../Components/HeaderBottom'
-import Entypo from 'react-native-vector-icons/Entypo'
 import StandAlone from './StandAlone'
-import { ScrollView } from 'react-native-gesture-handler'
 
 
 const Tab1 = () => <WorkoutDetails />
