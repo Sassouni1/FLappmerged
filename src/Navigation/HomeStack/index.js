@@ -31,11 +31,10 @@ import AditionalWorkout from "../../Screens/AditionalWorkout";
 import RestTimeScreen from "../../Screens/Workouts/RestTimeScreen";
 
 import Fitnesssurvey from "../../Screens/Fitnesssurvey";
-import ChatScreen from '../../Screens/ChatBot/ChatScreen'
-import BotAllChatScreen from '../../Screens/ChatBot/AllChats'
-import CreateChatScreen from '../../Screens/ChatBot/CreateChat'
-import TestChatSceen from '../../Screens/ChatBot/Testing'
-
+import ChatScreen from "../../Screens/ChatBot/ChatScreen";
+import BotAllChatScreen from "../../Screens/ChatBot/AllChats";
+import CreateChatScreen from "../../Screens/ChatBot/CreateChat";
+import TestChatSceen from "../../Screens/ChatBot/Testing";
 
 import SearchWorkout from "../../Screens/Skills/SearchWorkout";
 import WorkoutDetail from "../../Screens/Skills/WorkoutDetail";
@@ -48,7 +47,7 @@ import LearningCenter from "../../Screens/SquatComponet/LearningCenter";
 import WorkoutComplete from "../../Screens/SquatComponet/WorkoutComplete";
 import ResetTimer from "../../Screens/SquatComponet/ResetTimer";
 import Squat from "../../Screens/SquatComponet/Squat";
-
+import HTUA from "../../Screens/HTUA";
 
 const stack = createNativeStackNavigator();
 const HomeStack = () => {
@@ -57,6 +56,13 @@ const HomeStack = () => {
       initialRouteName={"Home"}
       screenOptions={{ headerShown: false }}
     >
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="HTUA"
+        component={HTUA}
+      />
       <stack.Screen
         options={{
           headerShown: false,
@@ -78,7 +84,7 @@ const HomeStack = () => {
         name="Fitnesssurvey"
         component={Fitnesssurvey}
       />
-   
+
       <stack.Screen
         options={{
           headerShown: false,
@@ -343,33 +349,33 @@ const HomeStack = () => {
         component={Squat}
       />
       <stack.Screen
-                options={{
-                    headerShown: false
-                }}
-                name="ChatScreen"
-                component={ChatScreen}
-            />
-            <stack.Screen
-                options={{
-                    headerShown: false
-                }}
-                name="BotAllChatScreen"
-                component={BotAllChatScreen}
-            />
-            <stack.Screen
-                options={{
-                    headerShown: false
-                }}
-                name="CreateChatScreen"
-                component={CreateChatScreen}
-            />
-            <stack.Screen
-                options={{
-                    headerShown: false
-                }}
-                name="TestChatSceen"
-                component={TestChatSceen}
-            />
+        options={{
+          headerShown: false,
+        }}
+        name="ChatScreen"
+        component={ChatScreen}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="BotAllChatScreen"
+        component={BotAllChatScreen}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="CreateChatScreen"
+        component={CreateChatScreen}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="TestChatSceen"
+        component={TestChatSceen}
+      />
     </stack.Navigator>
   );
 };

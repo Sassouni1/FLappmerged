@@ -54,7 +54,7 @@ export default function BottomTab() {
               name="home"
               size={getFontSize(2.7)}
               style={{ marginTop: getFontSize(1) }}
-              color={focused ? "#F79300" : "white"}
+              color={focused ? "#F79300" : ""}
             />
           ),
         }}
