@@ -32,55 +32,55 @@ import { PlayerSvg } from "../../../assets/images";
 
 const ViewProgram = ({ route }) => {
   const navigation = useNavigation();
-  // const { _id } = route?.params?.passData
+  const { _id } = route?.params?.passData
   const url = route?.params?.url;
   // console.log('Url from view screen', url)
   // console.log('from view programs', _id)
   const [program, setProgram] = useState(null);
   const [data, setData] = useState(null);
 
-  // const token = useSelector((state) => state.auth.userToken)
+  const token = useSelector((state) => state.auth.userToken)
   const dispatch = useDispatch();
 
-  // const getViewProgram = async () => {
-  //   dispatch(setLoader(true));
-  //   try {
-  //     const res = await ApiCall({
-  //       params: { category_name: "skill" },
-  //       route: url + _id,
-  //       verb: "get",
-  //       token: token,
-  //     });
+  const getViewProgram = async () => {
+    dispatch(setLoader(true));
+    try {
+      const res = await ApiCall({
+        params: { category_name: "skill" },
+        route: url + _id,
+        verb: "get",
+        token: token,
+      });
 
-  //     if (res?.status == "200") {
-  //       console.log(
-  //         "workout",
-  //         res?.response?.detail?.workouts[0]?.innerWorkout[0]?.exercise
-  //       );
-  //       console.log("workout", res?.response?.detail);
+      if (res?.status == "200") {
+        console.log(
+          "workout",
+          res?.response?.detail?.workouts[0]?.innerWorkout[0]?.exercise
+        );
+        console.log("workout", res?.response?.detail);
 
-  //       setData(res?.response?.detail);
-  //       setProgram(res?.response?.detail?.workouts);
-  //       dispatch(setLoader(false));
-  //       // navigation.goBack();
+        setData(res?.response?.detail);
+        setProgram(res?.response?.detail?.workouts);
+        dispatch(setLoader(false));
+        // navigation.goBack();
 
-  //       // navigation.navigate('HomeScreen');
-  //     } else {
-  //       dispatch(setLoader(false));
+        // navigation.navigate('HomeScreen');
+      } else {
+        dispatch(setLoader(false));
 
-  //       alert(res?.response?.message, [
-  //         { text: "OK", onPress: () => console.log("OK Pressed") },
-  //       ]);
-  //     }
-  //   } catch (e) {
-  //     console.log("api get skill error -- ", e.toString());
-  //   }
-  // };
+        alert(res?.response?.message, [
+          { text: "OK", onPress: () => console.log("OK Pressed") },
+        ]);
+      }
+    } catch (e) {
+      console.log("api get skill error -- ", e.toString());
+    }
+  };
 
-  // useEffect(() => {
-  //   getViewProgram();
-  // }, []);
-
+  useEffect(() => {
+    getViewProgram();
+  }, []);
+  console.log(data,'data')
   return (
     <ScrollView
       style={{
@@ -88,7 +88,7 @@ const ViewProgram = ({ route }) => {
       }}
     >
       <Image
-        source={require("../../../assets/images/workoutdetailsback.png")}
+        source={{uri:data?.program_Image}}
         style={{
           objectFit: "fill",
           position: "absolute",
@@ -149,7 +149,7 @@ const ViewProgram = ({ route }) => {
               fontSize: 12,
             }}
           >
-            HEAVY HITTER BOXING
+            {data?.title}
           </Text>
         </View>
         <Text
@@ -218,10 +218,7 @@ const ViewProgram = ({ route }) => {
               lineHeight: 20,
             }}
           >
-            Embrace the morning sun and revitalize your body and mind with our
-            'Morning Boost' routine. This energizing workout is designed to
-            kickstart your metabolism, increase your energy levels, and set a
-            positive tone for the day ahead.
+           {data?.description}
           </Text>
         </View>
         <View

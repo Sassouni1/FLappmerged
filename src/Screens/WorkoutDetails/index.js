@@ -119,7 +119,6 @@ const WorkoutDetails = () => {
   useEffect(() => {
     getAllProgram();
   }, []);
-  console.log(data[0], "program");
 
   // const AssignProgram = async () => {
   //   dispatch(setLoader(true));
@@ -305,7 +304,7 @@ const WorkoutDetails = () => {
         {program.length > 0 &&
           program.map((item, index) => (
             <TouchableOpacity
-              onPress={() => navigation.navigate("ViewProgram")}
+              onPress={() => navigation.navigate("ViewProgram", {passData: item, url:'program/detail_program/'})}
             >
               <View
                 style={{
