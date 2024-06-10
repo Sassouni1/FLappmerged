@@ -1,85 +1,107 @@
-import { ScrollView } from 'react-native-gesture-handler'
+import { ScrollView } from "react-native-gesture-handler";
 
-import React, { useEffect, useState } from 'react'
-import { Text, View, Image, StyleSheet, Dimensions } from 'react-native'
+import React, { useEffect, useState } from "react";
+import {
+  Text,
+  View,
+  Image,
+  StyleSheet,
+  Dimensions,
+  Linking,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 
-import { useDispatch, useSelector } from 'react-redux'
-import { appListner, requestUserPermission } from '../Notifications'
-import { getSingleUser } from '../../Redux/actions/AuthActions'
-import { ApiCall } from '../../Services/Apis'
-import { setLoader } from '../../Redux/actions/GernalActions'
+import { useDispatch, useSelector } from "react-redux";
+import { appListner, requestUserPermission } from "../Notifications";
+import { getSingleUser } from "../../Redux/actions/AuthActions";
+import { ApiCall } from "../../Services/Apis";
+import { setLoader } from "../../Redux/actions/GernalActions";
+import { useNavigation } from "@react-navigation/native";
 
 const HomeSc = ({ navigation, route }) => {
-  const token = useSelector((state) => state.auth.userToken)
-  const dispatch = useDispatch()
+  const navigate = useNavigation();
+  const token = useSelector((state) => state.auth.userToken);
+  const dispatch = useDispatch();
 
-  const [adminAlert, setAdminAlert] = useState('')
+  const [adminAlert, setAdminAlert] = useState("");
 
   const getAdminAlert = async () => {
     try {
       const res = await ApiCall({
         route: `auth/get-recent-alert`,
-        verb: 'get',
+        verb: "get",
         token: token,
-      })
+      });
 
-      if (res?.status == '200') {
-        console.log('admin response', res?.response)
-        setAdminAlert(res?.response?.event)
-        dispatch(setLoader(false))
+      if (res?.status == "200") {
+        console.log("admin response", res?.response);
+        setAdminAlert(res?.response?.event);
+        dispatch(setLoader(false));
       } else {
-        dispatch(setLoader(false))
-        console.log('errorrrr in alert')
+        dispatch(setLoader(false));
+        console.log("errorrrr in alert");
       }
     } catch (e) {
-      console.log('api get admin alert error -- ', e.toString())
+      console.log("api get admin alert error -- ", e.toString());
     }
-  }
+  };
 
   useEffect(() => {
-    requestUserPermission(token)
-  }, [])
+    requestUserPermission(token);
+  }, []);
   useEffect(() => {
     if (token) {
-      dispatch(getSingleUser(token))
-      appListner(navigation)
+      dispatch(getSingleUser(token));
+      appListner(navigation);
     }
-  }, [])
+  }, []);
   useEffect(() => {
-    getAdminAlert()
-  }, [])
+    getAdminAlert();
+  }, []);
 
+  const openURL = async (url) => {
+    const supported = await Linking.canOpenURL(url);
+
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      Alert.alert(`Don't know how to open this URL: ${url}`);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Image
-          source={require('../../assets/images/HomeTopBack.png')}
+          source={require("../../assets/images/HomeTopBack.png")}
           style={styles.headerImage}
         />
         <View style={styles.headerInfo}>
           <View style={styles.profilePicture}>
-
             <Image
-              source={require('../../assets/images/ProfilePicture.png')}
+              source={require("../../assets/images/ProfilePicture.png")}
               style={styles.profileImage}
             />
           </View>
           <View style={styles.headerContent}>
-            <Text style={styles.greeting}>Hello Makise</Text>
+            <Text style={styles.greeting}>Hello Chris</Text>
           </View>
           <View style={styles.chevronRight}>
-            <Image source={require('../../assets/images/homerightarrow.png')} />
+            <Image source={require("../../assets/images/homerightarrow.png")} />
           </View>
         </View>
       </View>
 
       <View style={styles.mainFeatures}>
         <View style={styles.buttonPrimary}>
-          <View style={styles.buttonContent}>
+          <TouchableOpacity
+            onPress={() => navigate.navigate("HTUA")}
+            style={styles.buttonContent}
+          >
             <Text style={styles.buttonText}>Watch How To Use App</Text>
             <View style={styles.solidArrowRight} />
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.subNav}>
           <View style={styles.vidTitle}>
@@ -95,7 +117,7 @@ const HomeSc = ({ navigation, route }) => {
         </View>
         <View style={styles.frameContainer}>
           <Image
-            source={require('../../assets/images/homevidthumb.png')}
+            source={require("../../assets/images/homevidthumb.png")}
             style={styles.vidThumb}
           />
           <View style={styles.frameContent}>
@@ -103,7 +125,7 @@ const HomeSc = ({ navigation, route }) => {
               <View style={styles.fitnessInfo}>
                 <View style={styles.fitnessIcon}>
                   <Image
-                    source={require('../../assets/images/homeclockicon.png')}
+                    source={require("../../assets/images/homeclockicon.png")}
                   />
                 </View>
                 <Text style={styles.fitnessText}>25min</Text>
@@ -111,7 +133,7 @@ const HomeSc = ({ navigation, route }) => {
               <View style={styles.fitnessInfo}>
                 <View style={styles.fitnessIcon}>
                   <Image
-                    source={require('../../assets/images/homefireicon.png')}
+                    source={require("../../assets/images/homefireicon.png")}
                   />
                 </View>
                 <Text style={styles.fitnessText}>412kcal</Text>
@@ -129,7 +151,7 @@ const HomeSc = ({ navigation, route }) => {
               </View>
               <View>
                 <Image
-                  source={require('../../assets/images/homeplaybtn.png')}
+                  source={require("../../assets/images/homeplaybtn.png")}
                 />
               </View>
             </View>
@@ -137,23 +159,49 @@ const HomeSc = ({ navigation, route }) => {
         </View>
       </View>
       <View style={styles.fitnessMetrics}>
-        <Text style={styles.fitnessMetricsTitle}>Upcoming Live Calls</Text>
-        <View style={styles.liveCallsBtn}>
+        {/* <Text style={styles.fitnessMetricsTitle}>Upcoming Live Calls</Text> */}
+        <TouchableOpacity
+          style={styles.liveCallsBtn}
+          onPress={() => Linking.openURL("https://www.zoom.com/us")}
+        >
           <Image
-            source={require('../../assets/images/WhiteCalendar.png')}
+            source={require("../../assets/images/WhiteCalendar.png")}
             style={styles.whiteCalendar}
           />
           <Text style={styles.liveCallsBtnText}>
             Next Live Call Is In 7 Hours With Jeff Mayweather
           </Text>
-        </View>
+        </TouchableOpacity>
       </View>
+
       <View style={styles.fitnessCalendar}>
         <Image
-          source={require('../../assets/images/CalendarMockup.png')}
+          source={require("../../assets/images/CalendarMockup.png")}
           style={styles.calendarMockup}
         />
+        <View
+          style={{
+            flexDirection: "row",
+            position: "absolute",
+            bottom: 60,
+            gap: 5,
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={{
+              height: 5,
+              width: 5,
+              backgroundColor: "#256CD0",
+              borderRadius: 2,
+            }}
+          />
+          <Text style={{ fontSize: 12 }}>
+            Call with Jeff Mayweather at 9:00 PM
+          </Text>
+        </View>
       </View>
+
       <View style={styles.coachBooking}>
         <View style={styles.coachBookingHeader}>
           <Text style={styles.coachBookingTitle}>Shop & Upgrades</Text>
@@ -162,7 +210,7 @@ const HomeSc = ({ navigation, route }) => {
         <View style={styles.coachBookingItem}>
           <View style={styles.coachBookingContent}>
             <View style={styles.coachBookingImage}>
-              <Image source={require('../../assets/images/CoachThumb.png')} />
+              <Image source={require("../../assets/images/CoachThumb.png")} />
             </View>
             <View style={styles.coachBookingText}>
               <View style={styles.coachBookingTextUpper}>
@@ -178,7 +226,7 @@ const HomeSc = ({ navigation, route }) => {
             </View>
             <View style={styles.coachBookingChevronRight}>
               <Image
-                source={require('../../assets/images/Graychevronright.png')}
+                source={require("../../assets/images/Graychevronright.png")}
               />
             </View>
           </View>
@@ -186,7 +234,7 @@ const HomeSc = ({ navigation, route }) => {
         <View style={styles.coachBookingItem}>
           <View style={styles.coachBookingContent}>
             <View style={styles.coachBookingImage}>
-              <Image source={require('../../assets/images/Homefood.png')} />
+              <Image source={require("../../assets/images/Homefood.png")} />
             </View>
             <View style={styles.coachBookingText}>
               <View style={styles.coachBookingTextUpper}>
@@ -204,7 +252,7 @@ const HomeSc = ({ navigation, route }) => {
             </View>
             <View style={styles.coachBookingChevronRight}>
               <Image
-                source={require('../../assets/images/Graychevronright.png')}
+                source={require("../../assets/images/Graychevronright.png")}
               />
             </View>
           </View>
@@ -212,7 +260,7 @@ const HomeSc = ({ navigation, route }) => {
         <View style={styles.coachBookingItem}>
           <View style={styles.coachBookingContent}>
             <View style={styles.coachBookingImage}>
-              <Image source={require('../../assets/images/Homepills.png')} />
+              <Image source={require("../../assets/images/Homepills.png")} />
             </View>
             <View style={styles.coachBookingText}>
               <View style={styles.coachBookingTextUpper}>
@@ -228,7 +276,7 @@ const HomeSc = ({ navigation, route }) => {
             </View>
             <View style={styles.coachBookingChevronRight}>
               <Image
-                source={require('../../assets/images/Graychevronright.png')}
+                source={require("../../assets/images/Graychevronright.png")}
               />
             </View>
           </View>
@@ -241,7 +289,7 @@ const HomeSc = ({ navigation, route }) => {
         </View>
         <View style={styles.mealPlanItem}>
           <Image
-            source={require('../../assets/images/Homesalad.png')}
+            source={require("../../assets/images/Homesalad.png")}
             style={styles.homeSalad}
           />
           <View style={styles.mealPlanContent}>
@@ -266,7 +314,7 @@ const HomeSc = ({ navigation, route }) => {
                   <View style={styles.mealPlanInfoItem}>
                     <View style={styles.mealPlanInfoIcon}>
                       <Image
-                        source={require('../../assets/images/homefireicon.png')}
+                        source={require("../../assets/images/homefireicon.png")}
                       />
                     </View>
                     <Text style={styles.mealPlanInfoText}>548kcal</Text>
@@ -275,7 +323,7 @@ const HomeSc = ({ navigation, route }) => {
                   <View style={styles.mealPlanInfoItem}>
                     <View style={styles.mealPlanInfoIcon}>
                       <Image
-                        source={require('../../assets/images/homeclockicon.png')}
+                        source={require("../../assets/images/homeclockicon.png")}
                       />
                     </View>
                     <Text style={styles.mealPlanInfoText}>20min</Text>
@@ -284,7 +332,7 @@ const HomeSc = ({ navigation, route }) => {
               </View>
               <View>
                 <Image
-                  source={require('../../assets/images/homeorangearrow.png')}
+                  source={require("../../assets/images/homeorangearrow.png")}
                 />
               </View>
             </View>
@@ -292,43 +340,43 @@ const HomeSc = ({ navigation, route }) => {
         </View>
       </View>
     </ScrollView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   homeSalad: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
-    width: '100%',
-    objectFit: 'cover',
+    width: "100%",
+    objectFit: "cover",
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 24,
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
-    position: 'relative',
+    position: "relative",
   },
   headerImage: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
-    resizeMode: 'stretch',
+    resizeMode: "stretch",
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
-    width: Dimensions.get('window').width,
+    width: Dimensions.get("window").width,
   },
   headerInfo: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     flex: 1,
     marginTop: 90,
   },
@@ -336,12 +384,12 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 18,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   profileImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
   },
   headerContent: {
     flex: 1,
@@ -349,102 +397,102 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: 30,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+    fontWeight: "bold",
+    color: "#FFFFFF",
     marginBottom: 4,
   },
 
   chevronRight: {
     width: 24,
     height: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   polygonStroke: {
     width: 10,
     height: 10,
     borderTopWidth: 2,
     borderRightWidth: 2,
-    borderColor: '#FFFFFF',
-    transform: [{ rotate: '45deg' }],
+    borderColor: "#FFFFFF",
+    transform: [{ rotate: "45deg" }],
   },
   subHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
   vidTitle: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 4,
   },
   vidTitleText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: 'gray',
+    fontWeight: "bold",
+    color: "gray",
   },
   calendarContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   calendarIcon: {
     width: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.64)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(255, 255, 255, 0.64)",
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 4,
   },
   calendarIconInner: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   calendarText: {
     fontSize: 12,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    textTransform: 'uppercase',
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    textTransform: "uppercase",
     letterSpacing: 1,
   },
   buttonFab: {
     width: 48,
     height: 48,
     borderRadius: 16,
-    backgroundColor: '#393C43',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#393C43",
+    justifyContent: "center",
+    alignItems: "center",
   },
   arrowRight: {
     width: 24,
     height: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   arrowRightInner: {
     width: 10,
     height: 10,
     borderTopWidth: 2,
     borderRightWidth: 2,
-    borderColor: '#FFFFFF',
-    transform: [{ rotate: '45deg' }],
+    borderColor: "#FFFFFF",
+    transform: [{ rotate: "45deg" }],
   },
   notificationCounter: {
-    position: 'absolute',
+    position: "absolute",
     top: 68,
     right: 16,
     width: 12,
     height: 12,
     borderRadius: 4,
-    backgroundColor: '#FF8036',
+    backgroundColor: "#FF8036",
     borderWidth: 2,
-    borderColor: '#393C43',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderColor: "#393C43",
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   mainFeatures: {
@@ -455,48 +503,48 @@ const styles = StyleSheet.create({
   buttonPrimary: {
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#111214',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#111214",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 16,
   },
   buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   buttonText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
+    fontWeight: "600",
+    color: "#FFFFFF",
   },
   solidArrowRight: {
     width: 24,
     height: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   subNav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 16,
   },
   subNavText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#111214',
+    fontWeight: "bold",
+    color: "#111214",
   },
   moreVertical: {
     width: 24,
     height: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   moreVerticalLine: {
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#BABBBE',
+    backgroundColor: "#BABBBE",
     marginVertical: 2,
   },
 
@@ -504,175 +552,174 @@ const styles = StyleSheet.create({
 
   frameContainer: {
     borderRadius: 32,
-    overflow: 'hidden',
+    overflow: "hidden",
     height: 230,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     flex: 1,
   },
   frameBackground: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#111214',
+    backgroundColor: "#111214",
   },
   frameOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   vidThumb: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     bottom: 0,
     right: 0,
     left: 0,
-    objectFit: 'cover',
-    width: Dimensions.get('window').width,
+    objectFit: "cover",
+    width: Dimensions.get("window").width,
   },
   frameContent: {
     padding: 16,
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   frameContentUpper: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 20,
     marginBottom: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   fitnessInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   fitnessIcon: {
     width: 20,
     height: 20,
 
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 4,
   },
 
   fitnessText: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#FFFFFF',
+    fontWeight: "600",
+    color: "#FFFFFF",
   },
   frameContentLower: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   frameText: {
     flex: 1,
   },
   frameTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+    fontWeight: "bold",
+    color: "#FFFFFF",
     marginBottom: 4,
   },
   frameSubtitle: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   frameSubtitleText: {
     fontSize: 14,
-    fontWeight: '500',
-    color: '#FFFFFF',
+    fontWeight: "500",
+    color: "#FFFFFF",
     marginRight: 8,
   },
   tagMaster: {
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.32)',
+    backgroundColor: "rgba(255, 255, 255, 0.32)",
   },
   tagText: {
     fontSize: 10,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    textTransform: 'uppercase',
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    textTransform: "uppercase",
     letterSpacing: 1,
   },
   buttonIconFab: {
     width: 56,
     height: 56,
     borderRadius: 19,
-    backgroundColor: '#FF8036',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#FF8036",
+    justifyContent: "center",
+    alignItems: "center",
   },
   solidArrowRightSm: {
     width: 24,
     height: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   solidArrowRightSmInner: {
     width: 10,
     height: 10,
     borderTopWidth: 2,
     borderRightWidth: 2,
-    borderColor: '#FFFFFF',
-    transform: [{ rotate: '45deg' }],
+    borderColor: "#FFFFFF",
+    transform: [{ rotate: "45deg" }],
   },
   fitnessMetrics: {
     paddingHorizontal: 16,
-    marginBottom: 24,
+    marginTop: 15,
   },
   fitnessMetricsTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#111214',
+    fontWeight: "bold",
+    color: "#111214",
     marginBottom: 8,
   },
   fitnessMetricsImage: {
-    width: '100%',
+    width: "100%",
     height: 31,
-    resizeMode: 'cover',
+    resizeMode: "cover",
     borderRadius: 5,
   },
   fitnessCalendar: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 24,
-    padding: 10,
+    alignItems: "center",
+    justifyContent: "center",
 
-    marginBottom: 24,
+    padding: 10,
+    marginTop: -10,
   },
   fitnessCalendarHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 20,
   },
   fitnessCalendarTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#393C43',
+    fontWeight: "bold",
+    color: "#393C43",
   },
   fitnessCalendarDatePicker: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   fitnessCalendarDateText: {
     fontSize: 16,
-    fontWeight: '500',
-    color: '#393C43',
+    fontWeight: "500",
+    color: "#393C43",
     marginRight: 6,
   },
   fitnessCalendarChevronDown: {
     width: 20,
     height: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   fitnessCalendarChevronDownInner: {
     width: 10,
     height: 10,
     borderBottomWidth: 2,
     borderRightWidth: 2,
-    borderColor: '#676C75',
-    transform: [{ rotate: '45deg' }],
+    borderColor: "#676C75",
+    transform: [{ rotate: "45deg" }],
   },
   fitnessCalendarDays: {
     // Add styles for calendar days
@@ -682,44 +729,44 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   coachBookingHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 16,
   },
   coachBookingTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#111214',
+    fontWeight: "bold",
+    color: "#111214",
   },
   coachBookingSeeAll: {
     fontSize: 12,
-    fontWeight: '500',
-    color: '#FF8036',
+    fontWeight: "500",
+    color: "#FF8036",
   },
   coachBookingItem: {
-    backgroundColor: '#F3F3F4',
+    backgroundColor: "#F3F3F4",
     borderRadius: 32,
     padding: 12,
     marginBottom: 12,
   },
   coachBookingContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   coachBookingImage: {
     width: 80,
     height: 80,
     borderRadius: 27,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 12,
   },
   coachBookingImageInner: {
     width: 136,
     height: 90,
-    resizeMode: 'cover',
+    resizeMode: "cover",
   },
   coachBookingText: {
     flex: 1,
@@ -729,21 +776,21 @@ const styles = StyleSheet.create({
   },
   coachBookingSubtitle: {
     fontSize: 14,
-    fontWeight: '500',
-    color: '#676C75',
+    fontWeight: "500",
+    color: "#676C75",
   },
   coachBookingDesc: {
     fontSize: 12,
-    fontWeight: '400',
-    color: 'black',
+    fontWeight: "400",
+    color: "black",
   },
   coachBookingTextLower: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   coachBookingRating: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginRight: 8,
   },
   coachBookingRatingStar: {
@@ -753,19 +800,19 @@ const styles = StyleSheet.create({
   },
   coachBookingRatingText: {
     fontSize: 10,
-    fontWeight: '500',
-    color: '#393C43',
+    fontWeight: "500",
+    color: "#393C43",
   },
   coachBookingDivider: {
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#D7D8D9',
+    backgroundColor: "#D7D8D9",
     marginHorizontal: 4,
   },
   coachBookingInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginRight: 8,
   },
   coachBookingInfoIcon: {
@@ -776,16 +823,16 @@ const styles = StyleSheet.create({
   coachBookingChevronRight: {
     width: 24,
     height: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   coachBookingChevronRightInner: {
     width: 10,
     height: 10,
     borderTopWidth: 2,
     borderRightWidth: 2,
-    borderColor: '#BABBBE',
-    transform: [{ rotate: '45deg' }],
+    borderColor: "#BABBBE",
+    transform: [{ rotate: "45deg" }],
   },
   mealPlan: {
     paddingHorizontal: 16,
@@ -796,30 +843,30 @@ const styles = StyleSheet.create({
   },
   mealPlanTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#111214',
+    fontWeight: "bold",
+    color: "#111214",
   },
   mealPlanItem: {
     borderRadius: 32,
-    overflow: 'hidden',
+    overflow: "hidden",
     height: 220,
   },
   mealPlanBackground: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#F3F3F4',
+    backgroundColor: "#F3F3F4",
   },
   mealPlanOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(243, 243, 244, 0.8)',
+    backgroundColor: "rgba(243, 243, 244, 0.8)",
   },
   mealPlanContent: {
     padding: 16,
   },
   mealPlanNutrition: {
-    flexDirection: 'col',
+    flexDirection: "col",
     marginBottom: 25,
     gap: 6,
-    position: 'absolute',
+    position: "absolute",
     top: 10,
     left: 10,
   },
@@ -827,137 +874,137 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   mealPlanNutritionFrame: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 12,
     paddingVertical: 8,
     paddingHorizontal: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   mealPlanNutritionValue: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#111214',
+    fontWeight: "bold",
+    color: "#111214",
     marginBottom: 4,
   },
   mealPlanNutritionLabel: {
     fontSize: 10,
-    fontWeight: '500',
-    color: '#111214',
+    fontWeight: "500",
+    color: "#111214",
   },
   mealPlanText: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    height: '100%',
+    flexDirection: "row",
+    alignItems: "flex-end",
+    height: "100%",
   },
   mealPlanTextContent: {
     flex: 1,
   },
   mealPlanInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   mealPlanInfoItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginRight: 8,
   },
   mealPlanInfoIcon: {
     width: 20,
     height: 20,
 
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 4,
   },
 
   mealPlanInfoText: {
     fontSize: 14,
-    fontWeight: '500',
-    color: '#393C43',
+    fontWeight: "500",
+    color: "#393C43",
   },
   mealPlanInfoDivider: {
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#BABBBE',
+    backgroundColor: "#BABBBE",
     marginHorizontal: 4,
   },
   mealPlanButtonFab: {
     width: 56,
     height: 56,
     borderRadius: 19,
-    backgroundColor: '#FF8036',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#FF8036",
+    justifyContent: "center",
+    alignItems: "center",
   },
   mealPlanButtonArrow: {
     width: 24,
     height: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   mealPlanButtonArrowLine: {
-    position: 'absolute',
-    top: '50%',
-    left: '16.67%',
-    right: '16.67%',
+    position: "absolute",
+    top: "50%",
+    left: "16.67%",
+    right: "16.67%",
     borderTopWidth: 2,
-    borderColor: '#FFFFFF',
+    borderColor: "#FFFFFF",
   },
   mealPlanButtonArrowHead: {
-    position: 'absolute',
-    top: '79.17%',
-    left: '83.33%',
+    position: "absolute",
+    top: "79.17%",
+    left: "83.33%",
     width: 0,
     height: 0,
-    backgroundColor: 'transparent',
-    borderStyle: 'solid',
+    backgroundColor: "transparent",
+    borderStyle: "solid",
     borderTopWidth: 0,
     borderRightWidth: 4,
     borderBottomWidth: 4,
     borderLeftWidth: 4,
-    borderTopColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: '#FFFFFF',
-    borderLeftColor: 'transparent',
-    transform: [{ rotate: '-45deg' }],
+    borderTopColor: "transparent",
+    borderRightColor: "transparent",
+    borderBottomColor: "#FFFFFF",
+    borderLeftColor: "transparent",
+    transform: [{ rotate: "-45deg" }],
   },
 
   buttonIconFab: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 16,
-    left: '50%',
+    left: "50%",
     marginLeft: -32,
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#FF8036',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#FF8036",
+    justifyContent: "center",
+    alignItems: "center",
   },
   buttonIconFabInner: {
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
 
   liveCallsBtn: {
-    width: '100%',
+    width: "100%",
     flex: 1,
-    flexDirection: 'row',
-    borderRadius: 5,
-    backgroundColor: '#555555',
-    paddingVertical: 8,
-    alignContent: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    borderRadius: 18,
+    backgroundColor: "#256CD0",
+    paddingVertical: 14,
+    alignContent: "center",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 4,
   },
   liveCallsBtnText: {
     fontSize: 12,
-    fontWeight: '500',
-    color: 'white',
+    fontWeight: "500",
+    color: "white",
     letterSpacing: -0.8,
   },
   whiteCalendar: {
@@ -965,9 +1012,10 @@ const styles = StyleSheet.create({
     width: 12,
   },
   calendarMockup: {
-    width: '95%',
-    objectFit: 'contain',
+    width: "95%",
+    objectFit: "scale-down",
+    marginVertical: -500,
   },
-})
+});
 
-export default HomeSc
+export default HomeSc;
