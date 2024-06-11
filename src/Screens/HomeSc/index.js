@@ -1,16 +1,5 @@
-import { ScrollView } from "react-native-gesture-handler";
-
 import React, { useEffect, useState } from "react";
-import {
-  Text,
-  View,
-  Image,
-  StyleSheet,
-  Dimensions,
-  Linking,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { Text, View, Image, StyleSheet, Dimensions, Linking, TouchableOpacity, Alert, ScrollView } from "react-native";
 
 import { useDispatch, useSelector } from "react-redux";
 import { appListner, requestUserPermission } from "../Notifications";
@@ -73,16 +62,10 @@ const HomeSc = ({ navigation, route }) => {
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps={"handled"}>
       <View style={styles.header}>
-        <Image
-          source={require("../../assets/images/HomeTopBack.png")}
-          style={styles.headerImage}
-        />
+        <Image source={require("../../assets/images/HomeTopBack.png")} style={styles.headerImage} />
         <View style={styles.headerInfo}>
           <View style={styles.profilePicture}>
-            <Image
-              source={require("../../assets/images/ProfilePicture.png")}
-              style={styles.profileImage}
-            />
+            <Image source={require("../../assets/images/ProfilePicture.png")} style={styles.profileImage} />
           </View>
           <View style={styles.headerContent}>
             <Text style={styles.greeting}>Hello Chris</Text>
@@ -95,10 +78,7 @@ const HomeSc = ({ navigation, route }) => {
 
       <View style={styles.mainFeatures}>
         <View style={styles.buttonPrimary}>
-          <TouchableOpacity
-            onPress={() => console.log("FUXCK")}
-            style={styles.buttonContent}
-          >
+          <TouchableOpacity onPress={() => console.log("FUXCK")} style={styles.buttonContent}>
             <Text style={styles.buttonText}>Watch How To Use App</Text>
             <View style={styles.solidArrowRight} />
           </TouchableOpacity>
@@ -116,25 +96,18 @@ const HomeSc = ({ navigation, route }) => {
           </View>
         </View>
         <View style={styles.frameContainer}>
-          <Image
-            source={require("../../assets/images/homevidthumb.png")}
-            style={styles.vidThumb}
-          />
+          <Image source={require("../../assets/images/homevidthumb.png")} style={styles.vidThumb} />
           <View style={styles.frameContent}>
             <View style={styles.frameContentUpper}>
               <View style={styles.fitnessInfo}>
                 <View style={styles.fitnessIcon}>
-                  <Image
-                    source={require("../../assets/images/homeclockicon.png")}
-                  />
+                  <Image source={require("../../assets/images/homeclockicon.png")} />
                 </View>
                 <Text style={styles.fitnessText}>25min</Text>
               </View>
               <View style={styles.fitnessInfo}>
                 <View style={styles.fitnessIcon}>
-                  <Image
-                    source={require("../../assets/images/homefireicon.png")}
-                  />
+                  <Image source={require("../../assets/images/homefireicon.png")} />
                 </View>
                 <Text style={styles.fitnessText}>412kcal</Text>
               </View>
@@ -150,40 +123,24 @@ const HomeSc = ({ navigation, route }) => {
                 </View>
               </View>
               <View>
-                <Image
-                  source={require("../../assets/images/homeplaybtn.png")}
-                />
+                <Image source={require("../../assets/images/homeplaybtn.png")} />
               </View>
             </View>
           </View>
         </View>
       </View>
-      <View style={styles.fitnessMetrics}>
-        {/* <Text style={styles.fitnessMetricsTitle}>Upcoming Live Calls</Text> */}
-        <TouchableOpacity
-          style={styles.liveCallsBtn}
-          onPress={() => Linking.openURL("https://www.zoom.com/us")}
-        >
-          <Image
-            source={require("../../assets/images/WhiteCalendar.png")}
-            style={styles.whiteCalendar}
-          />
-          <Text style={styles.liveCallsBtnText}>
-            Next Live Call Is In 7 Hours With Jeff Mayweather
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity style={styles.liveCallsBtn} onPress={() => Linking.openURL("https://www.zoom.com/us")}>
+        <Image source={require("../../assets/images/WhiteCalendar.png")} style={styles.whiteCalendar} />
+        <Text style={styles.liveCallsBtnText}>Next Live Call Is In 7 Hours With Jeff Mayweather</Text>
+      </TouchableOpacity>
 
       <View style={styles.fitnessCalendar}>
-        <Image
-          source={require("../../assets/images/CalendarMockup.png")}
-          style={styles.calendarMockup}
-        />
+        <Image source={require("../../assets/images/CalendarMockup.png")} style={styles.calendarMockup} />
         <View
           style={{
             flexDirection: "row",
             position: "absolute",
-            bottom: 60,
+            bottom: "10%",
             gap: 5,
             alignItems: "center",
           }}
@@ -196,9 +153,7 @@ const HomeSc = ({ navigation, route }) => {
               borderRadius: 2,
             }}
           />
-          <Text style={{ fontSize: 12 }}>
-            Call with Jeff Mayweather at 9:00 PM
-          </Text>
+          <Text style={{ fontSize: 12 }}>Call with Jeff Mayweather at 9:00 PM</Text>
         </View>
       </View>
 
@@ -214,20 +169,15 @@ const HomeSc = ({ navigation, route }) => {
             </View>
             <View style={styles.coachBookingText}>
               <View style={styles.coachBookingTextUpper}>
-                <Text style={styles.coachBookingTitle}>
-                  1 on 1 Online Coaching
-                </Text>
+                <Text style={styles.coachBookingTitle}>1 on 1 Online Coaching</Text>
                 <Text style={styles.coachBookingSubtitle}>Custom Coaching</Text>
                 <Text style={styles.coachBookingDesc}>
-                  Bring your training to the next level with one on one custom
-                  coaching
+                  Bring your training to the next level with one on one custom coaching
                 </Text>
               </View>
             </View>
             <View style={styles.coachBookingChevronRight}>
-              <Image
-                source={require("../../assets/images/Graychevronright.png")}
-              />
+              <Image source={require("../../assets/images/Graychevronright.png")} />
             </View>
           </View>
         </View>
@@ -238,22 +188,15 @@ const HomeSc = ({ navigation, route }) => {
             </View>
             <View style={styles.coachBookingText}>
               <View style={styles.coachBookingTextUpper}>
-                <Text style={styles.coachBookingTitle}>
-                  Ultimate Nutrition Plan
-                </Text>
-                <Text style={styles.coachBookingSubtitle}>
-                  Get the top nutrition to fuel your training
-                </Text>
+                <Text style={styles.coachBookingTitle}>Ultimate Nutrition Plan</Text>
+                <Text style={styles.coachBookingSubtitle}>Get the top nutrition to fuel your training</Text>
                 <Text style={styles.coachBookingDesc}>
-                  Created by the nutritionist for Ronda Rousey, Rampage Jackson
-                  & Vitor Belfort
+                  Created by the nutritionist for Ronda Rousey, Rampage Jackson & Vitor Belfort
                 </Text>
               </View>
             </View>
             <View style={styles.coachBookingChevronRight}>
-              <Image
-                source={require("../../assets/images/Graychevronright.png")}
-              />
+              <Image source={require("../../assets/images/Graychevronright.png")} />
             </View>
           </View>
         </View>
@@ -265,19 +208,14 @@ const HomeSc = ({ navigation, route }) => {
             <View style={styles.coachBookingText}>
               <View style={styles.coachBookingTextUpper}>
                 <Text style={styles.coachBookingTitle}>Battle Tested</Text>
-                <Text style={styles.coachBookingSubtitle}>
-                  Post Workout Recovery Drink
-                </Text>
+                <Text style={styles.coachBookingSubtitle}>Post Workout Recovery Drink</Text>
                 <Text style={styles.coachBookingDesc}>
-                  Bring your training to the next level with one on one custom
-                  coaching
+                  Bring your training to the next level with one on one custom coaching
                 </Text>
               </View>
             </View>
             <View style={styles.coachBookingChevronRight}>
-              <Image
-                source={require("../../assets/images/Graychevronright.png")}
-              />
+              <Image source={require("../../assets/images/Graychevronright.png")} />
             </View>
           </View>
         </View>
@@ -288,10 +226,7 @@ const HomeSc = ({ navigation, route }) => {
           <Text style={styles.mealPlanTitle}>My Fitness Pal Stats</Text>
         </View>
         <View style={styles.mealPlanItem}>
-          <Image
-            source={require("../../assets/images/Homesalad.png")}
-            style={styles.homeSalad}
-          />
+          <Image source={require("../../assets/images/Homesalad.png")} style={styles.homeSalad} />
           <View style={styles.mealPlanContent}>
             <View style={styles.mealPlanNutrition}>
               <View style={styles.mealPlanNutritionItem}>
@@ -313,27 +248,21 @@ const HomeSc = ({ navigation, route }) => {
                 <View style={styles.mealPlanInfo}>
                   <View style={styles.mealPlanInfoItem}>
                     <View style={styles.mealPlanInfoIcon}>
-                      <Image
-                        source={require("../../assets/images/homefireicon.png")}
-                      />
+                      <Image source={require("../../assets/images/homefireicon.png")} />
                     </View>
                     <Text style={styles.mealPlanInfoText}>548kcal</Text>
                   </View>
                   <View style={styles.mealPlanInfoDivider} />
                   <View style={styles.mealPlanInfoItem}>
                     <View style={styles.mealPlanInfoIcon}>
-                      <Image
-                        source={require("../../assets/images/homeclockicon.png")}
-                      />
+                      <Image source={require("../../assets/images/homeclockicon.png")} />
                     </View>
                     <Text style={styles.mealPlanInfoText}>20min</Text>
                   </View>
                 </View>
               </View>
               <View>
-                <Image
-                  source={require("../../assets/images/homeorangearrow.png")}
-                />
+                <Image source={require("../../assets/images/homeorangearrow.png")} />
               </View>
             </View>
           </View>
@@ -662,10 +591,6 @@ const styles = StyleSheet.create({
     borderColor: "#FFFFFF",
     transform: [{ rotate: "45deg" }],
   },
-  fitnessMetrics: {
-    paddingHorizontal: 16,
-    marginTop: 15,
-  },
   fitnessMetricsTitle: {
     fontSize: 16,
     fontWeight: "bold",
@@ -679,12 +604,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   fitnessCalendar: {
-    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-
     padding: 10,
-    marginTop: -10,
   },
   fitnessCalendarHeader: {
     flexDirection: "row",
@@ -990,16 +912,14 @@ const styles = StyleSheet.create({
   },
 
   liveCallsBtn: {
-    width: "100%",
-    flex: 1,
     flexDirection: "row",
-    borderRadius: 18,
-    backgroundColor: "#256CD0",
-    paddingVertical: 14,
-    alignContent: "center",
     alignItems: "center",
     justifyContent: "center",
-    gap: 4,
+    borderRadius: 18,
+    backgroundColor: "#256CD0",
+    paddingVertical: 15,
+    gap: 6,
+    marginHorizontal: 16,
   },
   liveCallsBtnText: {
     fontSize: 12,
@@ -1013,8 +933,8 @@ const styles = StyleSheet.create({
   },
   calendarMockup: {
     width: "95%",
-    objectFit: "scale-down",
-    marginVertical: -500,
+    height: Dimensions.get("window").width * 0.9,
+    resizeMode: "contain",
   },
 });
 

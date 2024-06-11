@@ -50,9 +50,7 @@ const WorkoutDetails = () => {
     navigation.navigate("ViewProgram", {
       passData: item,
 
-      url: betweenTwoHandles
-        ? "cont_program/detail_cont_program/"
-        : "program/detail_program/",
+      url: betweenTwoHandles ? "cont_program/detail_cont_program/" : "program/detail_program/",
     });
   };
 
@@ -85,9 +83,7 @@ const WorkoutDetails = () => {
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        Alert.alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        Alert.alert(res?.response?.message, [{ text: "OK", onPress: () => console.log("OK Pressed") }]);
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
@@ -110,9 +106,7 @@ const WorkoutDetails = () => {
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        Alert.alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        Alert.alert(res?.response?.message, [{ text: "OK", onPress: () => console.log("OK Pressed") }]);
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
@@ -133,9 +127,7 @@ const WorkoutDetails = () => {
           programId: selectedItemId,
         },
 
-        route: betweenTwoHandles
-          ? "assignProgram/assign-continuous-program"
-          : "assignProgram/assign_Program",
+        route: betweenTwoHandles ? "assignProgram/assign-continuous-program" : "assignProgram/assign_Program",
         verb: "post",
 
         token: token,
@@ -148,9 +140,7 @@ const WorkoutDetails = () => {
       } else {
         dispatch(setLoader(false));
 
-        Alert.alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        Alert.alert(res?.response?.message, [{ text: "OK", onPress: () => console.log("OK Pressed") }]);
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
@@ -182,9 +172,7 @@ const WorkoutDetails = () => {
       } else {
         dispatch(setLoader(false));
 
-        alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        alert(res?.response?.message, [{ text: "OK", onPress: () => console.log("OK Pressed") }]);
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
@@ -193,9 +181,7 @@ const WorkoutDetails = () => {
 
   useEffect(() => {
     const fetchSelectedItemId = async () => {
-      const latestSelectedItemId = await AsyncStorage.getItem(
-        "latestSelectedItemId"
-      );
+      const latestSelectedItemId = await AsyncStorage.getItem("latestSelectedItemId");
 
       if (latestSelectedItemId) {
         setSelectedItemId(latestSelectedItemId);
@@ -210,9 +196,7 @@ const WorkoutDetails = () => {
     let prevSelectedItems = await AsyncStorage.getItem("selectedItems");
     prevSelectedItems = JSON.parse(prevSelectedItems) || [];
 
-    const index = prevSelectedItems.findIndex(
-      (selectedItem) => selectedItem._id === item._id
-    );
+    const index = prevSelectedItems.findIndex((selectedItem) => selectedItem._id === item._id);
 
     if (index !== -1) {
       prevSelectedItems.splice(index, 1);
@@ -220,10 +204,7 @@ const WorkoutDetails = () => {
       prevSelectedItems.push(item);
     }
 
-    await AsyncStorage.setItem(
-      "selectedItems",
-      JSON.stringify(prevSelectedItems)
-    );
+    await AsyncStorage.setItem("selectedItems", JSON.stringify(prevSelectedItems));
 
     // Update the latest selected program ID in AsyncStorage
     await AsyncStorage.setItem("latestSelectedItemId", item._id);
@@ -342,9 +323,7 @@ const WorkoutDetails = () => {
                   gap: 6,
                 }}
               >
-                <Image
-                  source={require("../../assets/images/homeclockicon.png")}
-                />
+                <Image source={require("../../assets/images/homeclockicon.png")} />
                 <Text
                   style={{
                     color: "white",
@@ -368,9 +347,7 @@ const WorkoutDetails = () => {
                   gap: 6,
                 }}
               >
-                <Image
-                  source={require("../../assets/images/homefireicon.png")}
-                />
+                <Image source={require("../../assets/images/homefireicon.png")} />
                 <Text
                   style={{
                     color: "white",
@@ -418,7 +395,7 @@ const WorkoutDetails = () => {
                     borderRadius: 12,
                   }}
                 >
-                  <View
+                  <Text
                     style={{
                       color: "white",
                       fontWeight: "600",
