@@ -47,7 +47,13 @@ import LearningCenter from "../../Screens/SquatComponet/LearningCenter";
 import WorkoutComplete from "../../Screens/SquatComponet/WorkoutComplete";
 import ResetTimer from "../../Screens/SquatComponet/ResetTimer";
 import Squat from "../../Screens/SquatComponet/Squat";
+
+import AddWorkouts from "../../Screens/Workouts/AddWorkouts";
+import WorkoutExercise from "../../Screens/Workouts/WorkoutExercise";
+
+
 import HTUA from "../../Screens/HTUA";
+
 
 const stack = createNativeStackNavigator();
 const HomeStack = () => {
@@ -349,33 +355,41 @@ const HomeStack = () => {
         component={Squat}
       />
       <stack.Screen
-        options={{
-          headerShown: false,
-        }}
-        name="ChatScreen"
-        component={ChatScreen}
-      />
-      <stack.Screen
-        options={{
-          headerShown: false,
-        }}
-        name="BotAllChatScreen"
-        component={BotAllChatScreen}
-      />
-      <stack.Screen
-        options={{
-          headerShown: false,
-        }}
-        name="CreateChatScreen"
-        component={CreateChatScreen}
-      />
-      <stack.Screen
-        options={{
-          headerShown: false,
-        }}
-        name="TestChatSceen"
-        component={TestChatSceen}
-      />
+                options={{
+                    headerShown: false
+                }}
+                name="ChatScreen"
+                component={ChatScreen}
+            />
+            <stack.Screen
+                options={{
+                    headerShown: false
+                }}
+                name="BotAllChatScreen"
+                component={BotAllChatScreen}
+            />
+            <stack.Screen
+                options={{
+                    headerShown: false
+                }}
+                name="CreateChatScreen"
+                component={CreateChatScreen}
+            />
+            <stack.Screen
+                options={{
+                    headerShown: false
+                }}
+                name="TestChatSceen"
+                component={TestChatSceen}
+            />
+            <stack.Screen
+                options={{
+                    headerShown: false
+                }}
+                name="WorkoutExercise"
+                component={WorkoutExercise}
+            />
+
     </stack.Navigator>
   );
 };

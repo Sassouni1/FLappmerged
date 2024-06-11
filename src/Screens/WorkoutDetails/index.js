@@ -418,7 +418,7 @@ const WorkoutDetails = () => {
                     borderRadius: 12,
                   }}
                 >
-                  <Text
+                  <View
                     style={{
                       color: "white",
                       fontWeight: "600",
@@ -470,7 +470,7 @@ const WorkoutDetails = () => {
                 color: "gray",
               }}
             >
-              (4)
+              {`(${data.length})`}
             </Text>
           </View>
 
@@ -560,6 +560,13 @@ const WorkoutDetails = () => {
                   marginTop: 4,
                 }}
               >
+                <Image
+                  source={require("../../assets/images/workoutsyoga.png")}
+                  style={{
+                    width: 60,
+                    height: 60,
+                  }}
+                />
                 <View
                   style={{
                     flexDirection: "row",
@@ -594,17 +601,63 @@ const WorkoutDetails = () => {
                   <Image
                     source={require("../../assets/images/workoutstopwatchicon.png")}
                     style={{
-                      width: 16,
-                      height: 16,
+                      width: "100%",
+                      backgroundColor: "lightgray",
+                      height: 6,
                     }}
                   />
-                  <Text
+                  <View
                     style={{
                       color: "black",
                     }}
                   >
-                    87%
-                  </Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        gap: 4,
+                        alignItems: "center",
+                        marginTop: 4,
+                      }}
+                    >
+                      <Image
+                        source={require("../../assets/images/workoutdocicon.png")}
+                        style={{
+                          width: 16,
+                          height: 16,
+                        }}
+                      />
+                      <Text
+                        style={{
+                          color: "black",
+                        }}
+                      >
+                        Movement 4
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        gap: 4,
+                        alignItems: "center",
+                        marginTop: 4,
+                      }}
+                    >
+                      <Image
+                        source={require("../../assets/images/workoutstopwatchicon.png")}
+                        style={{
+                          width: 16,
+                          height: 16,
+                        }}
+                      />
+                      <Text
+                        style={{
+                          color: "black",
+                        }}
+                      >
+                        87%
+                      </Text>
+                    </View>
+                  </View>
                 </View>
               </View>
             </View>
