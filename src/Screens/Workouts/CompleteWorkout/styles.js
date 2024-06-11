@@ -41,13 +41,13 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   parameterCon: {
-    color: colors.whiteOp20,
+    color: colors.blackDarkOp,
     fontSize: getFontSize(2),
     marginTop: getFontSize(0.5),
     fontFamily: fonts.URe,
   },
   setName: {
-    color: "white",
+    color: colors.blackOp,
     fontWeight: "700",
     fontSize: getFontSize(2.2),
     fontFamily: fonts.URe,
@@ -75,11 +75,11 @@ export const styles = StyleSheet.create({
     fontSize: getFontSize(1.7),
     position: 'absolute', alignSelf: 'center', top: getHeight(2),
     marginRight: getWidth(0),
-    color: colors.white,
+    color: colors.black2,
     fontFamily: fonts.URe,
   },
   setContainer: {
-    backgroundColor: colors.whiteOp20,
+    backgroundColor: colors.blackDarkOp,
     height: getHeight(6),
     width: getWidth(14),
     alignItems: "center",
@@ -90,7 +90,7 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: getFontSize(1),
-    backgroundColor: colors.greenlight,
+    backgroundColor: colors.orange,
   },
   exerciseParamas: {
     //flexDirection: "row",
@@ -221,7 +221,7 @@ export const styles = StyleSheet.create({
     marginHorizontal: 4,
     fontSize: Platform.OS === "ios" ? getFontSize(5.2) : getFontSize(4),
     fontFamily: fonts.Re,
-    color: colors.white,
+    color: colors.black,
     marginLeft: getWidth(2),
   },
   header: {
@@ -368,7 +368,7 @@ export const styles = StyleSheet.create({
     // paddingBottom:getFontSize(1.5),
     borderRadius: getFontSize(0.5),
     borderWidth: 1,
-    borderColor: colors.gray1,
+    borderColor: colors.blackOp,
     borderStyle: "dashed",
   },
 });

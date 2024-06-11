@@ -24,9 +24,7 @@ export const styles = StyleSheet.create({
     list: {
       marginLeft: 4,
       marginRight: 15,
-   
     },
-  
     image: {
       marginLeft: getFontSize(1),
       width: getWidth(95),
