@@ -71,7 +71,7 @@ const HomeSc = ({ navigation, route }) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} keyboardShouldPersistTaps={"handled"}>
       <View style={styles.header}>
         <Image
           source={require("../../assets/images/HomeTopBack.png")}
@@ -96,7 +96,7 @@ const HomeSc = ({ navigation, route }) => {
       <View style={styles.mainFeatures}>
         <View style={styles.buttonPrimary}>
           <TouchableOpacity
-            onPress={() => navigate.navigate("HTUA")}
+            onPress={() => console.log("FUXCK")}
             style={styles.buttonContent}
           >
             <Text style={styles.buttonText}>Watch How To Use App</Text>

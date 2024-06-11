@@ -95,13 +95,12 @@ export default function Achievements({ navigation }) {
           style={styles.imageBgStyle}
           imageStyle={styles.imageStyle}
         >
-          <TouchableOpacity onPress={onPressBack} style={styles.headerBtnStyle}>
-            <Ionicons
-              name="chevron-back"
-              size={getFontSize(2.5)}
-              color={colors.black}
+          <TouchableOpacity onPress={onPressBack}>
+            <Image
+              source={require("../../assets/images/Monotonechevronleft.png")}
             />
           </TouchableOpacity>
+
           <Text style={styles.achievementStyle}>Achievements</Text>
           <View style={styles.topContainerStyle}>
             <RenderTab title="Leader Board" id={0} />

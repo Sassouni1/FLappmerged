@@ -1,11 +1,22 @@
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useState } from "react";
 import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 // Local Imports
 import GeneralStatusBar from "../../../Components/GeneralStatusBar";
-import { getFontSize, getHeight, getWidth } from "../../../../utils/ResponsiveFun";
+import {
+  getFontSize,
+  getHeight,
+  getWidth,
+} from "../../../../utils/ResponsiveFun";
 import { colors } from "../../../constants/colors";
 import { fonts } from "../../../constants/fonts";
 import CKeyBoardAvoidWrapper from "../../../Components/Common/CKeyBoardAvoidWrapper";
@@ -25,10 +36,6 @@ export default function SkillsTraining({ navigation }) {
   const onPressDetail = () => navigation.navigate("CoachDetail");
 
   const onPressCategory = () => navigation.navigate("Squat");
-
-  const onPressAchievement = () => {
-    navigation.navigate("Achievements");
-  };
 
   const RenderTab = ({ title, id }) => {
     return (
@@ -158,25 +165,33 @@ export default function SkillsTraining({ navigation }) {
         <GeneralStatusBar
           barStyle="light-content"
           hidden={false}
-          backgroundColor={colors.darkGray}
-          translucent={true}
+          translucent={false}
         />
-        <View>
+        <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+          <Image
+            source={require("../../../assets/images/Monotonechevronleft.png")}
+            style={{
+              tintColor: colors.white,
+              height: 30,
+              width: 30,
+              marginLeft: 22,
+              marginTop: 11,
+            }}
+          />
+        </TouchableOpacity>
+        <View style={{ marginTop: 10 }}>
           <Text style={styles.headerTextStyles}>Skills Training</Text>
         </View>
-        <View style={styles.topTabContainer}>
+        {/* <View style={styles.topTabContainer}>
           <RenderTab title="Skill Learning" id={0} />
           <RenderTab title="Skill Workouts" id={1} />
         </View>
         <TouchableOpacity onPress={onPressSearch} style={styles.searchContainerStyle}>
           <Text style={styles.searchInputStyle}>Search Full Database</Text>
           <Entypo name="magnifying-glass" size={getFontSize(3)} color={colors.white} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <CKeyBoardAvoidWrapper>
-        <TouchableOpacity onPress={onPressAchievement}>
-          <Text style={styles.achievementsStyle}>Achievements</Text>
-        </TouchableOpacity>
         <FlatList
           data={[1, 2, 3]}
           renderItem={RenderItem}
@@ -207,16 +222,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   topContainer: {
-    backgroundColor: colors.darkGray,
-    paddingBottom: getWidth(6),
+    backgroundColor: colors.black,
+    paddingTop: getWidth(6),
+    paddingBottom: getWidth(9),
     borderBottomLeftRadius: getWidth(10),
     borderBottomRightRadius: getWidth(10),
   },
   headerTextStyles: {
     color: colors.white,
-    fontSize: getFontSize(3.5),
+    fontSize: getFontSize(4.2),
     fontFamily: fonts.WB,
-    paddingLeft: getWidth(5),
+    paddingLeft: getWidth(3.5),
+    marginTop: 14,
+    fontWeight: "800",
   },
   topTabContainer: {
     flexDirection: "row",
@@ -333,12 +351,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.darkGray1,
     height: getWidth(2),
     width: "70%",
-  },
-  achievementsStyle: {
-    color: colors.orange,
-    fontSize: getFontSize(2.5),
-    fontFamily: fonts.WB,
-    marginLeft: getWidth(5),
-    marginTop: getWidth(3),
   },
 });

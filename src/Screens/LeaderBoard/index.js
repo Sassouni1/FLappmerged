@@ -1,305 +1,295 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from 'react-native';
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { setLoader } from "../../Redux/actions/GernalActions";
-import { useDispatch, useSelector } from "react-redux";
-import { ApiCall } from "../../Services/Apis";
-import HeaderBottom from "../../Components/HeaderBottom";
-import Entypo from "react-native-vector-icons/Entypo";
-import WelcomeScreens from '../WelcomeScreens';
+import {
+  FlatList,
+  Image,
+  ImageBackground,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, { useState } from "react";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
-const Achievements = () => {
-  const navigation = useNavigation();
-  const token = useSelector((state) => state.auth.userToken);
-  const loader = useSelector((state) => state.gernal.loader);
-  const dispatch = useDispatch();
-  const [data, setData] = useState([]);
-  const [dataWeight, setDataWeight] = useState([]);
-  const [dataMessages, setDataMessages] = useState([]);
+//Local imports
+import { colors } from "../../constants/colors";
+import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
+import { fonts } from "../../constants/fonts";
 
-  const [showAll, setShowAll] = useState(false);
-  const topItems = showAll ? data : data.slice(0, 3);
+export default function Achievements({ navigation }) {
+  const [selectedTab, setSelectedTab] = useState(0);
 
-  const [showAllWeight, setShowAllWeight] = useState(false);
-  const topItemsWeight = showAllWeight ? dataWeight : dataWeight.slice(0, 3);
-
-  const [showAllMessages, setShowAllMessages] = useState(false);
-  const topItemsMessages = showAllMessages ? dataMessages : dataMessages.slice(0, 3);
-
-  const getConsistentUser = async () => {
-    try {
-      const res = await ApiCall({
-        route: "assignProgram/maxComplete",
-        verb: "get",
-        token: token,
-      });
-      if (res?.status == "200") {
-        setData(res?.response?.maxComplete);
-        setDataWeight(res?.response?.maxWeight);
-        setDataMessages(res?.response?.maxMessages);
-        dispatch(setLoader(false));
-      } else {
-        console.log("error", res.response);
-        dispatch(setLoader(false));
-        alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
-      }
-    } catch (e) {
-      console.log("api get skill error -- ", e.toString());
-    }
+  const onPressTab = (id) => {
+    setSelectedTab(id);
   };
 
-  const handleRefresh = () => {
-    dispatch(setLoader(true));
-    getConsistentUser();
+  const onPressBack = () => {
+    navigation.goBack();
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      handleRefresh();
-    }, [])
-  );
+  const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
-  const handleNavigateToNewPage = () => {
-    navigation.navigate('WelcomeScreens');
+  const RenderTab = ({ title, id }) => {
+    return (
+      <TouchableOpacity
+        onPress={() => onPressTab(id)}
+        style={[
+          styles.buttonStyle,
+          {
+            backgroundColor: selectedTab !== id ? null : colors.orange,
+          },
+        ]}
+      >
+        <Text style={[styles.fontsStyle]}>{title}</Text>
+      </TouchableOpacity>
+    );
+  };
+
+  const RenderItemAchievements = ({ item }) => {
+    return (
+      <TouchableOpacity style={styles.btnStyle}>
+        <Text numberOfLines={1} style={styles.textContainerStyle}>
+          Achievements
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
+  const RenderItem = ({ item }) => {
+    return (
+      <TouchableOpacity style={styles.container1Style}>
+        <View style={styles.rowContainer}>
+          <Image
+            source={require("../../assets/images/home1.png")}
+            style={styles.imageContainerSTyle}
+          />
+          <View style={{ gap: getHeight(1), flex: 1 }}>
+            <View style={styles.categoryContainer}>
+              <Text style={styles.categoryTextStyle}>#1</Text>
+            </View>
+            <Text style={styles.titleSTyle} numberOfLines={1}>
+              Aaron Ince
+            </Text>
+            <Text style={{ color: colors.grayText1 }}>
+              43 consecutive Days{" "}
+            </Text>
+          </View>
+        </View>
+        <TouchableOpacity>
+          <Ionicons
+            name="chevron-forward-outline"
+            size={getFontSize(3)}
+            color={colors.slateGray}
+          />
+        </TouchableOpacity>
+      </TouchableOpacity>
+    );
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Leader Board</Text>
-        <View style={styles.tabs}>
-          <TouchableOpacity style={styles.tab}>
-            <Text style={styles.tabText}>
-              <Text style={styles.tabTextOutline}>Achievements</Text>
-            </Text>
+    <SafeAreaView style={styles.root}>
+      <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+        <ImageBackground
+          source={require("../../assets/images/home1.png")}
+          style={styles.imageBgStyle}
+          imageStyle={styles.imageStyle}
+        >
+          <TouchableOpacity onPress={onPressBack} style={styles.headerBtnStyle}>
+            <Ionicons
+              name="chevron-back"
+              size={getFontSize(2.5)}
+              color={colors.black}
+            />
           </TouchableOpacity>
-        </View>
-      </View>
-      <ScrollView style={styles.contentBackground} showsVerticalScrollIndicator={false}>
-        <TouchableOpacity onPress={() => navigation.navigate("WelcomeScreens")}>
-          <Text>Navigate</Text>
-        </TouchableOpacity>
-        <View style={styles.content}>
-          <Text style={styles.sectionTitle}>Most Consistent User</Text>
-          <View style={styles.sectionBackground}>
-            <View style={styles.userList}>
-              {topItems.map((item, index) => (
-         <View key={index} style={styles.userItem}>
-  <View>
-    
-    {item?.userImage && item?.userImage !== "" ? (
-      <Image
-        source={{ uri: item?.userImage }}
-        style={styles.userAvatar}
-        resizeMode="cover"
-      />
-    ) : (
-      <Image
-        source={require("../../assets/images/Pimg.jpeg")}
-        style={styles.userAvatar}
-        resizeMode="cover"
-      />
-    )}
-  </View>
-  <View>
-  <View style={{
- borderWidth:1,
- borderColor: 'black',
- borderRadius: 8,
- paddingVertical: 4,
- paddingHorizontal: 8,
- justifyContent: 'center',
- alignItems: 'center',
-width: 50
-  }}>
-      <Text style={styles.userRank}>#{index + 1}</Text>
-    </View>
-    <Text style={styles.userName}>{item.username}</Text>
-    <Text style={styles.userDays}>{item?.totalCompletedExercises} consecutive Days</Text>
-  </View>
-</View>
-              ))}
-            </View>
-            <TouchableOpacity onPress={() => setShowAll(!showAll)} style={styles.seeAllButton}>
-              <Text style={styles.seeAllButtonText}>{showAll ? 'See Less' : 'See All'}</Text>
-            </TouchableOpacity>
+          <Text style={styles.achievementStyle}>Achievements</Text>
+          <View style={styles.topContainerStyle}>
+            <RenderTab title="Leader Board" id={0} />
+            <RenderTab title="Achievements" id={1} />
           </View>
-
-          <Text style={styles.sectionTitle}>Heaviest Squat</Text>
-          <View style={styles.sectionBackground}>
-            <View style={styles.userList}>
-              {topItemsWeight.map((item, index) => (
-                <View key={index} style={styles.userItem}>
-                <View>
-                  
-                  <Image
-                    source={
-                      item?.userImage && item?.userImage !== ""
-                        ? { uri: item?.userImage }
-                        : require("../../assets/images/Pimg.jpeg")
-                    }
-                    style={styles.userAvatar}
-                    resizeMode="cover"
-                  />
-                </View>
-                <View style={styles.userInfo}>
-                <View>
-                    <Text style={styles.userRank}>#{index + 1}</Text>
-                  </View>
-                  <Text style={styles.userName}>{item.username}</Text>
-                  <Text style={styles.userDays}>{item?.totalCompletedExercises} consecutive Days</Text>
-                </View>
+        </ImageBackground>
+        <View style={styles.mainContainer}>
+          {selectedTab === 0 ? (
+            <View style={styles.mostConsistentUserStyle}>
+              <Text style={styles.userFontStyle}>Most Consistent User</Text>
+              <FlatList
+                data={[1, 2, 3]}
+                renderItem={RenderItem}
+                keyExtractor={(item) => item.toString()}
+                scrollEnabled={false}
+              />
+              <TouchableOpacity>
+                <Text style={styles.seeAllTextStyle}>See All</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View>
+              <Text style={styles.sectionTextStyle}>Workouts</Text>
+              <View style={styles.workoutsStyle}>
+                {data.map((item, index) => (
+                  <RenderItemAchievements key={index} item={item} />
+                ))}
               </View>
-              ))}
+              <Text style={styles.sectionTextStyle}>Programs</Text>
+              <View style={styles.workoutsStyle}>
+                {data.map((item, index) => (
+                  <RenderItemAchievements key={index} item={item} />
+                ))}
+              </View>
             </View>
-            <TouchableOpacity onPress={() => setShowAllWeight(!showAllWeight)} style={styles.seeAllButton}>
-              <Text style={styles.seeAllButtonText}>{showAllWeight ? 'See Less' : 'See All'}</Text>
-            </TouchableOpacity>
-          </View>
-
-          <Text style={styles.sectionTitle}>Most Messages Received</Text>
-          <View style={styles.sectionBackground}>
-            <View style={styles.userList}>
-              {topItemsMessages.map((item, index) => (
-                <View key={index} style={styles.userItem}>
-                  <Text style={styles.userRank}>#{index + 1}</Text>
-                  {item?.userImage && item?.userImage != "" ? (
-                    <Image
-                      source={{ uri: item?.userImage }}
-                      style={styles.userAvatar}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <Image
-                      source={require("../../assets/images/Pimg.jpeg")}
-                      style={styles.userAvatar}
-                      resizeMode="cover"
-                    />
-                  )}
-                  <View style={styles.userInfo}>
-                    <Text style={styles.userName}>{item.username}</Text>
-                    <Text style={styles.userDays}>{item?.totalMessages} Messages</Text>
-                  </View>
-                </View>
-              ))}
-            </View>
-            <TouchableOpacity onPress={() => setShowAllMessages(!showAllMessages)} style={styles.seeAllButton}>
-              <Text style={styles.seeAllButtonText}>{showAllMessages ? 'See Less' : 'See All'}</Text>
+          )}
+          <View style={styles.mostConsistentUserStyle}>
+            <Text style={styles.userFontStyle}>Heaviest Squat</Text>
+            <FlatList
+              data={[1, 2, 3]}
+              renderItem={RenderItem}
+              keyExtractor={(item) => item.toString()}
+              scrollEnabled={false}
+            />
+            <TouchableOpacity>
+              <Text style={styles.seeAllTextStyle}>See All</Text>
             </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
+  root: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0)',
+    backgroundColor: colors.white,
   },
-  header: {
-    alignItems: 'center',
-    paddingVertical: 20,
-    paddingHorizontal: 20,
+  imageBgStyle: {
+    height: getHeight(30),
+    padding: getWidth(6),
+    justifyContent: "space-between",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#FFFFFF',
+  imageStyle: {
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
   },
-  tabs: {
-    flexDirection: 'row',
+  headerBtnStyle: {
+    padding: getWidth(2),
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    width: getWidth(10),
   },
-  tab: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0)',
-    borderWidth: 2,
-    borderColor: '#FF8000',
+  achievementStyle: {
+    fontSize: getFontSize(4),
+    fontFamily: fonts.WB,
+    color: colors.white,
   },
-  tabText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+  buttonStyle: {
+    padding: getWidth(3),
+    borderRadius: 14,
+    width: getWidth(42),
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: colors.orange,
+    marginVertical: getHeight(1),
   },
-  tabTextOutline: {
-    color: '#FF8000',
-  },
-  contentBackground: {
-    backgroundColor: '#FFFFFF',
-    flex: 1,
-    marginTop: 20,
-  },
-  content: {
-    paddingHorizontal: 20,
-    paddingTop: 30,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#111214',
-    textAlign: 'center',
-  },
-  sectionBackground: {
-    backgroundColor: '#F2F2F2',
-    borderRadius: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-    marginBottom: 20,
-  },
-  userList: {
-    marginBottom: 10,
-  },
-  userItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    marginBottom: 10,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 10,
-  },
-  userRank: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  userAvatar: {
-    width: 40,
-    height: 40,
+  topContainerStyle: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+
     borderRadius: 10,
-    marginRight: 10,
   },
-  userInfo: {
-    flexDirection: 'column',
-   
+  fontsStyle: {
+    fontSize: getFontSize(2),
+    fontFamily: fonts.WB,
+    color: colors.white,
   },
-  userName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
-    paddingTop: 10,
+  mostConsistentUserStyle: {
+    backgroundColor: colors.paleGray,
+    padding: getWidth(3),
+    borderRadius: 40,
   },
-  userDays: {
-    fontSize: 14,
-    color: '#676C75',
+  mainContainer: {
+    paddingHorizontal: getWidth(2),
+    paddingVertical: getHeight(3),
+    gap: getHeight(3),
   },
-  seeAllButton: {
-    alignSelf: 'flex-end',
-    marginTop: 10,
-    backgroundColor: 'rgba(0, 0, 0, 0)',
+  userFontStyle: {
+    fontSize: getFontSize(2.3),
+    fontFamily: fonts.WB,
+    color: colors.black,
+    textAlign: "center",
+    marginVertical: getHeight(1),
   },
-  seeAllButtonText: {
-    fontSize: 14,
-    color: '#676C75',
-    },
-
+  container1Style: {
+    backgroundColor: colors.white,
+    marginVertical: getWidth(1),
+    marginHorizontal: getWidth(3),
+    borderRadius: 32,
+    padding: getWidth(4),
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  rowContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+  },
+  imageContainerSTyle: {
+    width: getWidth(26),
+    height: getWidth(26),
+    borderRadius: getWidth(4),
+    marginRight: getWidth(2),
+  },
+  categoryContainer: {
+    borderColor: colors.slateGray,
+    borderWidth: 1,
+    borderRadius: 6,
+    paddingVertical: getWidth(0.6),
+    paddingHorizontal: getWidth(2.2),
+    alignSelf: "flex-start",
+  },
+  categoryTextStyle: {
+    color: colors.black,
+    fontSize: getFontSize(1.7),
+    fontFamily: fonts.WMe,
+  },
+  titleSTyle: {
+    color: colors.black,
+    fontSize: getFontSize(2.5),
+    fontFamily: fonts.WB,
+  },
+  seeAllTextStyle: {
+    fontSize: getFontSize(1.7),
+    fontFamily: fonts.WMe,
+    textAlign: "right",
+    marginRight: getWidth(5),
+    color: colors.grayText1,
+  },
+  sectionTextStyle: {
+    fontSize: getFontSize(2.3),
+    fontFamily: fonts.WB,
+    color: colors.black,
+    padding: getWidth(2.4),
+  },
+  workoutsStyle: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    padding: getWidth(1),
+    rowGap: getWidth(3),
+    marginTop: getHeight(1),
+    marginBottom: getHeight(2),
+  },
+  btnStyle: {
+    backgroundColor: colors.orange,
+    borderRadius: 32,
+    padding: getWidth(1),
+    width: "23%",
+  },
+  textContainerStyle: {
+    color: colors.white,
+    fontSize: getFontSize(1.5),
+    fontFamily: fonts.WB,
+  },
 });
-
-export default Achievements;

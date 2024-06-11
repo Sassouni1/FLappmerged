@@ -50,13 +50,22 @@ const Login = ({ navigation }) => {
   const changeHandler = (type, value) => setState({ ...state, [type]: value });
   return (
     <View style={styles.container}>
-      <Image source={require('../../../assets/images/jakajake.jpg')} style={styles.backgroundImage} />
-      <Image source={require('../../../assets/images/22212.png')} style={styles.backgroundImageCover} />
-      
+      <Image
+        source={require("../../../assets/images/jakajake.jpg")}
+        style={styles.backgroundImage}
+      />
+      <Image
+        source={require("../../../assets/images/22212.png")}
+        style={styles.backgroundImageCover}
+      />
+
       <View style={styles.content}>
         <View style={styles.frame}>
           <View style={styles.iconContainer}>
-            <Image source={require('../../../assets/images/Frame.png')} style={styles.icon} />
+            <Image
+              source={require("../../../assets/images/Frame.png")}
+              style={styles.icon}
+            />
           </View>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Sign In To Fight Life</Text>
@@ -69,10 +78,15 @@ const Login = ({ navigation }) => {
             <Text style={styles.label}>Email Address</Text>
             <View style={styles.inputContent}>
               <View style={styles.inputText}>
-                <Image source={require('../../../assets/images/Monotoneemail.png')} style={styles.inputIcon} />
+                <Image
+                  source={require("../../../assets/images/Monotoneemail.png")}
+                  style={styles.inputIcon}
+                />
                 <TextInput
                   mode="outlined"
-                  label={<Text style={styles.inputPlaceholder}>Email Address</Text>}
+                  label={
+                    <Text style={styles.inputPlaceholder}>Email Address</Text>
+                  }
                   theme={{ roundness: 19 }}
                   outlineColor="#F3F3F4"
                   activeOutlineColor="#F3F3F4"
@@ -102,7 +116,10 @@ const Login = ({ navigation }) => {
             <Text style={styles.label}>Password</Text>
             <View style={styles.inputContent}>
               <View style={styles.inputText}>
-                <Image source={require('../../../assets/images/Monotonelockpassword.png')} style={styles.inputIcon} />
+                <Image
+                  source={require("../../../assets/images/Monotonelockpassword.png")}
+                  style={styles.inputIcon}
+                />
                 <TextInput
                   mode="outlined"
                   label={<Text style={styles.inputPlaceholder}>Password</Text>}
@@ -156,20 +173,32 @@ const Login = ({ navigation }) => {
           <TouchableOpacity style={styles.button} onPress={() => login()}>
             <View style={styles.buttonContent}>
               <Text style={styles.buttonText}>Sign In</Text>
-              <Image source={require('../../../assets/images/Monotonearrowright.png')} style={styles.buttonIcon} />
+              <Image
+                source={require("../../../assets/images/Monotonearrowright.png")}
+                style={styles.buttonIcon}
+              />
             </View>
           </TouchableOpacity>
         </View>
 
         <View style={styles.socialContainer}>
           <TouchableOpacity style={styles.socialButton}>
-            <Image source={require('../../../assets/images/SocialIcons.png')} style={styles.socialIcon} />
+            <Image
+              source={require("../../../assets/images/SocialIcons.png")}
+              style={styles.socialIcon}
+            />
           </TouchableOpacity>
           <TouchableOpacity style={styles.socialButton}>
-            <Image source={require('../../../assets/images/Socialicons-2.png')} style={styles.socialIcon} />
+            <Image
+              source={require("../../../assets/images/Socialicons-2.png")}
+              style={styles.socialIcon}
+            />
           </TouchableOpacity>
           <TouchableOpacity style={styles.socialButton}>
-            <Image source={require('../../../assets/images/Vector.png')} style={styles.socialIcon} />
+            <Image
+              source={require("../../../assets/images/Vector.png")}
+              style={styles.socialIcon}
+            />
           </TouchableOpacity>
         </View>
 
@@ -184,26 +213,26 @@ const Login = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   backgroundImage: {
-    position: 'absolute',
+    position: "absolute",
     top: -285,
     left: 0,
     right: 0,
     bottom: 0,
-    width: '100%',
-    resizeMode: 'contain',
+    width: "100%",
+    resizeMode: "contain",
   },
   backgroundImageCover: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    width: '100%',
-    height: '38%',
-    resizeMode: 'cover',
+    width: "100%",
+    height: "49%",
+    resizeMode: "cover",
   },
   content: {
     flex: 1,
@@ -211,11 +240,11 @@ const styles = StyleSheet.create({
     paddingTop: 130,
   },
   frame: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 48,
   },
   iconContainer: {
-    backgroundColor: '#FF8036',
+    backgroundColor: "#FF8036",
     borderRadius: 16,
     padding: 8,
     marginBottom: 16,
@@ -225,111 +254,111 @@ const styles = StyleSheet.create({
     height: 32,
   },
   titleContainer: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   title: {
-    fontFamily: 'Work Sans',
-    fontWeight: '700',
+    fontFamily: "Work Sans",
+    fontWeight: "700",
     fontSize: 30,
     lineHeight: 38,
-    textAlign: 'center',
+    textAlign: "center",
     letterSpacing: -0.01,
-    color: '#111214',
+    color: "#111214",
     marginBottom: 8,
   },
   subtitle: {
-    fontFamily: 'Work Sans',
-    fontWeight: '400',
+    fontFamily: "Work Sans",
+    fontWeight: "400",
     fontSize: 16,
     lineHeight: 26,
-    textAlign: 'center',
+    textAlign: "center",
     letterSpacing: -0.003,
-    color: '#393C43',
+    color: "#393C43",
   },
   formContainer: {
     marginBottom: 48,
-    paddingTop: 10,
+    marginTop: -10,
   },
   inputContainer: {
     marginBottom: 24,
   },
   label: {
-    fontFamily: 'Work Sans',
-    fontWeight: '700',
+    fontFamily: "Work Sans",
+    fontWeight: "700",
     fontSize: 14,
     lineHeight: 16,
     letterSpacing: -0.002,
-    color: '#111214',
+    color: "#111214",
     marginBottom: 8,
   },
   inputContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F3F3F4',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F3F3F4",
     borderRadius: 19,
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 5,
   },
   inputText: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   inputPlaceholder: {
-    fontFamily: 'Work Sans',
-    fontWeight: '500',
+    fontFamily: "Work Sans",
+    fontWeight: "500",
     fontSize: 16,
     lineHeight: 19,
     letterSpacing: -0.003,
-    color: '#393C43',
+    color: "#393C43",
   },
   input: {
     flex: 1,
-    fontFamily: 'Work Sans',
+    fontFamily: "Work Sans",
     fontSize: 16,
-    color: '#393C43',
-    backgroundColor: 'transparent',
+    color: "#393C43",
+    backgroundColor: "transparent",
     borderWidth: 0,
     paddingHorizontal: 0,
   },
-  
+
   errorText: {
-    fontFamily: 'Work Sans',
+    fontFamily: "Work Sans",
     fontSize: 12,
-    color: 'red',
+    color: "red",
     marginTop: 4,
   },
   forgotPasswordButton: {
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     marginBottom: 24,
   },
   forgotPasswordText: {
-    fontFamily: 'Work Sans',
-    fontWeight: '500',
+    fontFamily: "Work Sans",
+    fontWeight: "500",
     fontSize: 14,
     lineHeight: 16,
     letterSpacing: -0.002,
-    color: '#FF8036',
-    textDecorationLine: 'underline',
+    color: "#FF8036",
+    textDecorationLine: "underline",
   },
   button: {
-    backgroundColor: '#111214',
+    backgroundColor: "#111214",
     borderRadius: 19,
     paddingVertical: 16,
     paddingHorizontal: 24,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   buttonText: {
-    fontFamily: 'Work Sans',
-    fontWeight: '600',
+    fontFamily: "Work Sans",
+    fontWeight: "600",
     fontSize: 16,
     lineHeight: 19,
     letterSpacing: -0.003,
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     marginRight: 16,
   },
   buttonIcon: {
@@ -337,13 +366,13 @@ const styles = StyleSheet.create({
     height: 24,
   },
   socialContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginBottom: 48,
   },
   socialButton: {
     borderWidth: 1,
-    borderColor: '#BABBBE',
+    borderColor: "#BABBBE",
     borderRadius: 19,
     padding: 8,
     marginHorizontal: 4,
@@ -353,15 +382,15 @@ const styles = StyleSheet.create({
     height: 24,
   },
   footerContainer: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   footerText: {
-    fontFamily: 'Work Sans',
-    fontWeight: '500',
+    fontFamily: "Work Sans",
+    fontWeight: "500",
     fontSize: 14,
     lineHeight: 16,
     letterSpacing: -0.002,
-    color: '#676C75',
+    color: "#676C75",
     marginBottom: 16,
   },
 });

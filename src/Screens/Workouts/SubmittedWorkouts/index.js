@@ -89,7 +89,7 @@ const SubmittedWorkouts = ({ route }) => {
       <View
         style={{
           ...styles.heading,
-          backgroundColor: "#000000",
+          backgroundColor: "#55555",
           height: getHeight(7.5),
         }}
       >

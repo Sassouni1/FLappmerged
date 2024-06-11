@@ -1,34 +1,57 @@
 import {
-  View,
+  Dimensions,
+  ImageBackground,
+  Platform,
+  SafeAreaView,
+  SectionList,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  ScrollView,
-  Platform,
- } from "react-native";
- import React, { useEffect, useState } from "react";
- import { colors } from "../../constants/colors";
- import Entypo from "react-native-vector-icons/Entypo";
- import { getHeight, getWidth, getFontSize } from "../../../utils/ResponsiveFun";
- import { Ellipse } from "../../assets/images";
- import { styles } from "./styles";
- import { useFocusEffect, useNavigation } from "@react-navigation/native";
- import GeneralStatusBar from "../../Components/GeneralStatusBar";
- import HeaderBottom from "../../Components/HeaderBottom";
- import ReactNativeCalendarStrip from "react-native-calendar-strip";
- import { ApiCall } from "../../Services/Apis";
- import { useDispatch, useSelector } from "react-redux";
- import { setLoader } from "../../Redux/actions/GernalActions";
- import { LineChart } from "react-native-chart-kit";
- import SelectDropdown from "react-native-select-dropdown";
- import CircularProgress from "../../Components/CircularProgress";
- 
- 
- const Activity = () => {
-  const navigation = useNavigation();
+  View,
+} from "react-native";
+import React, { memo, useCallback, useMemo, useState } from "react";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { BarChart, LineChart } from "react-native-gifted-charts";
+import Entypo from "react-native-vector-icons/Entypo";
+import MultiSLider from "@ptomasroos/react-native-multi-slider";
+import { Dropdown } from "react-native-element-dropdown";
+
+//Local Imports
+import { colors } from "../../constants/colors";
+import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
+import { fonts } from "../../constants/fonts";
+import { Heartbeat } from "../../assets/images";
+import { useDispatch, useSelector } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
+import { setLoader } from "../../Redux/actions/GernalActions";
+import { ApiCall } from "../../Services/Apis";
+import SelectDropdown from "react-native-select-dropdown";
+
+export default function TrainingStats({ navigation }) {
+  const [sliderValue, setSliderValue] = React.useState(200);
+  const [value, setValue] = React.useState("");
+
   const dispatch = useDispatch();
   const [date, setDate] = useState(new Date());
- 
- 
+  const { height, width } = Dimensions.get("window");
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setSelectedTypes("Last 7 Days");
+      dispatch(setLoader(true));
+      // getSingleExcercise(date);
+      // exerciseWeekProgress(date);
+      getMessagesProgress();
+      exerciseProgress();
+      getWeightProgress();
+      getCaloriesProgress();
+    }, [])
+  );
+
+  const onPressBack = () => {
+    navigation.goBack();
+  };
+
   // all progress states
   const [weeklyProgress, setWeeklyProgress] = useState({
     Monday: 0,
@@ -62,8 +85,7 @@ import {
     Dec: 0,
   });
   const [weekDataProgress, setWeekDataProgress] = useState({});
- 
- 
+
   // all messages progress states
   const [messagesProgress, setMessagesProgress] = useState({
     Monday: 0,
@@ -98,8 +120,7 @@ import {
     Nov: 0,
     Dec: 0,
   });
- 
- 
+
   // all weight progress states
   const [weightProgress, setWeightProgress] = useState({
     Monday: 0,
@@ -132,8 +153,7 @@ import {
     Nov: 0,
     Dec: 0,
   });
- 
- 
+
   // all calories progress states
   const [caloriesProgress, setCaloriesProgress] = useState({
     Monday: 0,
@@ -168,8 +188,7 @@ import {
     Nov: 0,
     Dec: 0,
   });
- 
- 
+
   // select type states by dropdown
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [allTypes, setAllTypes] = useState([
@@ -179,22 +198,11 @@ import {
     "Last 6 Months",
     "All Time",
   ]);
- 
- 
+
   const [assigWorkout, setAssigWorkout] = useState([]);
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
- 
- 
-  // calender apis call fun
-  const handleDateChange = (selectedDate) => {
-    setDate(selectedDate);
-    dispatch(setLoader(true));
-    getSingleExcercise(selectedDate);
-    exerciseWeekProgress(selectedDate);
-  };
- 
- 
+
   // all exercise progress apis functions
   const exerciseProgress = async () => {
     try {
@@ -206,8 +214,7 @@ import {
           givenDate: new Date(),
         },
       });
- 
- 
+
       if (res?.status == "200") {
         setWeeklyProgress(res?.response?.weeklyProgress);
         dispatch(setLoader(false));
@@ -219,8 +226,7 @@ import {
       console.log("api get user_progress error -- ", e.toString());
     }
   };
- 
- 
+
   const getExerciseMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -240,8 +246,7 @@ import {
       console.log("api gettttt monthly_progress error -- ", e.toString());
     }
   };
- 
- 
+
   const getExerciseThreeMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -260,8 +265,7 @@ import {
       console.log("api get last_three_months_progress error -- ", e.toString());
     }
   };
- 
- 
+
   const getExerciseSixMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -280,8 +284,7 @@ import {
       console.log("api get last_six_months_progress error -- ", e.toString());
     }
   };
- 
- 
+
   const getExerciseAllMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -300,11 +303,8 @@ import {
       console.log("api gettt all_months_progress error -- ", e.toString());
     }
   };
- 
- 
+
   // all messages progress apis functions
- 
- 
   const getMessagesProgress = async () => {
     try {
       const res = await ApiCall({
@@ -324,8 +324,7 @@ import {
       console.log("api get totalMessages error -- ", e.toString());
     }
   };
- 
- 
+
   const getMessagesMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -345,8 +344,7 @@ import {
       console.log("api get monthlyMessages error -- ", e.toString());
     }
   };
- 
- 
+
   const getMessagesThreeMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -369,8 +367,7 @@ import {
       );
     }
   };
- 
- 
+
   const getMessagesSixMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -390,8 +387,7 @@ import {
       console.log("api get last_six_monthly_messages error -- ", e.toString());
     }
   };
- 
- 
+
   const getMessagesAllMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -411,11 +407,8 @@ import {
       console.log("api get all_monthly_messages error -- ", e.toString());
     }
   };
- 
- 
+
   // all weight progress apis functions
- 
- 
   const getWeightProgress = async () => {
     try {
       const res = await ApiCall({
@@ -435,8 +428,7 @@ import {
       console.log("api get weeklyWeight error -- ", e.toString());
     }
   };
- 
- 
+
   const getWeightMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -445,8 +437,7 @@ import {
         token: token,
       });
       console.log("response of getWeightMonthProgress", res?.response);
- 
- 
+
       if (res?.status == "200") {
         setMonthlyWeightProgess(res?.response?.monthlyWeight);
         dispatch(setLoader(false));
@@ -458,8 +449,7 @@ import {
       console.log("api get monthlyWeight error -- ", e.toString());
     }
   };
- 
- 
+
   const getWeightThreeMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -479,8 +469,7 @@ import {
       console.log("api get lastThreeMonthWeight error -- ", e.toString());
     }
   };
- 
- 
+
   const getWeightSixMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -489,8 +478,7 @@ import {
         token: token,
       });
       console.log("response of getWeightSixMonthProgress", res?.response);
- 
- 
+
       if (res?.status == "200") {
         setWeightProgressSixMonth(res?.response?.monthlyWeight);
         dispatch(setLoader(false));
@@ -502,8 +490,7 @@ import {
       console.log("api get lastSixMonthWeight error -- ", e.toString());
     }
   };
- 
- 
+
   const getWeightAllMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -512,8 +499,7 @@ import {
         token: token,
       });
       console.log("response of getWeightAllMonthProgress", res?.response);
- 
- 
+
       if (res?.status == "200") {
         setWeightProgressAllMonth(res?.response?.monthlyWeight);
         dispatch(setLoader(false));
@@ -525,11 +511,8 @@ import {
       console.log("api get allMonthsWeight error -- ", e.toString());
     }
   };
- 
- 
+
   // all Calories progress apis functions
- 
- 
   const getCaloriesProgress = async () => {
     try {
       const res = await ApiCall({
@@ -552,8 +535,7 @@ import {
       console.log("api get weeklyWeight error -- ", e.toString());
     }
   };
- 
- 
+
   const getCaloriesMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -562,8 +544,7 @@ import {
         token: token,
       });
       console.log("response of weight", res?.response);
- 
- 
+
       if (res?.status == "200") {
         setMonthlyCaloriesProgess(res?.response?.weeklyProgress);
         dispatch(setLoader(false));
@@ -575,8 +556,7 @@ import {
       console.log("api get monthlyWeight error -- ", e.toString());
     }
   };
- 
- 
+
   const getCaloriesThreeMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -596,8 +576,7 @@ import {
       console.log("api get lastThreeMonthWeight error -- ", e.toString());
     }
   };
- 
- 
+
   const getCaloriesSixMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -606,8 +585,7 @@ import {
         token: token,
       });
       console.log("response of weightHJJH", res?.response);
- 
- 
+
       if (res?.status == "200") {
         setCaloriesProgressSixMonth(res?.response?.monthlyProgress);
         dispatch(setLoader(false));
@@ -619,8 +597,7 @@ import {
       console.log("api get lastSixMonthWeight error -- ", e.toString());
     }
   };
- 
- 
+
   const getCaloriesAllMonthProgress = async () => {
     try {
       const res = await ApiCall({
@@ -629,8 +606,7 @@ import {
         token: token,
       });
       console.log("response of weightJKJK", res?.response);
- 
- 
+
       if (res?.status == "200") {
         setCaloriesProgressAllMonth(res?.response?.yearlyProgress);
         dispatch(setLoader(false));
@@ -642,11 +618,8 @@ import {
       console.log("api get allMonthsWeight error -- ", e.toString());
     }
   };
- 
- 
+
   // all calender progress apis functions
- 
- 
   const getSingleExcercise = async (selectedDate) => {
     try {
       const res = await ApiCall({
@@ -656,8 +629,7 @@ import {
         verb: "get",
         token: token,
       });
- 
- 
+
       if (res?.status == "200") {
         setAssigWorkout(res?.response?.Workout[0]);
         dispatch(setLoader(false));
@@ -670,8 +642,7 @@ import {
       console.log("api get skill error -- ", e.toString());
     }
   };
- 
- 
+
   const exerciseWeekProgress = async (selectedDate) => {
     try {
       const res = await ApiCall({
@@ -682,8 +653,7 @@ import {
           givenDate: selectedDate,
         },
       });
- 
- 
+
       if (res?.status == "200") {
         setWeekDataProgress(res?.response?.weeklyProgress);
         dispatch(setLoader(false));
@@ -695,21 +665,7 @@ import {
       console.log("api get skill error -- ", e.toString());
     }
   };
- 
- 
-  useFocusEffect(
-    React.useCallback(() => {
-      dispatch(setLoader(true));
-      getSingleExcercise(date);
-      exerciseWeekProgress(date);
-      getMessagesProgress();
-      exerciseProgress();
-      getWeightProgress();
-      getCaloriesProgress();
-    }, [])
-  );
- 
- 
+
   // logic for calender days changing
   let weekProgress = {
     Monday: weekDataProgress?.Monday,
@@ -720,8 +676,7 @@ import {
     Saturday: weekDataProgress?.Saturday,
     Sunday: weekDataProgress?.Sunday,
   };
- 
- 
+
   let customDatesStyles = [];
   const startDate = new Date(date);
   const endDate = new Date(date);
@@ -732,8 +687,7 @@ import {
     startDate.setDate(startDate.getDate() - diff);
   }
   endDate.setDate(startDate.getDate() + 6);
- 
- 
+
   const dayOfWeekMap = {
     0: "Sunday",
     1: "Monday",
@@ -743,19 +697,16 @@ import {
     5: "Friday",
     6: "Saturday",
   };
- 
- 
+
   const selectedDayOfWeek = new Date(date).getDay();
   const selectedDayName = dayOfWeekMap[selectedDayOfWeek];
- 
- 
+
   for (let i = 0; i < 7; i++) {
     const currentDate = new Date(startDate);
     currentDate.setDate(startDate.getDate() + i);
     const dayOfWeek = currentDate.getDay();
     const dayName = dayOfWeekMap[dayOfWeek];
- 
- 
+
     if (dayName == selectedDayName) {
       customDatesStyles.push({
         startDate: currentDate,
@@ -871,8 +822,7 @@ import {
       }
     }
   }
- 
- 
+
   // select api function from dropdown
   const toggleTypeSelection = (selectedType) => {
     if (selectedType == "Last 7 Days") {
@@ -909,11 +859,9 @@ import {
       console.log("NO select type selected");
     }
   };
- 
- 
+
   // three month names and their percentages of messages
- 
- 
+
   let monthNameOfThreeMonth = [];
   if (messagesProgressThreeMonth.length > 0) {
     monthNameOfThreeMonth = messagesProgressThreeMonth.map(
@@ -922,8 +870,7 @@ import {
   } else {
     monthNameOfThreeMonth = [0, 0, 0];
   }
- 
- 
+
   let percentageOfThreeMonth = [];
   if (messagesProgressThreeMonth.length > 0) {
     percentageOfThreeMonth = messagesProgressThreeMonth.map(
@@ -932,19 +879,16 @@ import {
   } else {
     percentageOfThreeMonth = [0, 0, 0];
   }
- 
- 
+
   // Six month names and their percentages of messages
- 
- 
+
   let monthNameOfSixMonth = [];
   if (messagesProgressSixMonth.length > 0) {
     monthNameOfSixMonth = messagesProgressSixMonth.map((item) => item.month);
   } else {
     monthNameOfSixMonth = [0, 0, 0, 0, 0, 0];
   }
- 
- 
+
   let percentageOfSixMonth = [];
   if (messagesProgressSixMonth.length > 0) {
     percentageOfSixMonth = messagesProgressSixMonth.map(
@@ -953,8 +897,7 @@ import {
   } else {
     percentageOfSixMonth = [0, 0, 0, 0, 0, 0];
   }
- 
- 
+
   // progress of three month of progress
   let monthNameOfThreeMonthProgress = [];
   if (progressThreeMonth.length > 0) {
@@ -964,8 +907,7 @@ import {
   } else {
     monthNameOfThreeMonthProgress = [0, 0, 0];
   }
- 
- 
+
   let percentageOfThreeMonthProgress = [];
   if (progressThreeMonth.length > 0) {
     percentageOfThreeMonthProgress = progressThreeMonth.map(
@@ -974,19 +916,15 @@ import {
   } else {
     percentageOfThreeMonthProgress = [0, 0, 0];
   }
- 
- 
+
   // Six month names progress and their percentages of progress
- 
- 
   let monthNameOfSixMonthProgress = [];
   if (progressSixMonth.length > 0) {
     monthNameOfSixMonthProgress = progressSixMonth.map((item) => item.month);
   } else {
     monthNameOfSixMonthProgress = [0, 0, 0, 0, 0, 0];
   }
- 
- 
+
   let percentageOfSixMonthProgress = [];
   if (progressSixMonth.length > 0) {
     percentageOfSixMonthProgress = progressSixMonth.map(
@@ -995,11 +933,9 @@ import {
   } else {
     percentageOfSixMonthProgress = [0, 0, 0, 0, 0, 0];
   }
- 
- 
+
   // three month names and their percentages of weight
- 
- 
+
   let monthNameOfThreeMonthWeight = [];
   if (weightProgressThreeMonth.length > 0) {
     monthNameOfThreeMonthWeight = weightProgressThreeMonth.map(
@@ -1008,8 +944,7 @@ import {
   } else {
     monthNameOfThreeMonthWeight = [0, 0, 0];
   }
- 
- 
+
   let percentageOfThreeMonthWeight = [];
   if (weightProgressThreeMonth.length > 0) {
     percentageOfThreeMonthWeight = weightProgressThreeMonth.map(
@@ -1018,11 +953,9 @@ import {
   } else {
     percentageOfThreeMonthWeight = [0, 0, 0];
   }
- 
- 
+
   // Six month names and their percentages of weight
- 
- 
+
   let monthNameOfSixMonthWeight = [];
   if (weightProgressSixMonth.length > 0) {
     monthNameOfSixMonthWeight = weightProgressSixMonth.map(
@@ -1031,8 +964,7 @@ import {
   } else {
     monthNameOfSixMonthWeight = [0, 0, 0, 0, 0, 0];
   }
- 
- 
+
   let percentageOfSixMonthWeight = [];
   if (weightProgressSixMonth.length > 0) {
     percentageOfSixMonthWeight = weightProgressSixMonth.map(
@@ -1041,11 +973,9 @@ import {
   } else {
     percentageOfSixMonthWeight = [0, 0, 0, 0, 0, 0];
   }
- 
- 
+
   // three month names and their percentages of weight
- 
- 
+
   let monthNameOfThreeMonthCalories = [];
   if (caloriesProgressThreeMonth.length > 0) {
     monthNameOfThreeMonthCalories = caloriesProgressThreeMonth.map(
@@ -1054,8 +984,7 @@ import {
   } else {
     monthNameOfThreeMonthCalories = [0, 0, 0];
   }
- 
- 
+
   let percentageOfThreeMonthCalories = [];
   if (caloriesProgressThreeMonth.length > 0) {
     percentageOfThreeMonthCalories = caloriesProgressThreeMonth.map(
@@ -1064,11 +993,9 @@ import {
   } else {
     percentageOfThreeMonthCalories = [0, 0, 0];
   }
- 
- 
+
   // Six month names and their percentages of weight
- 
- 
+
   let monthNameOfSixMonthCalories = [];
   if (caloriesProgressSixMonth.length > 0) {
     monthNameOfSixMonthCalories = caloriesProgressSixMonth.map(
@@ -1077,8 +1004,7 @@ import {
   } else {
     monthNameOfSixMonthCalories = [0, 0, 0, 0, 0, 0];
   }
- 
- 
+
   let percentageOfSixMonthCalories = [];
   if (caloriesProgressSixMonth.length > 0) {
     percentageOfSixMonthCalories = caloriesProgressSixMonth.map(
@@ -1087,72 +1013,7 @@ import {
   } else {
     percentageOfSixMonthCalories = [0, 0, 0, 0, 0, 0];
   }
- 
- 
-  // tooltip for progress
-  const [tooltip, setTooltip] = useState(null);
-  const [tooltipPosition, setTooltipPosition] = useState({ left: 0, top: 0 });
-  const [isVisible, setIsVisible] = useState(false);
- 
- 
-  // tooltip for messages
-  const [tooltipMessages, setTooltipMessages] = useState(null);
-  const [tooltipPositionMessages, setTooltipPositionMessages] = useState({
-    left: 0,
-    top: 0,
-  });
-  const [isVisibleMessages, setIsVisibleMessages] = useState(false);
- 
- 
-  // tooltip for weight
-  const [tooltipWeight, setTooltipWeight] = useState(null);
-  const [tooltipPositionWeight, setTooltipPositionWeight] = useState({
-    left: 0,
-    top: 0,
-  });
-  const [isVisibleWeight, setIsVisibleWeight] = useState(false);
- 
- 
-  // tooltip for CALORIES
-  const [tooltipCalories, setTooltipCalories] = useState(null);
-  const [tooltipPositionCalories, setTooltipPositionCalories] = useState({
-    left: 0,
-    top: 0,
-  });
-  const [isVisibleCalories, setIsVisibleCalories] = useState(false);
- 
- 
-  const handleDataPointClick = (
-    data,
-    setTooltipFunc,
-    setTooltipPositionFunc,
-    setIsVisibleFunc
-  ) => {
-    if (
-      data &&
-      typeof data.x !== "undefined" &&
-      typeof data.y !== "undefined" &&
-      (typeof data.value === "number" || typeof data.value === "string")
-    ) {
-      const { x, y, value } = data;
- 
- 
-      // Store tooltip content and position
-      const tooltipValue = typeof value === "number" ? value.toFixed(2) : value;
-      setTooltipFunc(tooltipValue);
-      setTooltipPositionFunc({ left: x, top: y });
- 
- 
-      setIsVisibleFunc(true);
- 
- 
-      setTimeout(() => {
-        setIsVisibleFunc(false);
-      }, 3000);
-    }
-  };
- 
- 
+
   const numValues =
     selectedTypes === "Last 7 Days"
       ? 7
@@ -1172,922 +1033,1009 @@ import {
       ? 7
       : 7; // Default to 7 if no specific count is available
   const chartWidth = getWidth(95) * (numValues / 7);
- 
- 
-  return (
-    <View style={styles.contaner}>
-      <GeneralStatusBar
-        barStyle="light-content"
-        hidden={false}
-        backgroundColor="rgba(51, 51, 51, 1)"
-        translucent={true}
-      />
-      <HeaderBottom
-        title={
-          <View style={{ justifyContent: "center", alignItems: "center" }}>
+
+  const trainingCompletionData = () => {
+    switch (selectedTypes) {
+      case "Last 7 Days":
+        return [
+          {
+            value: weeklyProgress.Sunday,
+            label: "Sun",
+          },
+          {
+            value: weeklyProgress.Monday,
+            label: "Mon",
+          },
+          {
+            value: weeklyProgress.Tuesday,
+            label: "Tue",
+          },
+          { value: weeklyProgress.Wednesday, label: "Wed" },
+          {
+            value: weeklyProgress.Thursday,
+            label: "Thurs",
+          },
+          {
+            value: weeklyProgress.Friday,
+            label: "Fri",
+          },
+          {
+            value: weeklyProgress.Saturday,
+            label: "Sat",
+          },
+        ];
+      case "This Month":
+        return [
+          {
+            value: monthlyProgress.Week1,
+            label: "Week1",
+          },
+          {
+            value: monthlyProgress.Week2,
+            label: "Week2",
+          },
+          {
+            value: monthlyProgress.Week3,
+            label: "Week3",
+          },
+          { value: monthlyProgress.Week4, label: "Week4" },
+        ];
+      case "Last 3 Months":
+        return [
+          {
+            value: percentageOfThreeMonthProgress[0],
+            label: monthNameOfThreeMonthProgress[0],
+          },
+          {
+            value: percentageOfThreeMonthProgress[1],
+            label: monthNameOfThreeMonthProgress[1],
+          },
+          {
+            value: percentageOfThreeMonthProgress[2],
+            label: monthNameOfThreeMonthProgress[2],
+          },
+        ];
+      case "Last 6 Months":
+        return [
+          {
+            value: percentageOfSixMonthProgress[0],
+            label: monthNameOfSixMonthProgress[0],
+          },
+          {
+            value: percentageOfSixMonthProgress[1],
+            label: monthNameOfSixMonthProgress[1],
+          },
+          {
+            value: percentageOfSixMonthProgress[2],
+            label: monthNameOfSixMonthProgress[2],
+          },
+          {
+            value: percentageOfSixMonthProgress[3],
+            label: monthNameOfSixMonthProgress[3],
+          },
+          {
+            value: percentageOfSixMonthProgress[4],
+            label: monthNameOfSixMonthProgress[4],
+          },
+          {
+            value: percentageOfSixMonthProgress[5],
+            label: monthNameOfSixMonthProgress[5],
+          },
+        ];
+      case "All Time":
+        return [
+          { label: "Jan", value: yearProgress.Jan },
+          { label: "Feb", value: yearProgress.Feb },
+          { label: "Mar", value: yearProgress.Mar },
+          { label: "Apr", value: yearProgress.Apr },
+          { label: "May", value: yearProgress.May },
+          { label: "Jun", value: yearProgress.Jun },
+          { label: "Jul", value: yearProgress.Jul },
+          { label: "Aug", value: yearProgress.Aug },
+          { label: "Sep", value: yearProgress.Sep },
+          { label: "Oct", value: yearProgress.Oct },
+          { label: "Nov", value: yearProgress.Nov },
+          { label: "Dec", value: yearProgress.Dec },
+        ];
+      default:
+        return [
+          {
+            value: weeklyProgress.Sunday,
+            label: "Sun",
+          },
+          {
+            value: weeklyProgress.Monday,
+            label: "Mon",
+          },
+          {
+            value: weeklyProgress.Tuesday,
+            label: "Tue",
+          },
+          { value: weeklyProgress.Wednesday, label: "Wed" },
+          {
+            value: weeklyProgress.Thursday,
+            label: "Thurs",
+          },
+          {
+            value: weeklyProgress.Friday,
+            label: "Fri",
+          },
+          {
+            value: weeklyProgress.Saturday,
+            label: "Sat",
+          },
+        ];
+    }
+  };
+
+  const individualExerciseData = useMemo(() => {
+    switch (selectedTypes) {
+      case "Last 7 Days":
+        return [
+          {
+            value: messagesProgress.Sunday,
+            label: "Sun",
+          },
+          {
+            value: messagesProgress.Monday,
+            label: "Mon",
+          },
+          {
+            value: messagesProgress.Tuesday,
+            label: "Tue",
+          },
+          { value: messagesProgress.Wednesday, label: "Wed" },
+          {
+            value: messagesProgress.Thursday,
+            label: "Thurs",
+          },
+          {
+            value: messagesProgress.Friday,
+            label: "Fri",
+          },
+          {
+            value: messagesProgress.Saturday,
+            label: "Sat",
+          },
+        ];
+      case "This Month":
+        return [
+          {
+            value: messagesProgressMonth.Week1,
+            label: "Week1",
+          },
+          {
+            value: messagesProgressMonth.Week2,
+            label: "Week2",
+          },
+          {
+            value: messagesProgressMonth.Week3,
+            label: "Week3",
+          },
+          { value: messagesProgressMonth.Week4, label: "Week4" },
+        ];
+      case "Last 3 Months":
+        return [
+          {
+            value: percentageOfThreeMonth[0],
+            label: monthNameOfThreeMonth[0],
+          },
+          {
+            value: percentageOfThreeMonth[1],
+            label: monthNameOfThreeMonth[1],
+          },
+          {
+            value: percentageOfThreeMonth[2],
+            label: monthNameOfThreeMonth[2],
+          },
+        ];
+      case "Last 6 Months":
+        return [
+          {
+            value: percentageOfSixMonth[0],
+            label: monthNameOfSixMonth[0],
+          },
+          {
+            value: percentageOfSixMonth[1],
+            label: monthNameOfSixMonth[1],
+          },
+          {
+            value: percentageOfSixMonth[2],
+            label: monthNameOfSixMonth[2],
+          },
+          {
+            value: percentageOfSixMonth[3],
+            label: monthNameOfSixMonth[3],
+          },
+          {
+            value: percentageOfSixMonth[4],
+            label: monthNameOfSixMonth[4],
+          },
+          {
+            value: percentageOfSixMonth[5],
+            label: monthNameOfSixMonth[5],
+          },
+        ];
+      case "All Time":
+        return [
+          { label: "Jan", value: messagesProgressAllMonth.Jan },
+          { label: "Feb", value: messagesProgressAllMonth.Feb },
+          { label: "Mar", value: messagesProgressAllMonth.Mar },
+          { label: "Apr", value: messagesProgressAllMonth.Apr },
+          { label: "May", value: messagesProgressAllMonth.May },
+          { label: "Jun", value: messagesProgressAllMonth.Jun },
+          { label: "Jul", value: messagesProgressAllMonth.Jul },
+          { label: "Aug", value: messagesProgressAllMonth.Aug },
+          { label: "Sep", value: messagesProgressAllMonth.Sep },
+          { label: "Oct", value: messagesProgressAllMonth.Oct },
+          { label: "Nov", value: messagesProgressAllMonth.Nov },
+          { label: "Dec", value: messagesProgressAllMonth.Dec },
+        ];
+      default:
+        return [
+          {
+            value: messagesProgress.Sunday,
+            label: "Sun",
+          },
+          {
+            value: messagesProgress.Monday,
+            label: "Mon",
+          },
+          {
+            value: messagesProgress.Tuesday,
+            label: "Tue",
+          },
+          { value: messagesProgress.Wednesday, label: "Wed" },
+          {
+            value: messagesProgress.Thursday,
+            label: "Thurs",
+          },
+          {
+            value: messagesProgress.Friday,
+            label: "Fri",
+          },
+          {
+            value: messagesProgress.Saturday,
+            label: "Sat",
+          },
+        ];
+    }
+  }, [selectedTypes]);
+
+  const caloriesLineData = () => {
+    switch (selectedTypes) {
+      case "Last 7 Days":
+        return [
+          {
+            value: caloriesProgress.Sunday,
+            label: "Sun",
+          },
+          {
+            value: caloriesProgress.Monday,
+            label: "Mon",
+          },
+          {
+            value: caloriesProgress.Tuesday,
+            label: "Tue",
+          },
+          { value: caloriesProgress.Wednesday, label: "Wed" },
+          {
+            value: caloriesProgress.Thursday,
+            label: "Thurs",
+          },
+          {
+            value: caloriesProgress.Friday,
+            label: "Fri",
+          },
+          {
+            value: caloriesProgress.Saturday,
+            label: "Sat",
+          },
+        ];
+      case "This Month":
+        return [
+          {
+            value: monthlyCaloriesProgress.Week1,
+            label: "Week1",
+          },
+          {
+            value: monthlyCaloriesProgress.Week2,
+            label: "Week2",
+          },
+          {
+            value: monthlyCaloriesProgress.Week3,
+            label: "Week3",
+          },
+          { value: monthlyCaloriesProgress.Week4, label: "Week4" },
+        ];
+      case "Last 3 Months":
+        return [
+          {
+            value: percentageOfThreeMonthCalories[0],
+            label: monthNameOfThreeMonthCalories[0],
+          },
+          {
+            value: percentageOfThreeMonthCalories[1],
+            label: monthNameOfThreeMonthCalories[1],
+          },
+          {
+            value: percentageOfThreeMonthCalories[2],
+            label: monthNameOfThreeMonthCalories[2],
+          },
+        ];
+      case "Last 6 Months":
+        return [
+          {
+            value: percentageOfSixMonthCalories[0],
+            label: monthNameOfSixMonthCalories[0],
+          },
+          {
+            value: percentageOfSixMonthCalories[1],
+            label: monthNameOfSixMonthCalories[1],
+          },
+          {
+            value: percentageOfSixMonthCalories[2],
+            label: monthNameOfSixMonthCalories[2],
+          },
+          {
+            value: percentageOfSixMonthCalories[3],
+            label: monthNameOfSixMonthCalories[3],
+          },
+          {
+            value: percentageOfSixMonthCalories[4],
+            label: monthNameOfSixMonthCalories[4],
+          },
+          {
+            value: percentageOfSixMonthCalories[5],
+            label: monthNameOfSixMonthCalories[5],
+          },
+        ];
+      case "All Time":
+        return [
+          { label: "Jan", value: caloriesProgressAllMonth.Jan },
+          { label: "Feb", value: caloriesProgressAllMonth.Feb },
+          { label: "Mar", value: caloriesProgressAllMonth.Mar },
+          { label: "Apr", value: caloriesProgressAllMonth.Apr },
+          { label: "May", value: caloriesProgressAllMonth.May },
+          { label: "Jun", value: caloriesProgressAllMonth.Jun },
+          { label: "Jul", value: caloriesProgressAllMonth.Jul },
+          { label: "Aug", value: caloriesProgressAllMonth.Aug },
+          { label: "Sep", value: caloriesProgressAllMonth.Sep },
+          { label: "Oct", value: caloriesProgressAllMonth.Oct },
+          { label: "Nov", value: caloriesProgressAllMonth.Nov },
+          { label: "Dec", value: caloriesProgressAllMonth.Dec },
+        ];
+      default:
+        return [
+          {
+            value: caloriesProgress.Sunday,
+            label: "Sun",
+          },
+          {
+            value: caloriesProgress.Monday,
+            label: "Mon",
+          },
+          {
+            value: caloriesProgress.Tuesday,
+            label: "Tue",
+          },
+          { value: caloriesProgress.Wednesday, label: "Wed" },
+          {
+            value: caloriesProgress.Thursday,
+            label: "Thurs",
+          },
+          {
+            value: caloriesProgress.Friday,
+            label: "Fri",
+          },
+          {
+            value: caloriesProgress.Saturday,
+            label: "Sat",
+          },
+        ];
+    }
+  };
+
+  const strengthProgressData = () => {
+    switch (selectedTypes) {
+      case "Last 7 Days":
+        return [
+          {
+            value: weightProgress.Sunday,
+            label: "Sun",
+          },
+          {
+            value: weightProgress.Monday,
+            label: "Mon",
+          },
+          {
+            value: weightProgress.Tuesday,
+            label: "Tue",
+          },
+          { value: weightProgress.Wednesday, label: "Wed" },
+          {
+            value: weightProgress.Thursday,
+            label: "Thurs",
+          },
+          {
+            value: weightProgress.Friday,
+            label: "Fri",
+          },
+          {
+            value: weightProgress.Saturday,
+            label: "Sat",
+          },
+        ];
+      case "This Month":
+        return [
+          { value: monthlyWeightProgress.Week1, label: "Week1" },
+          { value: monthlyWeightProgress.Week2, label: "Week2" },
+          { value: monthlyWeightProgress.Week3, label: "Week3" },
+          { value: monthlyWeightProgress.Week4, label: "Week4" },
+        ];
+      case "Last 3 Months":
+        return [
+          {
+            value: percentageOfThreeMonthWeight[0],
+            label: monthNameOfThreeMonthWeight[0],
+          },
+          {
+            value: percentageOfThreeMonthWeight[1],
+            label: monthNameOfThreeMonthWeight[1],
+          },
+          {
+            value: percentageOfThreeMonthWeight[2],
+            label: monthNameOfThreeMonthWeight[2],
+          },
+        ];
+      case "Last 6 Months":
+        return [
+          {
+            value: percentageOfSixMonthWeight[0],
+            label: monthNameOfSixMonthWeight[0],
+          },
+          {
+            value: percentageOfSixMonthWeight[1],
+            label: monthNameOfSixMonthWeight[1],
+          },
+          {
+            value: percentageOfSixMonthWeight[2],
+            label: monthNameOfSixMonthWeight[2],
+          },
+          {
+            value: percentageOfSixMonthWeight[3],
+            label: monthNameOfSixMonthWeight[3],
+          },
+          {
+            value: percentageOfSixMonthWeight[4],
+            label: monthNameOfSixMonthWeight[4],
+          },
+          {
+            value: percentageOfSixMonthWeight[5],
+            label: monthNameOfSixMonthWeight[5],
+          },
+        ];
+      case "All Time":
+        return [
+          { label: "Jan", value: weightProgressAllMonth.Jan },
+          { label: "Feb", value: weightProgressAllMonth.Feb },
+          { label: "Mar", value: weightProgressAllMonth.Mar },
+          { label: "Apr", value: weightProgressAllMonth.Apr },
+          { label: "May", value: weightProgressAllMonth.May },
+          { label: "Jun", value: weightProgressAllMonth.Jun },
+          { label: "Jul", value: weightProgressAllMonth.Jul },
+          { label: "Aug", value: weightProgressAllMonth.Aug },
+          { label: "Sep", value: weightProgressAllMonth.Sep },
+          { label: "Oct", value: weightProgressAllMonth.Oct },
+          { label: "Nov", value: weightProgressAllMonth.Nov },
+          { label: "Dec", value: weightProgressAllMonth.Dec },
+        ];
+      default:
+        return [
+          {
+            value: weightProgress.Sunday,
+            label: "Sun",
+          },
+          {
+            value: weightProgress.Monday,
+            label: "Mon",
+          },
+          {
+            value: weightProgress.Tuesday,
+            label: "Tue",
+          },
+          { value: weightProgress.Wednesday, label: "Wed" },
+          {
+            value: weightProgress.Thursday,
+            label: "Thurs",
+          },
+          {
+            value: weightProgress.Friday,
+            label: "Fri",
+          },
+          {
+            value: weightProgress.Saturday,
+            label: "Sat",
+          },
+        ];
+    }
+  };
+
+  const trainingSeatsData = [
+    {
+      title: "Apple Watch Stats",
+      data: [
+        { title: "Sleep", des: "Time in Bed: 7 Hrs 20 mins " },
+        { title: "Steps", des: "40,000 steps" },
+      ],
+    },
+    {
+      title: "Personal Records",
+      data: [
+        {
+          title: "Deadlift Variations",
+          des: "234 lb max: Zercher Squat - 09/30/2012 ",
+        },
+        { title: "Squat Variation", des: "300 lb max: #Exercise Name - #date" },
+      ],
+    },
+  ];
+
+  const onChangeSlider = (value) => setSliderValue(value);
+
+  const renderItem = ({ item }) => {
+    return (
+      <TouchableOpacity style={[styles.containerStyle, { gap: 10 }]}>
+        <Text style={styles.sectionTextStyle}>{item.title}</Text>
+        <View style={styles.descriptionStyle}>
+          <Heartbeat />
+          <Text style={styles.descriptionTextStyle}>{item.des}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+  const RenderSectionHeader = ({ section: { title } }) => {
+    return (
+      <View style={[styles.trainingContainerStyle, styles.sectionTitleStyle]}>
+        <Text style={styles.sectionTextStyle}>{title}</Text>
+
+        <Entypo
+          name={"dots-three-vertical"}
+          size={getFontSize(2.5)}
+          color={colors.axisColor}
+        />
+      </View>
+    );
+  };
+
+  const CustomMarker = ({ currentValue }) => {
+    return (
+      <View style={styles.customMarkerStyle}>
+        <Text style={styles.sliderTextStyle}>{currentValue}</Text>
+      </View>
+    );
+  };
+
+  const RenderDropdown = () => {
+    return (
+      <SelectDropdown
+        defaultValue={selectedTypes}
+        data={allTypes}
+        onSelect={(selectedType) => {
+          console.log("selectedType", selectedType);
+          toggleTypeSelection(selectedType), setSelectedTypes(selectedType);
+        }}
+        defaultButtonText="Last 7 Days"
+        buttonTextAfterSelection={(selectedItem, index) => {
+          return (
             <Text
               style={{
-                textAlign: "center",
-                color: "white",
-                fontSize: 24,
-                marginBottom: Platform.OS === "ios" ? 3 : 0,
-                fontFamily: "Russo_One",
-                fontWeight: "600",
-              }}
-            >
-              Hello!{`\n`}
-              <Text style={{ fontSize: getFontSize(1.5) }}>
-                Here’s how you’re going.
-              </Text>
-            </Text>
-          </View>
-        }
-        LeftIcon={
-          <Entypo
-            size={30}
-            style={{
-              alignSelf: "flex-start",
-            }}
-            color={"white"}
-            onPress={() => navigation.openDrawer()}
-            name="menu"
-          />
-        }
-        RightIcon={<View style={{ marginRight: getFontSize(3.5) }} />}
-      />
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <Text style={styles.progress}>Your Progress</Text>
- 
- 
-        <ReactNativeCalendarStrip
-          showMonth={false}
-          selectedDate={date}
-          onDateSelected={handleDateChange}
-          calendarAnimation={{ type: "sequence", duration: 30 }}
-          customDatesStyles={customDatesStyles}
-          iconLeft={require("../../assets/images/leftp.png")}
-          iconRight={require("../../assets/images/rightp.png")}
-          style={{
-            height: getHeight(8),
-            marginTop: getHeight(1),
-            paddingHorizontal: 5,
-          }}
-          calendarColor={colors.primary}
-          iconContainer={{ flex: 0.05 }}
-        />
- 
- 
-        <View
-          style={{
-            justifyContent: "center",
-            marginVertical: getHeight(2),
-            alignItems: "center",
-          }}
-        >
-          <Ellipse height={getHeight(21)} width={getWidth(58)} />
-          {/* <CircularProgress
-            percentage={assigWorkout?.progress}
-            radius={35}
-            strokeWidth={10}
-            progressColor="#00FF00" // Green color for progress
-            bgColor="#FF0000" // Red color for background
-          /> */}
-          {assigWorkout?.progress ? (
-            <Text style={styles.fourtyper}>
-              {(assigWorkout?.progress).toFixed(0)}%
-            </Text>
-          ) : (
-            <Text style={styles.fourtyper}>0%</Text>
-          )}
-          <Text style={styles.todayt}>Today’s progress</Text>
-        </View>
-        <View style={styles.spaceBet}>
-          <Text style={styles.activty}>TRAINING COMPLETETION</Text>
-          <View style={styles.activityCon}>
-            <SelectDropdown
-              defaultValue={"Last 7 Days"}
-              data={allTypes}
-              onSelect={(selectedType) => {
-                toggleTypeSelection(selectedType),
-                  setSelectedTypes(selectedType);
-              }}
-              defaultButtonText="Last 7 Days"
-              buttonTextAfterSelection={(selectedItem, index) => {
-                return (
-                  <Text
-                    style={{
-                      color: "white",
-                      fontSize: getFontSize(2),
-                      textAlign: "left",
-                    }}
-                  >
-                    {selectedItem}
-                  </Text>
-                );
-              }}
-              buttonStyle={{
-                width: getWidth(40),
-                height: getHeight(4),
-                marginVertical: getHeight(1),
-                backgroundColor: colors.secondary,
-                borderRadius: 5,
-              }}
-              buttonTextStyle={{
-                color: "white",
-                fontSize: getFontSize(2),
-                fontFamily: "Ubuntu",
-              }}
-              renderDropdownIcon={(isOpened) => {
-                return (
-                  <Entypo
-                    name={isOpened ? "chevron-thin-up" : "chevron-thin-down"}
-                    color={"#fff"}
-                    size={getFontSize(2)}
-                  />
-                );
-              }}
-              dropdownIconPosition={"right"}
-              showsVerticalScrollIndicator={false}
-              dropdownStyle={{
-                backgroundColor: colors.secondary,
-                height: getHeight(27),
-              }}
-              rowStyle={{
-                backgroundColor: colors.secondary,
-                borderBottomColor: "rgba(0, 0, 0, 0.1)",
-              }}
-              selectedRowTextStyle={{
-                color: colors.buttonColor,
-              }}
-              rowTextStyle={{
-                color: "white",
+                color: colors.black,
                 fontSize: getFontSize(2),
                 textAlign: "left",
-                paddingLeft: getFontSize(1),
-                fontFamily: "Ubuntu-bold",
               }}
+            >
+              {selectedItem}
+            </Text>
+          );
+        }}
+        buttonStyle={{
+          width: getWidth(30),
+          height: getHeight(4),
+          marginVertical: getHeight(1),
+          marginHorizontal: getWidth(2),
+          backgroundColor: colors.white,
+          color: colors.black,
+          borderRadius: 5,
+        }}
+        buttonTextStyle={{
+          color: colors.black,
+          fontSize: getFontSize(2),
+          fontFamily: "Ubuntu",
+        }}
+        renderDropdownIcon={(isOpened) => {
+          return (
+            <Entypo
+              name={isOpened ? "chevron-thin-up" : "chevron-thin-down"}
+              color={colors.black}
+              size={getFontSize(2)}
+            />
+          );
+        }}
+        dropdownIconPosition={"right"}
+        showsVerticalScrollIndicator={false}
+        dropdownStyle={{
+          backgroundColor: colors.white,
+          height: getHeight(27),
+        }}
+        rowStyle={{
+          backgroundColor: colors.white,
+          borderBottomColor: "rgba(0, 0, 0, 0.1)",
+        }}
+        selectedRowTextStyle={{
+          color: colors.buttonColor,
+        }}
+        rowTextStyle={{
+          color: colors.black,
+          fontSize: getFontSize(2),
+          textAlign: "left",
+          paddingLeft: getFontSize(1),
+          fontFamily: "Ubuntu-bold",
+        }}
+      />
+    );
+  };
+
+  const ListHeaderComponent = () => {
+    return (
+      <View>
+        <ImageBackground
+          source={require("../../assets/images/home1.png")}
+          style={styles.imageBgStyle}
+          imageStyle={styles.imageStyle}
+        >
+          <TouchableOpacity onPress={onPressBack} style={styles.headerBtnStyle}>
+            <Ionicons
+              name="chevron-back"
+              size={getFontSize(2.5)}
+              color={colors.black}
+            />
+          </TouchableOpacity>
+          <Text style={styles.statsFontStyle}>Stats</Text>
+          <View />
+        </ImageBackground>
+        <View style={styles.innerContainerStyle}>
+          <View style={styles.trainingContainerStyle}>
+            <Text style={styles.trainingFontStyle}>Training Completion</Text>
+            <Ionicons
+              name="settings"
+              size={getFontSize(2.5)}
+              color={colors.axisColor}
             />
           </View>
-        </View>
-        <View style={{ ...styles.spaceBet, marginTop: getFontSize(3) }}>
-          <Text style={styles.activty}>TRAINING COMPLETION</Text>
-        </View>
-        <View style={styles.graphCon}>
-          <LineChart
-            data={
-              selectedTypes === "Last 7 Days"
-                ? {
-                    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-                    datasets: [
-                      {
-                        data: [
-                          weeklyProgress.Monday,
-                          weeklyProgress.Tuesday,
-                          weeklyProgress.Wednesday,
-                          weeklyProgress.Thursday,
-                          weeklyProgress.Friday,
-                          weeklyProgress.Saturday,
-                          weeklyProgress.Sunday,
-                        ],
-                      },
-                    ],
-                  }
-                : selectedTypes === "This Month"
-                ? {
-                    labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-                    datasets: [
-                      {
-                        data: [
-                          monthlyProgress.Week1,
-                          monthlyProgress.Week2,
-                          monthlyProgress.Week3,
-                          monthlyProgress.Week4,
-                        ],
-                      },
-                    ],
-                  }
-                : selectedTypes === "Last 3 Months"
-                ? {
-                    labels: [
-                      monthNameOfThreeMonthProgress[0],
-                      monthNameOfThreeMonthProgress[1],
-                      monthNameOfThreeMonthProgress[2],
-                    ],
-                    datasets: [
-                      {
-                        data: [
-                          percentageOfThreeMonthProgress[0],
-                          percentageOfThreeMonthProgress[1],
-                          percentageOfThreeMonthProgress[2],
-                        ],
-                      },
-                    ],
-                  }
-                : selectedTypes === "Last 6 Months"
-                ? {
-                    labels: [
-                      monthNameOfSixMonthProgress[0],
-                      monthNameOfSixMonthProgress[1],
-                      monthNameOfSixMonthProgress[2],
-                      monthNameOfSixMonthProgress[3],
-                      monthNameOfSixMonthProgress[4],
-                      monthNameOfSixMonthProgress[5],
-                    ],
-                    datasets: [
-                      {
-                        data: [
-                          percentageOfSixMonthProgress[0],
-                          percentageOfSixMonthProgress[1],
-                          percentageOfSixMonthProgress[2],
-                          percentageOfSixMonthProgress[3],
-                          percentageOfSixMonthProgress[4],
-                          percentageOfSixMonthProgress[5],
-                        ],
-                      },
-                    ],
-                  }
-                : selectedTypes === "All Time"
-                ? {
-                    labels: [
-                      "Jan",
-                      "Feb",
-                      "Mar",
-                      "Apr",
-                      "May",
-                      "Jun",
-                      "Jul",
-                      "Aug",
-                      "Sep",
-                      "Oct",
-                      "Nov",
-                      "Dec",
-                    ],
-                    datasets: [
-                      {
-                        data: [
-                          yearProgress.Jan,
-                          yearProgress.Feb,
-                          yearProgress.Mar,
-                          yearProgress.Apr,
-                          yearProgress.May,
-                          yearProgress.Jun,
-                          yearProgress.Jul,
-                          yearProgress.Aug,
-                          yearProgress.Sep,
-                          yearProgress.Oct,
-                          yearProgress.Nov,
-                          yearProgress.Dec,
-                        ],
-                      },
-                    ],
-                  }
-                : {
-                    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-                    datasets: [
-                      {
-                        data: [
-                          weeklyProgress.Monday,
-                          weeklyProgress.Tuesday,
-                          weeklyProgress.Wednesday,
-                          weeklyProgress.Thursday,
-                          weeklyProgress.Friday,
-                          weeklyProgress.Saturday,
-                          weeklyProgress.Sunday,
-                        ],
-                      },
-                    ],
-                  }
-            }
-            width={chartWidth} // from react-native
-            height={getHeight(25)}
-            onDataPointClick={(data) =>
-              handleDataPointClick(
-                data,
-                setTooltip,
-                setTooltipPosition,
-                setIsVisible
-              )
-            }
-            yAxisSuffix="%"
-            withHorizontalLines={false}
-            withVerticalLines={false}
-            chartConfig={{
-              backgroundColor: colors.secondary,
-              backgroundGradientFrom: colors.secondary,
-              backgroundGradientTo: colors.secondary,
-              decimalPlaces: 0, // round to decimal places
-              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(250, 250, 250, ${opacity})`,
-              style: {
-                borderRadius: 16,
-              },
-              propsForDots: {
-                r: "6",
-                strokeWidth: "2",
-                stroke: "#ffa726",
-              },
-              yAxis: {
-                min: 0,
-                max: 100,
-              },
-            }}
-            bezier // smooth lines
-            style={{
-              marginVertical: 8,
-              borderRadius: getFontSize(2),
-            }}
+          <View style={styles.chartOuterContainer}>
+            <View style={styles.headerTopContainer}>
+              <View style={styles.headerTextStyle}>
+                <Text style={styles.percentageStyle}>96%</Text>
+                <Text style={styles.completionStyle}>Completion rate</Text>
+              </View>
+              <RenderDropdown />
+            </View>
+            <BarChart
+              frontColor={colors.orange}
+              width={width - getWidth(30)}
+              data={trainingCompletionData()}
+              maxValue={100}
+              dashGap={0}
+              spacing={22}
+              barBorderRadius={4}
+              barWidth={30}
+              stepValue={20}
+              yAxisThickness={0}
+              xAxisColor={colors.rulesColor}
+              xAxisLabelTextStyle={{ color: colors.axisColor }}
+              yAxisTextStyle={{ color: colors.axisColor }}
+            />
+          </View>
+          <View style={styles.trainingContainerStyle}>
+            <Text style={styles.trainingFontStyle}>Calories Burned</Text>
+            <Ionicons
+              name="settings"
+              size={getFontSize(2.5)}
+              color={colors.axisColor}
+            />
+          </View>
+          <View style={styles.chartOuterContainer}>
+            <View style={styles.headerTopContainer}>
+              <View style={styles.headerTextStyle}>
+                <Text style={styles.percentageStyle}>549</Text>
+                <Text style={styles.completionStyle}>Calories Burned</Text>
+              </View>
+              <RenderDropdown />
+            </View>
+            <LineChart
+              areaChart
+              curved
+              data={caloriesLineData()}
+              width={width - getWidth(30)}
+              spacing={getWidth(15)}
+              initialSpacing={5}
+              color={colors.orange}
+              hideDataPoints
+              startFillColor1={colors.orange}
+              startOpacity={0.8}
+              endOpacity={0.3}
+              dashGap={0}
+              thickness={2}
+              rulesColor={colors.rulesColor}
+              yAxisThickness={0}
+              xAxisColor={colors.rulesColor}
+              xAxisLabelTextStyle={{ color: colors.axisColor }}
+              yAxisTextStyle={{ color: colors.axisColor }}
+            />
+          </View>
+          <View style={styles.trainingContainerStyle}>
+            <Text style={styles.trainingFontStyle}>Strength Progress</Text>
+            <Ionicons
+              name="settings"
+              size={getFontSize(2.5)}
+              color={colors.axisColor}
+            />
+          </View>
+          <Text style={styles.totalVolumeStyle}>
+            Total Volume: 14,540 lbs lifted
+          </Text>
+          <View style={styles.chartOuterContainer}>
+            <View style={styles.headerTopContainer}>
+              <View style={styles.headerTextStyle}>
+                <Text style={styles.percentageStyle}>14,450</Text>
+                <Text
+                  style={[styles.completionStyle, { fontSize: getWidth(3) }]}
+                >
+                  Total lbs lifted
+                </Text>
+              </View>
+              <RenderDropdown />
+            </View>
+            <BarChart
+              frontColor={colors.orange}
+              data={strengthProgressData()}
+              maxValue={20000}
+              dashGap={0}
+              spacing={8}
+              barBorderRadius={4}
+              barWidth={30}
+              width={width - getWidth(30)}
+              yAxisThickness={0}
+              xAxisColor={colors.rulesColor}
+              xAxisLabelTextStyle={{ color: colors.axisColor }}
+              yAxisTextStyle={{ color: colors.axisColor }}
+            />
+          </View>
+          <View style={styles.weightContainer}>
+            <Text style={styles.bodyTextStyle}>Bodyweight Goal</Text>
+            <Text style={styles.lbsTextStyle}>Lbs</Text>
+          </View>
+          <MultiSLider
+            value={sliderValue}
+            onValueChange={onChangeSlider}
+            trackStyle={styles.sliderStyle}
+            customMarker={(e) => <CustomMarker currentValue={e.currentValue} />}
+            min={100}
+            max={500}
+            sliderLength={getWidth(90)}
+            markerOffsetY={0}
+            step={1}
+            selectedStyle={{ backgroundColor: colors.green }}
           />
-          {isVisible && (
-            <TouchableOpacity
-              style={{
-                position: "absolute",
-                left: tooltipPosition.left,
-                top: tooltipPosition.top - 20,
-              }}
-              onPress={() => setIsVisible(false)}
-            >
-              <Text
-                style={{ color: colors.buttonColor, fontSize: getFontSize(2) }}
-              >
-                {tooltip}
-              </Text>
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity>
+            <Text style={styles.updateTextStyle}>Update Weight</Text>
+          </TouchableOpacity>
         </View>
- 
- 
-        <View style={styles.spaceBet}>
-          <Text style={styles.activty}>INDIVIDUAL EXERCISE</Text>
-        </View>
-        <View style={{ ...styles.graphCon, marginTop: getHeight(2) }}>
-          <LineChart
-            data={
-              selectedTypes === "Last 7 Days"
-                ? {
-                    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-                    datasets: [
-                      {
-                        data: [
-                          messagesProgress.Monday,
-                          messagesProgress.Tuesday,
-                          messagesProgress.Wednesday,
-                          messagesProgress.Thursday,
-                          messagesProgress.Friday,
-                          messagesProgress.Saturday,
-                          messagesProgress.Sunday,
-                        ],
-                      },
-                    ],
-                  }
-                : selectedTypes === "This Month"
-                ? {
-                    labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-                    datasets: [
-                      {
-                        data: [
-                          messagesProgressMonth.Week1,
-                          messagesProgressMonth.Week2,
-                          messagesProgressMonth.Week3,
-                          messagesProgressMonth.Week4,
-                        ],
-                      },
-                    ],
-                  }
-                : selectedTypes === "Last 3 Months"
-                ? {
-                    labels: [
-                      monthNameOfThreeMonth[0],
-                      monthNameOfThreeMonth[1],
-                      monthNameOfThreeMonth[2],
-                    ],
-                    datasets: [
-                      {
-                        data: [
-                          percentageOfThreeMonth[0],
-                          percentageOfThreeMonth[1],
-                          percentageOfThreeMonth[2],
-                        ],
-                      },
-                    ],
-                  }
-                : selectedTypes === "Last 6 Months"
-                ? {
-                    labels: [
-                      monthNameOfSixMonth[0],
-                      monthNameOfSixMonth[1],
-                      monthNameOfSixMonth[2],
-                      monthNameOfSixMonth[3],
-                      monthNameOfSixMonth[4],
-                      monthNameOfSixMonth[5],
-                    ],
-                    datasets: [
-                      {
-                        data: [
-                          percentageOfSixMonth[0],
-                          percentageOfSixMonth[1],
-                          percentageOfSixMonth[2],
-                          percentageOfSixMonth[3],
-                          percentageOfSixMonth[4],
-                          percentageOfSixMonth[5],
-                        ],
-                      },
-                    ],
-                  }
-                : selectedTypes === "All Time"
-                ? {
-                    labels: [
-                      "Jan",
-                      "Feb",
-                      "Mar",
-                      "Apr",
-                      "May",
-                      "Jun",
-                      "Jul",
-                      "Aug",
-                      "Sep",
-                      "Oct",
-                      "Nov",
-                      "Dec",
-                    ],
-                    datasets: [
-                      {
-                        data: [
-                          messagesProgressAllMonth.Jan,
-                          messagesProgressAllMonth.Feb,
-                          messagesProgressAllMonth.Mar,
-                          messagesProgressAllMonth.Apr,
-                          messagesProgressAllMonth.May,
-                          messagesProgressAllMonth.Jun,
-                          messagesProgressAllMonth.Jul,
-                          messagesProgressAllMonth.Aug,
-                          messagesProgressAllMonth.Sep,
-                          messagesProgressAllMonth.Oct,
-                          messagesProgressAllMonth.Nov,
-                          messagesProgressAllMonth.Dec,
-                        ],
-                      },
-                    ],
-                  }
-                : {
-                    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-                    datasets: [
-                      {
-                        data: [
-                          messagesProgress.Monday,
-                          messagesProgress.Tuesday,
-                          messagesProgress.Wednesday,
-                          messagesProgress.Thursday,
-                          messagesProgress.Friday,
-                          messagesProgress.Saturday,
-                          messagesProgress.Sunday,
-                        ],
-                      },
-                    ],
-                  }
-            }
-            width={chartWidth}
-            height={getHeight(25)}
-            yAxisSuffix="%"
-            onDataPointClick={(data) =>
-              handleDataPointClick(
-                data,
-                setTooltipMessages,
-                setTooltipPositionMessages,
-                setIsVisibleMessages
-              )
-            }
-            //fromZero={true}
-            withHorizontalLines={false}
-            withVerticalLines={false}
-            chartConfig={{
-              backgroundColor: colors.secondary,
-              backgroundGradientFrom: colors.secondary,
-              backgroundGradientTo: colors.secondary,
-              decimalPlaces: 0,
-              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(250, 250, 250, ${opacity})`,
-              style: {
-                borderRadius: 16,
-              },
-              propsForDots: {
-                r: "6",
-                strokeWidth: "2",
-                stroke: "#ffa726",
-              },
-              yAxis: {
-                min: 0,
-                max: 100,
-              },
-            }}
-            bezier // smooth lines
-            style={{
-              marginVertical: 8,
-              borderRadius: getFontSize(2),
-            }}
-          />
-          {isVisibleMessages && (
-            <TouchableOpacity
-              style={{
-                position: "absolute",
-                left: tooltipPositionMessages.left,
-                top: tooltipPositionMessages.top - 20,
-              }}
-              onPress={() => setIsVisibleMessages(false)}
-            >
-              <Text
-                style={{ color: colors.buttonColor, fontSize: getFontSize(2) }}
-              >
-                {tooltipMessages}
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
- 
- 
-        <View style={styles.spaceBet}>
-          <Text style={styles.activty}>STRENGTH PROGRESS</Text>
-        </View>
-        <View style={{ ...styles.graphCon, marginTop: getHeight(2) }}>
-          <LineChart
-            data={
-              selectedTypes === "Last 7 Days"
-                ? {
-                    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
- 
- 
-                    datasets: [
-                      {
-                        data: [
-                          weightProgress.Monday,
-                          weightProgress.Tuesday,
-                          weightProgress.Wednesday,
-                          weightProgress.Thursday,
-                          weightProgress.Friday,
-                          weightProgress.Saturday,
-                          weightProgress.Sunday,
-                        ],
-                      },
-                    ],
-                  }
-                : selectedTypes === "This Month"
-                ? {
-                    labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-                    datasets: [
-                      {
-                        data: [
-                          monthlyWeightProgress.Week1,
-                          monthlyWeightProgress.Week2,
-                          monthlyWeightProgress.Week3,
-                          monthlyWeightProgress.Week4,
-                        ],
-                      },
-                    ],
-                  }
-                : selectedTypes === "Last 3 Months"
-                ? {
-                    labels: [
-                      monthNameOfThreeMonthWeight[0],
-                      monthNameOfThreeMonthWeight[1],
-                      monthNameOfThreeMonthWeight[2],
-                    ],
-                    datasets: [
-                      {
-                        data: [
-                          percentageOfThreeMonthWeight[0],
-                          percentageOfThreeMonthWeight[1],
-                          percentageOfThreeMonthWeight[2],
-                        ],
-                      },
-                    ],
-                  }
-                : selectedTypes === "Last 6 Months"
-                ? {
-                    labels: [
-                      monthNameOfSixMonthWeight[0],
-                      monthNameOfSixMonthWeight[1],
-                      monthNameOfSixMonthWeight[2],
-                      monthNameOfSixMonthWeight[3],
-                      monthNameOfSixMonthWeight[4],
-                      monthNameOfSixMonthWeight[5],
-                    ],
-                    datasets: [
-                      {
-                        data: [
-                          percentageOfSixMonthWeight[0],
-                          percentageOfSixMonthWeight[1],
-                          percentageOfSixMonthWeight[2],
-                          percentageOfSixMonthWeight[3],
-                          percentageOfSixMonthWeight[4],
-                          percentageOfSixMonthWeight[5],
-                        ],
-                      },
-                    ],
-                  }
-                : selectedTypes === "All Time"
-                ? {
-                    labels: [
-                      "Jan",
-                      "Feb",
-                      "Mar",
-                      "Apr",
-                      "May",
-                      "Jun",
-                      "Jul",
-                      "Aug",
-                      "Sep",
-                      "Oct",
-                      "Nov",
-                      "Dec",
-                    ],
-                    datasets: [
-                      {
-                        data: [
-                          weightProgressAllMonth.Jan,
-                          weightProgressAllMonth.Feb,
-                          weightProgressAllMonth.Mar,
-                          weightProgressAllMonth.Apr,
-                          weightProgressAllMonth.May,
-                          weightProgressAllMonth.Jun,
-                          weightProgressAllMonth.Jul,
-                          weightProgressAllMonth.Aug,
-                          weightProgressAllMonth.Sep,
-                          weightProgressAllMonth.Oct,
-                          weightProgressAllMonth.Nov,
-                          weightProgressAllMonth.Dec,
-                        ],
-                      },
-                    ],
-                  }
-                : {
-                    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-                    datasets: [
-                      {
-                        data: [
-                          weightProgress.Monday,
-                          weightProgress.Tuesday,
-                          weightProgress.Wednesday,
-                          weightProgress.Thursday,
-                          weightProgress.Friday,
-                          weightProgress.Saturday,
-                          weightProgress.Sunday,
-                        ],
-                      },
-                    ],
-                  }
-            }
-            width={chartWidth} // from react-native
-            height={getHeight(25)}
-            onDataPointClick={(data) =>
-              handleDataPointClick(
-                data,
-                setTooltipWeight,
-                setTooltipPositionWeight,
-                setIsVisibleWeight
-              )
-            }
-            yAxisSuffix="%"
-            withHorizontalLines={false}
-            withVerticalLines={false}
-            chartConfig={{
-              backgroundColor: colors.secondary,
-              backgroundGradientFrom: colors.secondary,
-              backgroundGradientTo: colors.secondary,
-              decimalPlaces: 0, // round to decimal places
-              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(250, 250, 250, ${opacity})`,
-              style: {
-                borderRadius: 16,
-              },
-              propsForDots: {
-                r: "6",
-                strokeWidth: "2",
-                stroke: "#ffa726",
-              },
-              yAxis: {
-                min: 0,
-                max: 100,
-              },
-            }}
-            bezier // smooth lines
-            style={{
-              marginVertical: 8,
-              borderRadius: getFontSize(2),
-            }}
-          />
-          {isVisibleWeight && (
-            <TouchableOpacity
-              style={{
-                position: "absolute",
-                left: tooltipPositionWeight.left,
-                top: tooltipPositionWeight.top - 20,
-              }}
-              onPress={() => setIsVisibleWeight(false)}
-            >
-              <Text
-                style={{ color: colors.buttonColor, fontSize: getFontSize(2) }}
-              >
-                {tooltipWeight}
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
- 
- 
-        <View style={styles.spaceBet}>
-          <Text style={styles.activty}>CALORIES BURNED</Text>
-        </View>
-        <View style={{ ...styles.graphCon, marginTop: getHeight(2) }}>
-          <LineChart
-            data={
-              selectedTypes === "Last 7 Days"
-                ? {
-                    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
- 
- 
-                    datasets: [
-                      {
-                        data: [
-                          caloriesProgress.Monday,
-                          caloriesProgress.Tuesday,
-                          caloriesProgress.Wednesday,
-                          caloriesProgress.Thursday,
-                          caloriesProgress.Friday,
-                          caloriesProgress.Saturday,
-                          caloriesProgress.Sunday,
-                        ],
-                      },
-                    ],
-                  }
-                : selectedTypes === "This Month"
-                ? {
-                    labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-                    datasets: [
-                      {
-                        data: [
-                          monthlyCaloriesProgress.Week1,
-                          monthlyCaloriesProgress.Week2,
-                          monthlyCaloriesProgress.Week3,
-                          monthlyCaloriesProgress.Week4,
-                        ],
-                      },
-                    ],
-                  }
-                : selectedTypes === "Last 3 Months"
-                ? {
-                    labels: [
-                      monthNameOfThreeMonthCalories[0],
-                      monthNameOfThreeMonthCalories[1],
-                      monthNameOfThreeMonthCalories[2],
-                    ],
-                    datasets: [
-                      {
-                        data: [
-                          percentageOfThreeMonthCalories[0],
-                          percentageOfThreeMonthCalories[1],
-                          percentageOfThreeMonthCalories[2],
-                        ],
-                      },
-                    ],
-                  }
-                : selectedTypes === "Last 6 Months"
-                ? {
-                    labels: [
-                      monthNameOfSixMonthCalories[0],
-                      monthNameOfSixMonthCalories[1],
-                      monthNameOfSixMonthCalories[2],
-                      monthNameOfSixMonthCalories[3],
-                      monthNameOfSixMonthCalories[4],
-                      monthNameOfSixMonthCalories[5],
-                    ],
-                    datasets: [
-                      {
-                        data: [
-                          percentageOfSixMonthCalories[0],
-                          percentageOfSixMonthCalories[1],
-                          percentageOfSixMonthCalories[2],
-                          percentageOfSixMonthCalories[3],
-                          percentageOfSixMonthCalories[4],
-                          percentageOfSixMonthCalories[5],
-                        ],
-                      },
-                    ],
-                  }
-                : selectedTypes === "All Time"
-                ? {
-                    labels: [
-                      "Jan",
-                      "Feb",
-                      "Mar",
-                      "Apr",
-                      "May",
-                      "Jun",
-                      "Jul",
-                      "Aug",
-                      "Sep",
-                      "Oct",
-                      "Nov",
-                      "Dec",
-                    ],
-                    datasets: [
-                      {
-                        data: [
-                          caloriesProgressAllMonth.Jan,
-                          caloriesProgressAllMonth.Feb,
-                          caloriesProgressAllMonth.Mar,
-                          caloriesProgressAllMonth.Apr,
-                          caloriesProgressAllMonth.May,
-                          caloriesProgressAllMonth.Jun,
-                          caloriesProgressAllMonth.Jul,
-                          caloriesProgressAllMonth.Aug,
-                          caloriesProgressAllMonth.Sep,
-                          caloriesProgressAllMonth.Oct,
-                          caloriesProgressAllMonth.Nov,
-                          caloriesProgressAllMonth.Dec,
-                        ],
-                      },
-                    ],
-                  }
-                : {
-                    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-                    datasets: [
-                      {
-                        data: [
-                          caloriesProgress.Monday,
-                          caloriesProgress.Tuesday,
-                          caloriesProgress.Wednesday,
-                          caloriesProgress.Thursday,
-                          caloriesProgress.Friday,
-                          caloriesProgress.Saturday,
-                          caloriesProgress.Sunday,
-                        ],
-                      },
-                    ],
-                  }
-            }
-            width={chartWidth} // from react-native
-            height={getHeight(25)}
-            onDataPointClick={(data) =>
-              handleDataPointClick(
-                data,
-                setTooltipCalories,
-                setTooltipPositionCalories,
-                setIsVisibleCalories
-              )
-            }
-           // yAxisSuffix="%"
-            withHorizontalLines={false}
-            withVerticalLines={false}
-            chartConfig={{
-              backgroundColor: colors.secondary,
-              backgroundGradientFrom: colors.secondary,
-              backgroundGradientTo: colors.secondary,
-              decimalPlaces: 0, // round to decimal places
-              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(250, 250, 250, ${opacity})`,
-              style: {
-                borderRadius: 16,
-              },
-              propsForDots: {
-                r: "6",
-                strokeWidth: "2",
-                stroke: "#ffa726",
-              },
-              yAxis: {
-                min: 0,
-                max: 100,
-              },
-            }}
-            bezier // smooth lines
-            style={{
-              marginVertical: 8,
-              borderRadius: getFontSize(2),
-            }}
-          />
-          {isVisibleCalories && (
-            <TouchableOpacity
-              style={{
-                position: "absolute",
-                left: tooltipPositionCalories.left,
-                top: tooltipPositionCalories.top - 20,
-              }}
-              onPress={() => setIsVisibleCalories(false)}
-            >
-              <Text
-                style={{ color: colors.buttonColor, fontSize: getFontSize(2) }}
-              >
-                {tooltipCalories}
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </ScrollView>
-    </View>
+      </View>
+    );
+  };
+
+  return (
+    <SafeAreaView style={styles.root}>
+      <SectionList
+        sections={trainingSeatsData}
+        renderItem={renderItem}
+        renderSectionHeader={RenderSectionHeader}
+        ListHeaderComponent={ListHeaderComponent}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+        keyExtractor={(item, index) => index.toString()}
+      />
+    </SafeAreaView>
   );
- };
- export default Activity;
- 
- 
- 
- 
- 
- 
+}
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
+  imageBgStyle: {
+    height: getHeight(35),
+    padding: getWidth(8),
+    justifyContent: "space-between",
+  },
+  headerBtnStyle: {
+    padding: getWidth(2),
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    width: getWidth(10),
+  },
+  statsFontStyle: {
+    color: colors.white,
+    fontSize: getFontSize(5.5),
+    fontFamily: fonts.WB,
+    textAlign: "center",
+  },
+  imageStyle: {
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+  },
+  innerContainerStyle: {
+    paddingHorizontal: getWidth(5),
+    paddingVertical: getWidth(7),
+  },
+  trainingFontStyle: {
+    color: colors.black,
+    fontSize: getFontSize(4),
+    fontFamily: fonts.WB,
+  },
+  trainingContainerStyle: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  chartOuterContainer: {
+    backgroundColor: colors.paleGray,
+    borderRadius: 20,
+    paddingVertical: getWidth(3),
+    paddingHorizontal: getWidth(5),
+    marginBottom: getWidth(4),
+  },
+  percentageStyle: {
+    color: colors.black,
+    fontSize: getFontSize(5),
+    fontFamily: fonts.WB,
+  },
+  completionStyle: {
+    color: colors.slateGray,
+    fontSize: getFontSize(1.7),
+    fontFamily: fonts.WB,
+    flex: 1,
+  },
+  headerTextStyle: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: getWidth(1.5),
+    flex: 1,
+  },
+  calenderStyle: {
+    backgroundColor: colors.white,
+    paddingHorizontal: getWidth(3),
+    paddingVertical: getWidth(1.5),
+    borderRadius: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: getWidth(1.5),
+  },
+  headerTopContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  weekTextStyle: {
+    color: colors.slateGray,
+    fontSize: getFontSize(2),
+    fontFamily: fonts.WMe,
+  },
+  totalVolumeStyle: {
+    color: colors.black,
+    fontSize: getFontSize(2.4),
+    fontFamily: fonts.WMe,
+    marginBottom: getWidth(1),
+  },
+  bodyTextStyle: {
+    color: colors.black,
+    fontSize: getFontSize(2),
+    fontFamily: fonts.WB,
+  },
+  lbsTextStyle: {
+    color: colors.grayText1,
+    fontSize: getFontSize(2),
+    fontFamily: fonts.WMe,
+  },
+  weightContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  sectionTextStyle: {
+    color: colors.black,
+    fontSize: getFontSize(2.3),
+    fontFamily: fonts.WB,
+  },
+  containerStyle: {
+    backgroundColor: colors.paleGray,
+    padding: getWidth(4),
+    borderRadius: 32,
+    marginBottom: getWidth(3),
+    marginHorizontal: getWidth(5),
+  },
+  descriptionStyle: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: getWidth(2),
+  },
+  sectionTitleStyle: {
+    marginBottom: getWidth(2.5),
+    paddingHorizontal: getWidth(5),
+    paddingVertical: getWidth(2),
+  },
+  descriptionTextStyle: {
+    color: colors.grayText,
+    fontSize: getFontSize(1.7),
+    fontFamily: fonts.WMe,
+  },
+  updateTextStyle: {
+    color: colors.orange,
+    fontSize: getFontSize(1.7),
+    fontFamily: fonts.WMe,
+    textAlign: "right",
+    marginTop: getWidth(2),
+    textDecorationLine: "underline",
+  },
+  dropdown: {
+    height: getHeight(4),
+    borderRadius: 16,
+    paddingHorizontal: getWidth(3),
+    backgroundColor: colors.white,
+    width: getWidth(20),
+  },
+  icon: {
+    marginRight: 5,
+  },
+  placeholderStyle: {
+    fontSize: getFontSize(1.5),
+    color: colors.black,
+    fontFamily: fonts.WMe,
+    marginLeft: getWidth(1),
+  },
+  selectedTextStyle: {
+    fontSize: getFontSize(1.5),
+    color: colors.black,
+    fontFamily: fonts.WMe,
+    marginLeft: getWidth(1),
+  },
+  iconStyle: {
+    width: getWidth(2),
+    height: getHeight(2),
+  },
+  sliderStyle: {
+    height: getHeight(2),
+    borderRadius: 40,
+    backgroundColor: colors.orange,
+  },
+  customMarkerStyle: {
+    paddingHorizontal: getWidth(2.5),
+    height: getHeight(4),
+    width: getWidth(12),
+    backgroundColor: colors.green,
+    borderRadius: 3,
+    marginTop: getHeight(2),
+    borderWidth: 4,
+    borderColor: colors.white,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  sliderTextStyle: {
+    fontSize: getFontSize(1.3),
+    color: colors.white,
+    fontFamily: fonts.WB,
+  },
+});
