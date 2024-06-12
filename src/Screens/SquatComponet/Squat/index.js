@@ -192,6 +192,7 @@ export default function Squat({ navigation, route }) {
             style={{ marginRight: getWidth(5) }}
             onPress={() => {
               handleCheckmarkPress(no);
+              navigation.navigate("ResetTimer");
             }}
           >
             <Ionicons
