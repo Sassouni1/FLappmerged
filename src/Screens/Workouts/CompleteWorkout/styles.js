@@ -76,7 +76,7 @@ export const styles = StyleSheet.create({
   },
   setView: {
     backgroundColor: colors.whiteOp20,
-    height: getHeight(6),
+    height: getHeight(10),
     width: getWidth(14),
     justifyContent: "center",
     alignItems: "center",
@@ -101,11 +101,15 @@ export const styles = StyleSheet.create({
     borderTopLeftRadius: 30
   },
   setParams: {
-    width: getWidth(14),
+    height: getHeight(10),
+    width: getWidth(15),
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: getFontSize(1),
+    // borderRadius: getFontSize(1),
     backgroundColor: colors.orange,
+    borderBottomLeftRadius: 30,
+    borderTopLeftRadius: 30,
+
   },
   exerciseParamas: {
     //flexDirection: "row",
