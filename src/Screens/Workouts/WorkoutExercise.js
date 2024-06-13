@@ -152,7 +152,7 @@ const WorkoutExercise = ({ route }) => {
               gap={0}
               indicatorStyle={{
                 backgroundColor: "black",
-                opacity: "100%",
+                opacity: 0.9
               }}
               style={{
                 marginBottom: 10,

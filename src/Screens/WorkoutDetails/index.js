@@ -304,6 +304,7 @@ const WorkoutDetails = () => {
         {program.length > 0 &&
           program.map((item, index) => (
             <TouchableOpacity
+            key={index}
               onPress={() => navigation.navigate("ViewProgram", {passData: item, url:'program/detail_program/'})}
             >
               <View
@@ -323,7 +324,7 @@ const WorkoutDetails = () => {
                     left: 0,
                     bottom: 0,
                     right: 0,
-                    opacity: 0.8,
+                    // opacity: 0.8,
                   }}
                 />
                 <View

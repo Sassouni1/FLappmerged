@@ -41,26 +41,37 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   parameterCon: {
-    color: colors.blackDarkOp,
+    color: colors.blackOp,
     fontSize: getFontSize(2),
     marginTop: getFontSize(0.5),
     fontFamily: fonts.URe,
+    textAlign: "center"
+
+  },
+  lbsCol: {
+    width: getWidth(17),
+    justifyContent: "center",
+    alignItems: "center",
   },
   setName: {
     color: colors.blackOp,
-    fontWeight: "700",
+    fontWeight: "900",
     fontSize: getFontSize(2.2),
     fontFamily: fonts.URe,
+    textAlign: "center"
   },
   setCon: {
     flexDirection: "column",
-    width: getWidth(57),
+    width: getWidth(19),
+    marginRight: getFontSize(2),
     marginLeft: getFontSize(1),
+
   },
   setParameter: {
-    width: getWidth(17),
-    alignItems: "center",
-    justifyContent: "space-between",
+    width: getWidth(5),
+    marginLeft: getFontSize(2),
+    alignItems: 'center',
+    justifyContent: "soace-between",
     flexDirection: "row",
   },
   setView: {
@@ -73,17 +84,21 @@ export const styles = StyleSheet.create({
   },
   setText: {
     fontSize: getFontSize(1.7),
-    position: 'absolute', alignSelf: 'center', top: getHeight(2),
+    position: 'absolute', alignSelf: 'center', top: getHeight(4),
+    textAlign: "center",
     marginRight: getWidth(0),
     color: colors.black2,
     fontFamily: fonts.URe,
   },
   setContainer: {
     backgroundColor: colors.blackDarkOp,
-    height: getHeight(6),
-    width: getWidth(14),
+    height: getHeight(10),
+    width: getWidth(15),
     alignItems: "center",
-    borderRadius: getFontSize(0.75)
+    justifyContent: "center",
+    // borderRadius: getFontSize(0.75),
+    borderBottomLeftRadius: 30,
+    borderTopLeftRadius: 30
   },
   setParams: {
     width: getWidth(14),
@@ -97,6 +112,7 @@ export const styles = StyleSheet.create({
     //alignItems: "center",
     //justifyContent: "space-between",
     width: getWidth(90),
+
     //marginTop: getFontSize(1),
   },
   lbs: {
@@ -355,7 +371,7 @@ export const styles = StyleSheet.create({
     paddingTop: getFontSize(1.5),
     paddingBottom: getFontSize(1.5),
     borderRadius: getFontSize(0.5),
-    marginBottom:getFontSize(1)
+    marginBottom: getFontSize(1)
   },
   additionalSet: {
     marginTop: getFontSize(2),
