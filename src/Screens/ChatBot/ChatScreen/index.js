@@ -21,37 +21,23 @@ import fs from "react-native-fs";
 
 import { GernalStyle } from "../../../constants/GernalStyle";
 import { colors } from "../../../constants/colors";
-import {
-  CameraPicker,
-  SendMsg,
-  SpeakIcon,
-  UserChat,
-  BotChat,
-} from "../../../assets/images";
-import {
-  getFontSize,
-  getHeight,
-  getWidth,
-} from "../../../../utils/ResponsiveFun";
+import { CameraPicker, SendMsg, SpeakIcon, UserChat, BotChat } from "../../../assets/images";
+import { getFontSize, getHeight, getWidth } from "../../../../utils/ResponsiveFun";
 import { fonts } from "../../../constants/fonts";
 import ImagePickerModal from "../../../Components/ImagePickerModal";
-import {
-  captureImage,
-  chooseImageGallery,
-} from "../../../../utils/ImageAndCamera";
+import { captureImage, chooseImageGallery } from "../../../../utils/ImageAndCamera";
 import HeaderChatBot from "../../../Components/HeaderChatBot";
 
-const STATUSBAR_HEIGHT =
-  Platform.OS === "ios" ? getStatusBarHeight(true) : StatusBar.currentHeight;
+const STATUSBAR_HEIGHT = Platform.OS === "ios" ? getStatusBarHeight(true) : StatusBar.currentHeight;
 
 const BotChatScreen = ({ navigation, route }) => {
   const user = useSelector((state) => state.auth.userData);
   const [pickerModalVisibile, setPickerModalVisibile] = useState(false);
   const [sms, setSms] = useState("");
+
   const sendChat = async (sms) => {
     setSms("");
-
-    navigation.navigate("TestChatSceen");
+    // navigation.navigate("TestChatSceen");
   };
 
   const uploadFromCamera = async () => {
@@ -60,18 +46,13 @@ const BotChatScreen = ({ navigation, route }) => {
       SimpleToast.show(res.error);
       return;
     }
-    const uri =
-      Platform.OS === "ios"
-        ? res?.data?.uri.replace("file://", "")
-        : res?.data?.uri;
+    const uri = Platform.OS === "ios" ? res?.data?.uri.replace("file://", "") : res?.data?.uri;
     const Base64 = await fs.readFile(uri, "base64");
-
     const imageObject = {
       uri: res.data.uri,
       type: res.data.type,
       name: res.data.name,
     };
-
     setPickerModalVisibile(false);
   };
 
@@ -82,10 +63,7 @@ const BotChatScreen = ({ navigation, route }) => {
       return;
     }
     console.log("image response", res);
-    const uri =
-      Platform.OS === "ios"
-        ? res?.data?.uri.replace("file://", "")
-        : res?.data?.uri;
+    const uri = Platform.OS === "ios" ? res?.data?.uri.replace("file://", "") : res?.data?.uri;
     const Base64 = await fs.readFile(uri, "base64");
     const imageObject = {
       uri: res.data.uri,
@@ -98,7 +76,8 @@ const BotChatScreen = ({ navigation, route }) => {
     console.log("started");
   };
 
-  const backHandler = () => navigation.navigate("BotAllChatScreen");
+  // const backHandler = () => navigation.navigate("BotAllChatScreen");
+  const backHandler = () => navigation.goBack();
 
   return (
     <View style={styles.container}>
@@ -114,21 +93,12 @@ const BotChatScreen = ({ navigation, route }) => {
         containerStyle={styles.headerContainer}
         LeftIcon={
           <Pressable style={styles.headerIconWraaper} onPress={backHandler}>
-            <Image
-              source={require("../../../assets/images/Monotonechevronleft.png")}
-              style={styles.headerIcons}
-            />
+            <Image source={require("../../../assets/images/Monotonechevronleft.png")} style={styles.headerIcons} />
           </Pressable>
         }
         RightIcon={
-          <Pressable
-            style={styles.headerIconWraaper}
-            onPress={() => navigation.navigate("BotAllChatScreen")}
-          >
-            <Image
-              source={require("../../../assets/images/settings.png")}
-              style={styles.headerIcons}
-            />
+          <Pressable style={styles.headerIconWraaper} onPress={() => navigation.navigate("BotAllChatScreen")}>
+            <Image source={require("../../../assets/images/settings.png")} style={styles.headerIcons} />
           </Pressable>
         }
       />
@@ -153,13 +123,10 @@ const BotChatScreen = ({ navigation, route }) => {
           renderMessageText={(props) => {
             return (
               <View>
-                {props.currentMessage?.text != "" ||
-                props.currentMessage?.text != null ? (
+                {props.currentMessage?.text != "" || props.currentMessage?.text != null ? (
                   <View
                     style={{
-                      flexDirection: props.currentMessage.user._id
-                        ? "row-reverse"
-                        : "row",
+                      flexDirection: props.currentMessage.user._id ? "row-reverse" : "row",
                       paddingLeft: getWidth(2),
                       paddingVertical: getHeight(1),
                     }}
@@ -168,9 +135,7 @@ const BotChatScreen = ({ navigation, route }) => {
                       style={{
                         width: getWidth(10),
                         height: getWidth(10),
-                        backgroundColor: props.currentMessage.user._id
-                          ? colors.orange
-                          : colors.greyMedium,
+                        backgroundColor: props.currentMessage.user._id ? colors.orange : colors.greyMedium,
                         justifyContent: "center",
                         alignItems: "center",
                         borderRadius: getWidth(3),
@@ -185,9 +150,7 @@ const BotChatScreen = ({ navigation, route }) => {
                     <Text
                       style={{
                         paddingHorizontal: getWidth(2),
-                        color: props.currentMessage.user._id
-                          ? colors.white
-                          : colors.black,
+                        color: props.currentMessage.user._id ? colors.white : colors.black,
                         fontFamily: fonts.WM,
                         fontSize: getFontSize(2),
                         maxWidth: "90%",
@@ -206,18 +169,14 @@ const BotChatScreen = ({ navigation, route }) => {
                 props.currentMessage?.fileType == "image/jpg" ? (
                   <View
                     style={{
-                      flexDirection: props.currentMessage.user._id
-                        ? "row-reverse"
-                        : "row",
+                      flexDirection: props.currentMessage.user._id ? "row-reverse" : "row",
                     }}
                   >
                     <View
                       style={[
                         styles.customView,
                         {
-                          backgroundColor: props.currentMessage.user._id
-                            ? colors.orange
-                            : colors.greyMedium,
+                          backgroundColor: props.currentMessage.user._id ? colors.orange : colors.greyMedium,
                         },
                       ]}
                     >
@@ -252,11 +211,7 @@ const BotChatScreen = ({ navigation, route }) => {
               <View style={{ ...styles.inputCon }}>
                 <View style={styles.textinputCon}>
                   <TouchableOpacity onPress={() => null}>
-                    <SpeakIcon
-                      height={25}
-                      width={25}
-                      style={{ marginLeft: getWidth(2.5) }}
-                    />
+                    <SpeakIcon height={25} width={25} style={{ marginLeft: getWidth(2.5) }} />
                   </TouchableOpacity>
                   <TextInput
                     style={{
@@ -272,9 +227,7 @@ const BotChatScreen = ({ navigation, route }) => {
                     placeholder="Type to start chatting..."
                     placeholderTextColor={colors.textDark}
                   />
-                  <TouchableOpacity
-                    onPress={() => setPickerModalVisibile(false)}
-                  >
+                  <TouchableOpacity onPress={() => setPickerModalVisibile(false)}>
                     <CameraPicker height={20} width={20} />
                   </TouchableOpacity>
                 </View>

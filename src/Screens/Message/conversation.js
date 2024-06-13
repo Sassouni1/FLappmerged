@@ -20,40 +20,29 @@ import moment from "moment";
 import fs from "react-native-fs";
 import { CameraIcon, PdfIcon, SendIcon } from "../../assets/images";
 
-import {
-  getChats,
-  setAllSms,
-  setLoader,
-} from "../../Redux/actions/GernalActions";
+import { getChats, setAllSms, setLoader } from "../../Redux/actions/GernalActions";
 import { IMAGE_URL, SOCKET_URL } from "../../Services/Constants";
 
 import { GernalStyle } from "../../constants/GernalStyle";
 import { colors } from "../../constants/colors";
-import {
-  CameraPicker,
-  SendMsg,
-  SpeakIcon,
-  UserChat,
-  BotChat,
-} from "../../assets/images";
+import { UserChat, BotChat } from "../../assets/images";
 import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
 import { fonts } from "../../constants/fonts";
 import ImagePickerModal from "../../Components/ImagePickerModal";
-import {
-  captureImage,
-  chooseImageGallery,
-} from "../../../utils/ImageAndCamera";
+import { captureImage, chooseImageGallery } from "../../../utils/ImageAndCamera";
 import HeaderChatBot from "../../Components/HeaderChatBot";
+import { ApiCall } from "../../Services/Apis";
+import { io } from "socket.io-client";
 
-const { io } = require("socket.io-client");
-const socket = io(SOCKET_URL);
+// const { io } = require("socket.io-client");
+const socket = io(SOCKET_URL, {
+  transports: ["websocket"],
+});
 
-const STATUSBAR_HEIGHT =
-  Platform.OS === "ios" ? getStatusBarHeight(true) : StatusBar.currentHeight;
+const STATUSBAR_HEIGHT = Platform.OS === "ios" ? getStatusBarHeight(true) : StatusBar.currentHeight;
 
 const BotChatScreen = ({ navigation, route }) => {
-  const { channelId, channelName, reciver, sender, chatRoomType } =
-    route.params;
+  const { channelId, channelName, reciver, sender, chatRoomType } = route?.params;
 
   const dispatch = useDispatch();
   const messagesAll = useSelector((state) => state.gernal.allSms);
@@ -65,8 +54,11 @@ const BotChatScreen = ({ navigation, route }) => {
 
   const sendChat = async (sms) => {
     console.log("socket emit sms", sms);
+
+    // Ensure the socket is connected
     const date = new Date();
     if (chatRoomType == "groupChat") {
+      console.log("group chat id", channelId);
       socket.emit("group-chat", {
         text: sms,
         groupChatId: channelId,
@@ -74,6 +66,7 @@ const BotChatScreen = ({ navigation, route }) => {
         date: date,
       });
     } else if (chatRoomType == "chat") {
+      console.log("chat id", channelId);
       socket.emit("chat", {
         text: sms,
         chatroomId: channelId,
@@ -81,7 +74,6 @@ const BotChatScreen = ({ navigation, route }) => {
         date: date,
       });
     }
-
     setSms("");
   };
 
@@ -90,34 +82,17 @@ const BotChatScreen = ({ navigation, route }) => {
       const res = await DocumentPicker.pickSingle({
         type: [DocumentPicker.types.pdf],
       });
-      const uri =
-        Platform.OS === "ios" ? res.uri.replace("file://", "") : res.uri;
+      const uri = Platform.OS === "ios" ? res.uri.replace("file://", "") : res.uri;
       const Base64 = await fs.readFile(uri, "base64");
 
       if (chatRoomType == "groupChat") {
-        socket.emit(
-          "mob-upload-groupchat",
-          Base64,
-          res?.name,
-          res?.type,
-          sender?._id,
-          channelId,
-          (status) => {
-            console.log("file...", status);
-          }
-        );
+        socket.emit("mob-upload-groupchat", Base64, res?.name, res?.type, sender?._id, channelId, (status) => {
+          console.log("file...", status);
+        });
       } else if (chatRoomType == "chat") {
-        socket.emit(
-          "mob-upload",
-          Base64,
-          res?.name,
-          res?.type,
-          sender?._id,
-          channelId,
-          (status) => {
-            console.log("file...", status);
-          }
-        );
+        socket.emit("mob-upload", Base64, res?.name, res?.type, sender?._id, channelId, (status) => {
+          console.log("file...", status);
+        });
       }
     } catch (err) {
       console.log("ERROR is ", err);
@@ -134,10 +109,7 @@ const BotChatScreen = ({ navigation, route }) => {
       SimpleToast.show(res.error);
       return;
     }
-    const uri =
-      Platform.OS === "ios"
-        ? res?.data?.uri.replace("file://", "")
-        : res?.data?.uri;
+    const uri = Platform.OS === "ios" ? res?.data?.uri.replace("file://", "") : res?.data?.uri;
     const Base64 = await fs.readFile(uri, "base64");
 
     const imageObject = {
@@ -160,17 +132,9 @@ const BotChatScreen = ({ navigation, route }) => {
         }
       );
     } else if (chatRoomType == "chat") {
-      socket.emit(
-        "mob-upload",
-        Base64,
-        imageObject?.name,
-        imageObject?.type,
-        sender?._id,
-        channelId,
-        (status) => {
-          console.log("image", status);
-        }
-      );
+      socket.emit("mob-upload", Base64, imageObject?.name, imageObject?.type, sender?._id, channelId, (status) => {
+        console.log("image", status);
+      });
     }
   };
 
@@ -182,10 +146,7 @@ const BotChatScreen = ({ navigation, route }) => {
       return;
     }
     console.log("image response", res);
-    const uri =
-      Platform.OS === "ios"
-        ? res?.data?.uri.replace("file://", "")
-        : res?.data?.uri;
+    const uri = Platform.OS === "ios" ? res?.data?.uri.replace("file://", "") : res?.data?.uri;
     const Base64 = await fs.readFile(uri, "base64");
     const imageObject = {
       uri: res.data.uri,
@@ -244,21 +205,16 @@ const BotChatScreen = ({ navigation, route }) => {
           token: token,
         });
       }
-
       if (res?.status == "200") {
         dispatch(setLoader(false));
         console.log("responses of message", res?.response);
-
-        const newArrayOfObj = res?.response?.chat?.messages.map(
-          ({ sender: user, message: text, ...rest }) => ({
-            user,
-            text,
-            ...rest,
-          })
-        );
+        const newArrayOfObj = res?.response?.chat?.messages.map(({ sender: user, message: text, ...rest }) => ({
+          user,
+          text,
+          ...rest,
+        }));
         dispatch(setAllSms(newArrayOfObj));
       } else {
-        console.log("error", res);
         dispatch(setLoader(false));
       }
     } catch (e) {
@@ -267,10 +223,55 @@ const BotChatScreen = ({ navigation, route }) => {
       console.log("saga error -- ", e.toString());
     }
   };
+
   useEffect(() => {
     getAllSms();
   }, []);
+
+  // useEffect(() => {
+  //   // Connect to the socket server
+  //   console.log("socket", socket);
+  //   socket.connect();
+
+  //   // Handle connection
+  //   socket.on("connect", () => {
+  //     console.log("Connected to socket server");
+  //     alert("true");
+  //     socket.emit("join", {
+  //       senderId: sender?._id,
+  //       chatroomId: channelId,
+  //     });
+  //   });
+
+  //   // Handle disconnection
+  //   socket.on("disconnect", () => {
+  //     console.log("Disconnected from socket server");
+  //   });
+
+  //   // Handle errors
+  //   socket.on("connect_error", (error) => {
+  //     console.error("Socket connection error:", error);
+  //   });
+
+  //   socket.on("error", (error) => {
+  //     console.error("Socket error:", error);
+  //     alert("error");
+  //   });
+
+  //   // Cleanup on unmount
+  //   return () => {
+  //     socket.off("connect");
+  //     socket.off("disconnect");
+  //     socket.off("connect_error");
+  //     socket.disconnect();
+  //   };
+  // }, []);
+
   useEffect(() => {
+    console.log("==========socket====", socket);
+    socket.io.engine.on("upgrade", (transport) => {
+      console.log("transport.name", transport.name);
+    });
     socket.emit("join", {
       senderId: sender?._id,
       chatroomId: channelId,
@@ -278,7 +279,6 @@ const BotChatScreen = ({ navigation, route }) => {
     if (chatRoomType == "groupChat") {
       socket.on("group-chat", (payload) => {
         console.log("payload there", payload);
-
         const newArray = [payload].map((item) =>
           item?.sender == sender?._id
             ? {
@@ -300,15 +300,13 @@ const BotChatScreen = ({ navigation, route }) => {
                 _id: item?._id,
               }
         );
-        setMessages((previousMessages) =>
-          GiftedChat.append(previousMessages, newArray)
-        );
+        setMessages((previousMessages) => GiftedChat.append(previousMessages, newArray));
       });
     } else if (chatRoomType == "chat") {
       socket.on("chat", (payload) => {
         console.log("payload there", payload);
 
-        const newArray = [payload].map((item) =>
+        const newArray = [payload].map((item, idx) =>
           item?.sender == sender?._id
             ? {
                 PdfFile: IMAGE_URL + item?.file?.url,
@@ -329,9 +327,7 @@ const BotChatScreen = ({ navigation, route }) => {
                 _id: item?._id,
               }
         );
-        setMessages((previousMessages) =>
-          GiftedChat.append(previousMessages, newArray)
-        );
+        setMessages((prv) => GiftedChat.append(prv, newArray));
       });
     }
 
@@ -341,12 +337,13 @@ const BotChatScreen = ({ navigation, route }) => {
       // socket.emit('end');
     };
   }, []);
+
   useEffect(() => {
     const sorted = messagesAll.sort(function (a, b) {
       return b.date.localeCompare(a.date);
     });
 
-    const newArray = sorted.map((item) =>
+    const newArray = sorted.map((item, idx) =>
       item?.user == sender?._id
         ? {
             PdfFile: IMAGE_URL + item?.file?.url,
@@ -429,21 +426,12 @@ const BotChatScreen = ({ navigation, route }) => {
         containerStyle={styles.headerContainer}
         LeftIcon={
           <Pressable style={styles.headerIconWraaper} onPress={backHandler}>
-            <Image
-              source={require("../../assets/images/Monotonechevronleft.png")}
-              style={styles.headerIcons}
-            />
+            <Image source={require("../../assets/images/Monotonechevronleft.png")} style={styles.headerIcons} />
           </Pressable>
         }
         RightIcon={
-          <Pressable
-            style={styles.headerIconWraaper}
-            onPress={() => navigation.navigate("BotAllChatScreen")}
-          >
-            <Image
-              source={require("../../assets/images/settings.png")}
-              style={styles.headerIcons}
-            />
+          <Pressable style={styles.headerIconWraaper} onPress={() => navigation.navigate("BotAllChatScreen")}>
+            <Image source={require("../../assets/images/settings.png")} style={styles.headerIcons} />
           </Pressable>
         }
       />
@@ -455,27 +443,18 @@ const BotChatScreen = ({ navigation, route }) => {
             return (
               <Bubble
                 {...props}
-                wrapperStyle={{
-                  right: styles.rightBuble,
-                  left: styles.leftBuble,
-                }}
-                textStyle={{
-                  left: styles.leftBubleText,
-                  right: styles.rightBubleText,
-                }}
+                wrapperStyle={{ right: styles.rightBuble, left: styles.leftBuble }}
+                textStyle={{ left: styles.leftBubleText, right: styles.rightBubleText }}
               />
             );
           }}
           renderMessageText={(props) => {
             return (
               <View>
-                {props.currentMessage?.text != "" ||
-                props.currentMessage?.text != null ? (
+                {props.currentMessage?.text != "" || props.currentMessage?.text != null ? (
                   <View
                     style={{
-                      flexDirection: props.currentMessage.user._id
-                        ? "row-reverse"
-                        : "row",
+                      flexDirection: props.currentMessage.user._id ? "row-reverse" : "row",
                       paddingLeft: getWidth(2),
                       paddingVertical: getHeight(1),
                     }}
@@ -484,9 +463,7 @@ const BotChatScreen = ({ navigation, route }) => {
                       style={{
                         width: getWidth(10),
                         height: getWidth(10),
-                        backgroundColor: props.currentMessage.user._id
-                          ? colors.orange
-                          : colors.greyMedium,
+                        backgroundColor: props.currentMessage.user._id ? colors.orange : colors.greyMedium,
                         justifyContent: "center",
                         alignItems: "center",
                         borderRadius: getWidth(3),
@@ -501,9 +478,7 @@ const BotChatScreen = ({ navigation, route }) => {
                     <Text
                       style={{
                         paddingHorizontal: getWidth(2),
-                        color: props.currentMessage.user._id
-                          ? colors.white
-                          : colors.black,
+                        color: props.currentMessage.user._id ? colors.white : colors.black,
                         fontFamily: fonts.WM,
                         fontSize: getFontSize(2),
                         maxWidth: "90%",
@@ -520,21 +495,11 @@ const BotChatScreen = ({ navigation, route }) => {
                 {props.currentMessage?.fileType == "image/jpeg" ||
                 props.currentMessage?.fileType == "image/png" ||
                 props.currentMessage?.fileType == "image/jpg" ? (
-                  <View
-                    style={{
-                      flexDirection: props.currentMessage.user._id
-                        ? "row-reverse"
-                        : "row",
-                    }}
-                  >
+                  <View style={{ flexDirection: props.currentMessage.user._id ? "row-reverse" : "row" }}>
                     <View
                       style={[
                         styles.customView,
-                        {
-                          backgroundColor: props.currentMessage.user._id
-                            ? colors.orange
-                            : colors.greyMedium,
-                        },
+                        { backgroundColor: props.currentMessage.user._id ? colors.orange : colors.greyMedium },
                       ]}
                     >
                       {props.currentMessage.user._id ? (
@@ -565,33 +530,26 @@ const BotChatScreen = ({ navigation, route }) => {
           }}
           renderInputToolbar={() => {
             return (
-              // null
-              <View style={{ ...styles.inputCon }}>
+              <View style={styles.inputCon}>
                 <View style={styles.textinputCon}>
                   <TextInput
                     style={{
+                      ...GernalStyle.textInputMessage,
                       width: getWidth(60),
                       marginTop: 0,
                       paddingLeft: getWidth(3),
-                      paddingVertical: 20,
                     }}
                     value={sms}
                     onChangeText={(e) => setSms(e)}
                     onSubmitEditing={() => sendChat(sms)}
                     placeholder="Type a message..."
-                    placeholderTextColor={colors.darkGray}
+                    placeholderTextColor={colors.graytext4}
                   />
-                  <TouchableOpacity
-                    onPress={() => setPickerModalVisibile(true)}
-                  >
+                  <TouchableOpacity onPress={() => setPickerModalVisibile(true)}>
                     <CameraIcon height={20} width={20} />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => UploadFile()}>
-                    <PdfIcon
-                      height={25}
-                      width={25}
-                      style={{ marginLeft: getWidth(2.5) }}
-                    />
+                    <PdfIcon height={25} width={25} style={{ marginLeft: getWidth(2.5) }} />
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity
@@ -616,13 +574,7 @@ const BotChatScreen = ({ navigation, route }) => {
                   marginVertical: getHeight(1.5),
                 }}
               >
-                <View
-                  style={{
-                    backgroundColor: colors.greyMedium,
-                    height: getWidth(0.4),
-                    flex: 1,
-                  }}
-                />
+                <View style={{ backgroundColor: colors.greyMedium, height: getWidth(0.4), flex: 1 }} />
                 <Text
                   style={{
                     color: colors.greyText,
@@ -634,13 +586,7 @@ const BotChatScreen = ({ navigation, route }) => {
                 >
                   {moment(props.currentMessage.createdAt).format("hh:mm A")}
                 </Text>
-                <View
-                  style={{
-                    backgroundColor: colors.greyMedium,
-                    height: getWidth(0.4),
-                    flex: 1,
-                  }}
-                />
+                <View style={{ backgroundColor: colors.greyMedium, height: getWidth(0.4), flex: 1 }} />
               </View>
             );
           }}
@@ -652,14 +598,10 @@ const BotChatScreen = ({ navigation, route }) => {
           isKeyboardInternallyHandled
           showAvatarForEveryMessage={true}
           showScrollIndicator={false}
-          messages={oooo}
+          messages={messages}
           onSend={(messages) => sendChat(messages)}
-          user={{
-            _id: user?._id,
-          }}
-          renderTime={() => {
-            return null;
-          }}
+          user={{ _id: user?._id }}
+          renderTime={() => null}
         />
       </View>
       <ImagePickerModal
@@ -797,107 +739,107 @@ const styles = StyleSheet.create({
 
 export default BotChatScreen;
 
-const oooo = [
-  {
-    PdfFile: "http://54.234.223.198/undefined",
-    _id: "664c3420945d171558b55dc6",
-    createdAt: "2024-05-21T05:41:52+00:00",
-    fileType: undefined,
-    reciver: {},
-    text: "Hello, who are you?",
-    user: {
-      _id: "661e4e621a476bee6cfd68ba",
-      allow_programs: false,
-      chatroomId: "661e4e631a476bee6cfd6b3b",
-      customerId: "cus_Pw0zA3CDcf1aNb",
-      email: "gyruhitav@yopmail.com",
-      fcmToken:
-        "dTivxpfi00mEm1BeX-Sf8U:APA91bFBN9gOUsVk2LqzmLIsE_yYt_EOB0rEgYVh93ngK9KIDhqzzSdE7T77-E1OBts35cDHEC9nGY4iXFioyao34AVI-pMomk4o5wxjST8tJWYEhxANCd-VObDXHzkjK8aHWynzPBMD",
-      full_name: "Eugenia Haley",
-      groupChatId: "652f88e0a3ed8a769d24ce05",
-      height: 5,
-      isAssigned: true,
-      plan_id: "661f8eb81a476bee6cc8cb65",
-      program_id: "660d29bb5d81fb1c1be8eaae",
-      role: "customer",
-      status: true,
-      subscription: [Array],
-      target_weight: 150,
-      userBadge: [Array],
-      user_id: "661e4e611a476bee6cfd6889",
-      verification_status: false,
-      weight: 100,
-      weight_gain: 0,
-      weight_loss: 0,
-      workout_number: 8,
-    },
-  },
-  {
-    PdfFile: "http://54.234.223.198/undefined",
-    _id: "6633ef9ca3f2d7f7aaadc1dc",
-    createdAt: "2024-05-02T19:55:08+00:00",
-    fileType: undefined,
-    reciver: {
-      _id: "661e4e621a476bee6cfd68ba",
-      allow_programs: false,
-      chatroomId: "661e4e631a476bee6cfd6b3b",
-      customerId: "cus_Pw0zA3CDcf1aNb",
-      email: "gyruhitav@yopmail.com",
-      fcmToken:
-        "dTivxpfi00mEm1BeX-Sf8U:APA91bFBN9gOUsVk2LqzmLIsE_yYt_EOB0rEgYVh93ngK9KIDhqzzSdE7T77-E1OBts35cDHEC9nGY4iXFioyao34AVI-pMomk4o5wxjST8tJWYEhxANCd-VObDXHzkjK8aHWynzPBMD",
-      full_name: "Eugenia Haley",
-      groupChatId: "652f88e0a3ed8a769d24ce05",
-      height: 5,
-      isAssigned: true,
-      plan_id: "661f8eb81a476bee6cc8cb65",
-      program_id: "660d29bb5d81fb1c1be8eaae",
-      role: "customer",
-      status: true,
-      subscription: [Array],
-      target_weight: 150,
-      userBadge: [Array],
-      user_id: "661e4e611a476bee6cfd6889",
-      verification_status: false,
-      weight: 100,
-      weight_gain: 0,
-      weight_loss: 0,
-      workout_number: 8,
-    },
-    text: `Hi there! Welcome to Sandow, your personal AI fitness coach. I'm here to guide you on your fitness journey. Whether you want to get fit, lose weight, or build strength, I'm here to help you through! 🙌`,
-    user: {},
-  },
-  {
-    PdfFile: "http://54.234.223.198/undefined",
-    _id: "664c3420945d171558b55dc600",
-    createdAt: "2024-05-21T05:41:52+00:00",
-    fileType: undefined,
-    reciver: {},
-    text: "Wow, amazing!! 💖",
-    user: {
-      _id: "661e4e621a476bee6cfd68ba",
-      allow_programs: false,
-      chatroomId: "661e4e631a476bee6cfd6b3b",
-      customerId: "cus_Pw0zA3CDcf1aNb",
-      email: "gyruhitav@yopmail.com",
-      fcmToken:
-        "dTivxpfi00mEm1BeX-Sf8U:APA91bFBN9gOUsVk2LqzmLIsE_yYt_EOB0rEgYVh93ngK9KIDhqzzSdE7T77-E1OBts35cDHEC9nGY4iXFioyao34AVI-pMomk4o5wxjST8tJWYEhxANCd-VObDXHzkjK8aHWynzPBMD",
-      full_name: "Eugenia Haley",
-      groupChatId: "652f88e0a3ed8a769d24ce05",
-      height: 5,
-      isAssigned: true,
-      plan_id: "661f8eb81a476bee6cc8cb65",
-      program_id: "660d29bb5d81fb1c1be8eaae",
-      role: "customer",
-      status: true,
-      subscription: [Array],
-      target_weight: 150,
-      userBadge: [Array],
-      user_id: "661e4e611a476bee6cfd6889",
-      verification_status: false,
-      weight: 100,
-      weight_gain: 0,
-      weight_loss: 0,
-      workout_number: 8,
-    },
-  },
-];
+// const oooo = [
+//   {
+//     PdfFile: "http://54.234.223.198/undefined",
+//     _id: "664c3420945d171558b55dc6",
+//     createdAt: "2024-05-21T05:41:52+00:00",
+//     fileType: undefined,
+//     reciver: {},
+//     text: "Hello, who are you?",
+//     user: {
+//       _id: "661e4e621a476bee6cfd68ba",
+//       allow_programs: false,
+//       chatroomId: "661e4e631a476bee6cfd6b3b",
+//       customerId: "cus_Pw0zA3CDcf1aNb",
+//       email: "gyruhitav@yopmail.com",
+//       fcmToken:
+//         "dTivxpfi00mEm1BeX-Sf8U:APA91bFBN9gOUsVk2LqzmLIsE_yYt_EOB0rEgYVh93ngK9KIDhqzzSdE7T77-E1OBts35cDHEC9nGY4iXFioyao34AVI-pMomk4o5wxjST8tJWYEhxANCd-VObDXHzkjK8aHWynzPBMD",
+//       full_name: "Eugenia Haley",
+//       groupChatId: "652f88e0a3ed8a769d24ce05",
+//       height: 5,
+//       isAssigned: true,
+//       plan_id: "661f8eb81a476bee6cc8cb65",
+//       program_id: "660d29bb5d81fb1c1be8eaae",
+//       role: "customer",
+//       status: true,
+//       subscription: [Array],
+//       target_weight: 150,
+//       userBadge: [Array],
+//       user_id: "661e4e611a476bee6cfd6889",
+//       verification_status: false,
+//       weight: 100,
+//       weight_gain: 0,
+//       weight_loss: 0,
+//       workout_number: 8,
+//     },
+//   },
+//   {
+//     PdfFile: "http://54.234.223.198/undefined",
+//     _id: "6633ef9ca3f2d7f7aaadc1dc",
+//     createdAt: "2024-05-02T19:55:08+00:00",
+//     fileType: undefined,
+//     reciver: {
+//       _id: "661e4e621a476bee6cfd68ba",
+//       allow_programs: false,
+//       chatroomId: "661e4e631a476bee6cfd6b3b",
+//       customerId: "cus_Pw0zA3CDcf1aNb",
+//       email: "gyruhitav@yopmail.com",
+//       fcmToken:
+//         "dTivxpfi00mEm1BeX-Sf8U:APA91bFBN9gOUsVk2LqzmLIsE_yYt_EOB0rEgYVh93ngK9KIDhqzzSdE7T77-E1OBts35cDHEC9nGY4iXFioyao34AVI-pMomk4o5wxjST8tJWYEhxANCd-VObDXHzkjK8aHWynzPBMD",
+//       full_name: "Eugenia Haley",
+//       groupChatId: "652f88e0a3ed8a769d24ce05",
+//       height: 5,
+//       isAssigned: true,
+//       plan_id: "661f8eb81a476bee6cc8cb65",
+//       program_id: "660d29bb5d81fb1c1be8eaae",
+//       role: "customer",
+//       status: true,
+//       subscription: [Array],
+//       target_weight: 150,
+//       userBadge: [Array],
+//       user_id: "661e4e611a476bee6cfd6889",
+//       verification_status: false,
+//       weight: 100,
+//       weight_gain: 0,
+//       weight_loss: 0,
+//       workout_number: 8,
+//     },
+//     text: `Hi there! Welcome to Sandow, your personal AI fitness coach. I'm here to guide you on your fitness journey. Whether you want to get fit, lose weight, or build strength, I'm here to help you through! 🙌`,
+//     user: {},
+//   },
+//   {
+//     PdfFile: "http://54.234.223.198/undefined",
+//     _id: "664c3420945d171558b55dc600",
+//     createdAt: "2024-05-21T05:41:52+00:00",
+//     fileType: undefined,
+//     reciver: {},
+//     text: "Wow, amazing!! 💖",
+//     user: {
+//       _id: "661e4e621a476bee6cfd68ba",
+//       allow_programs: false,
+//       chatroomId: "661e4e631a476bee6cfd6b3b",
+//       customerId: "cus_Pw0zA3CDcf1aNb",
+//       email: "gyruhitav@yopmail.com",
+//       fcmToken:
+//         "dTivxpfi00mEm1BeX-Sf8U:APA91bFBN9gOUsVk2LqzmLIsE_yYt_EOB0rEgYVh93ngK9KIDhqzzSdE7T77-E1OBts35cDHEC9nGY4iXFioyao34AVI-pMomk4o5wxjST8tJWYEhxANCd-VObDXHzkjK8aHWynzPBMD",
+//       full_name: "Eugenia Haley",
+//       groupChatId: "652f88e0a3ed8a769d24ce05",
+//       height: 5,
+//       isAssigned: true,
+//       plan_id: "661f8eb81a476bee6cc8cb65",
+//       program_id: "660d29bb5d81fb1c1be8eaae",
+//       role: "customer",
+//       status: true,
+//       subscription: [Array],
+//       target_weight: 150,
+//       userBadge: [Array],
+//       user_id: "661e4e611a476bee6cfd6889",
+//       verification_status: false,
+//       weight: 100,
+//       weight_gain: 0,
+//       weight_loss: 0,
+//       workout_number: 8,
+//     },
+//   },
+// ];

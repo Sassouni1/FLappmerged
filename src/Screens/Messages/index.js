@@ -10,6 +10,7 @@ import {
   Platform,
   Pressable,
   SectionList,
+  Linking,
 } from "react-native";
 import { Bubble, GiftedChat } from "react-native-gifted-chat";
 import { getStatusBarHeight } from "react-native-safearea-height";
@@ -22,31 +23,16 @@ import fs from "react-native-fs";
 
 import { GernalStyle } from "../../../constants/GernalStyle";
 import { colors } from "../../constants/colors";
-import {
-  CameraPicker,
-  SendMsg,
-  SpeakIcon,
-  UserChat,
-  BotChat,
-} from "../../../assets/images";
-import {
-  getFontSize,
-  getHeight,
-  getWidth,
-  timeSince,
-} from "../../../utils/ResponsiveFun";
+import { CameraPicker, SendMsg, SpeakIcon, UserChat, BotChat } from "../../../assets/images";
+import { getFontSize, getHeight, getWidth, timeSince } from "../../../utils/ResponsiveFun";
 import { fonts } from "../../constants/fonts";
 import ChatsCard from "../../Components/Chats/ChatsCard";
-import {
-  captureImage,
-  chooseImageGallery,
-} from "../../../utils/ImageAndCamera";
+import { captureImage, chooseImageGallery } from "../../../utils/ImageAndCamera";
 import HeaderChatBot from "../../Components/HeaderChatBot";
 import { ApiCall } from "../../Services/Apis";
 import { setLoader } from "../../Redux/actions/GernalActions";
 
-const STATUSBAR_HEIGHT =
-  Platform.OS === "ios" ? getStatusBarHeight(true) : StatusBar.currentHeight;
+const STATUSBAR_HEIGHT = Platform.OS === "ios" ? getStatusBarHeight(true) : StatusBar.currentHeight;
 
 const BotAllChatScreen = ({ navigation, route }) => {
   const user = useSelector((state) => state.auth.userData);
@@ -76,9 +62,7 @@ const BotAllChatScreen = ({ navigation, route }) => {
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        alert(res?.response?.message, [{ text: "OK", onPress: () => console.log("OK Pressed") }]);
       }
     } catch (e) {
       console.log("api get chatrooms error -- ", e.toString());
@@ -101,7 +85,7 @@ const BotAllChatScreen = ({ navigation, route }) => {
         //     chatRoomType: item.subText === "GPT-4" ? "groupChat" : "chat",
         //   })
         // }
-        onPress={() => navigation.navigate("CreateChatScreen")}
+        onPress={item.onPress}
       >
         <ChatsCard item={item} index={index} />
       </TouchableOpacity>
@@ -110,20 +94,14 @@ const BotAllChatScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar
-        barStyle="light-content"
-        style={{ backgroundColor: colors.white }}
-      />
+      <StatusBar barStyle="light-content" style={{ backgroundColor: colors.white }} />
       <HeaderChatBot
         title={"My Chats"}
         titelStyle={styles.headerTitle}
         containerStyle={styles.headerContainer}
         LeftIcon={
           <Pressable style={styles.headerIconWraaper} onPress={backHandler}>
-            <Image
-              source={require("../../assets/images/Monotonechevronleft.png")}
-              style={styles.headerIcons}
-            />
+            <Image source={require("../../assets/images/Monotonechevronleft.png")} style={styles.headerIcons} />
           </Pressable>
         }
       />
@@ -138,11 +116,18 @@ const BotAllChatScreen = ({ navigation, route }) => {
                   _id: item._id,
                   title: "Fight Life Team",
                   subText: "GPT-4",
-                  msgCount: item?.messages
-                    ? item?.messages.length.toString()
-                    : "0",
+                  msgCount: item?.messages ? item?.messages.length.toString() : "0",
                   iconUrl: require("../../assets/images/support.png"),
                   colors: colors.greenlight,
+                  onPress: () => {
+                    navigation.navigate("ConversationScreen", {
+                      channelId: item._id,
+                      channelName: "Fight Life Team",
+                      reciver: {},
+                      sender: user,
+                      chatRoomType: "groupChat",
+                    });
+                  },
                 })),
                 {
                   _id: "team",
@@ -151,17 +136,17 @@ const BotAllChatScreen = ({ navigation, route }) => {
                   msgCount: "1.7K",
                   iconUrl: require("../../assets/images/teamIcon.png"),
                   colors: colors.lightBlue,
+                  onPress: () => navigation.navigate("CreateChatScreen"),
                 },
                 ...admin.map((item) => ({
                   _id: item._id,
                   title: "Customer Support",
                   subText: "Support",
-                  msgCount: item?.messages
-                    ? item?.messages.length.toString()
-                    : "0",
+                  msgCount: item?.messages ? item?.messages.length.toString() : "0",
                   iconUrl: require("../../assets/images/aiIcon.png"),
                   colors: colors.lightRed,
                   admin: item?.admin,
+                  onPress: () => Linking.openURL("mailto:support@example.com"),
                 })),
               ],
             },
