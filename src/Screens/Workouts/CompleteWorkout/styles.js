@@ -49,12 +49,12 @@ export const styles = StyleSheet.create({
 
   },
   lbsCol: {
-    width: getWidth(17),
+    width: getWidth(20),
     justifyContent: "center",
     alignItems: "center",
   },
   setName: {
-    color: colors.blackOp,
+    color: colors.black,
     fontWeight: "900",
     fontSize: getFontSize(2.2),
     fontFamily: fonts.URe,
@@ -62,14 +62,14 @@ export const styles = StyleSheet.create({
   },
   setCon: {
     flexDirection: "column",
-    width: getWidth(19),
+    width: getWidth(20),
     marginRight: getFontSize(2),
     marginLeft: getFontSize(1),
 
   },
   setParameter: {
-    width: getWidth(5),
-    marginLeft: getFontSize(2),
+    width: getWidth(10),
+    marginLeft: getFontSize(4),
     alignItems: 'center',
     justifyContent: "soace-between",
     flexDirection: "row",
@@ -83,7 +83,7 @@ export const styles = StyleSheet.create({
     borderRadius: getFontSize(1),
   },
   setText: {
-    fontSize: getFontSize(1.7),
+    // fontSize: getFontSize(1.9),
     position: 'absolute', alignSelf: 'center', top: getHeight(4),
     textAlign: "center",
     marginRight: getWidth(0),
@@ -93,7 +93,7 @@ export const styles = StyleSheet.create({
   setContainer: {
     backgroundColor: colors.blackDarkOp,
     height: getHeight(10),
-    width: getWidth(15),
+    width: getWidth(11),
     alignItems: "center",
     justifyContent: "center",
     // borderRadius: getFontSize(0.75),
@@ -102,11 +102,11 @@ export const styles = StyleSheet.create({
   },
   setParams: {
     height: getHeight(10),
-    width: getWidth(15),
+    width: getWidth(18),
     justifyContent: "center",
     alignItems: "center",
     // borderRadius: getFontSize(1),
-    backgroundColor: colors.orange,
+    // backgroundColor: colors.orange,
     borderBottomLeftRadius: 30,
     borderTopLeftRadius: 30,
 
@@ -121,7 +121,7 @@ export const styles = StyleSheet.create({
   },
   lbs: {
     fontSize: getFontSize(2),
-    color: colors.gray8,
+    color: colors.gray7,
     fontFamily: fonts.URe,
     // marginTop: getHeight(0.5),
     textAlign: "center",
@@ -153,7 +153,7 @@ export const styles = StyleSheet.create({
   },
   count: {
     fontSize: getFontSize(2.2),
-    color: colors.white,
+    color: colors.black,
     fontFamily: fonts.URe,
     marginRight: getWidth(2),
   },
@@ -256,7 +256,7 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     height: getHeight(8),
     marginTop: getHeight(3),
-    backgroundColor: colors.secondary1,
+    backgroundColor: colors.gray6,
     width: getWidth(90),
     // paddingLeft:getFontSize(1),
     paddingRight: getFontSize(1),
@@ -280,7 +280,7 @@ export const styles = StyleSheet.create({
     height: getHeight(6),
     // borderRadius: 5,
     // borderWidth: 1,
-    borderColor: colors.graytext5,
+    borderColor: colors.blackDarkOp,
     // backgroundColor: 'rgba(79,79,79,0.1)',
     flexDirection: "row",
     paddingLeft: getFontSize(3),
@@ -379,14 +379,14 @@ export const styles = StyleSheet.create({
   },
   additionalSet: {
     marginTop: getFontSize(2),
-    backgroundColor: colors.secondary1,
+    backgroundColor: colors.whiteOp20,
     width: getWidth(90),
     height: getHeight(6),
     justifyContent: "center",
     alignItems: "center",
     // paddingTop:getFontSize(1.5),
     // paddingBottom:getFontSize(1.5),
-    borderRadius: getFontSize(0.5),
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.blackOp,
     borderStyle: "dashed",

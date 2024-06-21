@@ -68,9 +68,8 @@ const AddWorkouts = () => {
     try {
       console.log("started");
       const res = await ApiCall({
-        route: `assignProgram/given-date-workouts/${
-          user?.plan_id
-        }&${selectedDate.toISOString()}`,
+        route: `assignProgram/given-date-workouts/${user?.plan_id
+          }&${selectedDate.toISOString()}`,
         verb: "get",
         token: token,
       });
@@ -378,9 +377,10 @@ const AddWorkouts = () => {
               style={{
                 alignItems: "center",
                 justifyContent: "center",
+                marginTop:10
               }}
             >
-              <Text style={{ fontWeight: "700", fontSize: 20 }}>
+              <Text style={{ fontWeight: "700", fontSize: 20,color:colors.black }}>
                 Endurance & Upper Body
               </Text>
               <Text
@@ -422,6 +422,8 @@ const AddWorkouts = () => {
                       fontWeight: "700",
                       fontSize: 16,
                       textAlign: "center",
+                      color:colors.black
+
                     }}
                   >
                     58 Min
@@ -465,6 +467,8 @@ const AddWorkouts = () => {
                       fontWeight: "700",
                       fontSize: 16,
                       textAlign: "center",
+                      color:colors.black
+
                     }}
                   >
                     254 Cal
@@ -508,9 +512,11 @@ const AddWorkouts = () => {
                       fontWeight: "700",
                       fontSize: 16,
                       textAlign: "center",
+                       color: colors.black
+
                     }}
                   >
-                    Upper 
+                    Upper
                   </Text>
                   <Text
                     style={{
@@ -525,15 +531,15 @@ const AddWorkouts = () => {
               </View>
               {item.exercise.map((ex) => (
                 <TouchableOpacity
-                onPress={() => {
-                  if (ex?.complete == 'true') {
+                  onPress={() => {
+                    if (ex?.complete == 'true') {
                     navigation.navigate('SubmittedWorkouts', {
                       workoutId: assigWorkout?._id,
                       innerWorkoutId: item?._id,
                       exerciseId: ex?._id,
                       exerciseName: ex?.exercise_name,
                     })
-                  } else {
+                    } else {
                     navigation.navigate('CompleteWorkout', {
                       workoutId: assigWorkout?._id,
                       innerWorkoutId: item?._id,
@@ -542,8 +548,8 @@ const AddWorkouts = () => {
                       given_sets: ex?.sets,
                       exerciseName: ex?.exercise_name,
                     })
-                  }
-                }}
+                    }
+                  }}
                   style={{
                     backgroundColor: "#F3F3F4",
                     borderRadius: 25,
@@ -562,7 +568,7 @@ const AddWorkouts = () => {
                       height: 90,
                     }}
                   />
-                  
+
                   <Image
                     source={require("../../../assets/images/exersiseplaybtn.png")}
                     style={{
@@ -591,6 +597,7 @@ const AddWorkouts = () => {
                       style={{
                         fontWeight: "700",
                         fontSize: 20,
+                        color: colors.black
                       }}
                     >
                       Back Warmup
