@@ -80,6 +80,8 @@ const WorkoutDetails = () => {
       });
 
       if (res?.status == "200") {
+        // console.log('Continue programss',res?.response?.detail?.filter((el) => !el?.isDeleted))
+
         setData(res?.response?.detail?.filter((el) => !el?.isDeleted));
         dispatch(setLoader(false));
       } else {
@@ -104,6 +106,7 @@ const WorkoutDetails = () => {
       });
 
       if (res?.status == "200") {
+        // console.log('programss', res?.response?.detail?.filter((el) => !el?.isDeleted))
         setProgram(res?.response?.detail?.filter((el) => !el?.isDeleted));
         dispatch(setLoader(false));
       } else {
@@ -304,8 +307,8 @@ const WorkoutDetails = () => {
         {program.length > 0 &&
           program.map((item, index) => (
             <TouchableOpacity
-            key={index}
-              onPress={() => navigation.navigate("ViewProgram", {passData: item, url:'program/detail_program/'})}
+              key={index}
+              onPress={() => navigation.navigate("ViewProgram", { passData: item, url: 'program/detail_program/' })}
             >
               <View
                 style={{

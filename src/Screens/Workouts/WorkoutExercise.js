@@ -38,8 +38,8 @@ const WorkoutExercise = ({ route }) => {
 
   const [routes] = useState([
     { key: "tab1", title: "Programs" },
-    { key: "tab3", title: "Stand Alone" },
     { key: "tab2", title: "My Calendar" },
+    { key: "tab3", title: "Stand Alone" },
   ]);
 
   useEffect(() => {

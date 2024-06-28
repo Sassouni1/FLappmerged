@@ -66,23 +66,24 @@ const AddWorkouts = () => {
   };
   const getSingleExcercise = async (selectedDate) => {
     try {
-      console.log("started");
+      // console.log("started");
       const res = await ApiCall({
         route: `assignProgram/given-date-workouts/${user?.plan_id
           }&${selectedDate.toISOString()}`,
         verb: "get",
         token: token,
       });
-      console.log("starteddd", res);
+      // console.log("starteddd", res);
       if (res?.status == "200") {
         console.log(
           "respone of add workoutss",
           res?.response?.Workout[0]?.innerWorkout[0]?.exercise
-        );
+                );
         setAssigWorkout(res?.response?.Workout[0]);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
+        
         setAssigWorkout([]);
         console.log("errorrrr in calenders");
       }
@@ -92,6 +93,7 @@ const AddWorkouts = () => {
   };
 
   const exerciseProgress = async (selectedDate) => {
+ 
     try {
       const res = await ApiCall({
         route: `assignProgram/user_status/${user?.user_id}`,
@@ -381,7 +383,7 @@ const AddWorkouts = () => {
               }}
             >
               <Text style={{ fontWeight: "700", fontSize: 20,color:colors.black }}>
-                Endurance & Upper Body
+                {item?.workoutName}
               </Text>
               <Text
                 style={{
@@ -392,8 +394,7 @@ const AddWorkouts = () => {
                   lineHeight: 20,
                 }}
               >
-                Prepare to transform your chest muscles with our targeted and
-                effective chest workout routine tailored for you.
+              {item?.description}
               </Text>
               <View
                 style={{
@@ -471,7 +472,7 @@ const AddWorkouts = () => {
 
                     }}
                   >
-                    254 Cal
+                    {item?.calories} Cal
                   </Text>
                   <Text
                     style={{
@@ -529,7 +530,7 @@ const AddWorkouts = () => {
                   </Text>
                 </View>
               </View>
-              {item.exercise.map((ex) => (
+              {item.exercise.map((ex,index) => (
                 <TouchableOpacity
                   onPress={() => {
                     if (ex?.complete == 'true') {
@@ -561,13 +562,26 @@ const AddWorkouts = () => {
                   }}
                   activeOpacity={0.8}
                 >
+                   {item?.video_thumbnail?
                   <Image
-                    source={require("../../../assets/images/exercse1.png")}
+                    source={{uri:item?.video_thumbnail}}
                     style={{
                       width: 90,
                       height: 90,
                     }}
                   />
+                  :
+                  <Image
+                  source={require("../../../assets/images/exercse1.png")}
+                  style={{
+                    width: 90,
+                    height: 90,
+                  }}
+                />
+                 
+                 }
+
+                 
 
                   <Image
                     source={require("../../../assets/images/exersiseplaybtn.png")}
@@ -591,7 +605,7 @@ const AddWorkouts = () => {
                         color: "#676C75",
                       }}
                     >
-                      Exercise 1
+                      Exercise {index + 1}
                     </Text>
                     <Text
                       style={{
@@ -600,7 +614,7 @@ const AddWorkouts = () => {
                         color: colors.black
                       }}
                     >
-                      Back Warmup
+                      {ex?.exercise_name}
                     </Text>
                     <View
                       style={{

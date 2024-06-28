@@ -182,7 +182,7 @@ const ViewProgram = ({ route }) => {
               color: "white",
             }}
           >
-            12 Week Program
+            {data?.no_of_days} days Program
           </Text>
         </View>
       </View>

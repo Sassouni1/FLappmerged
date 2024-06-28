@@ -180,7 +180,7 @@ const CompleteWorkout = ({ route }) => {
   };
 
   useEffect(() => {
-    console.log("submittedSets updated:", submittedSets);
+    // console.log("submittedSets updated:", submittedSets);
   }, [submittedSets]);
 
   const [showRestScreen, setShowRestScreen] = useState(false);
@@ -230,7 +230,7 @@ const CompleteWorkout = ({ route }) => {
       remaining_time !== "" ? remaining_time : currentSet.remaining_time;
 
     updatedSets[index] = currentSet;
-    console.log("gasjhdfgjkashfjkgh", updatedSets);
+    // console.log("gasjhdfgjkashfjkgh", updatedSets);
     setSubmittedSets(updatedSets);
   };
 
@@ -366,7 +366,7 @@ const CompleteWorkout = ({ route }) => {
         token: token,
         params: requestParams,
       });
-      console.log("submit....", res?.response);
+      // console.log("submit....", res?.response);
       if (res?.status == "200") {
         toast.show("Exercise successfully completed");
         setSubmittedSets([]);
@@ -394,8 +394,7 @@ const CompleteWorkout = ({ route }) => {
     setid,
     rest_time
   ) => {
-    console.log('rest timd', rest_time
-    )
+    // console.log('rest timd', rest_time )
     try {
       dispatch(setLoader(true));
       const submittedData = {
@@ -421,7 +420,7 @@ const CompleteWorkout = ({ route }) => {
         token: token,
         params: requestParams,
       });
-      console.log("submit....set", res?.response);
+      // console.log("submit....set", res?.response);
       if (res?.status == "200") {
         toast.show("set successfully completed");
         navigation.navigate("RestTimeScreen", { restTime: rest_time });
@@ -1037,9 +1036,9 @@ const CompleteWorkout = ({ route }) => {
                                   onChangeText={(text) => handleWeightChange(text, index)}
                                   
                                 onSubmitEditing={
-                                  //  set?.complete == "true"
-                                  // ? null
-                                  // : 
+                                   set?.complete == "true"
+                                  ? null
+                                  : 
                                 () => {
                                   setSubmitYards(true);
                                   singleSetComplete(
