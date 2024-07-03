@@ -160,6 +160,23 @@ import { fonts } from "../../../constants/fonts";
 import { colors } from "../../../constants/colors";
 
 export const styles = StyleSheet.create({
+  title: {
+    // flex: 1,
+    fontSize: getFontSize(3.2),
+    fontFamily: fonts.Re,
+    color: colors.black,
+    marginLeft: getWidth(2),
+    marginRight: getWidth(8),
+    textAlign: "center",
+  },
+  
+  item: {
+    padding: 10,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    backgroundColor: "lightgray",
+    borderRadius: 10,
+  },
   workt: {
     color: colors.white,
     fontFamily: fonts.UBo,

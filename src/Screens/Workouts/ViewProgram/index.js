@@ -34,6 +34,7 @@ const ViewProgram = ({ route }) => {
   const navigation = useNavigation();
   const { _id } = route?.params?.passData
   const url = route?.params?.url;
+  console.log({_id})
   // console.log('Url from view screen', url)
   // console.log('from view programs', _id)
   const [program, setProgram] = useState(null);
@@ -53,11 +54,11 @@ const ViewProgram = ({ route }) => {
       });
 
       if (res?.status == "200") {
-        console.log(
-          "workout",
-          res?.response?.detail?.workouts[0]?.innerWorkout[0]?.exercise
-        );
-        console.log("workout", res?.response?.detail);
+        // console.log(
+        //   "workout",
+        //   res?.response?.detail?.workouts[0]?.innerWorkout[0]?.exercise
+        // );
+        // console.log("workout", res?.response?.detail);
 
         setData(res?.response?.detail);
         setProgram(res?.response?.detail?.workouts);
@@ -80,7 +81,6 @@ const ViewProgram = ({ route }) => {
   useEffect(() => {
     getViewProgram();
   }, []);
-  console.log(data,'data')
   return (
     <ScrollView
       style={{
@@ -279,7 +279,7 @@ const ViewProgram = ({ route }) => {
             marginTop: -20,
           }}
         >
-          <TouchableOpacity onPress={() => navigation.navigate("WorkoutExercise")}>
+          <TouchableOpacity onPress={() => navigation.navigate("WorkoutExercise",{workoutData:route?.params?.passData, _id:_id})}>
             <Image
               source={require("../../../assets/images/workoutsdetailsbtn1.png")}
               style={{

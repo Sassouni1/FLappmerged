@@ -18,18 +18,22 @@ import WorkoutDetails from "../WorkoutDetails";
 import AddWorkouts from "./AddWorkouts";
 import StandAlone from "./StandAlone";
 
-const Tab1 = () => <AddWorkouts />;
-const Tab2 = () => <AddWorkouts />;
-const Tab3 = () => <StandAlone />;
+
 
 const initialLayout = { width: Dimensions.get("window").width };
 
 const WorkoutExercise = ({ route }) => {
   const navigation = useNavigation();
+  const workoutData = route?.params?.workoutData
+  const _id = route?.params?._id
 
+  // console.log({workoutData})
   const [index, setIndex] = useState(0);
   const [focusedTab, setfocusedTab] = useState(0);
 
+  const Tab1 = () => <AddWorkouts workoutData={workoutData} _id={_id} />;
+  const Tab2 = () => <AddWorkouts />;
+  const Tab3 = () => <StandAlone />;
   const renderScene = SceneMap({
     tab1: Tab1,
     tab2: Tab2,
@@ -37,7 +41,7 @@ const WorkoutExercise = ({ route }) => {
   });
 
   const [routes] = useState([
-    { key: "tab1", title: "Programs" },
+    { key: "tab1", title: "Programs", },
     { key: "tab2", title: "My Calendar" },
     { key: "tab3", title: "Stand Alone" },
   ]);
@@ -99,9 +103,9 @@ const WorkoutExercise = ({ route }) => {
               <TouchableOpacity
                 style={{
                   position: "absolute",
-                    top: 60,
+                  top: 60,
                   left: 20,
-                //   backgroundColor: "white",
+                  //   backgroundColor: "white",
                 }}
                 onPress={() => navigation.goBack()}
               >
