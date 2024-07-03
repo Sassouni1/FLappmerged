@@ -294,7 +294,9 @@ const CompleteWorkout = ({ route }) => {
   };
 
   useEffect(() => {
-    getSingleExcercise();
+    getSingleExcercise();    
+      console.log({given_sets})
+
   }, []);
 
   const [additionalSet, setAdditionalSets] = useState([]);
@@ -550,230 +552,233 @@ const CompleteWorkout = ({ route }) => {
                 }}
               />
             </TouchableOpacity>
-            <View
-              style={{
-                flexDirection: "row",
-                marginTop: 10,
-              }}
-            >
-              <View
+            {exercise!=='' &&
+                <View
                 style={{
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 10,
-                  paddingHorizontal: 24,
-                  justifyContent: "center",
+                  flexDirection: "row",
+                  marginTop: 10,
                 }}
               >
-                <Image
-                  source={require("../../../assets/images/workoutsclockicon.png")}
+                <View
                   style={{
-                    height: 20,
-                    width: 20,
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 10,
+                    paddingHorizontal: 24,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Image
+                    source={require("../../../assets/images/workoutsclockicon.png")}
+                    style={{
+                      height: 20,
+                      width: 20,
+                    }}
+                  />
+                  <Text
+                    style={{
+                      fontWeight: "700",
+                      fontSize: 16,
+                      textAlign: "center",
+                      color: colors.black
+                    }}
+                  >
+                    {exercise.no_of_sets} x {given_sets[0]?.reps}
+                  </Text>
+                  <Text
+                    style={{
+                      fontWeight: "400",
+                      fontSize: 14,
+                      textAlign: "center",
+  
+                    }}
+                  >
+                    Reps
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    height: 110,
+                    width: 1.5,
+                    backgroundColor: "lightgray",
                   }}
                 />
-                <Text
+                <View
                   style={{
-                    fontWeight: "700",
-                    fontSize: 16,
-                    textAlign: "center",
-                    color: colors.black
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 10,
+                    paddingHorizontal: 18,
+                    justifyContent: "center",
                   }}
                 >
-                  3X5
-                </Text>
-                <Text
+                  <Image
+                    source={require("../../../assets/images/workoutsfireicon.png")}
+                    style={{
+                      height: 18,
+                      width: 18,
+                      objectFit: "contain",
+                    }}
+                  />
+                  <Text
+                    style={{
+                      fontWeight: "700",
+                      fontSize: 16,
+                      textAlign: "center",
+                      color: colors.black
+  
+                    }}
+                  >
+                    1.2.3.1
+                  </Text>
+                  <Text
+                    style={{
+                      fontWeight: "400",
+                      fontSize: 14,
+                      textAlign: "center",
+                    }}
+                  >
+                    Tempo
+                  </Text>
+                </View>
+                <View
                   style={{
-                    fontWeight: "400",
-                    fontSize: 14,
-                    textAlign: "center",
-
-                  }}
-                >
-                  Reps
-                </Text>
-              </View>
-              <View
-                style={{
-                  height: 110,
-                  width: 1.5,
-                  backgroundColor: "lightgray",
-                }}
-              />
-              <View
-                style={{
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 10,
-                  paddingHorizontal: 18,
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  source={require("../../../assets/images/workoutsfireicon.png")}
-                  style={{
-                    height: 18,
-                    width: 18,
-                    objectFit: "contain",
+                    height: 110,
+                    width: 1.5,
+                    backgroundColor: "lightgray",
                   }}
                 />
-                <Text
+                <View
                   style={{
-                    fontWeight: "700",
-                    fontSize: 16,
-                    textAlign: "center",
-                    color: colors.black
-
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 10,
+                    paddingHorizontal: 20,
+                    justifyContent: "center",
                   }}
                 >
-                  1.2.3.1
-                </Text>
-                <Text
+                  <Image
+                    source={require("../../../assets/images/workoutsweightsicon.png")}
+                    style={{
+                      height: 20,
+                      width: 20,
+                      objectFit: "contain",
+                    }}
+                  />
+                  <Text
+                    style={{
+                      fontWeight: "700",
+                      fontSize: 16,
+                      textAlign: "center",
+                      color: colors.black
+  
+                    }}
+                  >
+                    85%
+                  </Text>
+                  <Text
+                    style={{
+                      fontWeight: "400",
+                      fontSize: 14,
+                      textAlign: "center",
+                    }}
+                  >
+                    Max
+                  </Text>
+                </View>
+                <View
                   style={{
-                    fontWeight: "400",
-                    fontSize: 14,
-                    textAlign: "center",
-                  }}
-                >
-                  Tempo
-                </Text>
-              </View>
-              <View
-                style={{
-                  height: 110,
-                  width: 1.5,
-                  backgroundColor: "lightgray",
-                }}
-              />
-              <View
-                style={{
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 10,
-                  paddingHorizontal: 20,
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  source={require("../../../assets/images/workoutsweightsicon.png")}
-                  style={{
-                    height: 20,
-                    width: 20,
-                    objectFit: "contain",
+                    height: 110,
+                    width: 1.5,
+                    backgroundColor: "lightgray",
                   }}
                 />
-                <Text
+                <View
                   style={{
-                    fontWeight: "700",
-                    fontSize: 16,
-                    textAlign: "center",
-                    color: colors.black
-
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 10,
+                    paddingHorizontal: 22,
+                    justifyContent: "center",
                   }}
                 >
-                  85%
-                </Text>
-                <Text
+                  <Image
+                    source={require("../../../assets/images/workoutsweightsicon.png")}
+                    style={{
+                      height: 20,
+                      width: 20,
+                      objectFit: "contain",
+                    }}
+                  />
+                  <Text
+                    style={{
+                      fontWeight: "700",
+                      fontSize: 16,
+                      textAlign: "center",
+                      color: colors.black
+  
+                    }}
+                  >
+                    10
+                  </Text>
+                  <Text
+                    style={{
+                      fontWeight: "400",
+                      fontSize: 14,
+                      textAlign: "center",
+                    }}
+                  >
+                    RPE
+                  </Text>
+                </View>
+                <View
                   style={{
-                    fontWeight: "400",
-                    fontSize: 14,
-                    textAlign: "center",
-                  }}
-                >
-                  Max
-                </Text>
-              </View>
-              <View
-                style={{
-                  height: 110,
-                  width: 1.5,
-                  backgroundColor: "lightgray",
-                }}
-              />
-              <View
-                style={{
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 10,
-                  paddingHorizontal: 22,
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  source={require("../../../assets/images/workoutsweightsicon.png")}
-                  style={{
-                    height: 20,
-                    width: 20,
-                    objectFit: "contain",
+                    height: 110,
+                    width: 1.5,
+                    backgroundColor: "lightgray",
                   }}
                 />
-                <Text
+                <View
                   style={{
-                    fontWeight: "700",
-                    fontSize: 16,
-                    textAlign: "center",
-                    color: colors.black
-
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 10,
+                    paddingHorizontal: 18,
+                    justifyContent: "center",
                   }}
                 >
-                  10
-                </Text>
-                <Text
-                  style={{
-                    fontWeight: "400",
-                    fontSize: 14,
-                    textAlign: "center",
-                  }}
-                >
-                  RPE
-                </Text>
+                  <Image
+                    source={require("../../../assets/images/workoutsweightsicon.png")}
+                    style={{
+                      height: 20,
+                      width: 20,
+                      objectFit: "contain",
+                    }}
+                  />
+                  <Text
+                    style={{
+                      fontWeight: "700",
+                      fontSize: 16,
+                      textAlign: "center",
+                      color: colors.black
+  
+                    }}
+                  >
+                    2
+                  </Text>
+                  <Text
+                    style={{
+                      fontWeight: "400",
+                      fontSize: 14,
+                      textAlign: "center",
+                    }}
+                  >
+                    RIR
+                  </Text>
+                </View>
               </View>
-              <View
-                style={{
-                  height: 110,
-                  width: 1.5,
-                  backgroundColor: "lightgray",
-                }}
-              />
-              <View
-                style={{
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 10,
-                  paddingHorizontal: 18,
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  source={require("../../../assets/images/workoutsweightsicon.png")}
-                  style={{
-                    height: 20,
-                    width: 20,
-                    objectFit: "contain",
-                  }}
-                />
-                <Text
-                  style={{
-                    fontWeight: "700",
-                    fontSize: 16,
-                    textAlign: "center",
-                    color: colors.black
-
-                  }}
-                >
-                  2
-                </Text>
-                <Text
-                  style={{
-                    fontWeight: "400",
-                    fontSize: 14,
-                    textAlign: "center",
-                  }}
-                >
-                  RIR
-                </Text>
-              </View>
-            </View>
+            }
+        
             {/* <View
               style={{
                 marginTop: getFontSize(4),
@@ -962,13 +967,12 @@ const CompleteWorkout = ({ route }) => {
                                       fontWeight: "700",
                                     }}
                                   >
-                                    {exercise?.sets[index - 1].rest_time}min
+                                    {exercise.sets[index-1]?.rest_time}min
                                     rest
                                   </Text>
                                 </View>
                               </View>
-                            )}
-
+                             )}
                             <View
                               style={{
                                 flexDirection: "row",
@@ -1013,11 +1017,12 @@ const CompleteWorkout = ({ route }) => {
                               <View style={styles.setCon}>
                                 <Text style={styles.setName}>
                                   {" "}
-                                  {index + 1}
+                                  {getParameter(set)}
                                 </Text>
                                 <Text style={styles.parameterCon}>
                                   {" "}
                                   {getParameter(set)} {set.parameter}
+
                                 </Text>
                               </View>
                               <View style={{
@@ -1125,7 +1130,7 @@ const CompleteWorkout = ({ route }) => {
                                     backgroundColor:
                                       set?.complete == "true"
                                         ? colors.orange
-                                        : colors.whiteOp20,
+                                        : colors.greyBg,
                                   }}
                                   onPress={
                                     set?.complete == "true"
