@@ -60,6 +60,7 @@ const CompleteWorkout = ({ route }) => {
   const [selectedInput, setSelectedInput] = useState(null);
   const [selectedInputAdditional, setSelectedInputAdditional] = useState(null);
   const [additionalSetCount, setAdditionalSetCount] = useState(0);
+  const [complete,setComplete]=useState(false)
   const [inputContent, setInputContent] = useState(
     Array(exercise?.sets.length).fill("")
   ); // State to store input content
@@ -71,7 +72,7 @@ const CompleteWorkout = ({ route }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextSet = () => {
-    if (nextIncompleteIndex < exercise.task.length - 1) {
+    if (nextIncompleteIndex < exercise[0].task.length - 1) {
       setCurrentIndex(nextIncompleteIndex + 1);
     }
     singleExerciseComplete();
@@ -468,8 +469,11 @@ const CompleteWorkout = ({ route }) => {
   };
 
   function getNextIncompleteTaskIndex(startIndex) {
-    for (let i = startIndex; i < exercise?.task?.length; i++) {
-      if (exercise?.task?.[i]?.complete !== "true") {
+    for (let i = startIndex; i < exercise[0]?.task?.length; i++) {
+      // if (exercise?.task?.[i]?.complete !== "true") {
+      //   return i;
+      // }
+      if (!complete) {
         return i;
       }
     }
@@ -580,7 +584,7 @@ const CompleteWorkout = ({ route }) => {
                       color: colors.black
                     }}
                   >
-                    {exercise[0].no_of_sets} x {given_sets[0]?.reps}
+                    {exercise[0].no_of_sets?exercise[0].no_of_sets:exercise[0].task[0].no_of_sets} x {given_sets[0]?.reps}
                   </Text>
                   <Text
                     style={{
@@ -837,6 +841,33 @@ const CompleteWorkout = ({ route }) => {
                       <Seprator style={{ width: getWidth(30) }} />
                     </View>
                   )}
+                     {exercise[0]?.task?.length > 0 && (
+                          <View
+                            style={{
+                              marginTop: getFontSize(2),
+                              flexDirection: "row",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Seprator style={{ width: getWidth(30) }} />
+                            <Text
+                              style={{
+                                fontSize: getFontSize(1.8),
+                                color: colors.blackOp,
+                                fontFamily: "Ubuntu",
+                                paddingLeft: getFontSize(1),
+                                paddingRight: getFontSize(1),
+                              }}
+                            >
+                              {exercise[0]?.task?.[nextIncompleteIndex]?.no_of_sets ===
+                                "1"
+                                ? `${exercise[0]?.task?.[nextIncompleteIndex]?.no_of_sets} WORKING SET`
+                                : `${exercise[0]?.task?.[nextIncompleteIndex]?.no_of_sets} WORKING SETS`}
+                            </Text>
+                            <Seprator style={{ width: getWidth(30) }} />
+                          </View>
+                        )}
                   {exercise.length > 0 && exercise.map((ex, index) => {
                     return (
                       <>
@@ -862,34 +893,7 @@ const CompleteWorkout = ({ route }) => {
                           </View>
                         )
                         }
-                        {ex?.task?.length > 0 && (
-                          <View
-                            key={index}
-                            style={{
-                              marginTop: getFontSize(2),
-                              flexDirection: "row",
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Seprator style={{ width: getWidth(30) }} />
-                            <Text
-                              style={{
-                                fontSize: getFontSize(1.8),
-                                color: colors.blackOp,
-                                fontFamily: "Ubuntu",
-                                paddingLeft: getFontSize(1),
-                                paddingRight: getFontSize(1),
-                              }}
-                            >
-                              {ex?.task?.[nextIncompleteIndex]?.no_of_sets ===
-                                "1"
-                                ? `${ex?.task?.[nextIncompleteIndex]?.no_of_sets} WORKING SET`
-                                : `${ex?.task?.[nextIncompleteIndex]?.no_of_sets} WORKING SETS`}
-                            </Text>
-                            <Seprator style={{ width: getWidth(30) }} />
-                          </View>
-                        )}
+                     
                         {ex?.task?.length > 0 &&
                           ex?.task?.[nextIncompleteIndex]?.notes &&
                           ex?.task?.[nextIncompleteIndex]?.notes.length > 0 && (
@@ -1135,7 +1139,7 @@ const CompleteWorkout = ({ route }) => {
                                         >
                                           <TextInput
                                             placeholder="Enter reps"
-                                            placeholderTextColor={"white"}
+                                            placeholderTextColor={"gray"}
                                             keyboardType="number-pad"
                                             onFocus={() => setSelectedInput(index)}
                                             onBlur={() => setSelectedInput(null)}
@@ -1159,7 +1163,7 @@ const CompleteWorkout = ({ route }) => {
                                             }}
                                             style={{
                                               width: getWidth(30),
-                                              color: colors.blackOp,
+                                              color: colors.black,
                                             }}
                                           />
                                           <View style={styles.parameterCtn}>
@@ -1178,7 +1182,7 @@ const CompleteWorkout = ({ route }) => {
                                         >
                                           <TextInput
                                             placeholder="Enter weight (lbs)"
-                                            placeholderTextColor={"white"}
+                                            placeholderTextColor={"gray"}
                                             keyboardType="number-pad"
                                             onFocus={() => setSelectedInput(index)}
                                             onBlur={() => setSelectedInput(null)}
@@ -1202,7 +1206,7 @@ const CompleteWorkout = ({ route }) => {
                                             }}
                                             style={{
                                               width: getWidth(30),
-                                              color: colors.blackOp,
+                                              color: colors.black,
                                             }}
                                           />
                                           <View style={styles.parameterCtn}>
@@ -1221,7 +1225,7 @@ const CompleteWorkout = ({ route }) => {
                                         >
                                           <TextInput
                                             placeholder="Enter weight"
-                                            placeholderTextColor={"white"}
+                                            placeholderTextColor={"gray"}
                                             keyboardType="number-pad"
                                             onFocus={() => setSelectedInput(index)}
                                             onBlur={() => setSelectedInput(null)}
@@ -1245,7 +1249,7 @@ const CompleteWorkout = ({ route }) => {
                                             }}
                                             style={{
                                               width: getWidth(30),
-                                              color: colors.blackOp,
+                                              color: colors.black,
                                             }}
                                           />
                                           <View style={styles.parameterCtn}>
@@ -1264,7 +1268,7 @@ const CompleteWorkout = ({ route }) => {
                                         >
                                           <TextInput
                                             placeholder="Enter seconds"
-                                            placeholderTextColor={"white"}
+                                            placeholderTextColor={"gray"}
                                             keyboardType="number-pad"
                                             onFocus={() => setSelectedInput(index)}
                                             onBlur={() => setSelectedInput(null)}
@@ -1288,7 +1292,7 @@ const CompleteWorkout = ({ route }) => {
                                             }}
                                             style={{
                                               width: getWidth(30),
-                                              color: colors.blackOp,
+                                              color: colors.black,
                                             }}
                                           />
                                           <View style={styles.parameterCtn}>
@@ -1307,7 +1311,7 @@ const CompleteWorkout = ({ route }) => {
                                         >
                                           <TextInput
                                             placeholder="Enter distance"
-                                            placeholderTextColor={"white"}
+                                            placeholderTextColor={"gray"}
                                             keyboardType="number-pad"
                                             onFocus={() => setSelectedInput(index)}
                                             onBlur={() => setSelectedInput(null)}
@@ -1331,7 +1335,7 @@ const CompleteWorkout = ({ route }) => {
                                             }}
                                             style={{
                                               width: getWidth(30),
-                                              color: colors.blackOp,
+                                              color: colors.black,
                                             }}
                                           />
                                           <View style={styles.parameterCtn}>
@@ -1350,7 +1354,7 @@ const CompleteWorkout = ({ route }) => {
                                         >
                                           <TextInput
                                             placeholder="Enter distance"
-                                            placeholderTextColor={"white"}
+                                            placeholderTextColor={"gray"}
                                             keyboardType="number-pad"
                                             onFocus={() => setSelectedInput(index)}
                                             onBlur={() => setSelectedInput(null)}
@@ -1374,7 +1378,7 @@ const CompleteWorkout = ({ route }) => {
                                             }}
                                             style={{
                                               width: getWidth(30),
-                                              color: colors.blackOp,
+                                              color: colors.black,
                                             }}
                                           />
                                           <View style={styles.parameterCtn}>
@@ -1393,7 +1397,7 @@ const CompleteWorkout = ({ route }) => {
                                         >
                                           <TextInput
                                             placeholder="Enter distance"
-                                            placeholderTextColor={"white"}
+                                            placeholderTextColor={"gray"}
                                             keyboardType="number-pad"
                                             onFocus={() => setSelectedInput(index)}
                                             onBlur={() => setSelectedInput(null)}
@@ -1417,7 +1421,7 @@ const CompleteWorkout = ({ route }) => {
                                             }}
                                             style={{
                                               width: getWidth(30),
-                                              color: colors.blackOp,
+                                              color: colors.black,
                                             }}
                                           />
                                           <View style={styles.parameterCtn}>
@@ -1943,7 +1947,7 @@ const CompleteWorkout = ({ route }) => {
                                   >
                                     <TextInput
                                       placeholder="Enter reps"
-                                      placeholderTextColor={"white"}
+                                      placeholderTextColor={"gray"}
                                       keyboardType="number-pad"
                                       onFocus={() =>
                                         setSelectedInputAdditional(index)
@@ -1989,7 +1993,7 @@ const CompleteWorkout = ({ route }) => {
                                   >
                                     <TextInput
                                       placeholder="Enter weight (lbs)"
-                                      placeholderTextColor={"white"}
+                                      placeholderTextColor={"gray"}
                                       keyboardType="number-pad"
                                       onFocus={() =>
                                         setSelectedInputAdditional(index)
@@ -2035,7 +2039,7 @@ const CompleteWorkout = ({ route }) => {
                                   >
                                     <TextInput
                                       placeholder="Enter weight"
-                                      placeholderTextColor={'white'}
+                                      placeholderTextColor={'gray'}
                                       keyboardType="number-pad"
                                       onFocus={() =>
                                         setSelectedInputAdditional(index)
@@ -2081,7 +2085,7 @@ const CompleteWorkout = ({ route }) => {
                                   >
                                     <TextInput
                                       placeholder="Enter seconds"
-                                      placeholderTextColor={"white"}
+                                      placeholderTextColor={"gray"}
                                       keyboardType="number-pad"
                                       onFocus={() =>
                                         setSelectedInputAdditional(index)
@@ -2111,7 +2115,7 @@ const CompleteWorkout = ({ route }) => {
                                       }}
                                       style={{
                                         width: getWidth(30),
-                                        color: "white",
+                                        color: "black",
                                       }}
                                     />
                                     <View style={styles.parameterCtn}>
@@ -2127,7 +2131,7 @@ const CompleteWorkout = ({ route }) => {
                                   >
                                     <TextInput
                                       placeholder="Enter distance"
-                                      placeholderTextColor={"white"}
+                                      placeholderTextColor={"gray"}
                                       keyboardType="number-pad"
                                       onFocus={() =>
                                         setSelectedInputAdditional(index)
@@ -2157,7 +2161,7 @@ const CompleteWorkout = ({ route }) => {
                                       }}
                                       style={{
                                         width: getWidth(30),
-                                        color: "white",
+                                        color: "black",
                                       }}
                                     />
                                     <View style={styles.parameterCtn}>
@@ -2173,7 +2177,7 @@ const CompleteWorkout = ({ route }) => {
                                   >
                                     <TextInput
                                       placeholder="Enter distance"
-                                      placeholderTextColor={"white"}
+                                      placeholderTextColor={"gray"}
                                       keyboardType="number-pad"
                                       onFocus={() =>
                                         setSelectedInputAdditional(index)
@@ -2203,7 +2207,7 @@ const CompleteWorkout = ({ route }) => {
                                       }}
                                       style={{
                                         width: getWidth(30),
-                                        color: "white",
+                                        color: "black",
                                       }}
                                     />
                                     <View style={styles.parameterCtn}>
@@ -2219,7 +2223,7 @@ const CompleteWorkout = ({ route }) => {
                                   >
                                     <TextInput
                                       placeholder="Enter distance"
-                                      placeholderTextColor={"white"}
+                                      placeholderTextColor={"gray"}
                                       keyboardType="number-pad"
                                       onFocus={() =>
                                         setSelectedInputAdditional(index)
@@ -2249,7 +2253,7 @@ const CompleteWorkout = ({ route }) => {
                                       }}
                                       style={{
                                         width: getWidth(30),
-                                        color: "white",
+                                        color: "black",
                                       }}
                                     />
                                     <View style={styles.parameterCtn}>
@@ -2361,7 +2365,7 @@ const CompleteWorkout = ({ route }) => {
                       paddingRight: getFontSize(1.5),
                     }}
                   >
-                    {nextIncompleteIndex === exercise?.task.length - 1
+                    {nextIncompleteIndex === exercise[0]?.task.length - 1
                       ? "Complete Exercise"
                       : "Next Exercise"}
                   </Text>
@@ -2370,7 +2374,7 @@ const CompleteWorkout = ({ route }) => {
               </TouchableOpacity>
             </View>
           ) : (
-            (nextIncompleteIndex === exercise?.task?.length - 1 ||
+            (nextIncompleteIndex === exercise[0]?.task?.length - 1 ||
               currentIndex === 0) && (
               <View
                 style={{
