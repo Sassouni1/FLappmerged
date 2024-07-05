@@ -32,7 +32,7 @@ const WorkoutExercise = ({ route }) => {
   const [focusedTab, setfocusedTab] = useState(0);
 
   const Tab1 = () => <AddWorkouts workoutData={workoutData} _id={_id} />;
-  const Tab2 = () => <AddWorkouts />;
+  const Tab2 = () => <AddWorkouts workoutData={workoutData} _id={_id}/>;
   const Tab3 = () => <StandAlone />;
   const renderScene = SceneMap({
     tab1: Tab1,
@@ -56,7 +56,6 @@ const WorkoutExercise = ({ route }) => {
     }
   }, [route]);
 
-  console.log(route);
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>

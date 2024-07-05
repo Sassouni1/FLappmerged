@@ -264,6 +264,7 @@ const CompleteWorkout = ({ route }) => {
 
 
   const getSingleExcercise = async () => {
+    console.log({workoutId,innerWorkoutId})
     try {
       const res = await ApiCall({
         route: `program/view_workout_exercise/${programId}`,
@@ -524,7 +525,7 @@ const CompleteWorkout = ({ route }) => {
           />
 
           <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
-            {exercise&& exercise[0].sets?.length > 0 ? (
+            {exercise&& exercise[0]?.sets?.length > 0 ? (
               <VideoSkills
                 data={{ video: exercise[0]?.video, Name: exercise[0]?.exercise_name }}
               />
@@ -584,7 +585,7 @@ const CompleteWorkout = ({ route }) => {
                       color: colors.black
                     }}
                   >
-                    {exercise[0].no_of_sets?exercise[0].no_of_sets:exercise[0].task[0].no_of_sets} x {given_sets[0]?.reps}
+                    {exercise[0]?.no_of_sets?exercise[0].no_of_sets:exercise[0].task[0].no_of_sets} x {given_sets[0]?.reps}
                   </Text>
                   <Text
                     style={{
@@ -815,7 +816,7 @@ const CompleteWorkout = ({ route }) => {
                     marginTop: getFontSize(2.5),
                   }}
                 >
-                  {exercise[0].sets?.length > 0 && (
+                  {exercise[0]?.sets?.length > 0 && (
                     <View
                       style={{
                         marginTop: getFontSize(2),

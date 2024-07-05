@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react";
 import { colors } from "../../../constants/colors";
 import GeneralStatusBar from "../../../Components/GeneralStatusBar";
 import { GernalStyle } from "../../../constants/GernalStyle";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation, useFocusEffect, useIsFocused } from "@react-navigation/native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import {
   getFontSize,
@@ -26,6 +26,7 @@ import { setLoader } from "../../../Redux/actions/GernalActions";
 import { ApiCall } from "../../../Services/Apis";
 import { fonts } from "../../../constants/fonts";
 import ReactNativeCalendarStrip from "react-native-calendar-strip";
+import { ActivityIndicator } from "react-native-paper";
 
 const AddWorkouts = ({ workoutData, _id }) => {
   // console.log({ workoutData })
@@ -34,21 +35,71 @@ const AddWorkouts = ({ workoutData, _id }) => {
   const dispatch = useDispatch();
   const [date, setDate] = useState(new Date());
   const [workout, setWorkout] = useState(null);
-
+  const isFocused = useIsFocused()
   const [assigWorkout, setAssigWorkout] = useState([]);
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
   const loader = useSelector((state) => state.gernal.loader);
   const [weekDataProgress, setWeekDataProgress] = useState({});
-  const handleDateChange = (selectedDate) => {
+
+  const calculateDayIndex = (selectedDate) => {
     dispatch(setLoader(true));
 
-    console.log({ selectedDate });
-    setDate(new Date(selectedDate));
+    const currentDate = new Date();
+    const normalizedCurrentDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate()
+    );
+    const normalizedSelectedDate = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      selectedDate.getDate()
+    );
+    const diffTime = normalizedSelectedDate - normalizedCurrentDate;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); // Floor to get an integer day difference
+    dispatch(setLoader(false))
+    return diffDays;
+  };
 
+  const fetchWorkout = (selectedDate) => {
+    dispatch(setLoader(true));
+
+    const dayIndex = calculateDayIndex(selectedDate);
+    if (dayIndex >= 0 && dayIndex < workoutData?.workouts.length) {
+      setWorkout(workoutData?.workouts[dayIndex]);
+      if (workout !== null) {
+        dispatch(setLoader(false))
+
+      }
+
+    } else {
+      console.log('Invalid day index');
+      setWorkout(null);
+      dispatch(setLoader(false))
+
+    }
 
 
   };
+
+  const handleDateChange = (selectedDate) => {
+    dispatch(setLoader(true));
+
+    setDate(new Date(selectedDate));
+    fetchWorkout(new Date(selectedDate));
+  };
+
+  useEffect(() => {
+
+    fetchWorkout(date);
+    console.log({ loader })
+
+
+  }, [ date, workoutData]);
+
+
+
 
   // const handleDateChange = (selectedDate) => {
   //   console.log({selectedDate})
@@ -73,7 +124,7 @@ const AddWorkouts = ({ workoutData, _id }) => {
     } else if (set.parameter == "reps") {
       return `${set.reps} reps`;
     } else {
-      return "N/A"; // You can change this to a default value if needed
+      return "N/A"; 
     }
   };
   // const getSingleExcercise = async (selectedDate) => {
@@ -132,57 +183,7 @@ const AddWorkouts = ({ workoutData, _id }) => {
   //     console.log("api get skill error -- ", e.toString());
   //   }
   // };
-  const calculateDayIndex = (selectedDate) => {
 
-    const currentDate = new Date();
-    const normalizedCurrentDate = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      currentDate.getDate()
-    );
-    const normalizedSelectedDate = new Date(
-      selectedDate.getFullYear(),
-      selectedDate.getMonth(),
-      selectedDate.getDate()
-    );
-    const diffTime = normalizedSelectedDate - normalizedCurrentDate;
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); // Floor to get an integer day difference
-    return diffDays;
-  };
-  useEffect(() => {
-    dispatch(setLoader(true));
-
-    const initialDayIndex = calculateDayIndex(date);
-    if (initialDayIndex >= 0 && initialDayIndex < workoutData?.workouts.length) {
-      setWorkout(workoutData?.workouts[initialDayIndex]);
-      dispatch(setLoader(false));
-
-    } else {
-      console.log('Invalid day index');
-      setWorkout(null);
-      dispatch(setLoader(false));
-    }
-
-  }, [date, workoutData]);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      dispatch(setLoader(true));
-
-      const dayIndex = calculateDayIndex(date);
-
-      if (dayIndex >= 0 && dayIndex < workoutData?.workouts.length) {
-        const currentWorkout = workoutData?.workouts[dayIndex];
-        setWorkout(currentWorkout);
-        dispatch(setLoader(false));
-      } else {
-        console.log('Invalid day index');
-        setWorkout(null);
-        dispatch(setLoader(false));
-      }
-
-    }, [date])
-  );
   // useFocusEffect(
   //   React.useCallback(() => {
 
@@ -382,7 +383,11 @@ const AddWorkouts = ({ workoutData, _id }) => {
         }}
       // iconContainer={{ flex: 0.05 }}
       />
-      <FlatList
+
+
+
+      {/* {workout&& */}
+      < FlatList
         style={{
           marginTop: 35,
         }}
@@ -402,26 +407,27 @@ const AddWorkouts = ({ workoutData, _id }) => {
                 height: getFontSize(55),
               }}
             >
-              {loader ? null : (
-                <View
-                  style={{ justifyContent: "center", alignItems: "center" }}
-                >
-                  <AntDesign
-                    size={getFontSize(8)}
-                    color={"white"}
-                    name="exclamationcircleo"
-                  />
-                  <Text
-                    style={{
-                      fontSize: getFontSize(2),
-                      color: colors.graytext5,
-                      marginTop: getHeight(1),
-                    }}
+              {loader ? null :
+                workout?.innerWorkout.length == 0 && (
+                  <View
+                    style={{ justifyContent: "center", alignItems: "center" }}
                   >
-                    No workout found on selected date
-                  </Text>
-                </View>
-              )}
+                    <AntDesign
+                      size={getFontSize(8)}
+                      color={"white"}
+                      name="exclamationcircleo"
+                    />
+                    <Text
+                      style={{
+                        fontSize: getFontSize(2),
+                        color: colors.graytext5,
+                        marginTop: getHeight(1),
+                      }}
+                    >
+                      No workout found on selected date
+                    </Text>
+                  </View>
+                )}
             </View>
 
           </>
@@ -482,7 +488,7 @@ const AddWorkouts = ({ workoutData, _id }) => {
 
                     }}
                   >
-                    58 Min
+                    {item?.workoutLength ? item?.workoutLength : 58} Min
                   </Text>
                   <Text
                     style={{
@@ -581,7 +587,7 @@ const AddWorkouts = ({ workoutData, _id }) => {
                       textAlign: "center",
                     }}
                   >
-                    Focus
+                    {item?.focus ? item?.focus : 'Focus'}
                   </Text>
                 </View>
               </View>
@@ -697,7 +703,7 @@ const AddWorkouts = ({ workoutData, _id }) => {
 
               }
               {
-              item.exercise[0].task.length === 0 &&
+                item.exercise[0].task.length === 0 &&
                 item.exercise.map((ex, index) => (
                   <TouchableOpacity
                     onPress={() => {
@@ -805,109 +811,109 @@ const AddWorkouts = ({ workoutData, _id }) => {
                 ))
               }
               {/* {item.exercise.map((ex, index) => (
-                <TouchableOpacity
-                  onPress={() => {
-                    if (ex?.complete == 'true') {
-                      navigation.navigate('SubmittedWorkouts', {
-                        workoutId: workout?._id,
-                        innerWorkoutId: item?._id,
-                        exerciseId: ex?._id,
-                        exerciseName: ex?.exercise_name,
-                      })
-                    } else {
-                      navigation.navigate('CompleteWorkout', {
-                        programId: _id,
-                        workoutId: workout?._id,
-                        innerWorkoutId: item?._id,
-                        exerciseId: ex?._id,
-                        calories: item?.calories,
-                        given_sets: ex?.sets,
-                        exerciseName: ex?.exercise_name,
-                      })
-                    }
-                  }}
-                  style={{
-                    backgroundColor: "#F3F3F4",
-                    borderRadius: 25,
-                    width: "100%",
-                    alignItems: "center",
-                    marginTop: 10,
-                    flexDirection: "row",
-                    padding: 10,
-                  }}
-                  activeOpacity={0.8}
-                >
-                  {item?.video_thumbnail ?
-                    <Image
-                      source={{ uri: item?.video_thumbnail }}
-                      style={{
-                        width: 90,
-                        height: 90,
-                      }}
-                    />
-                    :
-                    <Image
-                      source={require("../../../assets/images/exercse1.png")}
-                      style={{
-                        width: 90,
-                        height: 90,
-                      }}
-                    />
-
-                  }
-
-
-
-                  <Image
-                    source={require("../../../assets/images/exersiseplaybtn.png")}
-                    style={{
-                      width: 50,
-                      height: 50,
-                      position: "absolute",
-                      right: 20,
-                    }}
-                  />
-                  <View
-                    style={{
-                      flexDirection: "column",
-                      gap: 6,
-                      marginLeft: 15,
-                      alignItems: "flex-start",
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: "#676C75",
-                      }}
-                    >
-                      Exercise {index + 1}
-                    </Text>
-                    <Text
-                      style={{
-                        fontWeight: "700",
-                        fontSize: 20,
-                        color: colors.black
-                      }}
-                    >
-                      {ex?.exercise_name}
-                    </Text>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: 4,
-                      }}
-                    >
-                      <Image
-                        source={require("../../../assets/images/workoutsclockicon.png")}
-                        style={{ height: 20, width: 20 }}
-                      />
-                      <Text>5:30</Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              ))} */}
+                 <TouchableOpacity
+                   onPress={() => {
+                     if (ex?.complete == 'true') {
+                       navigation.navigate('SubmittedWorkouts', {
+                         workoutId: workout?._id,
+                         innerWorkoutId: item?._id,
+                         exerciseId: ex?._id,
+                         exerciseName: ex?.exercise_name,
+                       })
+                     } else {
+                       navigation.navigate('CompleteWorkout', {
+                         programId: _id,
+                         workoutId: workout?._id,
+                         innerWorkoutId: item?._id,
+                         exerciseId: ex?._id,
+                         calories: item?.calories,
+                         given_sets: ex?.sets,
+                         exerciseName: ex?.exercise_name,
+                       })
+                     }
+                   }}
+                   style={{
+                     backgroundColor: "#F3F3F4",
+                     borderRadius: 25,
+                     width: "100%",
+                     alignItems: "center",
+                     marginTop: 10,
+                     flexDirection: "row",
+                     padding: 10,
+                   }}
+                   activeOpacity={0.8}
+                 >
+                   {item?.video_thumbnail ?
+                     <Image
+                       source={{ uri: item?.video_thumbnail }}
+                       style={{
+                         width: 90,
+                         height: 90,
+                       }}
+                     />
+                     :
+                     <Image
+                       source={require("../../../assets/images/exercse1.png")}
+                       style={{
+                         width: 90,
+                         height: 90,
+                       }}
+                     />
+ 
+                   }
+ 
+ 
+ 
+                   <Image
+                     source={require("../../../assets/images/exersiseplaybtn.png")}
+                     style={{
+                       width: 50,
+                       height: 50,
+                       position: "absolute",
+                       right: 20,
+                     }}
+                   />
+                   <View
+                     style={{
+                       flexDirection: "column",
+                       gap: 6,
+                       marginLeft: 15,
+                       alignItems: "flex-start",
+                     }}
+                   >
+                     <Text
+                       style={{
+                         color: "#676C75",
+                       }}
+                     >
+                       Exercise {index + 1}
+                     </Text>
+                     <Text
+                       style={{
+                         fontWeight: "700",
+                         fontSize: 20,
+                         color: colors.black
+                       }}
+                     >
+                       {ex?.exercise_name}
+                     </Text>
+                     <View
+                       style={{
+                         flexDirection: "row",
+                         alignItems: "center",
+                         justifyContent: "center",
+                         gap: 4,
+                       }}
+                     >
+                       <Image
+                         source={require("../../../assets/images/workoutsclockicon.png")}
+                         style={{ height: 20, width: 20 }}
+                       />
+                       <Text>5:30</Text>
+                     </View>
+                   </View>
+                 </TouchableOpacity>
+               ))} */}
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() =>
@@ -946,6 +952,11 @@ const AddWorkouts = ({ workoutData, _id }) => {
           );
         }}
       />
+
+
+      {/* } */}
+
+
 
 
 
@@ -995,7 +1006,7 @@ const AddWorkouts = ({ workoutData, _id }) => {
           />
         </View>
       ) : null} */}
-    </View>
+    </View >
   );
 };
 

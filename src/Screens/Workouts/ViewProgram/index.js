@@ -34,9 +34,7 @@ const ViewProgram = ({ route }) => {
   const navigation = useNavigation();
   const { _id } = route?.params?.passData
   const url = route?.params?.url;
-  console.log({_id})
-  // console.log('Url from view screen', url)
-  // console.log('from view programs', _id)
+  
   const [program, setProgram] = useState(null);
   const [data, setData] = useState(null);
 

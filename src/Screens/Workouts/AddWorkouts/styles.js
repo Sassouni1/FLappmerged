@@ -160,6 +160,15 @@ import { fonts } from "../../../constants/fonts";
 import { colors } from "../../../constants/colors";
 
 export const styles = StyleSheet.create({
+  loaderbackground: {
+    justifyContent: "center",
+    alignItems: "center",
+    height: getHeight(110),
+    width: getWidth(100),
+    backgroundColor: "rgba(52, 52, 52, 0.5)",
+    position: "absolute",
+    alignSelf: "center",
+  },
   title: {
     // flex: 1,
     fontSize: getFontSize(3.2),
