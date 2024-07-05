@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect,useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -18,9 +18,9 @@ import SimpleToast from "react-native-simple-toast";
 import ImageModal from "react-native-image-modal";
 import moment from "moment";
 import fs from "react-native-fs";
-
 import { GernalStyle } from "../../../constants/GernalStyle";
 import { colors } from "../../../constants/colors";
+import * as Animatable from 'react-native-animatable';
 import {
   CameraPicker,
   SendMsg,
@@ -48,10 +48,73 @@ const BotChatScreen = ({ navigation, route }) => {
   const user = useSelector((state) => state.auth.userData);
   const [pickerModalVisibile, setPickerModalVisibile] = useState(false);
   const [sms, setSms] = useState("");
-  const sendChat = async (sms) => {
-    setSms("");
+  const [messages, setMessages] = useState([]);
 
-    navigation.navigate("TestChatSceen");
+  useEffect(() => {
+    setMessages([
+      {
+        _id: 1,
+        text: 'Hello! How can I assist you today?',
+        createdAt: new Date(),
+        user: {
+          _id: 2,
+          name: 'ChatGPT',
+        },
+      },
+    ]);
+  }, []);
+
+  const handleSend = useCallback((newMessages = []) => {
+    setSms('');
+    setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages));
+
+    const message = newMessages[0].text;
+
+    // Add a waiting indicator message
+    setMessages(previousMessages => GiftedChat.append(previousMessages, [{
+      _id: Math.random().toString(36).substring(7),
+      text: 'waiting...',
+      createdAt: new Date(),
+      user: {
+        _id: 2,
+        name: 'ChatGPT',
+      },
+    }]));
+
+    fetch('http://54.147.3.191/assistant', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ text: message }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(user)
+        console.log(data?.choices[0]?.message?.content)
+        const responseMessage = {
+          _id: Math.random().toString(36).substring(7),
+          text: data?.choices[0]?.message?.content,
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: 'ChatGPT',
+          },
+        };
+        setMessages(previousMessages => {
+          const filteredMessages = previousMessages.filter(msg => msg.text !== 'waiting...');
+          return GiftedChat.append(filteredMessages, responseMessage);
+        });
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, []);
+
+  const sendChat = async (sms) => {
+    // setSms("");
+
+    // navigation.navigate("TestChatSceen");
   };
 
   const uploadFromCamera = async () => {
@@ -98,7 +161,34 @@ const BotChatScreen = ({ navigation, route }) => {
     console.log("started");
   };
 
-  const backHandler = () => navigation.navigate("BotAllChatScreen");
+  const WaitingDots = () => {
+    return (
+      <View style={styles.dotsContainer}>
+        <Animatable.Text animation="bounce" iterationCount="infinite" style={styles.dot}>.</Animatable.Text>
+        <Animatable.Text animation="bounce" iterationCount="infinite" delay={100} style={styles.dot}>.</Animatable.Text>
+        <Animatable.Text animation="bounce" iterationCount="infinite" delay={200} style={styles.dot}>.</Animatable.Text>
+      </View>
+    );
+  };
+
+  const renderBubble = (props) => {
+    if (props.currentMessage.text === 'waiting...') {
+      return <WaitingDots />;
+    }
+    return  <Bubble
+    {...props}
+    wrapperStyle={{
+      right: styles.rightBuble,
+      left: styles.leftBuble,
+    }}
+    textStyle={{
+      left: styles.leftBubleText,
+      right: styles.rightBubleText,
+    }}
+  />;
+  };
+  
+  const backHandler = () => navigation.navigate("HomeSc");
 
   return (
     <View style={styles.container}>
@@ -135,21 +225,7 @@ const BotChatScreen = ({ navigation, route }) => {
       <View style={styles.chatContainer}>
         <GiftedChat
           renderAvatar={(props) => null}
-          renderBubble={(props) => {
-            return (
-              <Bubble
-                {...props}
-                wrapperStyle={{
-                  right: styles.rightBuble,
-                  left: styles.leftBuble,
-                }}
-                textStyle={{
-                  left: styles.leftBubleText,
-                  right: styles.rightBubleText,
-                }}
-              />
-            );
-          }}
+          renderBubble={renderBubble}
           renderMessageText={(props) => {
             return (
               <View>
@@ -185,7 +261,7 @@ const BotChatScreen = ({ navigation, route }) => {
                     <Text
                       style={{
                         paddingHorizontal: getWidth(2),
-                        color: props.currentMessage.user._id
+                        color: props.currentMessage.user._id == user?._id
                           ? colors.white
                           : colors.black,
                         fontFamily: fonts.WM,
@@ -264,13 +340,14 @@ const BotChatScreen = ({ navigation, route }) => {
                       width: getWidth(60),
                       marginTop: 0,
                       paddingLeft: getWidth(3),
+                      color:colors.black,
                       backgroundColor: colors.greyLight,
                     }}
                     value={sms}
                     onChangeText={(e) => setSms(e)}
-                    onSubmitEditing={() => sendChat(sms)}
+                    // onSubmitEditing={() => sendChat(sms)}
                     placeholder="Type to start chatting..."
-                    placeholderTextColor={colors.textDark}
+                    // placeholderTextColor={colors.textDark}
                   />
                   <TouchableOpacity
                     onPress={() => setPickerModalVisibile(false)}
@@ -280,8 +357,18 @@ const BotChatScreen = ({ navigation, route }) => {
                 </View>
                 <TouchableOpacity
                   onPress={() => {
-                    // sms == "" ? null : sendChat(sms);
-                    navigation.navigate("TestChatSceen");
+                    let newMessages = [
+                      {
+                        _id: Math.random().toString(36).substring(7),
+                        text: sms,
+                        createdAt: new Date(),
+                        user: {
+                          _id: user?._id,
+                          name: 'User',
+                        },
+                      },
+                    ]
+                    handleSend(newMessages);
                   }}
                   style={styles.sendBtn}
                 >
@@ -337,8 +424,8 @@ const BotChatScreen = ({ navigation, route }) => {
           isKeyboardInternallyHandled
           showAvatarForEveryMessage={true}
           showScrollIndicator={false}
-          messages={oooo}
-          onSend={(messages) => sendChat(messages)}
+          messages={messages}
+          onSend={newMessages => handleSend(newMessages)}
           user={{
             _id: user?._id,
           }}
@@ -478,111 +565,13 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: getWidth(10),
     borderTopRightRadius: getWidth(10),
   },
+  dotsContainer: {
+    flexDirection: 'row',
+  },
+  dot: {
+    fontSize: 40,
+    color: '#007AFF',
+  },
 });
 
 export default BotChatScreen;
-
-const oooo = [
-  {
-    PdfFile: "http://54.234.223.198/undefined",
-    _id: "664c3420945d171558b55dc6",
-    createdAt: "2024-05-21T05:41:52+00:00",
-    fileType: undefined,
-    reciver: {},
-    text: "Hello, who are you?",
-    user: {
-      _id: "661e4e621a476bee6cfd68ba",
-      allow_programs: false,
-      chatroomId: "661e4e631a476bee6cfd6b3b",
-      customerId: "cus_Pw0zA3CDcf1aNb",
-      email: "gyruhitav@yopmail.com",
-      fcmToken:
-        "dTivxpfi00mEm1BeX-Sf8U:APA91bFBN9gOUsVk2LqzmLIsE_yYt_EOB0rEgYVh93ngK9KIDhqzzSdE7T77-E1OBts35cDHEC9nGY4iXFioyao34AVI-pMomk4o5wxjST8tJWYEhxANCd-VObDXHzkjK8aHWynzPBMD",
-      full_name: "Eugenia Haley",
-      groupChatId: "652f88e0a3ed8a769d24ce05",
-      height: 5,
-      isAssigned: true,
-      plan_id: "661f8eb81a476bee6cc8cb65",
-      program_id: "660d29bb5d81fb1c1be8eaae",
-      role: "customer",
-      status: true,
-      subscription: [Array],
-      target_weight: 150,
-      userBadge: [Array],
-      user_id: "661e4e611a476bee6cfd6889",
-      verification_status: false,
-      weight: 100,
-      weight_gain: 0,
-      weight_loss: 0,
-      workout_number: 8,
-    },
-  },
-  {
-    PdfFile: "http://54.234.223.198/undefined",
-    _id: "6633ef9ca3f2d7f7aaadc1dc",
-    createdAt: "2024-05-02T19:55:08+00:00",
-    fileType: undefined,
-    reciver: {
-      _id: "661e4e621a476bee6cfd68ba",
-      allow_programs: false,
-      chatroomId: "661e4e631a476bee6cfd6b3b",
-      customerId: "cus_Pw0zA3CDcf1aNb",
-      email: "gyruhitav@yopmail.com",
-      fcmToken:
-        "dTivxpfi00mEm1BeX-Sf8U:APA91bFBN9gOUsVk2LqzmLIsE_yYt_EOB0rEgYVh93ngK9KIDhqzzSdE7T77-E1OBts35cDHEC9nGY4iXFioyao34AVI-pMomk4o5wxjST8tJWYEhxANCd-VObDXHzkjK8aHWynzPBMD",
-      full_name: "Eugenia Haley",
-      groupChatId: "652f88e0a3ed8a769d24ce05",
-      height: 5,
-      isAssigned: true,
-      plan_id: "661f8eb81a476bee6cc8cb65",
-      program_id: "660d29bb5d81fb1c1be8eaae",
-      role: "customer",
-      status: true,
-      subscription: [Array],
-      target_weight: 150,
-      userBadge: [Array],
-      user_id: "661e4e611a476bee6cfd6889",
-      verification_status: false,
-      weight: 100,
-      weight_gain: 0,
-      weight_loss: 0,
-      workout_number: 8,
-    },
-    text: `Hi there! Welcome to Sandow, your personal AI fitness coach. I'm here to guide you on your fitness journey. Whether you want to get fit, lose weight, or build strength, I'm here to help you through! 🙌`,
-    user: {},
-  },
-  {
-    PdfFile: "http://54.234.223.198/undefined",
-    _id: "664c3420945d171558b55dc600",
-    createdAt: "2024-05-21T05:41:52+00:00",
-    fileType: undefined,
-    reciver: {},
-    text: "Wow, amazing!! 💖",
-    user: {
-      _id: "661e4e621a476bee6cfd68ba",
-      allow_programs: false,
-      chatroomId: "661e4e631a476bee6cfd6b3b",
-      customerId: "cus_Pw0zA3CDcf1aNb",
-      email: "gyruhitav@yopmail.com",
-      fcmToken:
-        "dTivxpfi00mEm1BeX-Sf8U:APA91bFBN9gOUsVk2LqzmLIsE_yYt_EOB0rEgYVh93ngK9KIDhqzzSdE7T77-E1OBts35cDHEC9nGY4iXFioyao34AVI-pMomk4o5wxjST8tJWYEhxANCd-VObDXHzkjK8aHWynzPBMD",
-      full_name: "Eugenia Haley",
-      groupChatId: "652f88e0a3ed8a769d24ce05",
-      height: 5,
-      isAssigned: true,
-      plan_id: "661f8eb81a476bee6cc8cb65",
-      program_id: "660d29bb5d81fb1c1be8eaae",
-      role: "customer",
-      status: true,
-      subscription: [Array],
-      target_weight: 150,
-      userBadge: [Array],
-      user_id: "661e4e611a476bee6cfd6889",
-      verification_status: false,
-      weight: 100,
-      weight_gain: 0,
-      weight_loss: 0,
-      workout_number: 8,
-    },
-  },
-];
