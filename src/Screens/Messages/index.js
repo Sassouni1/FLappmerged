@@ -92,16 +92,17 @@ const BotAllChatScreen = ({ navigation, route }) => {
   const renderItem = ({ item, index }) => {
     return (
       <TouchableOpacity
-        // onPress={() =>
-        //   navigation.navigate("ConversationScreen", {
-        //     channelId: item._id,
-        //     channelName: item.title,
-        //     reciver: item.subText === "GPT-4" ? {} : item.admin,
-        //     sender: user,
-        //     chatRoomType: item.subText === "GPT-4" ? "groupChat" : "chat",
-        //   })
-        // }
-        onPress={() => navigation.navigate("CreateChatScreen")}
+        onPress={() =>
+          item.title === "Coach Jarvis.AI"
+            ? navigation.navigate("CreateChatScreen")
+            : navigation.navigate("ConversationScreen", {
+                channelId: item._id,
+                channelName: item.title,
+                receiver: item.subText === "GPT-4" ? {} : item.admin,
+                sender: user,
+                chatRoomType: item.subText === "GPT-4" ? "groupChat" : "chat",
+              })
+        }
       >
         <ChatsCard item={item} index={index} />
       </TouchableOpacity>
@@ -119,12 +120,18 @@ const BotAllChatScreen = ({ navigation, route }) => {
         titelStyle={styles.headerTitle}
         containerStyle={styles.headerContainer}
         LeftIcon={
-          <Pressable style={styles.headerIconWraaper} onPress={backHandler}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image
-              source={require("../../assets/images/Monotonechevronleft.png")}
-              style={styles.headerIcons}
+              source={require("../../assets/images/Monotone3chevron3left.png")}
+              style={{
+                tintColor: colors.white,
+                height: 30,
+                width: 30,
+                marginLeft: 16,
+                marginTop: 2,
+              }}
             />
-          </Pressable>
+          </TouchableOpacity>
         }
       />
       {loader ? null : (

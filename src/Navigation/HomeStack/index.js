@@ -47,13 +47,14 @@ import LearningCenter from "../../Screens/SquatComponet/LearningCenter";
 import WorkoutComplete from "../../Screens/SquatComponet/WorkoutComplete";
 import ResetTimer from "../../Screens/SquatComponet/ResetTimer";
 import Squat from "../../Screens/SquatComponet/Squat";
+import Goal1 from "../../Screens/Fitnesssurvey/Goal1";
+import ZEquipment from "../../Screens/Fitnesssurvey/ZEquipment";
+import Weightgoals from "../../Screens/Fitnesssurvey/Weightgoals";
 
 import AddWorkouts from "../../Screens/Workouts/AddWorkouts";
 import WorkoutExercise from "../../Screens/Workouts/WorkoutExercise";
 
-
 import HTUA from "../../Screens/HTUA";
-
 
 const stack = createNativeStackNavigator();
 const HomeStack = () => {
@@ -76,6 +77,23 @@ const HomeStack = () => {
         name="videoScreen"
         component={VideoScreen}
       />
+
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="Goal"
+        component={VideoSkills}
+      />
+
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="Goal1"
+        component={Goal1}
+      />
+
       <stack.Screen
         options={{
           headerShown: false,
@@ -87,8 +105,23 @@ const HomeStack = () => {
         options={{
           headerShown: false,
         }}
+        name="ZEquipment"
+        component={ZEquipment}
+      />
+
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
         name="Fitnesssurvey"
         component={Fitnesssurvey}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="Weightgoals"
+        component={Weightgoals}
       />
 
       <stack.Screen
@@ -355,41 +388,40 @@ const HomeStack = () => {
         component={Squat}
       />
       <stack.Screen
-                options={{
-                    headerShown: false
-                }}
-                name="ChatScreen"
-                component={ChatScreen}
-            />
-            <stack.Screen
-                options={{
-                    headerShown: false
-                }}
-                name="BotAllChatScreen"
-                component={BotAllChatScreen}
-            />
-            <stack.Screen
-                options={{
-                    headerShown: false
-                }}
-                name="CreateChatScreen"
-                component={CreateChatScreen}
-            />
-            <stack.Screen
-                options={{
-                    headerShown: false
-                }}
-                name="TestChatSceen"
-                component={TestChatSceen}
-            />
-            <stack.Screen
-                options={{
-                    headerShown: false
-                }}
-                name="WorkoutExercise"
-                component={WorkoutExercise}
-            />
-
+        options={{
+          headerShown: false,
+        }}
+        name="ChatScreen"
+        component={ChatScreen}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="BotAllChatScreen"
+        component={BotAllChatScreen}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="CreateChatScreen"
+        component={CreateChatScreen}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="TestChatSceen"
+        component={TestChatSceen}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="WorkoutExercise"
+        component={WorkoutExercise}
+      />
     </stack.Navigator>
   );
 };

@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  SafeAreaView,
 } from "react-native";
 import React, { useState } from "react";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -19,127 +20,65 @@ import {
 } from "../../../../utils/ResponsiveFun";
 import { colors } from "../../../constants/colors";
 import { fonts } from "../../../constants/fonts";
-import CKeyBoardAvoidWrapper from "../../../Components/Common/CKeyBoardAvoidWrapper";
 
 export default function SkillsTraining({ navigation }) {
   const [selectedTab, setSelectedTab] = useState(0);
 
   const onPressTab = (id) => {
-    if (id == 1) {
+    if (id === 1) {
       navigation.navigate("TrainingStats");
     }
     setSelectedTab(id);
   };
 
   const onPressSearch = () => navigation.navigate("SearchWorkout");
-
   const onPressDetail = () => navigation.navigate("CoachDetail");
-
   const onPressCategory = () => navigation.navigate("Squat");
 
-  const RenderTab = ({ title, id }) => {
-    return (
-      <TouchableOpacity
-        onPress={() => onPressTab(id)}
-        style={[
-          styles.tabContainerStyle,
-          {
-            backgroundColor:
-              selectedTab !== id ? colors.darkGray : colors.white,
-          },
-        ]}
-      >
-        <Text
-          style={[
-            styles.topTabTextStyle,
-            {
-              color: selectedTab !== id ? colors.white : colors.darkGray,
-            },
-          ]}
-        >
-          {title}
-        </Text>
+  const RenderHeader = () => (
+    <View style={styles.topContainer}>
+      <GeneralStatusBar
+        barStyle="light-content"
+        hidden={false}
+        translucent={false}
+      />
+      <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+        <Image
+          source={require("../../../assets/images/Monotone3chevron3left.png")}
+          style={{
+            tintColor: colors.white,
+            height: 30,
+            width: 30,
+            marginLeft: 31,
+            marginTop: -2,
+          }}
+        />
       </TouchableOpacity>
-    );
-  };
+      <View style={{ marginTop: 10 }}>
+        <Text style={styles.headerTextStyles}>Skills Training</Text>
+      </View>
+    </View>
+  );
 
-  const RenderItem = ({ item }) => {
-    return (
-      <TouchableOpacity onPress={onPressDetail} style={styles.container1Style}>
-        <View style={styles.rowContainer}>
-          <Image
-            source={require("../../../assets/images/home1.png")}
-            style={styles.imageSTyle}
-          />
-          <View style={{ gap: getHeight(1), flex: 1 }}>
-            <View style={styles.categoryContainer}>
-              <Text style={styles.categoryTextStyle}>Category</Text>
-            </View>
-            <Text style={styles.titleSTyle} numberOfLines={1}>
-              Category
-            </Text>
-            <View style={styles.descRowContainer}>
-              <View style={styles.rowContainer}>
-                <Entypo
-                  name="star"
-                  size={getFontSize(2)}
-                  color={colors.orange}
-                />
-                <Text numberOfLines={1} style={styles.lessonTextStyle}>
-                  37 lessons
-                </Text>
-              </View>
-              <Text style={styles.lessonTextStyle}>•</Text>
-              <View style={styles.rowContainer}>
-                <Ionicons
-                  name="person"
-                  size={getFontSize(2)}
-                  color={colors.darkBlue}
-                />
-                <Text numberOfLines={1} style={styles.lessonTextStyle}>
-                  5 Coaches
-                </Text>
-              </View>
-            </View>
-          </View>
-        </View>
-        <TouchableOpacity>
-          <Ionicons
-            name="chevron-forward-outline"
-            size={getFontSize(4)}
-            color={colors.slateGray}
-          />
-        </TouchableOpacity>
-      </TouchableOpacity>
-    );
-  };
-
-  const RenderPopularSkills = () => {
-    return (
-      <TouchableOpacity
-        onPress={onPressCategory}
-        style={styles.container1Style}
-      >
+  const RenderSkillItem = ({ item }) => (
+    <TouchableOpacity onPress={onPressDetail} style={styles.container1Style}>
+      <View style={styles.rowContainer}>
         <Image
           source={require("../../../assets/images/home1.png")}
           style={styles.imageSTyle}
         />
-        <View style={{ flex: 1, gap: getHeight(1.5) }}>
+        <View style={{ gap: getHeight(1), flex: 1 }}>
+          <View style={styles.categoryContainer}>
+            <Text style={styles.categoryTextStyle}>Category</Text>
+          </View>
           <Text style={styles.titleSTyle} numberOfLines={1}>
             Category
           </Text>
-          <View style={styles.outerProgressStyle}>
-            <View style={styles.innerProgressStyle} />
-          </View>
-          <View style={[styles.descRowContainer, { flex: 0 }]}>
+          <View style={styles.descRowContainer}>
             <View style={styles.rowContainer}>
-              <Ionicons
-                name="document-text"
-                size={getFontSize(2)}
-                color={colors.slateGray}
-              />
+              <Entypo name="star" size={getFontSize(2)} color={colors.orange} />
               <Text numberOfLines={1} style={styles.lessonTextStyle}>
-                Movement 4
+                37 lessons
               </Text>
             </View>
             <Text style={styles.lessonTextStyle}>•</Text>
@@ -155,63 +94,96 @@ export default function SkillsTraining({ navigation }) {
             </View>
           </View>
         </View>
-      </TouchableOpacity>
-    );
-  };
-
-  return (
-    <View style={styles.root}>
-      <View style={styles.topContainer}>
-        <GeneralStatusBar
-          barStyle="light-content"
-          hidden={false}
-          translucent={false}
-        />
-        <TouchableOpacity onPress={() => navigation.navigate("Home")}>
-          <Image
-            source={require("../../../assets/images/Monotonechevronleft.png")}
-            style={{
-              tintColor: colors.white,
-              height: 30,
-              width: 30,
-              marginLeft: 22,
-              marginTop: 11,
-            }}
-          />
-        </TouchableOpacity>
-        <View style={{ marginTop: 10 }}>
-          <Text style={styles.headerTextStyles}>Skills Training</Text>
-        </View>
-        {/* <View style={styles.topTabContainer}>
-          <RenderTab title="Skill Learning" id={0} />
-          <RenderTab title="Skill Workouts" id={1} />
-        </View>
-        <TouchableOpacity onPress={onPressSearch} style={styles.searchContainerStyle}>
-          <Text style={styles.searchInputStyle}>Search Full Database</Text>
-          <Entypo name="magnifying-glass" size={getFontSize(3)} color={colors.white} />
-        </TouchableOpacity> */}
       </View>
-      <CKeyBoardAvoidWrapper>
-        <FlatList
-          data={[1, 2, 3]}
-          renderItem={RenderItem}
-          keyExtractor={(item) => item.toString()}
-          scrollEnabled={false}
+      <TouchableOpacity>
+        <Ionicons
+          name="chevron-forward-outline"
+          size={getFontSize(4)}
+          color={colors.slateGray}
         />
+      </TouchableOpacity>
+    </TouchableOpacity>
+  );
 
+  const RenderPopularSkillItem = ({ item }) => (
+    <TouchableOpacity onPress={onPressCategory} style={styles.container1Style}>
+      <Image
+        source={require("../../../assets/images/home1.png")}
+        style={styles.imageSTyle}
+      />
+      <View style={{ flex: 1, gap: getHeight(1.5) }}>
+        <Text style={styles.titleSTyle} numberOfLines={1}>
+          Category
+        </Text>
+        <View style={styles.outerProgressStyle}>
+          <View style={styles.innerProgressStyle} />
+        </View>
+        <View style={[styles.descRowContainer, { flex: 0 }]}>
+          <View style={styles.rowContainer}>
+            <Ionicons
+              name="document-text"
+              size={getFontSize(2)}
+              color={colors.slateGray}
+            />
+            <Text numberOfLines={1} style={styles.lessonTextStyle}>
+              Movement 4
+            </Text>
+          </View>
+          <Text style={styles.lessonTextStyle}>•</Text>
+          <View style={styles.rowContainer}>
+            <Ionicons
+              name="person"
+              size={getFontSize(2)}
+              color={colors.darkBlue}
+            />
+            <Text numberOfLines={1} style={styles.lessonTextStyle}>
+              5 Coaches
+            </Text>
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const renderItem = ({ item }) => {
+    if (item.type === "skill") {
+      return <RenderSkillItem item={item} />;
+    } else if (item.type === "popularSkill") {
+      return <RenderPopularSkillItem item={item} />;
+    } else if (item.type === "popularHeader") {
+      return (
         <View style={styles.subHeaderStyle}>
           <Text style={styles.titleSTyle}>Popular Skills</Text>
           <TouchableOpacity>
             <Text style={styles.viewAllTextStyle}>See All</Text>
           </TouchableOpacity>
         </View>
-        <FlatList
-          data={[1, 2, 3, 4, 5]}
-          renderItem={RenderPopularSkills}
-          keyExtractor={(item) => item.toString()}
-          scrollEnabled={false}
-        />
-      </CKeyBoardAvoidWrapper>
+      );
+    }
+  };
+
+  const data = [
+    { id: "s1", type: "skill" },
+    { id: "s2", type: "skill" },
+    { id: "s3", type: "skill" },
+    { id: "ph", type: "popularHeader" },
+    { id: "ps1", type: "popularSkill" },
+    { id: "ps2", type: "popularSkill" },
+    { id: "ps3", type: "popularSkill" },
+    { id: "ps4", type: "popularSkill" },
+    { id: "ps5", type: "popularSkill" },
+  ];
+
+  return (
+    <View style={styles.root}>
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        ListHeaderComponent={RenderHeader}
+        stickyHeaderIndices={[0]}
+        contentContainerStyle={{ paddingBottom: getHeight(4) }}
+      />
     </View>
   );
 }
@@ -223,17 +195,18 @@ const styles = StyleSheet.create({
   },
   topContainer: {
     backgroundColor: colors.black,
-    paddingTop: getWidth(6),
-    paddingBottom: getWidth(9),
-    borderBottomLeftRadius: getWidth(10),
-    borderBottomRightRadius: getWidth(10),
+    paddingTop: getWidth(1),
+    paddingBottom: getWidth(10),
+    borderBottomLeftRadius: getWidth(8),
+    borderBottomRightRadius: getWidth(8),
   },
   headerTextStyles: {
     color: colors.white,
-    fontSize: getFontSize(4.2),
+    fontSize: getFontSize(3.8),
     fontFamily: fonts.WB,
     paddingLeft: getWidth(3.5),
-    marginTop: 14,
+    marginTop: 10,
+    marginLeft: 5,
     fontWeight: "800",
   },
   topTabContainer: {

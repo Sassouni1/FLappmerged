@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, ImageBackground } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -24,10 +24,12 @@ import SkillsTraining from "../../Screens/Skills/SkillsTraining";
 
 const Tab = createBottomTabNavigator();
 const borderRadius = 30;
-const backgroundColor = "#000000";
+const backgroundColor = "#ffffff";
+const shadowColor = "#000";
 const tabBarActiveColor = "#F79300";
-const tabBarActiveIconColor = "blacks";
-const tabBarInActiveColor = "#bababa";
+const tabBarActiveIconColor = "#000000";
+const tabBarInActiveColor = "#808082";
+const image = require("../../assets/images/tabbaricon.png");
 
 const TabBarText = (title, focused) =>
   !focused ? (
@@ -40,6 +42,18 @@ const TabBarText = (title, focused) =>
       {title}
     </Text>
   ) : null;
+const TabBarIcon = ({ icon, focused }) =>
+  focused ? (
+    <ImageBackground
+      source={image}
+      resizeMode="cover"
+      style={styles.iconContainerActive}
+    >
+      {icon}
+    </ImageBackground>
+  ) : (
+    <View style={styles.iconContainerInActive}>{icon}</View>
+  );
 export default function BottomTab() {
   const user = useSelector((state) => state.auth.userData);
   console.log("user", user);
@@ -48,16 +62,26 @@ export default function BottomTab() {
       tabBarOptions={{
         activeTintColor: "#F79300",
         inactiveTintColor: "white",
-        shadowColor: "black",
       }}
       screenOptions={{
         tabBarStyle: {
           headerShown: false,
           borderTopLeftRadius: borderRadius,
           borderTopRightRadius: borderRadius,
+          backgroundColor: backgroundColor,
           height: getFontSize(9),
           paddingBottom: getFontSize(1.6),
           paddingTop: getFontSize(0.5),
+          position: "absolute",
+          overflow: "hidden",
+          shadowColor: shadowColor,
+          shadowOffset: {
+            width: 100,
+            height: 100,
+          },
+          shadowOpacity: 100,
+          shadowRadius: 100,
+          elevation: 100,
         },
       }}
       options={{ headerShown: false }}
@@ -70,15 +94,16 @@ export default function BottomTab() {
           title: "Home",
           tabBarLabel: ({ focused }) => TabBarText("Home", focused),
           tabBarIcon: ({ focused, color, size }) => (
-            <View style={focused ? styles.iconContainer : {}}>
-              <View style={focused ? styles.iconContainerInside : {}}>
+            <TabBarIcon
+              icon={
                 <Foundation
                   name="home"
                   size={getFontSize(2.7)}
                   color={focused ? tabBarActiveIconColor : tabBarInActiveColor}
                 />
-              </View>
-            </View>
+              }
+              focused={focused}
+            />
           ),
         }}
       />
@@ -94,19 +119,42 @@ export default function BottomTab() {
           title: "Workouts",
           tabBarLabel: ({ focused }) => TabBarText("Workouts", focused),
           tabBarIcon: ({ focused, color, size }) => (
-            <View style={focused ? styles.iconContainer : {}}>
-              <View style={focused ? styles.iconContainerInside : {}}>
+            <TabBarIcon
+              icon={
                 <Entypo
                   name="man"
                   size={getFontSize(2.5)}
                   style={{ marginTop: getFontSize(1) }}
                   color={focused ? tabBarActiveIconColor : tabBarInActiveColor}
                 />
-              </View>
-            </View>
+              }
+              focused={focused}
+            />
           ),
         }}
       />
+      {/* <Tab.Screen
+        name="Skills"
+        component={Skills}
+        options={{
+          headerShown: false,
+          title: "Skills",
+          tabBarLabel: ({ focused }) => (TabBarText('Skills',focused)),
+          tabBarIcon: ({ focused, color, size }) => (
+             <TabBarIcon
+              icon={
+                <FontAwesome5
+                  name="hand-rock"
+                  size={getFontSize(2.5)}
+                  style={{ marginTop: getFontSize(1) }}
+                  color={focused ? tabBarActiveIconColor : tabBarInActiveColor}
+                />
+              }
+              focused={focused}
+            />
+          ),
+        }}
+      /> */}
       <Tab.Screen
         name="SkillsTraining"
         component={SkillsTraining}
@@ -115,16 +163,17 @@ export default function BottomTab() {
           title: "New Skills",
           tabBarLabel: ({ focused }) => TabBarText("New Skills", focused),
           tabBarIcon: ({ focused, color, size }) => (
-            <View style={focused ? styles.iconContainer : {}}>
-              <View style={focused ? styles.iconContainerInside : {}}>
+            <TabBarIcon
+              icon={
                 <FontAwesome5
                   name="speakap"
                   size={getFontSize(2.5)}
-                  style={{ marginTop: getFontSize(1) }}
+                  // style={{ marginTop: getFontSize(1) }}
                   color={focused ? tabBarActiveIconColor : tabBarInActiveColor}
                 />
-              </View>
-            </View>
+              }
+              focused={focused}
+            />
           ),
         }}
       />
@@ -137,16 +186,17 @@ export default function BottomTab() {
           title: "Exercises",
           tabBarLabel: ({ focused }) => TabBarText("Exercises", focused),
           tabBarIcon: ({ focused, color, size }) => (
-            <View style={focused ? styles.iconContainer : {}}>
-              <View style={focused ? styles.iconContainerInside : {}}>
+            <TabBarIcon
+              icon={
                 <FontAwesome6
                   name="bolt-lightning"
                   size={getFontSize(2.4)}
-                  style={{ marginTop: getFontSize(1) }}
+                  // style={{ marginTop: getFontSize(1) }}
                   color={focused ? tabBarActiveIconColor : tabBarInActiveColor}
                 />
-              </View>
-            </View>
+              }
+              focused={focused}
+            />
           ),
         }}
       />
@@ -158,16 +208,17 @@ export default function BottomTab() {
           title: "Messages",
           tabBarLabel: ({ focused }) => TabBarText("Messages", focused),
           tabBarIcon: ({ focused, color, size }) => (
-            <View style={focused ? styles.iconContainer : {}}>
-              <View style={focused ? styles.iconContainerInside : {}}>
+            <TabBarIcon
+              icon={
                 <Entypo
                   name="message"
                   size={getFontSize(3)}
-                  style={{ marginTop: getFontSize(1) }}
+                  // style={{ marginTop: getFontSize(1) }}
                   color={focused ? tabBarActiveIconColor : tabBarInActiveColor}
                 />
-              </View>
-            </View>
+              }
+              focused={focused}
+            />
           ),
         }}
       />
@@ -180,16 +231,17 @@ export default function BottomTab() {
           title: "LeaderBoard",
           tabBarLabel: ({ focused }) => TabBarText("LeaderBoard", focused),
           tabBarIcon: ({ focused, color, size }) => (
-            <View style={focused ? styles.iconContainer : {}}>
-              <View style={focused ? styles.iconContainerInside : {}}>
+            <TabBarIcon
+              icon={
                 <MaterialCommunityIcons
                   name="trophy-variant"
                   size={25}
-                  style={{ marginTop: getFontSize(1) }}
+                  // style={{ marginTop: getFontSize(1) }}
                   color={focused ? tabBarActiveIconColor : tabBarInActiveColor}
                 />
-              </View>
-            </View>
+              }
+              focused={focused}
+            />
           ),
         }}
       />
@@ -202,16 +254,17 @@ export default function BottomTab() {
           title: "Activity",
           tabBarLabel: ({ focused }) => TabBarText("Activity", focused),
           tabBarIcon: ({ focused, color, size }) => (
-            <View style={focused ? styles.iconContainer : {}}>
-              <View style={focused ? styles.iconContainerInside : {}}>
+            <TabBarIcon
+              icon={
                 <MaterialIcons
                   name="bar-chart"
                   size={getFontSize(3.5)}
-                  style={{ marginTop: getFontSize(1), right: getFontSize(0.2) }}
+                  // style={{ marginTop: getFontSize(1), right: getFontSize(0.2) }}
                   color={focused ? tabBarActiveIconColor : tabBarInActiveColor}
                 />
-              </View>
-            </View>
+              }
+              focused={focused}
+            />
           ),
         }}
       />
@@ -220,17 +273,18 @@ export default function BottomTab() {
 }
 
 const styles = StyleSheet.create({
-  iconContainer: {
-    borderRadius: 15,
-    backgroundColor: "#f3f3f4",
-  },
-  iconContainerInside: {
+  iconContainerActive: {
     height: 48,
     width: 48,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 15,
-    borderBottomWidth: 4,
-    borderBlockColor: tabBarActiveColor,
+  },
+  iconContainerInActive: {
+    height: 48,
+    width: 48,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 10,
   },
 });

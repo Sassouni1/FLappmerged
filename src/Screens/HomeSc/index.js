@@ -1,5 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, Image, StyleSheet, Dimensions, Linking, TouchableOpacity, Alert, ScrollView } from "react-native";
+import {
+  Text,
+  View,
+  Image,
+  StyleSheet,
+  Dimensions,
+  Linking,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+} from "react-native";
+import moment from "moment"; // Import moment for date manipulation
+const openMyFitnessPal = async () => {
+  const myFitnessPalURL = "myfitnesspal://"; // MyFitnessPal URL scheme
+  const appStoreURL = "https://apps.apple.com/us/app/myfitnesspal/id341232718"; // MyFitnessPal App Store URL
+
+  try {
+    // Try to open MyFitnessPal app
+    const supported = await Linking.canOpenURL(myFitnessPalURL);
+    if (supported) {
+      await Linking.openURL(myFitnessPalURL);
+    } else {
+      // If the app is not installed, open the App Store link
+      await Linking.openURL(appStoreURL);
+    }
+  } catch (error) {
+    console.error("Error opening MyFitnessPal: ", error);
+    Alert.alert("Error", "Unable to open MyFitnessPal.");
+  }
+};
 
 import { useDispatch, useSelector } from "react-redux";
 import { appListner, requestUserPermission } from "../Notifications";
@@ -59,26 +88,47 @@ const HomeSc = ({ navigation, route }) => {
     }
   };
 
+  const currentDate = moment().format("MMM DD, YYYY"); // Get current date in the format MMM DD, YYYY
+
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps={"handled"}>
       <View style={styles.header}>
-        <Image source={require("../../assets/images/HomeTopBack.png")} style={styles.headerImage} />
+        <Image
+          source={require("../../assets/images/HomeTopBack.png")}
+          style={styles.headerImage}
+        />
+        <View style={styles.dateContainer}>
+          <Image
+            source={require("../../assets/images/Solid-calendar.png")}
+            style={styles.calendarIcon}
+          />
+          <Text style={styles.dateText}>{currentDate}</Text>
+        </View>
         <View style={styles.headerInfo}>
           <View style={styles.profilePicture}>
-            <Image source={require("../../assets/images/ProfilePicture.png")} style={styles.profileImage} />
+            <Image
+              source={require("../../assets/images/ProfilePicture.png")}
+              style={styles.profileImage}
+            />
           </View>
           <View style={styles.headerContent}>
             <Text style={styles.greeting}>Hello Chris</Text>
           </View>
           <View style={styles.chevronRight}>
-            <Image source={require("../../assets/images/homerightarrow.png")} />
+            <Image
+              source={require("../../assets/images/Solid-chevron-right.png")}
+              style={styles.chevronImage}
+            />
           </View>
         </View>
       </View>
 
       <View style={styles.mainFeatures}>
         <View style={styles.buttonPrimary}>
-          <TouchableOpacity onPress={() => console.log("FUXCK")} style={styles.buttonContent}>
+          <TouchableOpacity
+            onPress={() => navigate.navigate("HTUA")}
+            style={styles.buttonContent}
+          >
             <Text style={styles.buttonText}>Watch How To Use App</Text>
             <View style={styles.solidArrowRight} />
           </TouchableOpacity>
@@ -96,18 +146,25 @@ const HomeSc = ({ navigation, route }) => {
           </View>
         </View>
         <View style={styles.frameContainer}>
-          <Image source={require("../../assets/images/homevidthumb.png")} style={styles.vidThumb} />
+          <Image
+            source={require("../../assets/images/homevidthumb.png")}
+            style={styles.vidThumb}
+          />
           <View style={styles.frameContent}>
             <View style={styles.frameContentUpper}>
               <View style={styles.fitnessInfo}>
                 <View style={styles.fitnessIcon}>
-                  <Image source={require("../../assets/images/homeclockicon.png")} />
+                  <Image
+                    source={require("../../assets/images/homeclockicon.png")}
+                  />
                 </View>
                 <Text style={styles.fitnessText}>25min</Text>
               </View>
               <View style={styles.fitnessInfo}>
                 <View style={styles.fitnessIcon}>
-                  <Image source={require("../../assets/images/homefireicon.png")} />
+                  <Image
+                    source={require("../../assets/images/homefireicon.png")}
+                  />
                 </View>
                 <Text style={styles.fitnessText}>412kcal</Text>
               </View>
@@ -123,19 +180,32 @@ const HomeSc = ({ navigation, route }) => {
                 </View>
               </View>
               <View>
-                <Image source={require("../../assets/images/homeplaybtn.png")} />
+                <Image
+                  source={require("../../assets/images/homeplaybtn.png")}
+                />
               </View>
             </View>
           </View>
         </View>
       </View>
-      <TouchableOpacity style={styles.liveCallsBtn} onPress={() => Linking.openURL("https://www.zoom.com/us")}>
-        <Image source={require("../../assets/images/WhiteCalendar.png")} style={styles.whiteCalendar} />
-        <Text style={styles.liveCallsBtnText}>Next Live Call Is In 7 Hours With Jeff Mayweather</Text>
+      <TouchableOpacity
+        style={styles.liveCallsBtn}
+        onPress={() => Linking.openURL("https://www.zoom.com/us")}
+      >
+        <Image
+          source={require("../../assets/images/WhiteCalendar.png")}
+          style={styles.whiteCalendar}
+        />
+        <Text style={styles.liveCallsBtnText}>
+          Next Live Call Is In 7 Hours With Jeff Mayweather
+        </Text>
       </TouchableOpacity>
 
       <View style={styles.fitnessCalendar}>
-        <Image source={require("../../assets/images/CalendarMockup.png")} style={styles.calendarMockup} />
+        <Image
+          source={require("../../assets/images/CalendarMockup.png")}
+          style={styles.calendarMockup}
+        />
         <View
           style={{
             flexDirection: "row",
@@ -153,7 +223,9 @@ const HomeSc = ({ navigation, route }) => {
               borderRadius: 2,
             }}
           />
-          <Text style={{ fontSize: 12 }}>Call with Jeff Mayweather at 9:00 PM</Text>
+          <Text style={{ fontSize: 12 }}>
+            Call with Jeff Mayweather at 9:00 PM
+          </Text>
         </View>
       </View>
 
@@ -169,16 +241,17 @@ const HomeSc = ({ navigation, route }) => {
             </View>
             <View style={styles.coachBookingText}>
               <View style={styles.coachBookingTextUpper}>
-                <Text style={styles.coachBookingTitle}>1 on 1 Online Coaching</Text>
+                <Text style={styles.coachBookingTitle}>
+                  1 on 1 Online Coaching
+                </Text>
                 <Text style={styles.coachBookingSubtitle}>Custom Coaching</Text>
                 <Text style={styles.coachBookingDesc}>
-                  Bring your training to the next level with one on one custom coaching
+                  Bring your training to the next level with one on one custom
+                  coaching
                 </Text>
               </View>
             </View>
-            <View style={styles.coachBookingChevronRight}>
-              <Image source={require("../../assets/images/Graychevronright.png")} />
-            </View>
+            <View style={styles.coachBookingChevronRight}></View>
           </View>
         </View>
         <View style={styles.coachBookingItem}>
@@ -188,15 +261,22 @@ const HomeSc = ({ navigation, route }) => {
             </View>
             <View style={styles.coachBookingText}>
               <View style={styles.coachBookingTextUpper}>
-                <Text style={styles.coachBookingTitle}>Ultimate Nutrition Plan</Text>
-                <Text style={styles.coachBookingSubtitle}>Get the top nutrition to fuel your training</Text>
+                <Text style={styles.coachBookingTitle}>
+                  Ultimate Nutrition Plan
+                </Text>
+                <Text style={styles.coachBookingSubtitle}>
+                  Get the top nutrition to fuel your training
+                </Text>
                 <Text style={styles.coachBookingDesc}>
-                  Created by the nutritionist for Ronda Rousey, Rampage Jackson & Vitor Belfort
+                  Created by the nutritionist for Ronda Rousey, Rampage Jackson
+                  & Vitor Belfort
                 </Text>
               </View>
             </View>
             <View style={styles.coachBookingChevronRight}>
-              <Image source={require("../../assets/images/Graychevronright.png")} />
+              <Image
+                source={require("../../assets/images/Graychevronright.png")}
+              />
             </View>
           </View>
         </View>
@@ -208,14 +288,19 @@ const HomeSc = ({ navigation, route }) => {
             <View style={styles.coachBookingText}>
               <View style={styles.coachBookingTextUpper}>
                 <Text style={styles.coachBookingTitle}>Battle Tested</Text>
-                <Text style={styles.coachBookingSubtitle}>Post Workout Recovery Drink</Text>
+                <Text style={styles.coachBookingSubtitle}>
+                  Post Workout Recovery Drink
+                </Text>
                 <Text style={styles.coachBookingDesc}>
-                  Bring your training to the next level with one on one custom coaching
+                  Bring your training to the next level with one on one custom
+                  coaching
                 </Text>
               </View>
             </View>
             <View style={styles.coachBookingChevronRight}>
-              <Image source={require("../../assets/images/Graychevronright.png")} />
+              <Image
+                source={require("../../assets/images/Graychevronright.png")}
+              />
             </View>
           </View>
         </View>
@@ -226,7 +311,10 @@ const HomeSc = ({ navigation, route }) => {
           <Text style={styles.mealPlanTitle}>My Fitness Pal Stats</Text>
         </View>
         <View style={styles.mealPlanItem}>
-          <Image source={require("../../assets/images/Homesalad.png")} style={styles.homeSalad} />
+          <Image
+            source={require("../../assets/images/Homesalad.png")}
+            style={styles.homeSalad}
+          />
           <View style={styles.mealPlanContent}>
             <View style={styles.mealPlanNutrition}>
               <View style={styles.mealPlanNutritionItem}>
@@ -248,21 +336,34 @@ const HomeSc = ({ navigation, route }) => {
                 <View style={styles.mealPlanInfo}>
                   <View style={styles.mealPlanInfoItem}>
                     <View style={styles.mealPlanInfoIcon}>
-                      <Image source={require("../../assets/images/homefireicon.png")} />
+                      <Image
+                        source={require("../../assets/images/homefireicon.png")}
+                      />
                     </View>
                     <Text style={styles.mealPlanInfoText}>548kcal</Text>
                   </View>
                   <View style={styles.mealPlanInfoDivider} />
                   <View style={styles.mealPlanInfoItem}>
                     <View style={styles.mealPlanInfoIcon}>
-                      <Image source={require("../../assets/images/homeclockicon.png")} />
+                      <Image
+                        source={require("../../assets/images/homeclockicon.png")}
+                        style={[
+                          styles.mealPlanInfoIcon,
+                          { tintColor: "black" },
+                        ]}
+                      />
                     </View>
                     <Text style={styles.mealPlanInfoText}>20min</Text>
                   </View>
                 </View>
               </View>
               <View>
-                <Image source={require("../../assets/images/homeorangearrow.png")} />
+                <TouchableOpacity onPress={openMyFitnessPal}>
+                  <Image
+                    source={require("../../assets/images/homeorangearrow.png")}
+                    style={styles.orangeArrow}
+                  />
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -275,6 +376,7 @@ const HomeSc = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: -50,
     backgroundColor: "#FFFFFF",
   },
   homeSalad: {
@@ -287,12 +389,13 @@ const styles = StyleSheet.create({
     objectFit: "cover",
   },
   header: {
-    flexDirection: "row",
+    flexDirection: "column", // Changed to column
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 24,
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
+    marginTop: 20,
     position: "relative",
   },
   headerImage: {
@@ -302,6 +405,28 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
     width: Dimensions.get("window").width,
+  },
+  dateContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    position: "absolute",
+    top: 80, // Adjusted to fit correctly
+    left: 16, // Adjusted to fit correctly
+  },
+  calendarIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 8,
+    resizeMode: "contain",
+    tintColor: "#FFFFFF", // Ensure the icon matches the text color
+    opacity: 0.8,
+  },
+  dateText: {
+    fontFamily: "Work Sans",
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#c8c8c9",
+    opacity: 0.8,
   },
   headerInfo: {
     alignItems: "center",
@@ -330,20 +455,16 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     marginBottom: 4,
   },
-
   chevronRight: {
     width: 24,
     height: 24,
     justifyContent: "center",
     alignItems: "center",
   },
-  polygonStroke: {
-    width: 10,
-    height: 10,
-    borderTopWidth: 2,
-    borderRightWidth: 2,
-    borderColor: "#FFFFFF",
-    transform: [{ rotate: "45deg" }],
+  chevronImage: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "contain",
   },
   subHeader: {
     flexDirection: "row",
@@ -365,15 +486,6 @@ const styles = StyleSheet.create({
   calendarContainer: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  calendarIcon: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.64)",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 4,
   },
   calendarIconInner: {
     width: 10,
@@ -423,7 +535,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
   mainFeatures: {
     paddingHorizontal: 16,
     paddingVertical: 24,
@@ -476,9 +587,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#BABBBE",
     marginVertical: 2,
   },
-
   //VID THUMB
-
   frameContainer: {
     borderRadius: 32,
     overflow: "hidden",
@@ -521,12 +630,10 @@ const styles = StyleSheet.create({
   fitnessIcon: {
     width: 20,
     height: 20,
-
     justifyContent: "center",
     alignItems: "center",
     marginRight: 4,
   },
-
   fitnessText: {
     fontSize: 14,
     fontWeight: "600",
@@ -772,6 +879,7 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     overflow: "hidden",
     height: 220,
+    marginBottom: 70,
   },
   mealPlanBackground: {
     ...StyleSheet.absoluteFillObject,
@@ -831,14 +939,11 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   mealPlanInfoIcon: {
-    width: 20,
-    height: 20,
-
-    justifyContent: "center",
-    alignItems: "center",
+    width: 16,
+    height: 16,
     marginRight: 4,
+    resizeMode: "contain",
   },
-
   mealPlanInfoText: {
     fontSize: 14,
     fontWeight: "500",

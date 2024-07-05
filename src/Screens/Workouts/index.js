@@ -74,8 +74,8 @@ const Workouts = ({ route }) => {
                 source={require("../../assets/images/workoutsgirlpic.png")}
               />
               <View style={styles.headerWords}>
-                <Text style={styles.headerSubtext}>Ready for training 🏋️‍♀️</Text>
-                <Text style={styles.headerText}>Start Training</Text>
+                <Text style={styles.headerSubtext}>Fight Life 👊 </Text>
+                <Text style={styles.headerText}> Start Training</Text>
               </View>
             </View>
             <TouchableOpacity>
@@ -135,50 +135,42 @@ const Workouts = ({ route }) => {
               {...props}
               gap={0}
               indicatorStyle={{
-                backgroundColor: "black",
-                opacity: "100%",
+                backgroundColor: "transparent",
               }}
               style={{
                 marginBottom: 10,
-                backgroundColor: "lightgray",
+                backgroundColor: "#f3f3f4",
                 borderRadius: 15,
               }}
-              renderLabel={({ route, focused, onPress }) => {
-                // console.log('Clicked tab: ', route.title,props)
-                //setfocusedTab(focused);
+              renderTabBarItem={({ route, focused, onPress }) => {
+                console.log(focused);
                 return (
-                  <View
-                    key={route.key}
+                  <TouchableOpacity
+                    onPress={onPress} // Use the onPress prop provided by TabBar
                     style={{
-                      height: getHeight(3.5),
+                      borderWidth: index == routes.indexOf(route) ? 4 : 0,
+                      borderColor: "#babbbc",
+                      backgroundColor:
+                        index == routes.indexOf(route) ? "black" : "#f3f3f4",
+                      borderRadius: 15,
+                      height: 43,
                       justifyContent: "center",
+                      alignItems: "center",
+                      width: getHeight(17.8),
                     }}
                   >
-                    <View
+                    <Text
                       style={{
-                        height: getHeight(5.7),
-                        backgroundColor: focused ? "black" : "lightgray",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        borderRadius: 15,
-                        paddingHorizontal: 7,
-                        width: "100%",
+                        color:
+                          index == routes.indexOf(route) ? "white" : "#686c74",
+                        fontFamily: fonts.Re,
+                        fontSize: 15,
+                        fontWeight: "700",
                       }}
                     >
-                      <Text
-                        style={{
-                          color: focused ? "white" : "black",
-                          fontFamily: fonts.Re,
-                          fontSize: 15,
-                          fontWeight: "600",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        {route.title}
-                      </Text>
-                    </View>
-                  </View>
+                      {route.title}
+                    </Text>
+                  </TouchableOpacity>
                 );
               }}
             />
@@ -244,7 +236,7 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     lineHeight: 14,
     textAlign: "center",
-    color: "#F79300",
+    color: "black",
   },
   AnotherText: {
     width: 81,
@@ -254,22 +246,23 @@ const styles = StyleSheet.create({
 
     lineHeight: 14,
     textAlign: "center",
-    color: "#FFFFFF",
+    color: "blue",
   },
   tabContent: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    color: "blue",
   },
   tabBar: {
-    backgroundColor: "#2196F3",
+    backgroundColor: "black",
     margin: 14, // Customize tab bar background color
   },
   indicator: {
-    backgroundColor: "#F79300", // Customize tab indicator color
+    backgroundColor: "blue", // Customize tab indicator color
   },
   label: {
-    fontWeight: "bold",
+    fontWeight: "blue",
     fontSize: 14,
   },
 });

@@ -27,6 +27,25 @@ import { setLoader } from "../../Redux/actions/GernalActions";
 import { ApiCall } from "../../Services/Apis";
 import SelectDropdown from "react-native-select-dropdown";
 
+const TopImage = React.memo(({ onPressBack }) => {
+  return (
+    <ImageBackground
+      source={require("../../assets/images/home1.png")}
+      style={styles.imageBgStyle}
+      imageStyle={styles.imageStyle}
+    >
+      <TouchableOpacity onPress={onPressBack} style={styles.headerBtnStyle}>
+        <Ionicons
+          name="chevron-back"
+          size={getFontSize(2.5)}
+          color={colors.black}
+        />
+      </TouchableOpacity>
+      <Text style={styles.statsFontStyle}>Stats</Text>
+    </ImageBackground>
+  );
+});
+
 export default function TrainingStats({ navigation }) {
   const [sliderValue, setSliderValue] = React.useState(200);
   const [value, setValue] = React.useState("");
@@ -1686,24 +1705,10 @@ export default function TrainingStats({ navigation }) {
     );
   };
 
-  const ListHeaderComponent = () => {
+  const ListHeaderComponent = React.memo(() => {
     return (
       <View>
-        <ImageBackground
-          source={require("../../assets/images/home1.png")}
-          style={styles.imageBgStyle}
-          imageStyle={styles.imageStyle}
-        >
-          <TouchableOpacity onPress={onPressBack} style={styles.headerBtnStyle}>
-            <Ionicons
-              name="chevron-back"
-              size={getFontSize(2.5)}
-              color={colors.black}
-            />
-          </TouchableOpacity>
-          <Text style={styles.statsFontStyle}>Stats</Text>
-          <View />
-        </ImageBackground>
+        <TopImage onPressBack={onPressBack} />
         <View style={styles.innerContainerStyle}>
           <View style={styles.trainingContainerStyle}>
             <Text style={styles.trainingFontStyle}>Training Completion</Text>
@@ -1716,7 +1721,7 @@ export default function TrainingStats({ navigation }) {
           <View style={styles.chartOuterContainer}>
             <View style={styles.headerTopContainer}>
               <View style={styles.headerTextStyle}>
-                <Text style={styles.percentageStyle}>96%</Text>
+                <Text style={styles.percentageStyle}>94%</Text>
                 <Text style={styles.completionStyle}>Completion rate</Text>
               </View>
               <RenderDropdown />
@@ -1834,24 +1839,32 @@ export default function TrainingStats({ navigation }) {
         </View>
       </View>
     );
-  };
+  });
+
+  const listHeaderComponent = useMemo(() => {
+    return <ListHeaderComponent />;
+  }, []);
 
   return (
-    <SafeAreaView style={styles.root}>
-      <SectionList
-        sections={trainingSeatsData}
-        renderItem={renderItem}
-        renderSectionHeader={RenderSectionHeader}
-        ListHeaderComponent={ListHeaderComponent}
-        showsVerticalScrollIndicator={false}
-        bounces={false}
-        keyExtractor={(item, index) => index.toString()}
-      />
-    </SafeAreaView>
+    // <SafeAreaView style={styles.safeArea}>
+    <SectionList
+      sections={trainingSeatsData}
+      renderItem={renderItem}
+      renderSectionHeader={RenderSectionHeader}
+      ListHeaderComponent={listHeaderComponent}
+      showsVerticalScrollIndicator={false}
+      bounces={false}
+      keyExtractor={(item, index) => index.toString()}
+    />
+    // </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.white, // or any background color you need
+  },
   root: {
     flex: 1,
     backgroundColor: colors.white,
@@ -1860,12 +1873,15 @@ const styles = StyleSheet.create({
     height: getHeight(35),
     padding: getWidth(8),
     justifyContent: "space-between",
+    // Ensure image does not overlap with status bar
+    paddingTop: Platform.OS === "ios" ? getHeight(8) : getHeight(5),
   },
   headerBtnStyle: {
     padding: getWidth(2),
     backgroundColor: colors.white,
     borderRadius: 12,
     width: getWidth(10),
+    marginTop: Platform.OS === "ios" ? 0 : getHeight(2), // adjust margin for iOS and Android
   },
   statsFontStyle: {
     color: colors.white,

@@ -88,7 +88,7 @@ export default function Achievements({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.root}>
+    // <SafeAreaView style={styles.root}>
       <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
         <ImageBackground
           source={require("../../assets/images/home1.png")}
@@ -152,7 +152,7 @@ export default function Achievements({ navigation }) {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    // </SafeAreaView>
   );
 }
 
@@ -194,7 +194,6 @@ const styles = StyleSheet.create({
   topContainerStyle: {
     flexDirection: "row",
     justifyContent: "space-around",
-
     borderRadius: 10,
   },
   fontsStyle: {

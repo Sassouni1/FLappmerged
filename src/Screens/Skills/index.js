@@ -31,8 +31,7 @@ const Skills = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [invalidEntry, setInvalidEntry] = useState(false);
 
-
-// search fun
+  // search fun
   useEffect(() => {
     const filtered = data.filter((item) => {
       const title = item.parent_title || "";
@@ -50,8 +49,7 @@ const Skills = () => {
     }
   }, [searchQuery, data]);
 
-
-// api function
+  // api function
 
   const getSkills = async () => {
     try {
@@ -85,7 +83,6 @@ const Skills = () => {
   useEffect(() => {
     handleRefresh(); // Call handleRefresh to load data initially
   }, []);
-
 
   return (
     <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
@@ -175,6 +172,7 @@ const Skills = () => {
               refreshing={false}
               onRefresh={handleRefresh}
               showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: getHeight(10) }} // Ensure some padding at the bottom
               renderItem={({ item, index }) => {
                 return (
                   <View>

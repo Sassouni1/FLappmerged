@@ -29,6 +29,7 @@ import { Item } from "react-native-paper/lib/typescript/components/Drawer/Drawer
 import { TextInput } from "react-native-paper";
 import { GernalStyle } from "../../constants/GernalStyle";
 import SelectDropdown from "react-native-select-dropdown";
+import screen from "../../Screens/Fitnesssurvey";
 
 const WorkoutDetails = () => {
   const navigation = useNavigation();
@@ -50,7 +51,9 @@ const WorkoutDetails = () => {
     navigation.navigate("ViewProgram", {
       passData: item,
 
-      url: betweenTwoHandles ? "cont_program/detail_cont_program/" : "program/detail_program/",
+      url: betweenTwoHandles
+        ? "cont_program/detail_cont_program/"
+        : "program/detail_program/",
     });
   };
 
@@ -83,7 +86,9 @@ const WorkoutDetails = () => {
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        Alert.alert(res?.response?.message, [{ text: "OK", onPress: () => console.log("OK Pressed") }]);
+        Alert.alert(res?.response?.message, [
+          { text: "OK", onPress: () => console.log("OK Pressed") },
+        ]);
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
@@ -106,7 +111,9 @@ const WorkoutDetails = () => {
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        Alert.alert(res?.response?.message, [{ text: "OK", onPress: () => console.log("OK Pressed") }]);
+        Alert.alert(res?.response?.message, [
+          { text: "OK", onPress: () => console.log("OK Pressed") },
+        ]);
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
@@ -127,7 +134,9 @@ const WorkoutDetails = () => {
           programId: selectedItemId,
         },
 
-        route: betweenTwoHandles ? "assignProgram/assign-continuous-program" : "assignProgram/assign_Program",
+        route: betweenTwoHandles
+          ? "assignProgram/assign-continuous-program"
+          : "assignProgram/assign_Program",
         verb: "post",
 
         token: token,
@@ -140,7 +149,9 @@ const WorkoutDetails = () => {
       } else {
         dispatch(setLoader(false));
 
-        Alert.alert(res?.response?.message, [{ text: "OK", onPress: () => console.log("OK Pressed") }]);
+        Alert.alert(res?.response?.message, [
+          { text: "OK", onPress: () => console.log("OK Pressed") },
+        ]);
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
@@ -172,7 +183,9 @@ const WorkoutDetails = () => {
       } else {
         dispatch(setLoader(false));
 
-        alert(res?.response?.message, [{ text: "OK", onPress: () => console.log("OK Pressed") }]);
+        alert(res?.response?.message, [
+          { text: "OK", onPress: () => console.log("OK Pressed") },
+        ]);
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
@@ -181,7 +194,9 @@ const WorkoutDetails = () => {
 
   useEffect(() => {
     const fetchSelectedItemId = async () => {
-      const latestSelectedItemId = await AsyncStorage.getItem("latestSelectedItemId");
+      const latestSelectedItemId = await AsyncStorage.getItem(
+        "latestSelectedItemId"
+      );
 
       if (latestSelectedItemId) {
         setSelectedItemId(latestSelectedItemId);
@@ -196,7 +211,9 @@ const WorkoutDetails = () => {
     let prevSelectedItems = await AsyncStorage.getItem("selectedItems");
     prevSelectedItems = JSON.parse(prevSelectedItems) || [];
 
-    const index = prevSelectedItems.findIndex((selectedItem) => selectedItem._id === item._id);
+    const index = prevSelectedItems.findIndex(
+      (selectedItem) => selectedItem._id === item._id
+    );
 
     if (index !== -1) {
       prevSelectedItems.splice(index, 1);
@@ -204,7 +221,10 @@ const WorkoutDetails = () => {
       prevSelectedItems.push(item);
     }
 
-    await AsyncStorage.setItem("selectedItems", JSON.stringify(prevSelectedItems));
+    await AsyncStorage.setItem(
+      "selectedItems",
+      JSON.stringify(prevSelectedItems)
+    );
 
     // Update the latest selected program ID in AsyncStorage
     await AsyncStorage.setItem("latestSelectedItemId", item._id);
@@ -228,31 +248,21 @@ const WorkoutDetails = () => {
   return (
     <ScrollView>
       <TouchableOpacity
-        style={{
-          width: "100%",
-          marginTop: -20,
-        }}
+        onPress={() => navigation.navigate("Fitnesssurvey")}
+        style={{ width: "100%", marginTop: -20, marginBottom: -10 }}
       >
         <Image
           source={require("../../assets/images/workoutsbtn1.png")}
-          style={{
-            width: "100%",
-            objectFit: "contain",
-          }}
+          style={{ width: "100%", resizeMode: "contain" }}
         />
       </TouchableOpacity>
       <TouchableOpacity
-        style={{
-          width: "100%",
-          marginTop: -50,
-        }}
+        onPress={() => navigation.navigate("Fitnesssurvey")}
+        style={{ width: "100%", marginTop: -50 }}
       >
         <Image
           source={require("../../assets/images/workoutsquizbtn.png")}
-          style={{
-            width: "100%",
-            objectFit: "contain",
-          }}
+          style={{ width: "100%", resizeMode: "contain" }}
         />
       </TouchableOpacity>
       <View
@@ -293,7 +303,7 @@ const WorkoutDetails = () => {
             source={require("../../assets/images/homevidthumb.png")}
             style={{
               width: "100%",
-              objectFit: "cover",
+              resizeMode: "cover",
               borderRadius: 30,
               position: "absolute",
               top: 0,
@@ -323,7 +333,9 @@ const WorkoutDetails = () => {
                   gap: 6,
                 }}
               >
-                <Image source={require("../../assets/images/homeclockicon.png")} />
+                <Image
+                  source={require("../../assets/images/homeclockicon.png")}
+                />
                 <Text
                   style={{
                     color: "white",
@@ -347,7 +359,9 @@ const WorkoutDetails = () => {
                   gap: 6,
                 }}
               >
-                <Image source={require("../../assets/images/homefireicon.png")} />
+                <Image
+                  source={require("../../assets/images/homefireicon.png")}
+                />
                 <Text
                   style={{
                     color: "white",
@@ -372,7 +386,6 @@ const WorkoutDetails = () => {
               >
                 Testing Week
               </Text>
-
               <View
                 style={{
                   flexDirection: "row",
