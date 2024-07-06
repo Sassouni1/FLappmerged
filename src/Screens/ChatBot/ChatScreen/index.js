@@ -91,10 +91,9 @@ const BotChatScreen = ({ navigation, route }) => {
       .then(response => response.json())
       .then(data => {
         console.log(user)
-        console.log(data?.choices[0]?.message?.content)
         const responseMessage = {
           _id: Math.random().toString(36).substring(7),
-          text: data?.choices[0]?.message?.content,
+          text: data?.message,
           createdAt: new Date(),
           user: {
             _id: 2,
