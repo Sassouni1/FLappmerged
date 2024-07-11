@@ -35,6 +35,8 @@ import ChatScreen from "../../Screens/ChatBot/ChatScreen";
 import BotAllChatScreen from "../../Screens/ChatBot/AllChats";
 import CreateChatScreen from "../../Screens/ChatBot/CreateChat";
 import TestChatSceen from "../../Screens/ChatBot/Testing";
+import Goal from "../../Screens/Fitnesssurvey/Goal";
+import ZEquipment from "../../Screens/Fitnesssurvey/ZEquipment";
 
 import SearchWorkout from "../../Screens/Skills/SearchWorkout";
 import WorkoutDetail from "../../Screens/Skills/WorkoutDetail";
@@ -47,12 +49,14 @@ import LearningCenter from "../../Screens/SquatComponet/LearningCenter";
 import WorkoutComplete from "../../Screens/SquatComponet/WorkoutComplete";
 import ResetTimer from "../../Screens/SquatComponet/ResetTimer";
 import Squat from "../../Screens/SquatComponet/Squat";
+import Weightgoals from "../../Screens/Fitnesssurvey/Weightgoals";
 
 import AddWorkouts from "../../Screens/Workouts/AddWorkouts";
 import WorkoutExercise from "../../Screens/Workouts/WorkoutExercise";
 
 
 import HTUA from "../../Screens/HTUA";
+import Howtoreadprogram from "../../Screens/Workouts/Howtoreadprogram";
 
 
 const stack = createNativeStackNavigator();
@@ -80,8 +84,30 @@ const HomeStack = () => {
         options={{
           headerShown: false,
         }}
+        name="Howtoreadprogram"
+        component={Howtoreadprogram}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="Goal"
+        component={Goal}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
         name="VideoSkills"
         component={VideoSkills}
+      />
+
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="ZEquipment"
+        component={ZEquipment}
       />
       <stack.Screen
         options={{
@@ -90,7 +116,13 @@ const HomeStack = () => {
         name="Fitnesssurvey"
         component={Fitnesssurvey}
       />
-
+<stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="Weightgoals"
+        component={Weightgoals}
+      />
       <stack.Screen
         options={{
           headerShown: false,
@@ -355,40 +387,40 @@ const HomeStack = () => {
         component={Squat}
       />
       <stack.Screen
-                options={{
-                    headerShown: false
-                }}
-                name="ChatScreen"
-                component={ChatScreen}
-            />
-            <stack.Screen
-                options={{
-                    headerShown: false
-                }}
-                name="BotAllChatScreen"
-                component={BotAllChatScreen}
-            />
-            <stack.Screen
-                options={{
-                    headerShown: false
-                }}
-                name="CreateChatScreen"
-                component={CreateChatScreen}
-            />
-            <stack.Screen
-                options={{
-                    headerShown: false
-                }}
-                name="TestChatSceen"
-                component={TestChatSceen}
-            />
-            <stack.Screen
-                options={{
-                    headerShown: false
-                }}
-                name="WorkoutExercise"
-                component={WorkoutExercise}
-            />
+        options={{
+          headerShown: false
+        }}
+        name="ChatScreen"
+        component={ChatScreen}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false
+        }}
+        name="BotAllChatScreen"
+        component={BotAllChatScreen}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false
+        }}
+        name="CreateChatScreen"
+        component={CreateChatScreen}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false
+        }}
+        name="TestChatSceen"
+        component={TestChatSceen}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false
+        }}
+        name="WorkoutExercise"
+        component={WorkoutExercise}
+      />
 
     </stack.Navigator>
   );

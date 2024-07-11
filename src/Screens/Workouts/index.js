@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import {
   Dimensions,
   Image,
+  ImageBackground,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -73,7 +74,7 @@ const Workouts = ({ route }) => {
          paddingHorizontal: 10,
        }}
      >
-       {index === 0 && (
+       {/* {index === 0 && (
          <View style={styles.header}>
            <View style={styles.headerLeft}>
              <Image
@@ -90,8 +91,56 @@ const Workouts = ({ route }) => {
              />
            </TouchableOpacity>
          </View>
-       )}
-       {index === 2 && (
+       )} */}
+         {index === 0 && (
+          <View>
+            <ImageBackground
+              source={require("../../assets/images/guyback.png")}
+              style={{
+                width: Dimensions.get("screen").width,
+                height: 360,
+                position: "absolute",
+                top: -60,
+                right: 0,
+                left: -10,
+                resizeMode: "cover",
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  position: "absolute",
+                  top: 60,
+                  left: 20,
+                  //   backgroundColor: "white",
+                }}
+                onPress={() => navigation.goBack()}
+              >
+                <Image
+                  source={require("../../assets/images/workoutsbackbtn.png")}
+                  style={{
+                    objectFit: "fill",
+                    height: 50,
+                    width: 50,
+                  }}
+                />
+              </TouchableOpacity>
+            </ImageBackground>
+            <View
+              style={{
+                borderRadius: 30,
+                width: Dimensions.get("screen").width + 5,
+                height: 100,
+                backgroundColor: "white",
+                position: "absolute",
+                top: 250,
+                right: 0,
+                left: -12,
+              }}
+            />
+          </View>
+        )}
+
+       {/* {index === 2 && (
          <View>
            <Image
              source={require('../../assets/images/guyback.png')}
@@ -118,79 +167,78 @@ const Workouts = ({ route }) => {
              }}
            />
          </View>
-       )}
+       )} */}
 
-
-       <TabView
-         style={{
-           position: 'absolute',
-           top: 100,
-           left: 10,
-           right: 10,
-           bottom: 0,
-         }}
-         navigationState={{ index, routes }}
-         renderScene={renderScene}
-         // onIndexChange={setIndex}
-         onIndexChange={(i) => {
-           setIndex(i) // Update the index state
-           setfocusedTab(i) // Update the focusedTab state
-         }}
-         initialLayout={initialLayout}
-         renderTabBar={(props) => (
-           <TabBar
-             {...props}
-             gap={0}
-             indicatorStyle={{
-               backgroundColor: 'black',
-               opacity: 0.9,
-             }}
-             style={{
-               marginBottom: 10,
-               backgroundColor: 'lightgray',
-               borderRadius: 15,
-             }}
-             renderLabel={({ route, focused, onPress }) => {
-               // console.log('Clicked tab: ', route.title,props)
-               //setfocusedTab(focused);
-               return (
-                 <View
-                   key={route.key}
-                   style={{
-                     height: getHeight(3.5),
-                     justifyContent: 'center',
-                   }}
-                 >
-                   <View
-                     style={{
-                       height: getHeight(5.7),
-                       backgroundColor: focused ? 'black' : 'lightgray',
-                       justifyContent: 'center',
-                       alignItems: 'center',
-                       borderRadius: 15,
-                       paddingHorizontal: 7,
-                       width: '100%',
-                     }}
-                   >
-                     <Text
-                       style={{
-                         color: focused ? 'white' : 'black',
-                         fontFamily: fonts.Re,
-                         fontSize: 15,
-                         fontWeight: '600',
-                         alignItems: 'center',
-                         justifyContent: 'center',
-                       }}
-                     >
-                       {route.title}
-                     </Text>
-                   </View>
-                 </View>
-               )
-             }}
-           />
-         )}
-       />
+<TabView
+          style={{
+            position: "absolute",
+            top: 100,
+            left: 10,
+            right: 10,
+            bottom: 0,
+          }}
+          navigationState={{ index, routes }}
+          renderScene={renderScene}
+          // onIndexChange={setIndex}
+          onIndexChange={(i) => {
+            setIndex(i); // Update the index state
+            setfocusedTab(i); // Update the focusedTab state
+          }}
+          initialLayout={initialLayout}
+          renderTabBar={(props) => (
+            <TabBar
+              {...props}
+              gap={0}
+              indicatorStyle={{
+                backgroundColor: "black",
+                opacity: 0.9,
+              }}
+              style={{
+                marginBottom: 10,
+                backgroundColor: "lightgray",
+                borderRadius: 15,
+              }}
+              renderLabel={({ route, focused, onPress }) => {
+                // console.log('Clicked tab: ', route.title,props)
+                //setfocusedTab(focused);
+                return (
+                  <View
+                    key={route.key}
+                    style={{
+                      height: getHeight(3.5),
+                      justifyContent: "center",
+                    }}
+                  >
+                    <View
+                      style={{
+                        height: getHeight(5.7),
+                        backgroundColor: focused ? "black" : "lightgray",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderRadius: 15,
+                        paddingHorizontal: 7,
+                        width: "100%",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: focused ? "white" : "black",
+                          fontFamily: fonts.Re,
+                          fontSize: 15,
+                          fontWeight: "600",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {route.title}
+                      </Text>
+                    </View>
+                  </View>
+                );
+              }}
+            />
+          )}
+        />
      </View>
    </View>
  )

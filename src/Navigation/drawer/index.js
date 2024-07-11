@@ -39,6 +39,7 @@ import AllChats from "../../Screens/ChatBot/AllChats";
 import ChatScreen from "../../Screens/ChatBot/ChatScreen";
 import CreateChat from "../../Screens/ChatBot/CreateChat";
 
+import Howtouse from "../../Screens/HTUA";
 
 
 const Drawer = createDrawerNavigator();
@@ -163,7 +164,7 @@ function CustomDrawerContent(props) {
           labelStyle={{ color: "#7B7A7A" }}
           activeBackgroundColor={"#7B7A7A"}
         /> */}
-        
+
         <DrawerItem
           //style={{ marginTop: getHeight(-1) }}
           label={"Privacy Policy"}
@@ -181,7 +182,7 @@ function CustomDrawerContent(props) {
           onPress={() => navigation.navigate("TermOfUse")}
           inactiveTintColor={"#7B7A7A"}
           activeTintColor={"#7B7A7A"}
-          
+
           activeBackgroundColor={"#7B7A7A"}
         />
 
@@ -192,7 +193,7 @@ function CustomDrawerContent(props) {
           onPress={() => navigation.navigate("About")}
           inactiveTintColor={"#7B7A7A"}
           activeTintColor={"#7B7A7A"}
-         
+
           activeBackgroundColor={"#7B7A7A"}
         />
         <View style={{ height: marginTop }}>
@@ -204,7 +205,7 @@ function CustomDrawerContent(props) {
           onPress={() => logoutFun()}
           inactiveTintColor={"#EB5757"}
           activeTintColor={"#EB5757"}
-         
+
           activeBackgroundColor={"#EB5757"}
           icon={({ color, size, focuced }) => (
             <MaterialIcons name={"logout"} size={20} color={"#EB5757"} />
@@ -429,7 +430,29 @@ export default function MyDrawer() {
         name="Help"
         component={Help}
       />
-
+      <Drawer.Screen
+        options={{
+          headerShown: false,
+          drawerInactiveTintColor: "white",
+          drawerActiveTintColor: "#333333",
+          drawerActiveBackgroundColor: "white",
+          drawerIcon: ({ color, size, focuced }) => (
+            <MaterialIcons
+              name={"help-outline"}
+              size={getFontSize(3.3)}
+              color={color}
+              style={{ marginLeft: getFontSize(-0.4) }}
+            />
+          ),
+          drawerLabelStyle: {
+            fontFamily: "Ubuntu",
+            fontSize: getFontSize(1.7),
+            marginLeft: getFontSize(0.3),
+          },
+        }}
+        name="How to Use"
+        component={Howtouse}
+      />
       <Drawer.Screen
         options={{
           headerShown: false,

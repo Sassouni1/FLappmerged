@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 const Assessment = ({ navigation }) => {
+  
   const [selectedAge, setSelectedAge] = useState('18-25');
 
   const handleAgeSelection = (age) => {
@@ -27,7 +28,10 @@ const Assessment = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.backButton}>{'<'}</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+
+          <Text style={styles.backButton}>{'<'}</Text>
+        </TouchableOpacity>
         <Text style={styles.headerText}>Assessment</Text>
         <Text style={styles.stepCount}>1 OF 14</Text>
       </View>
@@ -62,8 +66,8 @@ const Assessment = ({ navigation }) => {
         </TouchableOpacity>
       ))}
 
-      <TouchableOpacity style={styles.continueButton} 
-      onPress={() => navigation.navigate("Goal")}>
+      <TouchableOpacity style={styles.continueButton}
+        onPress={() => navigation.navigate("Goal")}>
         <View style={styles.continueButtonContent}>
           <Text style={styles.continueButtonText}>Continue</Text>
           <Image

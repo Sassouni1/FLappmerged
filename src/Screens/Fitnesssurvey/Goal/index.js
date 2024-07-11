@@ -1,60 +1,64 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState } from "react";
+import {
+  ScrollView,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+} from "react-native";
 
 const Assessment = ({ navigation }) => {
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedGoal, setSelectedGoal] = useState(
+    "Increase sports performance"
+  );
 
-  const handleOptionSelection = (option) => {
-    setSelectedOption(option);
+  const handleGoalSelection = (Zequipment) => {
+    setSelectedGoal(Zequipment);
   };
 
   const handleContinuePress = () => {
-    // Add your navigation logic here based on the selected option
-    // For example:
-    if (selectedOption === 'Increase sports performance') {
-      navigation.navigate('WhatIsYourMainFocus');
-    } else if (selectedOption === 'I wanna lose weight') {
-      navigation.navigate('LoseWeightFlow');
-    }
-    // Add more cases for other options
+    navigation.navigate("ZEquipment");
   };
 
-  const options = [
-    { label: "Increase sports performance", value: "Increase sports performance" },
+  const goalOptions = [
+    {
+      label: "Increase sports performance",
+      value: "Increase sports performance",
+    },
     { label: "I wanna lose weight", value: "I wanna lose weight" },
-    { label: "I wanna Bulk", value: "I wanna Bulk" },
-    { label: "General Health & Fitness", value: "General Health & Fitness" },
+    { label: "I wanna bulk", value: "I wanna bulk" },
+    { label: "General health & fitness", value: "General health & fitness" },
   ];
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.topNav}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.buttonContainer}
-        >
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Image
+            source={require("../../../assets/images/Button1Container1.png")} // Ensure this path is correct
+            style={styles.headerImage}
+          />
         </TouchableOpacity>
-      </View>
         <Text style={styles.headerText}>Assessment</Text>
-        <Text style={styles.stepCount}>2 OF 6</Text>
+        <Text style={styles.stepCount}>1 OF 14</Text>
       </View>
 
-      <Text style={styles.question}>What's your main goal?</Text>
+      <Text style={styles.question}>What's your fitness goal/target?</Text>
 
-      {options.map((option) => (
+      {goalOptions.map((option) => (
         <TouchableOpacity
           key={option.value}
           style={[
-            styles.option,
-            selectedOption === option.value && styles.selectedOption,
+            styles.goalOption,
+            selectedGoal === option.value && styles.selectedOption,
           ]}
-          onPress={() => handleOptionSelection(option.value)}
+          onPress={() => handleGoalSelection(option.value)}
         >
           <Text
             style={[
               styles.optionText,
-              selectedOption === option.value && styles.selectedOptionText,
+              selectedGoal === option.value && styles.selectedOptionText,
             ]}
           >
             {option.label}
@@ -62,134 +66,128 @@ const Assessment = ({ navigation }) => {
           <View
             style={[
               styles.checkbox,
-              selectedOption === option.value && styles.selectedCheckbox,
+              selectedGoal === option.value && styles.selectedCheckbox,
             ]}
           >
-            {selectedOption === option.value && <View style={styles.checkboxInner} />}
+            {selectedGoal === option.value && (
+              <View style={styles.checkboxInner} />
+            )}
           </View>
         </TouchableOpacity>
       ))}
 
-      <TouchableOpacity style={styles.continueButton} onPress={() => navigation.navigate("ForgotPassword")}>
-        <View style={styles.continueButtonContent}>
-          <Text style={styles.continueButtonText}>Continue</Text>
-          <Image
-            style={styles.continueButtonIcon}
-          />
-        </View>
+      <TouchableOpacity
+        style={styles.continueButton}
+        onPress={handleContinuePress}
+      >
+        <Text style={styles.continueButtonText}>Continue</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     paddingHorizontal: 16,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'left',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginVertical: 16,
-    marginTop: 100,
-    left: 10,
+    marginTop: 30,
   },
-  backButton: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'black',
+  headerImage: {
+    width: 45, // Adjust the size to be smaller
+    height: 45, // Adjust the size to be smaller
+    marginRight: 10,
   },
   headerText: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: 'black',
-    left: 20,
-    top: 3,
+    fontWeight: "bold",
+    color: "black",
+    flex: 1,
+  },
+  stepCountContainer: {
+    alignItems: "flex-end",
   },
   stepCount: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#007AFF',
-    backgroundColor: '#F0F7FF',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    position: 'absolute',
-    right: 16,
-    top: 0,
-    borderRadius: 12,
-    overflow: 'hidden',
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#387CFF",
+    backgroundColor: "#F0F7FF",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10, // Make it fully rounded
+    overflow: "hidden", // Ensure the background doesn't overflow
   },
   question: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginVertical: 16,
-    paddingTop: 70,
-    color: '#000',
-    textAlign: 'center',
+    color: "#000",
+    textAlign: "center",
   },
-  option: {
-    backgroundColor: '#F3F3F4',
+  goalOption: {
+    backgroundColor: "#F3F3F4",
     borderRadius: 17,
     paddingVertical: 15,
     paddingHorizontal: 16,
     marginVertical: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   selectedOption: {
-    backgroundColor: '#FF8036',
+    backgroundColor: "#FF8036",
+    borderRadius: 19,
+    paddingVertical: 15,
+    paddingHorizontal: 16,
+    borderWidth: 4,
+    borderColor: "#fae0d0", // Outer border color
   },
   optionText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000',
+    fontWeight: "bold",
+    color: "#000",
   },
   selectedOptionText: {
-    color: '#fff',
+    color: "#fff",
   },
   checkbox: {
     width: 20,
     height: 20,
-    borderWidth: 2.4,
-    borderColor: '#000',
+    borderWidth: 2,
+    borderColor: "#000",
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   selectedCheckbox: {
-    backgroundColor: '#FF8036',
-    borderColor: '#fff',
+    backgroundColor: "#FF8036",
+    borderColor: "#fff",
   },
   checkboxInner: {
     width: 8,
     height: 8,
     borderRadius: 3,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   continueButton: {
-    backgroundColor: '#000',
+    backgroundColor: "#000",
     borderRadius: 18,
     paddingVertical: 18,
     paddingHorizontal: 24,
     marginVertical: 16,
-    alignItems: 'center',
-  },
-  continueButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: "center",
   },
   continueButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
-    marginRight: 8,
-  },
-  continueButtonIcon: {
-    width: 24,
-    height: 24,
+    fontWeight: "bold",
   },
 });
 
-export default Assessment;
+export default Assessment; // Correctly export the Assessment component

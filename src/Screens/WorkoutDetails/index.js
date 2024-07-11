@@ -248,31 +248,21 @@ const WorkoutDetails = () => {
   return (
     <ScrollView>
       <TouchableOpacity
-        style={{
-          width: "100%",
-          marginTop: -20,
-        }}
+        onPress={() => navigation.navigate("Howtoreadprogram")}
+        style={{ width: "100%", marginTop: -30 ,marginBottom:10}}
       >
         <Image
           source={require("../../assets/images/workoutsbtn1.png")}
-          style={{
-            width: "100%",
-            objectFit: "contain",
-          }}
+          style={{ width: "100%", resizeMode: "contain" }}
         />
       </TouchableOpacity>
       <TouchableOpacity
-        style={{
-          width: "100%",
-          marginTop: -50,
-        }}
+        onPress={() => navigation.navigate("Fitnesssurvey")}
+        style={{ width: "100%", marginTop: -50,}}
       >
         <Image
           source={require("../../assets/images/workoutsquizbtn.png")}
-          style={{
-            width: "100%",
-            objectFit: "contain",
-          }}
+          style={{ width: "100%", resizeMode: "contain" }}
         />
       </TouchableOpacity>
       <View
