@@ -8,8 +8,9 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ScrollView
 } from "react-native";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { BarChart, LineChart } from "react-native-gifted-charts";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -26,25 +27,10 @@ import { useFocusEffect } from "@react-navigation/native";
 import { setLoader } from "../../Redux/actions/GernalActions";
 import { ApiCall } from "../../Services/Apis";
 import SelectDropdown from "react-native-select-dropdown";
+import session from "redux-persist/lib/storage/session";
 
-const TopImage = React.memo(({ onPressBack }) => {
-  return (
-    <ImageBackground
-      source={require("../../assets/images/home1.png")}
-      style={styles.imageBgStyle}
-      imageStyle={styles.imageStyle}
-    >
-      <TouchableOpacity onPress={onPressBack} style={styles.headerBtnStyle}>
-        <Ionicons
-          name="chevron-back"
-          size={getFontSize(2.5)}
-          color={colors.black}
-        />
-      </TouchableOpacity>
-      <Text style={styles.statsFontStyle}>Stats</Text>
-    </ImageBackground>
-  );
-});
+
+const defaultDropDownValue = "Last 7 Days";
 
 export default function TrainingStats({ navigation }) {
   const [sliderValue, setSliderValue] = React.useState(200);
@@ -56,11 +42,14 @@ export default function TrainingStats({ navigation }) {
 
   useFocusEffect(
     React.useCallback(() => {
-      setSelectedTypes("Last 7 Days");
+      set_tc_dropdown(defaultDropDownValue)
+      set_cb_dropdown(defaultDropDownValue)
+      set_sp_dropdown(defaultDropDownValue)
+
       dispatch(setLoader(true));
       // getSingleExcercise(date);
       // exerciseWeekProgress(date);
-      getMessagesProgress();
+      // getMessagesProgress();
       exerciseProgress();
       getWeightProgress();
       getCaloriesProgress();
@@ -209,7 +198,90 @@ export default function TrainingStats({ navigation }) {
   });
 
   // select type states by dropdown
-  const [selectedTypes, setSelectedTypes] = useState([]);
+
+  const [tc_dropdown, set_tc_dropdown] = useState();
+  const [cb_dropdown, set_cb_dropdown] = useState();
+  const [sp_dropdown, set_sp_dropdown] = useState();
+  const [caloriesBurned,setCaloriesBurned] = useState(0);
+  const [total_lbs,setTotal_lbs] = useState(0);
+  const [workoutsThisWeek,setWorkoutsThisWeek] = useState();
+
+  const [maxLBS,setMaxLBS] = useState();
+  const [exerciseName,setExerciseName] = useState();
+  const [exerciseDate,setExerciseDate] = useState();
+  const [parameter,setParameter] = useState();
+
+  const [maxLBS_DL,setMaxLBS_DL] = useState();
+  const [exerciseName_DL,setExerciseName_DL] = useState();
+  const [exerciseDate_DL,setExerciseDate_DL] = useState();
+  const [parameter_DL,setParameter_DL] = useState();
+
+  useEffect(()=>{
+    let maxLBS = 0;
+    let exerciseName = '';
+    let exerciseDate = '';
+    let parameter = '';
+
+    let maxLBS_DL = 0;
+    let exerciseName_DL = '';
+    let exerciseDate_DL = '';
+    let parameter_DL = '';
+    workoutsThisWeek?.forEach(dayWorkout => {
+      dayWorkout?.innerWorkout?.forEach(element => {
+        element?.exercise?.forEach(exercise => {
+          console.log("submitted_sets",exercise?.submitted_sets)
+          exercise?.sets?.forEach(additionalSet => {
+            let _exerciseName = exercise?.exercise_name?.toLowerCase();
+            if(_exerciseName?.includes("squat") && (additionalSet.parameter == 'lbs' || additionalSet.parameter == 'weight'))
+            {
+              let isLBS = additionalSet.parameter == 'lbs';
+              let _max = isLBS ? parseInt(additionalSet?.lbs || 0) : parseInt(additionalSet?.weight || 0);
+              if (maxLBS < _max)
+              {
+                maxLBS = _max;
+                parameter= isLBS ? additionalSet.parameter : 'kg'
+                exerciseName = exercise?.exercise_name;
+                exerciseDate = dayWorkout?.workoutDate;
+              }
+            }
+            if(_exerciseName?.includes("deadlift") && (additionalSet.parameter == 'lbs' || additionalSet.parameter == 'weight'))
+            {
+              let isLBS = additionalSet.parameter == 'lbs';
+              let _max = isLBS ? parseInt(additionalSet?.lbs || 0) : parseInt(additionalSet?.weight || 0);
+              if (maxLBS_DL < _max)
+              {
+                maxLBS_DL = _max;
+                parameter_DL= isLBS ? additionalSet.parameter : 'kg'
+                exerciseName_DL = exercise?.exercise_name;
+                exerciseDate_DL = dayWorkout?.workoutDate;
+              }
+            }
+          });
+        });
+      });
+    });
+    setMaxLBS(maxLBS);
+    setParameter(parameter);
+    setExerciseName(exerciseName);
+    setExerciseDate(exerciseDate);
+
+    setMaxLBS_DL(maxLBS_DL);
+    setParameter_DL(parameter_DL);
+    setExerciseName_DL(exerciseName_DL);
+    setExerciseDate_DL(exerciseDate_DL);
+  }, [workoutsThisWeek])
+
+  function formatDate(date) {
+    date = new Date(date);
+    // Get the day, month, and year from the date object
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = date.getFullYear();
+  
+    // Return the formatted date string
+    return `${month}/${day}/${year}`;
+  }
+
   const [allTypes, setAllTypes] = useState([
     "Last 7 Days",
     "This Month",
@@ -221,6 +293,18 @@ export default function TrainingStats({ navigation }) {
   const [assigWorkout, setAssigWorkout] = useState([]);
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
+
+  const onChangeDropDown = (selectedType,section) => {
+    console.log("selectedType", selectedType);
+    toggleTypeSelection(selectedType,section);
+
+    if (section == "tc")
+      set_tc_dropdown(selectedType)
+    else if (section == "cb")
+      set_cb_dropdown(selectedType)
+    else if (section == "sp")
+      set_sp_dropdown(selectedType)
+  }
 
   // all exercise progress apis functions
   const exerciseProgress = async () => {
@@ -235,6 +319,7 @@ export default function TrainingStats({ navigation }) {
       });
 
       if (res?.status == "200") {
+        setWorkoutsThisWeek(res?.response?.workoutsThisWeek);
         setWeeklyProgress(res?.response?.weeklyProgress);
         dispatch(setLoader(false));
       } else {
@@ -438,6 +523,7 @@ export default function TrainingStats({ navigation }) {
       console.log("getWeightProgress", res);
       if (res?.status == "200") {
         setWeightProgress(res?.response?.weeklyWeight);
+        setTotal_lbs(res?.response?.total_lbs)
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -459,6 +545,7 @@ export default function TrainingStats({ navigation }) {
 
       if (res?.status == "200") {
         setMonthlyWeightProgess(res?.response?.monthlyWeight);
+        setTotal_lbs(res?.response?.total_lbs)
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -479,6 +566,7 @@ export default function TrainingStats({ navigation }) {
       console.log("response of getWeightThreeMonthProgress", res?.response);
       if (res?.status == "200") {
         setWeightProgressThreeMonth(res?.response?.monthlyWeight);
+        setTotal_lbs(res?.response?.total_lbs)
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -500,6 +588,7 @@ export default function TrainingStats({ navigation }) {
 
       if (res?.status == "200") {
         setWeightProgressSixMonth(res?.response?.monthlyWeight);
+        setTotal_lbs(res?.response?.total_lbs)
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -521,6 +610,7 @@ export default function TrainingStats({ navigation }) {
 
       if (res?.status == "200") {
         setWeightProgressAllMonth(res?.response?.monthlyWeight);
+        setTotal_lbs(res?.response?.total_lbs)
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -545,6 +635,7 @@ export default function TrainingStats({ navigation }) {
       console.log("ressss", res?.response);
       if (res?.status == "200") {
         setCaloriesProgress(res?.response?.weeklyProgress);
+        setCaloriesBurned(res?.response?.totalCalories);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -566,6 +657,7 @@ export default function TrainingStats({ navigation }) {
 
       if (res?.status == "200") {
         setMonthlyCaloriesProgess(res?.response?.weeklyProgress);
+        setCaloriesBurned(res?.response?.totalCalories);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -586,6 +678,7 @@ export default function TrainingStats({ navigation }) {
       console.log("response of weightLKL", res?.response);
       if (res?.status == "200") {
         setCaloriesProgressThreeMonth(res?.response?.monthlyProgress);
+        setCaloriesBurned(res?.response?.totalCalories);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -607,6 +700,7 @@ export default function TrainingStats({ navigation }) {
 
       if (res?.status == "200") {
         setCaloriesProgressSixMonth(res?.response?.monthlyProgress);
+        setCaloriesBurned(res?.response?.totalCalories);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -628,6 +722,7 @@ export default function TrainingStats({ navigation }) {
 
       if (res?.status == "200") {
         setCaloriesProgressAllMonth(res?.response?.yearlyProgress);
+        setCaloriesBurned(res?.response?.totalCalories);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -640,17 +735,16 @@ export default function TrainingStats({ navigation }) {
 
   // all calender progress apis functions
   const getSingleExcercise = async (selectedDate) => {
+    console.log(selectedDate);
     try {
       const res = await ApiCall({
-        route: `assignProgram/given-date-workouts/${
-          user?.plan_id
-        }&${selectedDate.toISOString()}`,
+        route: `assignProgram/given_date_workout/${user?.plan_id
+          }&${selectedDate.toISOString()}`,
         verb: "get",
         token: token,
       });
-
       if (res?.status == "200") {
-        setAssigWorkout(res?.response?.Workout[0]);
+        setAssigWorkout(res?.response?.Workout);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -843,37 +937,54 @@ export default function TrainingStats({ navigation }) {
   }
 
   // select api function from dropdown
-  const toggleTypeSelection = (selectedType) => {
+  const toggleTypeSelection = (selectedType,section) => {
+    dispatch(setLoader(true));
+
     if (selectedType == "Last 7 Days") {
-      dispatch(setLoader(true));
-      exerciseProgress();
-      getMessagesProgress();
-      getWeightProgress();
-      getCaloriesProgress();
+      if (section == 'tc')
+        exerciseProgress();
+      else if (section == 'cb')
+        getCaloriesProgress();
+      else if (section == 'sp')
+        getWeightProgress();
+
     } else if (selectedType == "This Month") {
-      dispatch(setLoader(true));
-      getExerciseMonthProgress();
-      getMessagesMonthProgress();
-      getWeightMonthProgress();
-      getCaloriesMonthProgress();
+
+      if (section == 'tc')
+        getExerciseMonthProgress();
+      else if (section == 'cb')
+        getCaloriesMonthProgress();
+      else if (section == 'sp')
+        getWeightMonthProgress();
+
     } else if (selectedType == "Last 3 Months") {
-      dispatch(setLoader(true));
-      getExerciseThreeMonthProgress();
-      getMessagesThreeMonthProgress();
-      getWeightThreeMonthProgress();
-      getCaloriesThreeMonthProgress();
+
+      if (section == 'tc')
+        getExerciseThreeMonthProgress();
+      else if (section == 'cb')
+        getCaloriesThreeMonthProgress();
+      else if (section == 'sp')
+        getWeightThreeMonthProgress();
+      
     } else if (selectedType == "Last 6 Months") {
-      dispatch(setLoader(true));
-      getExerciseSixMonthProgress();
-      getMessagesSixMonthProgress();
-      getWeightSixMonthProgress();
-      getCaloriesSixMonthProgress();
+
+      if (section == 'tc')
+        getExerciseSixMonthProgress();
+      else if (section == 'cb')
+        getCaloriesSixMonthProgress();
+      else if (section == 'sp')
+        getWeightSixMonthProgress();
+
+
     } else if (selectedType == "All Time") {
-      dispatch(setLoader(true));
-      getExerciseAllMonthProgress();
-      getMessagesAllMonthProgress();
-      getWeightAllMonthProgress();
-      getCaloriesAllMonthProgress();
+
+      if (section == 'tc')
+        getExerciseAllMonthProgress();
+      else if (section == 'cb')
+        getCaloriesAllMonthProgress();
+      else if (section == 'sp')
+        getWeightAllMonthProgress();
+
     } else {
       console.log("NO select type selected");
     }
@@ -1033,28 +1144,23 @@ export default function TrainingStats({ navigation }) {
     percentageOfSixMonthCalories = [0, 0, 0, 0, 0, 0];
   }
 
-  const numValues =
-    selectedTypes === "Last 7 Days"
-      ? 7
-      : selectedTypes === "This Month"
-      ? Platform.OS === "ios"
-        ? 8
-        : 7
-      : selectedTypes === "Last 3 Months"
-      ? Platform.OS === "ios"
-        ? 8.7
-        : 7
-      : selectedTypes === "Last 6 Months"
-      ? Platform.OS === "ios"
-        ? 7.2
-        : 7
-      : selectedTypes === "All Time"
-      ? 7
-      : 7; // Default to 7 if no specific count is available
-  const chartWidth = getWidth(95) * (numValues / 7);
+  const trainingCompletionRate = () => {
+    let completionRate = 0;
+    let data = trainingCompletionData();
+    let total = 0;
+
+    if (data) {
+      let length = data?.length;
+      data.forEach(element => {
+        total = total + element.value;
+      });
+      completionRate = (total/(100*length))*100
+    }
+    return Math.round(completionRate);
+  }
 
   const trainingCompletionData = () => {
-    switch (selectedTypes) {
+    switch (tc_dropdown) {
       case "Last 7 Days":
         return [
           {
@@ -1097,7 +1203,10 @@ export default function TrainingStats({ navigation }) {
             value: monthlyProgress.Week3,
             label: "Week3",
           },
-          { value: monthlyProgress.Week4, label: "Week4" },
+          {
+            value: monthlyProgress.Week4,
+            label: "Week4"
+          },
         ];
       case "Last 3 Months":
         return [
@@ -1187,142 +1296,8 @@ export default function TrainingStats({ navigation }) {
     }
   };
 
-  const individualExerciseData = useMemo(() => {
-    switch (selectedTypes) {
-      case "Last 7 Days":
-        return [
-          {
-            value: messagesProgress.Sunday,
-            label: "Sun",
-          },
-          {
-            value: messagesProgress.Monday,
-            label: "Mon",
-          },
-          {
-            value: messagesProgress.Tuesday,
-            label: "Tue",
-          },
-          { value: messagesProgress.Wednesday, label: "Wed" },
-          {
-            value: messagesProgress.Thursday,
-            label: "Thurs",
-          },
-          {
-            value: messagesProgress.Friday,
-            label: "Fri",
-          },
-          {
-            value: messagesProgress.Saturday,
-            label: "Sat",
-          },
-        ];
-      case "This Month":
-        return [
-          {
-            value: messagesProgressMonth.Week1,
-            label: "Week1",
-          },
-          {
-            value: messagesProgressMonth.Week2,
-            label: "Week2",
-          },
-          {
-            value: messagesProgressMonth.Week3,
-            label: "Week3",
-          },
-          { value: messagesProgressMonth.Week4, label: "Week4" },
-        ];
-      case "Last 3 Months":
-        return [
-          {
-            value: percentageOfThreeMonth[0],
-            label: monthNameOfThreeMonth[0],
-          },
-          {
-            value: percentageOfThreeMonth[1],
-            label: monthNameOfThreeMonth[1],
-          },
-          {
-            value: percentageOfThreeMonth[2],
-            label: monthNameOfThreeMonth[2],
-          },
-        ];
-      case "Last 6 Months":
-        return [
-          {
-            value: percentageOfSixMonth[0],
-            label: monthNameOfSixMonth[0],
-          },
-          {
-            value: percentageOfSixMonth[1],
-            label: monthNameOfSixMonth[1],
-          },
-          {
-            value: percentageOfSixMonth[2],
-            label: monthNameOfSixMonth[2],
-          },
-          {
-            value: percentageOfSixMonth[3],
-            label: monthNameOfSixMonth[3],
-          },
-          {
-            value: percentageOfSixMonth[4],
-            label: monthNameOfSixMonth[4],
-          },
-          {
-            value: percentageOfSixMonth[5],
-            label: monthNameOfSixMonth[5],
-          },
-        ];
-      case "All Time":
-        return [
-          { label: "Jan", value: messagesProgressAllMonth.Jan },
-          { label: "Feb", value: messagesProgressAllMonth.Feb },
-          { label: "Mar", value: messagesProgressAllMonth.Mar },
-          { label: "Apr", value: messagesProgressAllMonth.Apr },
-          { label: "May", value: messagesProgressAllMonth.May },
-          { label: "Jun", value: messagesProgressAllMonth.Jun },
-          { label: "Jul", value: messagesProgressAllMonth.Jul },
-          { label: "Aug", value: messagesProgressAllMonth.Aug },
-          { label: "Sep", value: messagesProgressAllMonth.Sep },
-          { label: "Oct", value: messagesProgressAllMonth.Oct },
-          { label: "Nov", value: messagesProgressAllMonth.Nov },
-          { label: "Dec", value: messagesProgressAllMonth.Dec },
-        ];
-      default:
-        return [
-          {
-            value: messagesProgress.Sunday,
-            label: "Sun",
-          },
-          {
-            value: messagesProgress.Monday,
-            label: "Mon",
-          },
-          {
-            value: messagesProgress.Tuesday,
-            label: "Tue",
-          },
-          { value: messagesProgress.Wednesday, label: "Wed" },
-          {
-            value: messagesProgress.Thursday,
-            label: "Thurs",
-          },
-          {
-            value: messagesProgress.Friday,
-            label: "Fri",
-          },
-          {
-            value: messagesProgress.Saturday,
-            label: "Sat",
-          },
-        ];
-    }
-  }, [selectedTypes]);
-
   const caloriesLineData = () => {
-    switch (selectedTypes) {
+    switch (cb_dropdown) {
       case "Last 7 Days":
         return [
           {
@@ -1455,8 +1430,9 @@ export default function TrainingStats({ navigation }) {
     }
   };
 
+
   const strengthProgressData = () => {
-    switch (selectedTypes) {
+    switch (sp_dropdown) {
       case "Last 7 Days":
         return [
           {
@@ -1580,29 +1556,9 @@ export default function TrainingStats({ navigation }) {
     }
   };
 
-  const trainingSeatsData = [
-    {
-      title: "Apple Watch Stats",
-      data: [
-        { title: "Sleep", des: "Time in Bed: 7 Hrs 20 mins " },
-        { title: "Steps", des: "40,000 steps" },
-      ],
-    },
-    {
-      title: "Personal Records",
-      data: [
-        {
-          title: "Deadlift Variations",
-          des: "234 lb max: Zercher Squat - 09/30/2012 ",
-        },
-        { title: "Squat Variation", des: "300 lb max: #Exercise Name - #date" },
-      ],
-    },
-  ];
-
   const onChangeSlider = (value) => setSliderValue(value);
 
-  const renderItem = ({ item }) => {
+  const renderItem = (item) => {
     return (
       <TouchableOpacity style={[styles.containerStyle, { gap: 10 }]}>
         <Text style={styles.sectionTextStyle}>{item.title}</Text>
@@ -1613,7 +1569,7 @@ export default function TrainingStats({ navigation }) {
       </TouchableOpacity>
     );
   };
-  const RenderSectionHeader = ({ section: { title } }) => {
+  const RenderSectionHeader = (title) => {
     return (
       <View style={[styles.trainingContainerStyle, styles.sectionTitleStyle]}>
         <Text style={styles.sectionTextStyle}>{title}</Text>
@@ -1635,16 +1591,15 @@ export default function TrainingStats({ navigation }) {
     );
   };
 
-  const RenderDropdown = () => {
+  const RenderDropdown = ({value,section}) => {
     return (
       <SelectDropdown
-        defaultValue={selectedTypes}
+        defaultValue={value}
         data={allTypes}
-        onSelect={(selectedType) => {
-          console.log("selectedType", selectedType);
-          toggleTypeSelection(selectedType), setSelectedTypes(selectedType);
+        onSelect={(value) => {
+          onChangeDropDown(value,section)
         }}
-        defaultButtonText="Last 7 Days"
+        // defaultButtonText={defaultDropDownValue}
         buttonTextAfterSelection={(selectedItem, index) => {
           return (
             <Text
@@ -1705,158 +1660,207 @@ export default function TrainingStats({ navigation }) {
     );
   };
 
-  const ListHeaderComponent = React.memo(() => {
+  const TopImage = React.memo(({ onPressBack }) => {
     return (
-      <View>
-        <TopImage onPressBack={onPressBack} />
-        <View style={styles.innerContainerStyle}>
-          <View style={styles.trainingContainerStyle}>
-            <Text style={styles.trainingFontStyle}>Training Completion</Text>
-            <Ionicons
-              name="settings"
-              size={getFontSize(2.5)}
-              color={colors.axisColor}
-            />
-          </View>
-          <View style={styles.chartOuterContainer}>
-            <View style={styles.headerTopContainer}>
-              <View style={styles.headerTextStyle}>
-                <Text style={styles.percentageStyle}>94%</Text>
-                <Text style={styles.completionStyle}>Completion rate</Text>
-              </View>
-              <RenderDropdown />
-            </View>
-            <BarChart
-              frontColor={colors.orange}
-              width={width - getWidth(30)}
-              data={trainingCompletionData()}
-              maxValue={100}
-              dashGap={0}
-              spacing={22}
-              barBorderRadius={4}
-              barWidth={30}
-              stepValue={20}
-              yAxisThickness={0}
-              xAxisColor={colors.rulesColor}
-              xAxisLabelTextStyle={{ color: colors.axisColor }}
-              yAxisTextStyle={{ color: colors.axisColor }}
-            />
-          </View>
-          <View style={styles.trainingContainerStyle}>
-            <Text style={styles.trainingFontStyle}>Calories Burned</Text>
-            <Ionicons
-              name="settings"
-              size={getFontSize(2.5)}
-              color={colors.axisColor}
-            />
-          </View>
-          <View style={styles.chartOuterContainer}>
-            <View style={styles.headerTopContainer}>
-              <View style={styles.headerTextStyle}>
-                <Text style={styles.percentageStyle}>549</Text>
-                <Text style={styles.completionStyle}>Calories Burned</Text>
-              </View>
-              <RenderDropdown />
-            </View>
-            <LineChart
-              areaChart
-              curved
-              data={caloriesLineData()}
-              width={width - getWidth(30)}
-              spacing={getWidth(15)}
-              initialSpacing={5}
-              color={colors.orange}
-              hideDataPoints
-              startFillColor1={colors.orange}
-              startOpacity={0.8}
-              endOpacity={0.3}
-              dashGap={0}
-              thickness={2}
-              rulesColor={colors.rulesColor}
-              yAxisThickness={0}
-              xAxisColor={colors.rulesColor}
-              xAxisLabelTextStyle={{ color: colors.axisColor }}
-              yAxisTextStyle={{ color: colors.axisColor }}
-            />
-          </View>
-          <View style={styles.trainingContainerStyle}>
-            <Text style={styles.trainingFontStyle}>Strength Progress</Text>
-            <Ionicons
-              name="settings"
-              size={getFontSize(2.5)}
-              color={colors.axisColor}
-            />
-          </View>
-          <Text style={styles.totalVolumeStyle}>
-            Total Volume: 14,540 lbs lifted
-          </Text>
-          <View style={styles.chartOuterContainer}>
-            <View style={styles.headerTopContainer}>
-              <View style={styles.headerTextStyle}>
-                <Text style={styles.percentageStyle}>14,450</Text>
-                <Text
-                  style={[styles.completionStyle, { fontSize: getWidth(3) }]}
-                >
-                  Total lbs lifted
-                </Text>
-              </View>
-              <RenderDropdown />
-            </View>
-            <BarChart
-              frontColor={colors.orange}
-              data={strengthProgressData()}
-              maxValue={20000}
-              dashGap={0}
-              spacing={8}
-              barBorderRadius={4}
-              barWidth={30}
-              width={width - getWidth(30)}
-              yAxisThickness={0}
-              xAxisColor={colors.rulesColor}
-              xAxisLabelTextStyle={{ color: colors.axisColor }}
-              yAxisTextStyle={{ color: colors.axisColor }}
-            />
-          </View>
-          <View style={styles.weightContainer}>
-            <Text style={styles.bodyTextStyle}>Bodyweight Goal</Text>
-            <Text style={styles.lbsTextStyle}>Lbs</Text>
-          </View>
-          <MultiSLider
-            value={sliderValue}
-            onValueChange={onChangeSlider}
-            trackStyle={styles.sliderStyle}
-            customMarker={(e) => <CustomMarker currentValue={e.currentValue} />}
-            min={100}
-            max={500}
-            sliderLength={getWidth(90)}
-            markerOffsetY={0}
-            step={1}
-            selectedStyle={{ backgroundColor: colors.green }}
+      <ImageBackground
+        source={require("../../assets/images/home1.png")}
+        style={styles.imageBgStyle}
+        imageStyle={styles.imageStyle}
+      >
+        <TouchableOpacity onPress={onPressBack} style={styles.headerBtnStyle}>
+          <Ionicons
+            name="chevron-back"
+            size={getFontSize(2.5)}
+            color={colors.black}
           />
-          <TouchableOpacity>
-            <Text style={styles.updateTextStyle}>Update Weight</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+        </TouchableOpacity>
+        <Text style={styles.statsFontStyle}>Stats</Text>
+      </ImageBackground>
     );
   });
+  const _TrainingCompletionComponent = React.memo(() => {
+    return (
+      <View>
+        <View style={styles.trainingContainerStyle}>
+          <Text style={styles.trainingFontStyle}>Training Completion</Text>
+          <Ionicons
+            name="settings"
+            size={getFontSize(2.5)}
+            color={colors.axisColor}
+          />
+        </View>
+        <View style={styles.chartOuterContainer}>
+          <View style={styles.headerTopContainer}>
+            <View style={styles.headerTextStyle}>
+              <Text style={styles.percentageStyle}>{trainingCompletionRate()+"%"}</Text>
+              <Text style={styles.completionStyle}>Completion rate</Text>
+            </View>
+            <RenderDropdown value={tc_dropdown} section={"tc"} />
+          </View>
+          <BarChart
+            frontColor={colors.orange}
+            width={width - getWidth(30)}
+            data={trainingCompletionData()}
+            maxValue={100}
+            dashGap={0}
+            spacing={22}
+            barBorderRadius={4}
+            barWidth={30}
+            stepValue={20}
+            yAxisThickness={0}
+            xAxisColor={colors.rulesColor}
+            xAxisLabelTextStyle={{ color: colors.axisColor }}
+            yAxisTextStyle={{ color: colors.axisColor }}
+          />
+        </View>
+      </View>
+    )
+  });
+  const _CaloriesBurnedComponent = React.memo(() => {
+    return (
+      <View>
+        <View style={styles.trainingContainerStyle}>
+          <Text style={styles.trainingFontStyle}>Calories Burned</Text>
+          <Ionicons
+            name="settings"
+            size={getFontSize(2.5)}
+            color={colors.axisColor}
+          />
+        </View>
+        <View style={styles.chartOuterContainer}>
+          <View style={styles.headerTopContainer}>
+            <View style={styles.headerTextStyle}>
+              <Text style={styles.percentageStyle}>{caloriesBurned}</Text>
+              <Text style={styles.completionStyle}>Calories Burned</Text>
+            </View>
+            <RenderDropdown value = {cb_dropdown} section={"cb"} />
+          </View>
+          <LineChart
+            areaChart
+            curved
+            data={caloriesLineData()}
+            width={width - getWidth(30)}
+            spacing={getWidth(15)}
+            initialSpacing={5}
+            color={colors.orange}
+            hideDataPoints
+            startFillColor1={colors.orange}
+            startOpacity={0.8}
+            endOpacity={0.3}
+            dashGap={0}
+            thickness={2}
+            rulesColor={colors.rulesColor}
+            yAxisThickness={0}
+            xAxisColor={colors.rulesColor}
+            xAxisLabelTextStyle={{ color: colors.axisColor }}
+            yAxisTextStyle={{ color: colors.axisColor }}
+          />
+        </View>
+      </View>
+    )
+  });
+  const _StrengthProgressComponent = React.memo(() => {
+    return (
+      <View>
+        <View style={styles.trainingContainerStyle}>
+          <Text style={styles.trainingFontStyle}>Strength Progress</Text>
+          <Ionicons
+            name="settings"
+            size={getFontSize(2.5)}
+            color={colors.axisColor}
+          />
+        </View>
+        <Text style={styles.totalVolumeStyle}>
+          {`Total Volume: 14,450 lbs lifted`}
+        </Text>
+        <View style={styles.chartOuterContainer}>
+          <View style={styles.headerTopContainer}>
+            <View style={styles.headerTextStyle}>
+              <Text style={styles.percentageStyle}>{'14,450'}</Text>
+              <Text
+                style={[styles.completionStyle, { fontSize: getWidth(3) }]}
+              >
+                Total lbs lifted
+              </Text>
+            </View>
+            <RenderDropdown value = {sp_dropdown}  section={"sp"}  />
+          </View>
+          <BarChart
+            frontColor={colors.orange}
+            data={strengthProgressData()}
+            maxValue={20000}
+            dashGap={0}
+            spacing={8}
+            barBorderRadius={4}
+            barWidth={30}
+            width={width - getWidth(30)}
+            yAxisThickness={0}
+            xAxisColor={colors.rulesColor}
+            xAxisLabelTextStyle={{ color: colors.axisColor }}
+            yAxisTextStyle={{ color: colors.axisColor }}
+          />
+        </View>
+      </View>
+    )
+  })
 
-  const listHeaderComponent = useMemo(() => {
-    return <ListHeaderComponent />;
+  const TopImageComponent = useMemo(() => {
+    return <TopImage onPressBack={onPressBack} />;
   }, []);
 
+  const TrainingCompletionComponent = useMemo(() => {
+    return <_TrainingCompletionComponent />;
+  }, [trainingCompletionData()]);
+
+  const CaloriesBurnedComponent = useMemo(() => {
+    return <_CaloriesBurnedComponent />;
+  }, [caloriesLineData()]);
+
+  const StrengthProgressComponent = useMemo(() => {
+    return <_StrengthProgressComponent />;
+  }, [strengthProgressData()]);
+
+
   return (
-    // <SafeAreaView style={styles.safeArea}>
-    <SectionList
-      sections={trainingSeatsData}
-      renderItem={renderItem}
-      renderSectionHeader={RenderSectionHeader}
-      ListHeaderComponent={listHeaderComponent}
-      showsVerticalScrollIndicator={false}
-      bounces={false}
-      keyExtractor={(item, index) => index.toString()}
-    />
-    // </SafeAreaView>
+    <ScrollView>
+      {TopImageComponent}
+      <View style={styles.innerContainerStyle}>
+        {TrainingCompletionComponent}
+        {CaloriesBurnedComponent}
+        {StrengthProgressComponent}
+
+
+        <View style={styles.weightContainer}>
+          <Text style={styles.bodyTextStyle}>Bodyweight Goal</Text>
+          <Text style={styles.lbsTextStyle}>Lbs</Text>
+        </View>
+        <MultiSLider
+          value={sliderValue}
+          onValueChange={onChangeSlider}
+          trackStyle={styles.sliderStyle}
+          customMarker={(e) => <CustomMarker currentValue={e.currentValue} />}
+          min={100}
+          max={500}
+          sliderLength={getWidth(90)}
+          markerOffsetY={0}
+          step={1}
+          selectedStyle={{ backgroundColor: colors.green }}
+        />
+        <TouchableOpacity>
+          <Text style={styles.updateTextStyle}>Update Weight</Text>
+        </TouchableOpacity>
+      </View>
+      {RenderSectionHeader("Apple Watch Stats")}
+      {renderItem({ title: "Sleep", des: "Time in Bed: 7 Hrs 20 mins " })}
+      {renderItem({ title: "Steps", des: "40,000 steps" })}
+
+      {RenderSectionHeader("Personal Records")}
+     
+      {renderItem({ title: "Deadlift Variations", des: `${maxLBS_DL} ${parameter_DL} max: ${exerciseName_DL} - ${exerciseDate_DL ? formatDate(exerciseDate_DL) : ''}`})}
+      {renderItem({ title: "Squat Variation", des: `${maxLBS} ${parameter} max: ${exerciseName} - ${exerciseDate ? formatDate(exerciseDate) : ''}`})}
+
+      <View style={{ height: 100 }} />
+    </ScrollView>
   );
 }
 
