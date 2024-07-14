@@ -51,8 +51,8 @@ export default function TrainingStats({ navigation }) {
       // exerciseWeekProgress(date);
       // getMessagesProgress();
       exerciseProgress();
-      getWeightProgress();
       getCaloriesProgress();
+      getWeightProgress();
     }, [])
   );
 
@@ -1771,12 +1771,12 @@ export default function TrainingStats({ navigation }) {
           />
         </View>
         <Text style={styles.totalVolumeStyle}>
-          {`Total Volume: 14,450 lbs lifted`}
+          {`Total Volume: ${Math.round(total_lbs)} lbs lifted`}
         </Text>
         <View style={styles.chartOuterContainer}>
           <View style={styles.headerTopContainer}>
             <View style={styles.headerTextStyle}>
-              <Text style={styles.percentageStyle}>{'14,450'}</Text>
+              <Text style={styles.percentageStyle}>{Math.round(total_lbs)}</Text>
               <Text
                 style={[styles.completionStyle, { fontSize: getWidth(3) }]}
               >
