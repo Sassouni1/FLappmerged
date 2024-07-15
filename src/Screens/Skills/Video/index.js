@@ -78,7 +78,7 @@ const VideoSkills = ({ data }) => {
   //   `;
   // };
   return (
-    <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)" }}>
+    <View style={{ flex: 1, backgroundColor: "rgba(51, 51, 51, 1)",borderRadius:30 }}>
       <View style={styles.mainCon}>
         <View style={{ width: getWidth(100), height: getHeight(30) }}>
           {/* <WebView

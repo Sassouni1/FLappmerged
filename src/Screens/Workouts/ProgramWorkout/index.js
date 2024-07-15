@@ -10,26 +10,25 @@ import {
   View,
 } from "react-native";
 import { SceneMap, TabBar, TabView } from "react-native-tab-view";
-import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
-import GeneralStatusBar from "../../Components/GeneralStatusBar";
-import { colors } from "../../constants/colors";
-import { fonts } from "../../constants/fonts";
-import WorkoutDetails from "../WorkoutDetails";
-import AddWorkouts from "./AddWorkouts";
-import StandAlone from "./StandAlone";
+import { getFontSize, getHeight, getWidth } from "../../../../utils/ResponsiveFun";
+import GeneralStatusBar from "../../../Components/GeneralStatusBar";
+import { colors } from "../../../constants/colors";
+import { fonts } from "../../../constants/fonts";
+import ProgramWorkoutExcercise from "../ProgramWorkoutExcercise";
+import StandAlone from "../StandAlone";
 
 
 const initialLayout = { width: Dimensions.get("window").width };
 
-const WorkoutExercise = ({ route }) => {
-  const navigation = useNavigation();
-
+const ProgramWorkout = ({ route }) => {
+    const navigation = useNavigation();
+    const { workoutData,programId } = route?.params;
   const [index, setIndex] = useState(0);
   const [focusedTab, setfocusedTab] = useState(0);
  
   const renderScene = SceneMap({
-    tab1: () => <AddWorkouts workoutData={route?.params?.workoutData} programId={route?.params?.programId} />,
-    tab2: () => <AddWorkouts workoutData={route?.params?.workoutData} programId={route?.params?.programId}  />,
+    tab1: () => <ProgramWorkoutExcercise program={workoutData} programId={programId} />,
+    tab2: () => <ProgramWorkoutExcercise program={workoutData} programId={programId}  />,
     tab3: () => <StandAlone />,
   });
 
@@ -61,28 +60,10 @@ const WorkoutExercise = ({ route }) => {
           paddingHorizontal: 10,
         }}
       >
-        {/* {index === 0 && (
-         <View style={styles.header}>
-           <View style={styles.headerLeft}>
-             <Image
-               source={require('../../assets/images/workoutsgirlpic.png')}
-             />
-             <View style={styles.headerWords}>
-               <Text style={styles.headerSubtext}>Ready for training 🏋️‍♀️</Text>
-               <Text style={styles.headerText}>Start Training</Text>
-             </View>
-           </View>
-           <TouchableOpacity>
-             <Image
-               source={require('../../assets/images/workoutssearch.png')}
-             />
-           </TouchableOpacity>
-         </View>
-       )} */}
         {index === 0 && (
           <View>
             <ImageBackground
-              source={require("../../assets/images/guyback.png")}
+              source={{uri:workoutData?.program_Image}}
               style={{
                 width: Dimensions.get("screen").width,
                 height: 360,
@@ -103,7 +84,7 @@ const WorkoutExercise = ({ route }) => {
                 onPress={() => navigation.goBack()}
               >
                 <Image
-                  source={require("../../assets/images/workoutsbackbtn.png")}
+                  source={require("../../../assets/images/workoutsbackbtn.png")}
                   style={{
                     objectFit: "fill",
                     height: 50,
@@ -287,4 +268,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WorkoutExercise;
+export default ProgramWorkout;

@@ -29,57 +29,55 @@ import { ApiCall } from "../../../Services/Apis";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import HeaderBottom from "../../../Components/HeaderBottom";
 import { PlayerSvg } from "../../../assets/images";
+import Button from "../../../Components/Button";
 
 const ViewProgram = ({ route }) => {
   const navigation = useNavigation();
-  // const { _id } = route?.params?.passData
+  const { _id } = route?.params?.passData
   const url = route?.params?.url;
-  // console.log('Url from view screen', url)
-  // console.log('from view programs', _id)
   const [program, setProgram] = useState(null);
   const [data, setData] = useState(null);
-
-  // const token = useSelector((state) => state.auth.userToken)
+  const token = useSelector((state) => state.auth.userToken)
   const dispatch = useDispatch();
 
-  // const getViewProgram = async () => {
-  //   dispatch(setLoader(true));
-  //   try {
-  //     const res = await ApiCall({
-  //       params: { category_name: "skill" },
-  //       route: url + _id,
-  //       verb: "get",
-  //       token: token,
-  //     });
+  const getViewProgram = async () => {
+    dispatch(setLoader(true));
+    try {
+      const res = await ApiCall({
+        params: { category_name: "skill" },
+        route: url + _id,
+        verb: "get",
+        token: token,
+      });
 
-  //     if (res?.status == "200") {
-  //       console.log(
-  //         "workout",
-  //         res?.response?.detail?.workouts[0]?.innerWorkout[0]?.exercise
-  //       );
-  //       console.log("workout", res?.response?.detail);
+      if (res?.status == "200") {
+        console.log(
+          "workout",
+          res?.response?.detail?.workouts[0]?.innerWorkout[0]?.exercise
+        );
+        console.log("workout", res?.response?.detail);
 
-  //       setData(res?.response?.detail);
-  //       setProgram(res?.response?.detail?.workouts);
-  //       dispatch(setLoader(false));
-  //       // navigation.goBack();
+        setData(res?.response?.detail);
+        setProgram(res?.response?.detail?.workouts);
+        dispatch(setLoader(false));
+        // navigation.goBack();
 
-  //       // navigation.navigate('HomeScreen');
-  //     } else {
-  //       dispatch(setLoader(false));
+        // navigation.navigate('HomeScreen');
+      } else {
+        dispatch(setLoader(false));
 
-  //       alert(res?.response?.message, [
-  //         { text: "OK", onPress: () => console.log("OK Pressed") },
-  //       ]);
-  //     }
-  //   } catch (e) {
-  //     console.log("api get skill error -- ", e.toString());
-  //   }
-  // };
+        alert(res?.response?.message, [
+          { text: "OK", onPress: () => console.log("OK Pressed") },
+        ]);
+      }
+    } catch (e) {
+      console.log("api get skill error -- ", e.toString());
+    }
+  };
 
-  // useEffect(() => {
-  //   getViewProgram();
-  // }, []);
+  useEffect(() => {
+    getViewProgram();
+  }, []);
 
   return (
     <ScrollView
@@ -88,7 +86,7 @@ const ViewProgram = ({ route }) => {
       }}
     >
       <Image
-        source={require("../../../assets/images/workoutdetailsback.png")}
+        source={{uri:data?.program_Image}}
         style={{
           objectFit: "fill",
           position: "absolute",
@@ -118,8 +116,13 @@ const ViewProgram = ({ route }) => {
 
       <View
         style={{
-          width: Dimensions.get("screen").width,
+          // width: Dimensions.get("screen").width/1.5,
+          // padding:10,
+          // backgroundColor:'black',
+          // borderRadius:10,
+          // opacity:0.8,
           justifyContent: "center",
+          alignSelf:'center',
           alignItems: "center",
           marginTop: 160,
           gap: 10,
@@ -130,6 +133,7 @@ const ViewProgram = ({ route }) => {
             borderWidth: 1,
             borderRadius: 8,
             borderColor: "white",
+            backgroundColor:'black',
             padding: 8,
             flexDirection: "row",
             alignItems: "center",
@@ -146,10 +150,10 @@ const ViewProgram = ({ route }) => {
           <Text
             style={{
               color: "white",
-              fontSize: 12,
+              fontSize: 14,
             }}
           >
-            HEAVY HITTER BOXING
+            {data?.title}
           </Text>
         </View>
         <Text
@@ -182,7 +186,7 @@ const ViewProgram = ({ route }) => {
               color: "white",
             }}
           >
-            12 Week Program
+             {data?.no_of_days} days Program
           </Text>
         </View>
       </View>
@@ -218,10 +222,7 @@ const ViewProgram = ({ route }) => {
               lineHeight: 20,
             }}
           >
-            Embrace the morning sun and revitalize your body and mind with our
-            'Morning Boost' routine. This energizing workout is designed to
-            kickstart your metabolism, increase your energy levels, and set a
-            positive tone for the day ahead.
+            {data?.description}
           </Text>
         </View>
         <View
@@ -277,7 +278,33 @@ const ViewProgram = ({ route }) => {
             most important:
           </Text>
         </View>
-        <View
+        <View style={{ height: 200}}>
+        <Button
+            onPress={() => navigation.navigate("ProgramWorkout",{workoutData:route?.params?.passData,programId:_id})}
+            text={`Start ${data?.title}`}
+            btnStyle={{
+              ...GernalStyle.btn,
+              borderRadius:20,
+              height:60,
+              backgroundColor: colors.orange,
+            }}
+            btnTextStyle={GernalStyle.btnText}
+          /> 
+           <Button
+            onPress={() => navigation.goBack()}
+            text="No, Go Back"
+            btnStyle={{
+              ...GernalStyle.btn,
+              borderRadius:20,
+              height:60,
+              backgroundColor: colors.black,
+              marginTop:20
+            }}
+            btnTextStyle={GernalStyle.btnText}
+          /> 
+        </View>
+
+        {/* <View
           style={{
             marginTop: -20,
           }}
@@ -287,6 +314,7 @@ const ViewProgram = ({ route }) => {
               source={require("../../../assets/images/workoutsdetailsbtn1.png")}
               style={{
                 width: Dimensions.get("screen").width - 30,
+                height:200,
                 objectFit: "scale-down",
               }}
             />
@@ -307,7 +335,7 @@ const ViewProgram = ({ route }) => {
               }}
             />
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
     </ScrollView>
   );
