@@ -3,16 +3,12 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  FlatList,
   Image,
-  Platform,
   ScrollView,
   Dimensions,
-  Video,
+  Alert
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import Header from "../../../Components/Header";
-import GeneralStatusBar from "../../../Components/GeneralStatusBar";
 import { GernalStyle } from "../../../constants/GernalStyle";
 import { colors } from "../../../constants/colors";
 import { useNavigation } from "@react-navigation/native";
@@ -22,14 +18,12 @@ import {
   getWidth,
 } from "../../../../utils/ResponsiveFun";
 import { fonts } from "../../../constants/fonts";
-import Seprator from "../../../Components/Seprator";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../../Redux/actions/GernalActions";
 import { ApiCall } from "../../../Services/Apis";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import HeaderBottom from "../../../Components/HeaderBottom";
-import { PlayerSvg } from "../../../assets/images";
 import Button from "../../../Components/Button";
+import Modal from "react-native-modal";
+import { Calendar } from "react-native-calendars";
 
 const ViewProgram = ({ route }) => {
   const navigation = useNavigation();
@@ -38,7 +32,15 @@ const ViewProgram = ({ route }) => {
   const [program, setProgram] = useState(null);
   const [data, setData] = useState(null);
   const token = useSelector((state) => state.auth.userToken)
+  const user = useSelector((state) => state.auth.userData);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    getViewProgram();
+  }, []);
 
   const getViewProgram = async () => {
     dispatch(setLoader(true));
@@ -60,9 +62,6 @@ const ViewProgram = ({ route }) => {
         setData(res?.response?.detail);
         setProgram(res?.response?.detail?.workouts);
         dispatch(setLoader(false));
-        // navigation.goBack();
-
-        // navigation.navigate('HomeScreen');
       } else {
         dispatch(setLoader(false));
 
@@ -74,10 +73,87 @@ const ViewProgram = ({ route }) => {
       console.log("api get skill error -- ", e.toString());
     }
   };
+  const AssignProgram = async () => {
+    dispatch(setLoader(true));
+    const today = new Date();
+    today.setDate(today.getDate() + 7);
+    try {
+      const res = await ApiCall({
+        params: {
+          startDate: selectedDate,
+          programId: data._id,
+        },
+        route: "assignProgram/assign_Program",
+        verb: "post",
+        token: token,
+      });
+      if (res?.status == "200") {
+        dispatch(setLoader(false));
+        navigation.navigate("WorkoutSucessfully", { selectDate: selectedDate });
+      } else {
+        dispatch(setLoader(false));
 
-  useEffect(() => {
-    getViewProgram();
-  }, []);
+        Alert.alert(res?.response?.message, [
+          { text: "OK", onPress: () => console.log("OK Pressed") },
+        ]);
+      }
+    } catch (e) {
+      console.log("api get skill error -- ", e.toString());
+    }
+  };
+  const SwitchProgram = async () => {
+    dispatch(setLoader(true));
+    const today = new Date();
+    today.setDate(today.getDate() + 7);
+
+    try {
+      const res = await ApiCall({
+        params: {
+          startDate: selectedDate,
+          programId: data._id,
+          planId: user?.plan_id,
+          isContinuous: "false",
+        },
+        route: "assignProgram/switch_assign_Program",
+        verb: "post",
+        token: token,
+      });
+      if (res?.status == "200") {
+        dispatch(setLoader(false));
+        navigation.navigate("WorkoutSucessfully", { selectDate: selectedDate });
+      } else {
+        dispatch(setLoader(false));
+
+        Alert.alert(res?.response?.message, [
+          { text: "OK", onPress: () => console.log("OK Pressed") },
+        ]);
+      }
+    } catch (e) {
+      console.log("api get skill error -- ", e.toString());
+    }
+  };
+
+  const handleAddToCalendar = () => {
+    if (user?.isAssigned === true) {
+      Alert.alert("Switch Program", " Do you want to switch to new program?", [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "destructive",
+        },
+        { 
+          text: "Continue",
+           onPress: () => setModalVisible(true),
+          style: "default" },
+      ]);
+    } else {
+      setModalVisible(true);
+    }
+  };
+
+  const handleDayPress = (day) => {
+    setSelectedDate(day.dateString);
+  };
 
   return (
     <ScrollView
@@ -85,6 +161,55 @@ const ViewProgram = ({ route }) => {
         position: "relative",
       }}
     >
+
+      <Modal
+        isVisible={isModalVisible}
+        onBackdropPress={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <TouchableOpacity
+            onPress={() => setModalVisible(false)}
+            style={styles.closeButton}
+          >
+            <Text style={{ color: "red" }}>Close</Text>
+          </TouchableOpacity>
+
+          <Calendar
+            onDayPress={handleDayPress}
+            markedDates={{
+              [selectedDate]: {
+                selected: true,
+                selectedColor: colors.buttonColor,
+              },
+            }}
+            minDate={new Date().toISOString().split("T")[0]}
+          />
+          <TouchableOpacity
+            onPress={() => {
+              setModalVisible(false);
+              if (user?.isAssigned === true) {
+                setModalVisible(false);
+                SwitchProgram();
+              } else {
+                setModalVisible(false);
+                AssignProgram();
+              }
+            }}
+            style={styles.donebtn}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                color: colors.white,
+                fontFamily: fonts.UBo,
+              }}
+            >
+              Done
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+
       <Image
         source={{uri:data?.program_Image}}
         style={{
@@ -116,11 +241,6 @@ const ViewProgram = ({ route }) => {
 
       <View
         style={{
-          // width: Dimensions.get("screen").width/1.5,
-          // padding:10,
-          // backgroundColor:'black',
-          // borderRadius:10,
-          // opacity:0.8,
           justifyContent: "center",
           alignSelf:'center',
           alignItems: "center",
@@ -280,7 +400,11 @@ const ViewProgram = ({ route }) => {
         </View>
         <View style={{ height: 200}}>
         <Button
-            onPress={() => navigation.navigate("ProgramWorkout",{workoutData:route?.params?.passData,programId:_id})}
+            onPress={() => {
+              handleAddToCalendar()
+              //navigation.navigate("ProgramWorkout", { workoutData: route?.params?.passData, programId: _id })
+            }
+            }
             text={`Start ${data?.title}`}
             btnStyle={{
               ...GernalStyle.btn,
@@ -303,114 +427,28 @@ const ViewProgram = ({ route }) => {
             btnTextStyle={GernalStyle.btnText}
           /> 
         </View>
-
-        {/* <View
-          style={{
-            marginTop: -20,
-          }}
-        >
-          <TouchableOpacity onPress={() => navigation.navigate("WorkoutExercise")}>
-            <Image
-              source={require("../../../assets/images/workoutsdetailsbtn1.png")}
-              style={{
-                width: Dimensions.get("screen").width - 30,
-                height:200,
-                objectFit: "scale-down",
-              }}
-            />
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            marginTop: -100,
-            marginBottom: 100,
-          }}
-        >
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Image
-              source={require("../../../assets/images/workoutsdetailsbtn2.png")}
-              style={{
-                width: Dimensions.get("screen").width - 30,
-                objectFit: "scale-down",
-              }}
-            />
-          </TouchableOpacity>
-        </View> */}
       </View>
     </ScrollView>
   );
 };
 const styles = StyleSheet.create({
-  workt: {
-    color: colors.white,
-    fontFamily: fonts.UBo,
-    fontSize: getFontSize(2.5),
-  },
-  thumbnail: {
-    backgroundColor: colors.white,
-    justifyContent: "center",
-    height: 65,
-    width: 85,
-    borderRadius: 10,
-    alignItems: "center",
-    marginTop: getFontSize(1),
-    marginBottom: getFontSize(1),
-  },
-  startwork: {
-    width: getWidth(66),
-    height: getHeight(7.5),
-    backgroundColor: colors.greenlight,
+  modalContainer: {
+    backgroundColor: 'white',
     borderRadius: 5,
-    position: "absolute",
-    bottom: getHeight(3),
-    alignSelf: "center",
-    justifyContent: "center",
-    alignItems: "center",
+    padding: 20,
   },
-  isTimeCon: {
-    height: getHeight(10),
-    width: getWidth(100),
-    paddingHorizontal: getWidth(3),
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: getHeight(3),
-    marginBottom: getHeight(2),
+  closeButton: {
+    alignItems: 'flex-start',
   },
-  sep: {
-    width: getWidth(95),
-    alignSelf: "center",
-    marginTop: getHeight(2),
-  },
-  spacebet: {
-    paddingHorizontal: getWidth(3),
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: getHeight(3),
-  },
-  chest: {
-    color: colors.white,
-    fontSize: getFontSize(2.8),
-    fontFamily: fonts.Re,
-  },
-  total: {
-    //   fontSize: getFontSize(1.5),
-    fontSize: getFontSize(1.3),
-
-    color: colors.graytext5,
-    fontFamily: fonts.Re,
-    width: getWidth(70),
-  },
-  heading: {
-    fontSize: getFontSize(2.2),
-    color: colors.white,
-    fontFamily: fonts.UBo,
-  },
-  conImg: {
-    paddingHorizontal: getWidth(3),
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: getHeight(1.5),
+  donebtn: {
+    height: getHeight(6),
+    borderRadius: 5,
+    width: getWidth(25),
+    backgroundColor: colors.bluebtn,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: getHeight(1),
   },
 });
 export default ViewProgram;

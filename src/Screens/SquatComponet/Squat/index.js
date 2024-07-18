@@ -276,7 +276,7 @@ console.log("exercise ....",exercise)
 
   const RenderCategory = ({key, no,set, reps, isSuccess = true, isBottom = true }) => {
     return (
-      <View style={styles.mainContainer}>
+      <View key={key} style={styles.mainContainer}>
         <View style={styles.outerContainer}>
           <View style={styles.numberContainer}>
             <Text style={styles.numberTextSTyle}>{no}</Text>

@@ -58,5 +58,6 @@ export const colors = {
     greyMedium: '#BABBBE',
     orange: '#FF8036',
     lightRed: '#F83E59',
-    lightGreen: '#6DB100'
+    lightGreen: '#6DB100',
+    calendarAssigned:'#05b7ff',
 };

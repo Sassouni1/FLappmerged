@@ -156,7 +156,7 @@ const Workouts = ({ route }) => {
                       height: 43,
                       justifyContent: "center",
                       alignItems: "center",
-                      width: getHeight(17.8),
+                      width: getWidth(31.6), //getHeight(17.8),
                     }}
                   >
                     <Text
