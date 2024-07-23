@@ -1,57 +1,72 @@
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
+  TextInput,
+  Pressable,
+  TouchableOpacity,
   Keyboard,
-  Platform,
+  Image,
+  Alert
 } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
-import { GernalStyle } from "../../constants/GernalStyle";
-import { colors } from "../../constants/colors";
-import { fonts } from "../../constants/fonts";
-import HeaderBottom from "../../Components/HeaderBottom";
-import GeneralStatusBar from "../../Components/GeneralStatusBar";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { getWidth, getFontSize, getHeight } from "../../../utils/ResponsiveFun";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import validator from "../../../utils/validation/validator";
-import { validateFields } from "../../../utils/validation/validate-fields";
 import { useDispatch, useSelector } from "react-redux";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { getFontSize, getHeight } from "../../../utils/ResponsiveFun";
 import { setLoader } from "../../Redux/actions/GernalActions";
 import { ApiCall } from "../../Services/Apis";
 import toast from "react-native-simple-toast";
 import { getSingleUser } from "../../Redux/actions/AuthActions";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import ImagePickerModal from "../../Components/ImagePickerModal";
+import ImagePicker from "react-native-image-crop-picker";
+import ImageModal from "react-native-image-modal";
 import Button from "../../Components/Button";
 import {
   captureImage,
   chooseImageGallery,
 } from "../../../utils/ImageAndCamera";
-import ImagePickerModal from "../../Components/ImagePickerModal";
-import ImagePicker from "react-native-image-crop-picker";
-import ImageModal from "react-native-image-modal";
-import { TextInput } from "react-native-paper";
 
 const UpdateProfiles = () => {
   const navigation = useNavigation();
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
+  const dispatch = useDispatch();
+
   const [pickerModalVisibile, setPickerModalVisibile] = useState(false);
   const [imageCrop, setImageCrop] = useState("");
   const [imageSave, setImageSave] = useState(null);
+  const [fullname, setFullname] = useState(user?.full_name);
+  const [fullnameError, setFullnameError] = useState("");
+  const [weight, setWeight] = useState(user?.weight);
+  const [weightError, setWeightError] = useState("");
+  const [height, setHeight] = useState(user?.height);
+  const [heightError, setHeightError] = useState("");
+
+  const inputRefs = {
+    fullname: useRef(null),
+    weight: useRef(null),
+    height: useRef(null),
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setFullname(user?.full_name);
+      setWeight(user?.weight);
+      setHeight(user?.height);
+      setFullnameError("");
+      setWeightError("");
+      setHeightError("");
+    }, [user])
+  );
 
   const handleImagePress = () => {
     setPickerModalVisibile(true);
   };
 
-
-
-// image upload
   const uploadFromCamera = async () => {
     const res = await captureImage();
-    if (res.status == false) {
+    if (res.status === false) {
       toast.show(res.error);
       return;
     }
@@ -67,9 +82,10 @@ const UpdateProfiles = () => {
       dispatch(setLoader(false));
     }, 3000);
   };
+
   const uploadFromGallry = async () => {
     const res = await chooseImageGallery("", 1, false);
-    if (res.status == false) {
+    if (res.status === false) {
       toast.show(res.error);
       return;
     }
@@ -101,45 +117,29 @@ const UpdateProfiles = () => {
     });
   };
 
-
-// api call
-  const inputRefs = {
-    fullname: useRef(null),
-    weight: useRef(null),
-    height: useRef(null),
+  const validateFields = (value, type) => {
+    console.log("value",value)
+    if (!value || value?.toString()?.trim() === "") {
+      return `${type} is required.`;
+    }
+    if (type === "weight" || type === "height") {
+      if (isNaN(value)) {
+        return `${type} must be a number.`;
+      }
+    }
+    return "";
   };
-  const [state, setState] = useState({
-    fullname: user?.full_name,
-    fullnameError: "",
-    weight: user?.weight,
-    weightError: "",
-    height: user?.height,
-    heightError: "",
-  });
-
-  useFocusEffect(
-    React.useCallback(() => {
-      setState({
-        fullname: user?.full_name,
-        fullnameError: "",
-        weight: user?.weight,
-        weightError: "",
-        height: user?.height,
-        heightError: "",
-      });
-    }, [user])
-  );
-
-  const dispatch = useDispatch();
-  const changeHandler = (type, value) => setState({ ...state, [type]: value });
 
   const profileSetting = async () => {
-    const { fullname, weight, height } = state;
-    const fullnameError = await validator("fullname", fullname);
-    const weightError = await validator("weight", weight);
-    const heightError = await validator("height", height);
+    const fullnameValidationError = validateFields(fullname, "Fullname");
+    const weightValidationError = validateFields(weight, "Weight");
+    const heightValidationError = validateFields(height, "Height");
 
-    if (!fullnameError && !weightError && !heightError) {
+    if (
+      !fullnameValidationError &&
+      !weightValidationError &&
+      !heightValidationError
+    ) {
       dispatch(setLoader(true));
       try {
         const formData = new FormData();
@@ -147,7 +147,6 @@ const UpdateProfiles = () => {
         formData.append("height", height);
         formData.append("weight", weight);
         formData.append("profile_image", imageCrop);
-        console.log("Form Data", formData);
 
         const res = await ApiCall({
           params: formData,
@@ -155,53 +154,196 @@ const UpdateProfiles = () => {
           token: token,
           verb: "put",
         });
-        console.log("started");
-        if (res?.status == "200") {
+
+        if (res?.status === "200") {
           navigation.goBack();
           dispatch(getSingleUser(token));
           toast.show(res?.response?.message);
           dispatch(setLoader(false));
           Keyboard.dismiss();
         } else {
-          console.log("error of api", res);
           dispatch(setLoader(false));
-
-          alert(res?.response?.message, [
-            { text: "OK", onPress: () => console.log("OK Pressed") },
-          ]);
+          Alert.alert('Awesome!','Profile update successful');
         }
       } catch (e) {
         console.log("profile update error -- ", e.toString());
       }
     } else {
-      setState({ ...state, fullnameError, weightError, heightError });
+      setFullnameError(fullnameValidationError);
+      setWeightError(weightValidationError);
+      setHeightError(heightValidationError);
     }
   };
 
   return (
-    <View
-      style={{ ...GernalStyle.continer, backgroundColor: colors.homeColor }}
-    >
-      <GeneralStatusBar
-        barStyle="light-content"
-        hidden={false}
-        backgroundColor={colors.primary}
-        translucent={true}
-      />
-      <HeaderBottom
-        title={"Profile Settings"}
-        LeftIcon={
-          <Ionicons
-            name={"arrow-back"}
-            size={25}
-            color={"#ffff"}
-            onPress={() => {
-              navigation.goBack();
-            }}
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backBtn}
+        >
+          <Image
+            source={require("../../assets/images/Monotone3chevron3left.png")}
+            style={styles.icon}
           />
-        }
-        RightIcon={<View style={{ marginRight: getFontSize(2.5) }} />}
-      />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>Profile Setup</Text>
+      </View>
+
+      {/* Profile Image Container */}
+      <View style={styles.profileContainer}>
+        <ImageModal
+          style={styles.profileImage}
+          resizeMode={"cover"}
+          modalImageResizeMode="contain"
+          source={
+            imageSave
+              ? { uri: imageSave }
+              : user?.profile_image
+              ? { uri: user?.profile_image }
+              : require("../../assets/images/redo.png")
+          }
+        />
+        <TouchableOpacity
+          onPress={() => handleImagePress()}
+          style={styles.editIconContainer}
+        >
+          <Image
+            source={require("../../assets/images/EditButton.png")}
+            style={styles.editIcon}
+          />
+        </TouchableOpacity>
+      </View>
+
+      <KeyboardAwareScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollViewContainer}
+      >
+        <View style={styles.inputFieldsContainer}>
+          <View style={styles.inputFieldContainer}>
+            <Text style={styles.inputLabel}>Name</Text>
+            <View
+              style={[
+                styles.inputField,
+                fullnameError && styles.inputFieldError,
+              ]}
+            >
+              <Image
+                source={require("../../assets/images/Monotone-user.png")}
+                style={styles.icon}
+              />
+              <TextInput
+                style={styles.inputText}
+                value={fullname}
+                onChangeText={setFullname}
+                placeholder="Full Name"
+                placeholderTextColor="#393C43"
+                onFocus={() => setFullnameError("")}
+                onBlur={() =>
+                  setFullnameError(validateFields(fullname, "Fullname"))
+                }
+                returnKeyType={"done"}
+                keyboardType={"default"}
+                ref={inputRefs.fullname}
+                onSubmitEditing={() => inputRefs?.weight?.current?.focus()}
+                blurOnSubmit={false}
+              />
+              <Pressable onPress={() => setFullname("")}>
+                <Image
+                  source={require("../../assets/images/pencil.png")}
+                  style={styles.icon}
+                />
+              </Pressable>
+            </View>
+            {fullnameError && (
+              <Text style={styles.errorText}>{fullnameError}</Text>
+            )}
+          </View>
+
+          <View style={styles.inputFieldContainer}>
+            <Text style={styles.inputLabel}>Email Address</Text>
+            <View style={styles.inputField}>
+              <Image
+                source={require("../../assets/images/Monotone-email.png")}
+                style={styles.icon}
+              />
+              <TextInput
+                style={styles.inputText}
+                value={user?.email}
+                placeholder="Email Address"
+                placeholderTextColor="#393C43"
+                editable={false}
+              />
+            </View>
+          </View>
+
+          <View style={styles.inputFieldContainer}>
+            <Text style={styles.inputLabel}>Current Weight</Text>
+            <View
+              style={[styles.inputField, weightError && styles.inputFieldError]}
+            >
+              <Image
+                source={require("../../assets/images/Monotone-user.png")}
+                style={styles.icon}
+              />
+              <TextInput
+                style={styles.inputText}
+                value={weight?.toString()}
+                onChangeText={setWeight}
+                placeholder="Weight"
+                placeholderTextColor="#393C43"
+                keyboardType={"numeric"}
+                onFocus={() => setWeightError("")}
+                onBlur={() => setWeightError(validateFields(weight, "Weight"))}
+                returnKeyType={"done"}
+                ref={inputRefs.weight}
+                onSubmitEditing={() => inputRefs?.height?.current?.focus()}
+                blurOnSubmit={false}
+              />
+            </View>
+            {weightError && <Text style={styles.errorText}>{weightError}</Text>}
+          </View>
+
+          <View style={styles.inputFieldContainer}>
+            <Text style={styles.inputLabel}>Height</Text>
+            <View
+              style={[styles.inputField, heightError && styles.inputFieldError]}
+            >
+              <Image
+                source={require("../../assets/images/Monotone-user.png")}
+                style={styles.icon}
+              />
+              <TextInput
+                style={styles.inputText}
+                value={height?.toString()}
+                onChangeText={setHeight}
+                placeholder="Height"
+                placeholderTextColor="#393C43"
+                keyboardType={"numeric"}
+                onFocus={() => setHeightError("")}
+                onBlur={() => setHeightError(validateFields(height, "Height"))}
+                returnKeyType={"done"}
+                ref={inputRefs.height}
+                onSubmitEditing={profileSetting}
+                blurOnSubmit={false}
+              />
+            </View>
+            {heightError && <Text style={styles.errorText}>{heightError}</Text>}
+          </View>
+        </View>
+      </KeyboardAwareScrollView>
+
+      <Pressable style={styles.primaryButton} onPress={profileSetting}>
+        <View style={styles.buttonContent}>
+          <Text style={styles.buttonText}>Continue</Text>
+          <Image
+            source={require("../../assets/images/Monotone-user.png")}
+            style={styles.icon}
+          />
+        </View>
+      </Pressable>
+
+      <View style={styles.homeIndicator} />
       <ImagePickerModal
         visible={pickerModalVisibile}
         hideVisible={() => setPickerModalVisibile(!pickerModalVisibile)}
@@ -210,206 +352,158 @@ const UpdateProfiles = () => {
         onBackdropPress={() => setPickerModalVisibile(false)}
         onSwipeComplete={() => setPickerModalVisibile(false)}
       />
-      <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
-        <View style={{ marginTop: getHeight(2), alignSelf: "center" }}>
-          <ImageModal
-            style={{
-              width: 140,
-              height: 130,
-              marginTop: getHeight(3),
-              borderRadius: 10,
-              alignItems: "center",
-              justifyContent: "center",
-              alignSelf: "center",
-            }}
-            resizeMode={"cover"}
-            modalImageResizeMode="contain"
-            source={
-              imageSave
-                ? { uri: imageSave }
-                : user?.profile_image
-                ? { uri: user?.profile_image }
-                : require("../../assets/images/Pimg.jpeg")
-            }
-          />
-          <TouchableOpacity
-            onPress={() => handleImagePress()}
-            style={{
-              position: "absolute",
-              justifyContent: "flex-end",
-              alignItems: "flex-end",
-              bottom: 0,
-              height: 30,
-              width: 30,
-              right: 0,
-              backgroundColor: "white",
-              borderTopLeftRadius: 60,
-            }}
-          >
-            <MaterialIcons name={"edit"} size={24} color={"#182d4a"} />
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.username}>{user?.full_name}</Text>
-        <Text style={styles.useremail}>{user?.email}</Text>
-
-        <TextInput
-          mode="outlined"
-          label={<Text style={GernalStyle.inputLabelStyle}>Full name</Text>}
-          theme={{ roundness: getFontSize(0.5) }}
-          outlineColor="#BDC3C4"
-          activeUnderlineColor="#BDC3C4"
-          activeOutlineColor="#BDC3C4"
-          textColor="white"
-          style={{ ...GernalStyle.input, marginTop: getHeight(2) }}
-          ref={inputRefs.fullname}
-          value={state.fullname}
-          returnKeyType={"done"}
-          keyboardType={"default"}
-          onFocus={() => setState({ ...state, fullnameError: "" })}
-          onBlur={() =>
-            validateFields(state.fullname, "fullname", (error) =>
-              setState({ ...state, fullnameError: error })
-            )
-          }
-          onSubmitEditing={() => inputRefs?.weight?.current?.focus()}
-          onChangeText={(fullname) => changeHandler("fullname", fullname)}
-          blurOnSubmit={false}
-        />
-        {state.fullnameError && (
-          <Text
-            style={[
-              GernalStyle.InputError,
-            ]}
-          >
-            {state.fullnameError}
-          </Text>
-        )}
-        <TextInput
-          mode="outlined"
-          editable={false}
-          label={<Text style={GernalStyle.inputLabelStyle}>{user?.email}</Text>}
-          theme={{ roundness: getFontSize(0.5) }}
-          outlineColor="#BDC3C4"
-          activeUnderlineColor="#BDC3C4"
-          activeOutlineColor="#BDC3C4"
-          textColor="white"
-          style={{ ...GernalStyle.input, marginTop: getHeight(2) }}
-        />
-        <TextInput
-          mode="outlined"
-          label={<Text style={GernalStyle.inputLabelStyle}>Weight</Text>}
-          theme={{ roundness: getFontSize(0.5) }}
-          outlineColor="#BDC3C4"
-          activeUnderlineColor="#BDC3C4"
-          activeOutlineColor="#BDC3C4"
-          textColor="white"
-          style={{ ...GernalStyle.input, marginTop: getHeight(2) }}
-          ref={inputRefs.weight}
-          value={state.weight.toString()}
-          returnKeyType={"done"}
-          keyboardType={"numeric"}
-          onFocus={() => setState({ ...state, weightError: "" })}
-          onBlur={() =>
-            validateFields(state.weight, "weight", (error) =>
-              setState({ ...state, weightError: error })
-            )
-          }
-          onSubmitEditing={() => inputRefs?.height?.current?.focus()}
-          onChangeText={(weight) => changeHandler("weight", weight)}
-          blurOnSubmit={false}
-        />
-        {state.weightError && (
-          <Text
-            style={[
-              GernalStyle.InputError,
-            ]}
-          >
-            {state.weightError}
-          </Text>
-        )}
-        <TextInput
-          mode="outlined"
-          label={<Text style={GernalStyle.inputLabelStyle}>Height</Text>}
-          theme={{ roundness: getFontSize(0.5) }}
-          outlineColor="#BDC3C4"
-          activeUnderlineColor="#BDC3C4"
-          activeOutlineColor="#BDC3C4"
-          textColor="white"
-          style={{
-            ...GernalStyle.input,
-            marginTop: getHeight(2),
-          }}
-          ref={inputRefs.height}
-          value={state.height.toString()}
-          returnKeyType={"done"}
-          keyboardType={"numeric"}
-          onFocus={() => setState({ ...state, heightError: "" })}
-          onBlur={() =>
-            validateFields(state.height, "height", (error) =>
-              setState({ ...state, heightError: error })
-            )
-          }
-          onSubmitEditing={() => profileSetting()}
-          onChangeText={(height) => changeHandler("height", height)}
-          blurOnSubmit={false}
-        />
-        {state.heightError && (
-          <Text
-            style={[
-              GernalStyle.InputError,
-            ]}
-          >
-            {state.heightError}
-          </Text>
-        )}
-      </KeyboardAwareScrollView>
-      <View
-        style={{
-          marginTop: Platform.OS === "ios" ? getFontSize(0) : getFontSize(15),
-        }}
-      >
-        <Button
-          onPress={profileSetting}
-          text="Update profile"
-          btnStyle={{
-            ...GernalStyle.btn,
-            backgroundColor: colors.buttonColor,
-            position: "absolute",
-            bottom: getHeight(5),
-          }}
-          btnTextStyle={GernalStyle.btnText}
-        />
-      </View>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
-  username: {
-    fontSize: getFontSize(2.2),
-    color: colors.white,
-    fontFamily: fonts.UBo,
-    marginTop: getHeight(1.5),
-    marginRight: getWidth(1),
-    alignSelf: "center",
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
   },
-  useremail: {
-    fontSize: getFontSize(1.8),
-    color: colors.white,
-    fontFamily: fonts.URe,
-    marginTop: getHeight(0.5),
-    marginRight: getWidth(1),
-    alignSelf: "center",
+  header: {
+    backgroundColor: "#111214",
+    height: 204,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    paddingHorizontal: 16,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+    position: "relative",
   },
-  editbtn: {
-    height: getHeight(3.5),
-    width: getWidth(7),
-    borderRadius: 5,
-    backgroundColor: colors.homeColor,
+  backBtn: {
     position: "absolute",
-    bottom: getHeight(-1),
-    right: 0,
+    left: 20,
+  },
+  headerText: {
+    fontFamily: "Work Sans",
+    fontWeight: "700",
+    fontSize: 22,
+    lineHeight: 21,
+    textAlign: "left",
+    marginRight: 130,
+    letterSpacing: -0.004,
+    color: "#FFFFFF",
+  },
+  profileContainer: {
+    position: "absolute",
+    top: 200, // Adjust the top value to place it correctly
+    left: "50%",
+    transform: [{ translateX: -48 }, { translateY: -48 }], // Adjust according to your needs
+    zIndex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 30,
+    borderColor: "#FFFFFF",
+    borderWidth: 4,
+  },
+  editIconContainer: {
+    position: "absolute",
+    bottom: 0,
+    height: 40,
+    width: 40,
     justifyContent: "center",
     alignItems: "center",
   },
+  editIcon: {
+    marginTop: 26,
+    width: 45,
+    height: 45,
+  },
+  scrollViewContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingBottom: 24,
+  },
+  inputFieldsContainer: {
+    marginHorizontal: 16,
+    marginTop: 20,
+    gap: 10,
+  },
+  inputFieldContainer: {
+    marginBottom: 16,
+    gap: 10,
+  },
+  inputLabel: {
+    fontFamily: "Work Sans",
+    fontWeight: "700",
+    fontSize: 14,
+    lineHeight: 16,
+    letterSpacing: -0.002,
+    color: "#111214",
+  },
+  inputField: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    gap: 10,
+    width: "100%",
+    height: 56,
+    backgroundColor: "#F3F3F4",
+    borderRadius: 19,
+  },
+  inputFieldError: {
+    borderColor: "#FF6347",
+    borderWidth: 1,
+  },
+  inputText: {
+    fontFamily: "Work Sans",
+    fontWeight: "500",
+    fontSize: 16,
+    lineHeight: 19,
+    letterSpacing: 1,
+    color: "#393C43",
+    flex: 1,
+  },
+  icon: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+  },
+  errorText: {
+    fontFamily: "Work Sans",
+    fontWeight: "500",
+    fontSize: 14,
+    lineHeight: 16,
+    letterSpacing: -0.002,
+    color: "#e54f5d",
+    marginTop: 4,
+  },
+  primaryButton: {
+    marginTop: 24,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf:'center',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    width: "91%",
+    height: 56,
+    backgroundColor: "#111214",
+    borderRadius: 19,
+  },
+  buttonContent: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 10,
+  },
+  buttonText: {
+    fontFamily: "Work Sans",
+    fontWeight: "600",
+    fontSize: 16,
+    lineHeight: 19,
+    letterSpacing: -0.003,
+    color: "#FFFFFF",
+  },
+  homeIndicator: {
+    height: 34,
+  },
 });
+
 export default UpdateProfiles;

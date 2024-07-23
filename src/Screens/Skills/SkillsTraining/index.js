@@ -42,7 +42,7 @@ export default function SkillsTraining({ navigation }) {
         hidden={false}
         translucent={false}
       />
-      <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
         <Image
           source={require("../../../assets/images/Monotone3chevron3left.png")}
           style={{
@@ -176,12 +176,12 @@ export default function SkillsTraining({ navigation }) {
 
   return (
     <View style={styles.root}>
+      {RenderHeader()}
       <FlatList
         data={data}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        ListHeaderComponent={RenderHeader}
-        stickyHeaderIndices={[0]}
+        // stickyHeaderIndices={[0]}
         contentContainerStyle={{ paddingBottom: getHeight(4) }}
       />
     </View>

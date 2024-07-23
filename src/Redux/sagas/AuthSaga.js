@@ -22,14 +22,14 @@ function* loginRequest(params) { try {
     } else {
       console.log('errorrrererer', res?.response);
       yield put(setLoader(false));
-      res?.response?.link? Alert.alert('Error', 'test', [
+      res?.response?.link? Alert.alert('Error', 'Please subscribe to the 3-month recurring plan to access your account.', [
        
         {
           text: 'Cancel',
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
-        {text: 'Payment', onPress: () => {if (Linking.canOpenURL("https://buy.stripe.com/test_fZe2c73Wv74lfVm5km")) {
+        {text: 'Subscribe', onPress: () => {if (Linking.canOpenURL("https://buy.stripe.com/test_fZe2c73Wv74lfVm5km")) {
           // Open the link in the default browser
           Linking.openURL("https://buy.stripe.com/test_fZe2c73Wv74lfVm5km");
         } else {

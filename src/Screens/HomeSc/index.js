@@ -11,6 +11,7 @@ import {
   ScrollView,
 } from "react-native";
 import moment from "moment"; // Import moment for date manipulation
+import Entypo from "react-native-vector-icons/Entypo";
 const openMyFitnessPal = async () => {
   const myFitnessPalURL = "myfitnesspal://"; // MyFitnessPal URL scheme
   const appStoreURL = "https://apps.apple.com/us/app/myfitnesspal/id341232718"; // MyFitnessPal App Store URL
@@ -36,13 +37,29 @@ import { getSingleUser } from "../../Redux/actions/AuthActions";
 import { ApiCall } from "../../Services/Apis";
 import { setLoader } from "../../Redux/actions/GernalActions";
 import { useNavigation } from "@react-navigation/native";
+import { Calendar } from 'react-native-calendars';
+import { colors } from "../../constants/colors";
 
 const HomeSc = ({ navigation, route }) => {
   const navigate = useNavigation();
   const token = useSelector((state) => state.auth.userToken);
+  const user = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
-
   const [adminAlert, setAdminAlert] = useState("");
+  const [selectedDate, setSelectedDate] = useState('');
+  const [calendarMarkedDates,setCalendarMarkedDates] = useState({});
+  const [events,setEvents] = useState();
+  const [eventDescription,setEventDescription] = useState("");
+  const [upComingEvent, setUpcomingEvent] = useState();
+
+  const handleDayPress = (day) => {
+    let find = events?.find(x=> getFormattedDate(x.start) == day.dateString);
+    if (find)
+      setEventDescription(find?.title)
+    else
+      setEventDescription('')
+    setSelectedDate(day.dateString);
+  };
 
   const getAdminAlert = async () => {
     try {
@@ -76,7 +93,97 @@ const HomeSc = ({ navigation, route }) => {
   }, []);
   useEffect(() => {
     getAdminAlert();
+    getEvents()
   }, []);
+
+  const getEvents = async () => {
+    dispatch(setLoader(true));
+
+    try {
+      let res = null;
+
+      res = await ApiCall({
+        route: "admin/get_alert",
+        verb: "get",
+        token: token,
+      });
+      if (res?.status == "200") {
+        console.log("events", res?.response?.admin);
+        setEvents(res?.response?.admin);
+        setMarkedDates(res?.response?.admin);
+       
+        let _events = res?.response?.admin;
+        let latestEvent = _events?.reduce((latest, current) => {
+          return new Date(current.start) > new Date(latest.start) ? current : latest;
+        }, _events[0]);
+        setUpcomingEvent(latestEvent)
+
+        dispatch(setLoader(false));
+      } else {
+        dispatch(setLoader(false));
+        Alert.alert(res?.response?.message, [
+          { text: "OK", onPress: () => console.log("OK Pressed") },
+        ]);
+      }
+    } catch (e) {
+      console.log("api get skill error -- ", e.toString());
+    }
+  };
+
+  const setMarkedDates = (records) => {
+    let allDates = {};
+    let currentDate = getFormattedDate(new Date());
+    records.forEach(item => {
+      let formatedDate = getFormattedDate(item.start);
+      if (formatedDate >= currentDate) {
+        let obj = {
+          [formatedDate]: {
+            selected: true,
+            // marked: true,
+            selectedColor: colors.blueColor,
+          },
+        }
+        allDates = { ...allDates, ...obj }
+      }
+    });
+    console.log(allDates);
+    setCalendarMarkedDates(allDates);
+  }
+
+  const getFormattedDate = (_date) => {
+    const date = new Date(_date);
+    
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+  
+    return `${year}-${month}-${day}`;
+  };
+
+  function timeRemaining(targetDate) {
+    const now = new Date();
+    const endDate = new Date(targetDate);
+    const timeDiff = endDate - now;
+  
+    if (timeDiff <= 0) {
+      return "The date has already passed.";
+    }
+  
+    const seconds = Math.floor((timeDiff / 1000) % 60);
+    const minutes = Math.floor((timeDiff / (1000 * 60)) % 60);
+    const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    
+    if (days > 0) {
+      return `${days} day${days > 1 ? 's' : ''}`;
+    } else if (hours > 0) {
+      return `${hours} hour${hours > 1 ? 's' : ''}`;
+    } else if (minutes > 0) {
+      return `${minutes} minute${minutes > 1 ? 's' : ''}`;
+    } else {
+      return `${seconds} second${seconds > 1 ? 's' : ''}`;
+    }
+  }
 
   const openURL = async (url) => {
     const supported = await Linking.canOpenURL(url);
@@ -114,12 +221,13 @@ const HomeSc = ({ navigation, route }) => {
           <View style={styles.headerContent}>
             <Text style={styles.greeting}>Hello Chris</Text>
           </View>
-          <View style={styles.chevronRight}>
-            <Image
-              source={require("../../assets/images/Solid-chevron-right.png")}
-              style={styles.chevronImage}
-            />
-          </View>
+          <Entypo
+            size={30}
+            color={"white"}
+            onPress={() => navigation.openDrawer()}
+            name="menu"
+            style={styles.menuIcon}
+          />
         </View>
       </View>
 
@@ -188,46 +296,60 @@ const HomeSc = ({ navigation, route }) => {
           </View>
         </View>
       </View>
-      <TouchableOpacity
-        style={styles.liveCallsBtn}
-        onPress={() => Linking.openURL("https://www.zoom.com/us")}
-      >
-        <Image
-          source={require("../../assets/images/WhiteCalendar.png")}
-          style={styles.whiteCalendar}
-        />
-        <Text style={styles.liveCallsBtnText}>
-          Next Live Call Is In 7 Hours With Jeff Mayweather
-        </Text>
-      </TouchableOpacity>
-
-      <View style={styles.fitnessCalendar}>
-        <Image
-          source={require("../../assets/images/CalendarMockup.png")}
-          style={styles.calendarMockup}
-        />
-        <View
-          style={{
-            flexDirection: "row",
-            position: "absolute",
-            bottom: "10%",
-            gap: 5,
-            alignItems: "center",
-          }}
+      {upComingEvent &&
+        <TouchableOpacity
+          style={styles.liveCallsBtn}
+          onPress={() => { }}
         >
-          <View
-            style={{
-              height: 5,
-              width: 5,
-              backgroundColor: "#256CD0",
-              borderRadius: 2,
-            }}
+          <Image
+            source={require("../../assets/images/WhiteCalendar.png")}
+            style={styles.whiteCalendar}
           />
-          <Text style={{ fontSize: 12 }}>
-            Call with Jeff Mayweather at 9:00 PM
+          <Text style={styles.liveCallsBtnText}>
+            {`Next Live Call Is In ${timeRemaining(upComingEvent?.start)} With ${upComingEvent?.speakers[0]?.name}`}
           </Text>
-        </View>
+        </TouchableOpacity>
+      }
+      {/* Calendar Start */}
+      <View style={styles.calendarContainer}>
+      <Calendar
+        onDayPress={handleDayPress}
+        markedDates={calendarMarkedDates}
+        style={{
+          borderRadius:20,
+          backgroundColor:'#f2f2f2',
+          margin:18,
+          height: 350,
+        }}
+        theme={{
+          calendarBackground: '#f2f2f2',
+          textSectionTitleColor: '#b6c1cd',
+          // selectedDayBackgroundColor: '#00adf5',
+          selectedDayTextColor: '#ffffff',
+          todayTextColor: '#00adf5',
+          dayTextColor: '#2d4150',
+          textDisabledColor: '#d9e1e8',
+          arrowColor: colors.black,
+          monthTextColor: colors.black,
+          indicatorColor: 'blue',
+          textDayFontFamily: 'monospace',
+          textMonthFontFamily: 'monospace',
+          textDayHeaderFontFamily: 'monospace',
+          textDayFontWeight: '300',
+          textMonthFontWeight: 'bold',
+          textDayHeaderFontWeight: '300',
+          textDayFontSize: 16,
+          textMonthFontSize: 16,
+          textDayHeaderFontSize: 16,
+        }}
+      />
+      <View style={styles.eventContainer}>
+          <Text style={styles.eventText}>
+            {eventDescription}
+          </Text>
       </View>
+    </View>
+    {/* Calendar End */}
 
       <View style={styles.coachBooking}>
         <View style={styles.coachBookingHeader}>
@@ -482,10 +604,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "gray",
-  },
-  calendarContainer: {
-    flexDirection: "row",
-    alignItems: "center",
   },
   calendarIconInner: {
     width: 10,
@@ -1040,6 +1158,20 @@ const styles = StyleSheet.create({
     width: "95%",
     height: Dimensions.get("window").width * 0.9,
     resizeMode: "contain",
+  },
+  calendarContainer: {
+    flex: 1,
+  },
+  eventContainer: {
+    position:'absolute',
+    bottom:30,
+    alignItems:'center',
+    width:'100%',
+  },
+  eventText: {
+    fontSize: 16,
+    left:0,
+    color: colors.black,
   },
 });
 
