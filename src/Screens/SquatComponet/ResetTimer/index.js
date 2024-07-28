@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React,{useEffect,useState,useMemo} from "react";
 import { colors } from "../../../constants/colors";
 import {
   getFontSize,
@@ -15,10 +15,44 @@ import {
 } from "../../../../utils/ResponsiveFun";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { fonts } from "../../../constants/fonts";
+import { useNavigation } from "@react-navigation/native";
 
-export default function ResetTimer({ navigation }) {
+export default function ResetTimer({ route }) {
+  const navigation = useNavigation();
+  const { restTime } = route?.params;
+  const [seconds, setSeconds] = useState(0);
+
+  useMemo(() => {
+    setSeconds(60 * restTime)
+}, [restTime])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSeconds((prevSeconds) => {
+        if (prevSeconds > 0) {
+          return prevSeconds - 1;
+        } else {
+          clearInterval(interval);
+          navigation.goBack()
+          return 0;
+        }
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const skipRest = () => {
+    navigation.goBack()
+  };
+
+  const convertTimeToMinutes = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+};
+
   const onPressBack = () => navigation.goBack();
-
   const onPressNext = () => navigation.navigate("WorkoutComplete");
 
   return (
@@ -63,10 +97,10 @@ export default function ResetTimer({ navigation }) {
           }}
         >
           <View>
-            <Text style={styles.headerTextStyles}>00:00</Text>
+            <Text style={styles.headerTextStyles}>{convertTimeToMinutes(seconds)}</Text>
             <Text style={styles.beginSTyle}>Rest</Text>
           </View>
-          <TouchableOpacity onPress={onPressNext} style={styles.nextBtnStyle}>
+          <TouchableOpacity onPress={skipRest} style={styles.nextBtnStyle}>
             <Text style={styles.backBtnTextStyle}>Skip</Text>
             <Ionicons
               name="checkmark"

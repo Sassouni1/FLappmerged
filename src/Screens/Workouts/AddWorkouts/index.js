@@ -34,12 +34,13 @@ const AddWorkouts = () => {
   const dispatch = useDispatch();
   const [date, setDate] = useState(new Date());
 
-  const [assigWorkout, setAssigWorkout] = useState([]);
+  const [workout,setWorkout] = useState({});
+  const [assigWorkout, setAssigWorkout] = useState({});
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
   const loader = useSelector((state) => state.gernal.loader);
   const [userWorkoutProgress, setUserWorkoutProgress] = useState([]);
-  const [exercises, setExercises] = useState({});
+  const [exercises, setExercises] = useState([]);
   const currentDate = new Date();
   const [customDatesStyles, setCustomDatesStyles] = useState([]);
 
@@ -60,16 +61,18 @@ const AddWorkouts = () => {
       });
       if (res?.status == "200") {
         console.log(
-          "respone of add workoutss",
-          res?.response?.Workout[0]?.innerWorkout[0]
+          "respone of add workoutss..",
+          res?.response?.Workout[0].innerWorkout[0]
         );
+        setWorkout(res?.response?.Workout[0]);
         setAssigWorkout(res?.response?.Workout[0]?.innerWorkout[0]);
         setExercises(res?.response?.Workout[0]?.innerWorkout[0]?.exercise)
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        setAssigWorkout([]);
-        setExercises({})
+        setWorkout({})
+        setAssigWorkout({});
+        setExercises([])
       }
     } catch (e) {
       console.log("api get skill errorrrr -- ", e.toString());
@@ -357,7 +360,6 @@ const AddWorkouts = () => {
           <View style={{}}>
             <View style={{ height: 200, marginTop: 20 }}>
               <Button
-                // onPress={() => navigation.navigate("ProgramWorkout", { workoutData: route?.params?.passData, programId: _id })}
                 onPress={() => { }
                   // navigation.navigate("Squat", {
                   //     program:program,
@@ -431,6 +433,7 @@ const AddWorkouts = () => {
               onPress={() => {
                 navigation.navigate("Squat", {
                   exercise: item,
+                  workout:workout
                 })
               }}
               activeOpacity={0.8}

@@ -9,42 +9,23 @@ import {
   View,
   TextInput,
   Dimensions,
+  Alert,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-
+import React, { useEffect, useState,useMemo } from "react";
 import { colors } from "../../../constants/colors";
-
 import Ionicons from "react-native-vector-icons/Ionicons";
-
-import { GernalStyle } from "../../../constants/GernalStyle";
-
-import GeneralStatusBar from "../../../Components/GeneralStatusBar";
 import {
   getWidth,
   getFontSize,
   getHeight,
 } from "../../../../utils/ResponsiveFun";
-import Feather from "react-native-vector-icons/Feather";
-import { StopSvg } from "../../../assets/images";
-import { useNavigation,useFocusEffect } from "@react-navigation/native";
-
+import { useFocusEffect } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../../Redux/actions/GernalActions";
 import { ApiCall } from "../../../Services/Apis";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-
-import Entypo from "react-native-vector-icons/Entypo";
 import toast from "react-native-simple-toast";
-import { updateTimer } from "../../../Redux/actions/AuthActions";
-import Button from "../../../Components/Button";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import Seprator from "../../../Components/Seprator";
-import WebView from "react-native-webview";
 import VideoSkills from "../../Skills/Video";
 import { fonts } from "../../../constants/fonts";
-import { camelCase } from "react-native-svg/lib/typescript/xml";
-import RestTimeScreen from "../../../Screens/Workouts/RestTimeScreen";
 
 
 const Timer = ({ isVisible, onTimerEnd }) => {
@@ -84,31 +65,21 @@ export default function Squat({ navigation, route }) {
   const onPressBack = () => {
     navigation.goBack();
   };
+  const {exercise,workout} = route?.params;
+  const user = useSelector((state) => state.auth.userData);
+  const dispatch = useDispatch();
 
-  const {exercise, workoutId, innerWorkoutId, exerciseId, calories, given_sets } =
-    route?.params;
+  const token = useSelector((state) => state.auth.userToken);
   const defaultTimer = { hours: 0, minutes: 0, seconds: 0 };
-
-  const [selectedInput, setSelectedInput] = useState(null);
-  const [selectedInputAdditional, setSelectedInputAdditional] = useState(null);
-  const [additionalSetCount, setAdditionalSetCount] = useState(0);
-  // const [inputContent, setInputContent] = useState(
-  //   Array(exercise?.sets.length).fill("")
-  // ); // State to store input content
-  const [inputContent, setInputContent] = useState(Array(2).fill("")); // State to store input content
-  const [isChecked, setIsChecked] = useState(Array(3).fill(false)); // State to track if checkmark is checked or not
+  const [isChecked, setIsChecked] = useState([]);
+  const [disableRest, setDisableRest] = useState([]);
   const [isResting, setIsResting] = useState(Array(3).fill(false)); // State to track if checkmark is checked or not
   const [showTimer, setShowTimer] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
- const [additionalSets,setAdditionalSets] = useState([]);
-
-  const [weights, setWeights] = useState('');
-
-  const handleWeightChange = (text, index) => {
-    const newWeights = [...weights];
-    newWeights[index] = text;
-    setWeights(newWeights);
-  };
+  const [additionalSets, setAdditionalSets] = useState([]);
+  const [seconds, setSeconds] = useState(0);
+  const [restTime, setRestTime] = useState(0);
+  const [weights, setWeights] = useState([]);
+  const [selectedSetKey,setSelectedSetKey] = useState('');
 
   const [isVisible, setIsVisible] = useState(true);
   useEffect(() => {
@@ -141,8 +112,32 @@ export default function Squat({ navigation, route }) {
     }, [exercise])
   );
 
-console.log("exercise ....",exercise)
-  const onPressReset = () => navigation.navigate("ResetTimer");
+  useMemo(() => {
+    setSeconds(60 * restTime)
+  }, [restTime])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSeconds((prevSeconds) => {
+        if (prevSeconds > 0) {
+          return prevSeconds - 1;
+        } else {
+          clearInterval(interval);
+          return 0;
+        }
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [restTime]);
+
+    const convertTimeToMinutes = (seconds) => {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+    };
+
+  console.log("exercise ....", exercise)
+  const onPressReset = (restTime) => navigation.navigate("ResetTimer",{restTime:restTime});
 
   const RenderSquare = ({ title, desc, icon }) => {
     return (
@@ -154,47 +149,80 @@ console.log("exercise ....",exercise)
     );
   };
 
-  const handleInputChange = (index, value) => {
-    const newInputContent = [...inputContent];
-    newInputContent[index] = value;
-    setInputContent(newInputContent);
-  };
+  const handleCheckmarkPress = async (index, set) => {
+    let find_lbs_value = findInputValueWithKey(index);
+    await singleSetComplete(set, find_lbs_value);
+    let newIsChecked = [...isChecked];
+    let valueIncludes = newIsChecked.includes(index);
+    if (valueIncludes)
+      newIsChecked = newIsChecked.filter(x => x != index);
+    else
+      newIsChecked.push(index);
 
-  const getParameter = (set) => {
-    switch (set.parameter) {
-      case "reps":
-        return set.reps;
-      case "lbs":
-        return set.lbs;
-      case "weight":
-        return set.weight;
-      case "seconds":
-        return set.seconds;
-      case "distance":
-        return set.distance;
-      case "yards":
-        return set.yards;
-      case "meters":
-        return set.meters;
-      default:
-        return "";
+    setIsChecked(newIsChecked);
+    
+    let isDisableRest  = disableRest?.includes(index);
+    if (!isDisableRest && !valueIncludes && set?.rest_time && set?.rest_time != 0) {
+      setSelectedSetKey(index);
+      setRestTime(parseInt(set?.rest_time))
+      // onPressReset(set?.rest_time);
+    }
+    else{
+      setSelectedSetKey('');
+      setRestTime(parseInt(0))
     }
   };
 
-  const handleCheckmarkPress = (index,set) => {
-    const newIsChecked = [...isChecked];
-    newIsChecked[index] = !newIsChecked[index];
-    setIsChecked(newIsChecked);
+  const handleRestButton = async (index) => {
+    let newState = [...disableRest];
+    let valueIncludes = newState.includes(index);
+    if (valueIncludes)
+      newState = newState.filter(x => x != index);
+    else
+    {
+      newState.push(index);
+      setRestTime(0)
+      setSelectedSetKey('')
+    }
 
-    setShowTimer(true); // Show the timer
+    setDisableRest(newState);
   };
+
+
+  const handleSubmitEditing = (event, key) => {
+    const newValue = event.nativeEvent.text;
+
+    let arrayOfObjects = [...weights];
+    const updatedArray = arrayOfObjects.map(obj => {
+      // If the key exists in the object, update its value
+      if (key in obj) {
+        return { ...obj, [key]: newValue };
+      }
+      return obj;
+    });
+
+    // Check if the key was updated
+    const keyUpdated = updatedArray.some(obj => key in obj);
+
+    // If the key was not found and updated, add a new object
+    if (!keyUpdated) {
+      updatedArray.push({ [key]: newValue });
+    }
+    setWeights(updatedArray)
+  };
+
+  const findInputValueWithKey = (keyToFind)=>{
+    const foundObject = weights.find(obj => keyToFind in obj);
+    const value = foundObject ? foundObject[keyToFind] : 0;
+    return value;
+  }
 
   const addAdditionalSet = () => {
     let newItem = {
       _id: (Math.random() * 1000).toString(),
-      lbs: "100",
+      lbs: "",
       parameter: "lbs",
-      reps: "0",
+      reps: "10",
       rest_time: "0",
       task: [],
       video: "",
@@ -203,80 +231,69 @@ console.log("exercise ....",exercise)
     setAdditionalSets((prevItems) => [...prevItems, newItem]);
   }
 
-  const singleSetComplete = async (
-    parameter,
-    value,
-    remaining_time,
-    setid,
-    rest_time
-  ) => {
-    // console.log('rest timd', rest_time )
+  const singleSetComplete = async ( set,weight ) => {
     try {
       dispatch(setLoader(true));
       const submittedData = {
-        parameter: parameter,
-        remaining_time: remaining_time,
-        [parameter]: value,
+        parameter: set?.parameter,
+        remaining_time: '',
+        [set?.parameter]: weight,
       };
 
       let requestParams = {
-        setId: setid,
-        workout_objId: workoutId,
-        exercise_objId: exerciseId,
-        inner_objId: innerWorkoutId,
+        setId: set?._id,
+        workout_objId: workout?._id,
+        exercise_objId: exercise?._id,
+        inner_objId: workout?.innerWorkout[0]?._id,
         submittedData: submittedData,
       };
 
-      if (exercise?.task?.length > 0) {
-        requestParams.task_objId = exercise?.task?.[nextIncompleteIndex]?._id;
-      }
+      // if (exercise?.task?.length > 0) {
+      //   requestParams.task_objId = exercise?.task?.[nextIncompleteIndex]?._id;
+      // }
       const res = await ApiCall({
         route: `assignProgram/update_set/${user?.plan_id}`,
         verb: "post",
         token: token,
         params: requestParams,
       });
-      // console.log("submit....set", res?.response);
+      console.log("requestParams",requestParams);
       if (res?.status == "200") {
         toast.show("set successfully completed");
-        navigation.navigate("RestTimeScreen", { restTime: rest_time });
-        getSingleExcercise();
-        //setSubmittedSets([]);
+        navigation.navigate("RestTimeScreen", { restTime: set?.rest_time });
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        toast.show("Enter correct sets");
+        // toast.show("Enter correct sets");
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
     }
   };
 
-  const handleRest = (index) => {
-    const newRest = [...isResting];
-    newRest[index] = !newRest[index];
-    setIsChecked(newRest);
-  };
-
-  const handleTimerEnd = () => {
-    setShowTimer(false); // Hide the timer
-  };
-
-  const RenderRest = ({ no }) => {
+  const RenderRest = ({ uniqueKey,restTime }) => {
     return (
-      <View style={styles.bottomStyle}>
-        <View style={styles.bottomDividerSTyle}></View>
-        <View style={styles.itemContainer}>
-          <View style={styles.dotContainer} />
-          <Text style={styles.itemTextStyle}>1 min rest</Text>
+      <View style={{ flexDirection: 'row' }}>
+        <View style={styles.bottomStyle}>
+          <View style={styles.bottomDividerSTyle}></View>
+          <View style={styles.itemContainer}>
+            <View style={styles.dotContainer} />
+            <Text style={styles.itemTextStyle}>{selectedSetKey == uniqueKey ? convertTimeToMinutes(seconds) : `${restTime} min rest`}</Text>
+          </View>
+        </View>
+        <View style={{ flex: 1}}>
+          <TouchableOpacity onPress={()=>{handleRestButton(uniqueKey)}} style={{alignItems:'flex-end',marginTop:25}}>
+          <Text style={{color:colors.darkBlue}}>{disableRest.includes(uniqueKey) ? `Enable Rest` : `Disable Rest`}</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
   };
 
-  const RenderCategory = ({key, no,set, reps, isSuccess = true, isBottom = true }) => {
+  const RenderCategory = ({no,set, reps, isSuccess = true, isBottom = true,isAdditional }) => {
+    const uniqueKey = isAdditional ? 'additionalSet'+no : 'set'+no;
     return (
-      <View key={key} style={styles.mainContainer}>
+      <View key={no} style={styles.mainContainer}>
         <View style={styles.outerContainer}>
           <View style={styles.numberContainer}>
             <Text style={styles.numberTextSTyle}>{no}</Text>
@@ -300,31 +317,29 @@ console.log("exercise ....",exercise)
               style={{ width: getWidth(15),textAlign:'center', letterSpacing: 2, paddingTop: 0, paddingBottom: 0, }}
               placeholder="--------"
               keyboardType="numeric"
-              value={weights[key]}
-              onChangeText={(text) => handleWeightChange(text, key)}
-
-              onSubmitEditing={() => {}}
+              onSubmitEditing={(event)=>{handleSubmitEditing(event,uniqueKey)}}
+              returnKeyType="done"
             />
-           <Text style={styles.lbsTextSTyle}>lbs</Text>
+           <Text style={styles.descStyle}>{`${findInputValueWithKey(uniqueKey)} lbs`}</Text>
           </View>
         
           <View style={styles.dividerStyle} />
           <TouchableOpacity
             style={{ marginRight: getWidth(5) }}
             onPress={() => {
-              handleCheckmarkPress(no,set);
+              handleCheckmarkPress(uniqueKey,set);
             }}
           >
             <Ionicons
               name="checkmark-circle"
               size={getFontSize(5)}
-              color={!isChecked[no] ? colors.axisColor : colors.orange}
+              color={!isChecked.includes(uniqueKey) ? colors.axisColor : colors.orange}
               style={{ marginRight: getWidth(5) }}
             />
           </TouchableOpacity>
         </View>
-        {isBottom && isChecked[no] ? (
-          <RenderRest no={no} />
+        {set?.rest_time && set?.rest_time != 0 ? (
+          <RenderRest uniqueKey={uniqueKey} restTime={set?.rest_time || 0} />
         ) : (
           <View
             style={{
@@ -393,31 +408,6 @@ console.log("exercise ....",exercise)
         </SafeAreaView>
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
-          {/* <ImageBackground
-            source={{uri:exercise?.video_thumbnail}}
-            style={styles.imageBgStyle}
-            imageStyle={styles.imageStyle}
-          >
-            <TouchableOpacity
-              onPress={onPressBack}
-              style={styles.headerBtnStyle}
-            >
-              <Ionicons
-                name="chevron-back"
-                size={getFontSize(2.5)}
-                color={colors.black}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.playBtnStyle}>
-              <Ionicons
-                name="play"
-                size={getFontSize(3.5)}
-                color={colors.white}
-              />
-            </TouchableOpacity>
-            <Text style={styles.statsFontStyle}>{exercise?.exercise_name}</Text>
-            <View />
-          </ImageBackground> */}
           <View>
             <VideoSkills
               data={{ video: exercise?.video, Name: exercise?.exercise_name }}
@@ -471,7 +461,7 @@ console.log("exercise ....",exercise)
             <View style={styles.rowDividerSTyle} />
           </View>
             {exercise?.sets?.map((item, index) => (
-              <RenderCategory key={index} set={item} no={index+1} reps={item?.reps || 0} isSuccess={true} />
+              <RenderCategory key={index+1}  set={item} no={index+1} reps={item?.reps || 0} isSuccess={true} isAdditional={false} />
             ))}
 
             {additionalSets?.length > 0 &&
@@ -482,12 +472,12 @@ console.log("exercise ....",exercise)
                   <View style={styles.rowDividerSTyle} />
                 </View>
                 {additionalSets?.map((item, index) => (
-                  <RenderCategory key={index} set={item} no={index + 1} reps={item?.reps || 0} isSuccess={true} />
+                  <RenderCategory key={index + 1}  set={item} no={index + 1} reps={item?.reps || 0} isSuccess={true} isAdditional={true} />
                 ))}
               </View>
             }
 
-          <TouchableOpacity onPress={addAdditionalSet} style={styles.addButtonContainer}>
+          <TouchableOpacity onPress={()=> addAdditionalSet()} style={styles.addButtonContainer}>
             <Text style={styles.addTitleStyle}>+ Add Set</Text>
           </TouchableOpacity>
           <View style={styles.bottomBtnStyle}>
@@ -502,7 +492,7 @@ console.log("exercise ....",exercise)
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={onPressReset}
+              onPress={()=>{}}
               style={styles.leftContainer}
             >
               <Text style={styles.nextExerciseStyle}>Next Exercise</Text>
@@ -673,6 +663,7 @@ const styles = StyleSheet.create({
     marginHorizontal: getWidth(5),
   },
   bottomStyle: {
+    flex:1,
     left: getWidth(7),
     ms: "center",
     justifyContent: "center",
