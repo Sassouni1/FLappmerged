@@ -161,7 +161,7 @@ const AddWorkouts = () => {
   return (
     <View style={{flex: 1,marginTop: getFontSize(1)}}>
       <ReactNativeCalendarStrip
-        showMonth={true}
+        showMonth={false}
         selectedDate={date}
         onDateSelected={handleDateChange}
         calendarAnimation={{ type: "sequence", duration: 30 }}
@@ -183,7 +183,7 @@ const AddWorkouts = () => {
       />
 
       <FlatList
-        style={{ marginTop: 35 }}
+        style={{ marginTop: 40 }}
         data={exercises}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
@@ -212,7 +212,7 @@ const AddWorkouts = () => {
             alignItems: "center",
             justifyContent: "center",
           }}>
-            <Text style={{ fontWeight: "700", fontSize: 20 }}>
+            <Text style={{ fontWeight: "700",textAlign:'center', fontSize: 20 }}>
               {assigWorkout?.workoutName}
             </Text>
             <Text

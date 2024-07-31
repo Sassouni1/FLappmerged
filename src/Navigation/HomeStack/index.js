@@ -53,6 +53,7 @@ import Weightgoals from "../../Screens/Fitnesssurvey/Weightgoals";
 
 import AddWorkouts from "../../Screens/Workouts/AddWorkouts";
 import WorkoutExercise from "../../Screens/Workouts/WorkoutExercise";
+import AdditionalWorkoutSelected from "../../Screens/Workouts/AdditionalWorkoutSelected";
 
 import HTUA from "../../Screens/HTUA";
 
@@ -421,6 +422,13 @@ const HomeStack = () => {
         }}
         name="WorkoutExercise"
         component={WorkoutExercise}
+      />
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="AdditionalWorkoutSelected"
+        component={AdditionalWorkoutSelected}
       />
     </stack.Navigator>
   );

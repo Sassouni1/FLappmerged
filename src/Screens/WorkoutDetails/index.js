@@ -269,7 +269,7 @@ const WorkoutDetails = () => {
                           color: "white",
                         }}
                       >
-                        All Equipment
+                        {item?.equipments_needed}
                       </Text>
                     </View>
                     <View
@@ -295,7 +295,7 @@ const WorkoutDetails = () => {
                           color: "white",
                         }}
                       >
-                        For Everyone
+                        {item?.program_for}
                       </Text>
                     </View>
                   </View>
@@ -317,18 +317,18 @@ const WorkoutDetails = () => {
 
                     <View
                       style={{
-                        // flexDirection: "row",
-                        gap: 8,
+                        flexDirection: "row",
                         alignItems: "center",
                       }}
                     >
+                      <View style={{flex:1}}>
                       <Text
-                        style={{
-                          color: "white",
-                        }}
+                        style={{color: "white"}}
+                        numberOfLines={1}
                       >
                         {item?.description}
                       </Text>
+                      </View>
                       <View
                         style={{
                           backgroundColor: "rgba(170, 170, 170, 0.42)",
@@ -540,6 +540,7 @@ const WorkoutDetails = () => {
             </TouchableOpacity>
           ))}
       </View>
+      <View style={{height:100}} />
     </ScrollView>
   );
 };

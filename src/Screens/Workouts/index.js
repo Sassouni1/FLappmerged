@@ -20,10 +20,11 @@ import HeaderBottom from "../../Components/HeaderBottom";
 import Entypo from "react-native-vector-icons/Entypo";
 import StandAlone from "./StandAlone";
 import { ScrollView } from "react-native-gesture-handler";
+import AdditionalWorkout from "./AdditionalWorkout";
 
 const Tab1 = () => <WorkoutDetails />;
 const Tab2 = () => <AddWorkouts />;
-const Tab3 = () => <StandAlone />;
+const Tab3 = () => <AdditionalWorkout />;
 
 const initialLayout = { width: Dimensions.get("window").width };
 
@@ -85,7 +86,7 @@ const Workouts = ({ route }) => {
             </TouchableOpacity>
           </View>
         )}
-        {index === 2 && (
+        {index == 1 && (
           <View>
             <Image
               source={require("../../assets/images/guyback.png")}
@@ -113,7 +114,34 @@ const Workouts = ({ route }) => {
             />
           </View>
         )}
-
+        {index == 2 && (
+          <View>
+            <Image
+              source={require("../../assets/images/guyback.png")}
+              style={{
+                width: Dimensions.get("screen").width,
+                height: 360,
+                position: "absolute",
+                top: -60,
+                right: 0,
+                left: -10,
+                resizeMode: "cover",
+              }}
+            />
+            <View
+              style={{
+                borderRadius: 30,
+                width: Dimensions.get("screen").width + 5,
+                height: 100,
+                backgroundColor: "white",
+                position: "absolute",
+                top: 250,
+                right: 0,
+                left: -12,
+              }}
+            />
+          </View>
+        )}
         <TabView
           style={{
             position: "absolute",
