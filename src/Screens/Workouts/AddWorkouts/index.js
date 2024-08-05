@@ -206,7 +206,7 @@ const AddWorkouts = () => {
           </View>
         )}
         refreshing={false}
-        onRefresh={() => getSingleExcercise(date, selectedIndex)}
+        onRefresh={() => getSingleExcercise(date)}
         ListHeaderComponent={() => (
           <View style={{
             alignItems: "center",

@@ -19,6 +19,8 @@ import ImageModal from "react-native-image-modal";
 import moment from "moment";
 import fs from "react-native-fs";
 import { CameraIcon, PdfIcon, SendIcon } from "../../assets/images";
+import { ApiCall } from "../../Services/Apis";
+import DocumentPicker from "react-native-document-picker";
 
 import {
   getChats,
@@ -72,6 +74,7 @@ const BotChatScreen = ({ navigation, route }) => {
         groupChatId: channelId,
         senderId: sender?._id,
         date: date,
+        _id:date.valueOf()
       });
     } else if (chatRoomType == "chat") {
       socket.emit("chat", {
@@ -79,6 +82,7 @@ const BotChatScreen = ({ navigation, route }) => {
         chatroomId: channelId,
         senderId: sender?._id,
         date: date,
+        _id:date.valueOf()
       });
     }
 
@@ -247,8 +251,6 @@ const BotChatScreen = ({ navigation, route }) => {
 
       if (res?.status == "200") {
         dispatch(setLoader(false));
-        console.log("responses of message", res?.response);
-
         const newArrayOfObj = res?.response?.chat?.messages.map(
           ({ sender: user, message: text, ...rest }) => ({
             user,
@@ -277,7 +279,7 @@ const BotChatScreen = ({ navigation, route }) => {
     });
     if (chatRoomType == "groupChat") {
       socket.on("group-chat", (payload) => {
-        console.log("payload there", payload);
+        // console.log("payload there", payload);
 
         const newArray = [payload].map((item) =>
           item?.sender == sender?._id
@@ -306,7 +308,7 @@ const BotChatScreen = ({ navigation, route }) => {
       });
     } else if (chatRoomType == "chat") {
       socket.on("chat", (payload) => {
-        console.log("payload there", payload);
+        // console.log("payload there", payload);
 
         const newArray = [payload].map((item) =>
           item?.sender == sender?._id
@@ -652,7 +654,7 @@ const BotChatScreen = ({ navigation, route }) => {
           isKeyboardInternallyHandled
           showAvatarForEveryMessage={true}
           showScrollIndicator={false}
-          messages={oooo}
+          messages={messages}
           onSend={(messages) => sendChat(messages)}
           user={{
             _id: user?._id,

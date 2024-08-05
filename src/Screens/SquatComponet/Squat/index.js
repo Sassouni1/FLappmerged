@@ -423,38 +423,62 @@ export default function Squat({ navigation, route }) {
               />
             </TouchableOpacity>
           </View>
-          <View style={styles.categoryContainer}>
+          <View style={[styles.categoryContainer,{justifyContent:'center'}]}>
+          <View style={styles.dividerStyle} />
             <RenderSquare
               title={`${exercise?.lbs || 0}x${exercise?.no_of_sets}`}
               desc="Reps"
               icon={require("../../../assets/images/squatsIcon3.png")}
             />
             <View style={styles.dividerStyle} />
-            <RenderSquare
-              title="1.2.3.1"
-              desc="Tempo"
-              icon={require("../../../assets/images/squatsIcon2.png")}
-            />
-            <View style={styles.dividerStyle} />
-            <RenderSquare
-              title="85%"
-              desc="Max"
-              icon={require("../../../assets/images/squatsIcon1.png")}
-            />
-            <View style={styles.dividerStyle} />
-            <RenderSquare
-              title="10"
-              desc="RPE"
-              icon={require("../../../assets/images/squatsIcon1.png")}
-            />
-            <View style={styles.dividerStyle} />
-            <RenderSquare
-              title="2"
-              desc="RIR"
-              icon={require("../../../assets/images/squatsIcon1.png")}
-            />
-            <View style={styles.dividerStyle} />
+              {exercise?.tempo &&
+                <>
+                  <RenderSquare
+                    title={exercise?.tempo}
+                    desc="Tempo"
+                    icon={require("../../../assets/images/squatsIcon2.png")}
+                  />
+                  <View style={styles.dividerStyle} />
+                </>
+              }
+              {exercise?.max &&
+                <>
+                  <RenderSquare
+                    title={exercise?.max}
+                    desc="Max"
+                    icon={require("../../../assets/images/squatsIcon1.png")}
+                  />
+                  <View style={styles.dividerStyle} />
+                </>
+              }
+              {exercise?.rpe &&
+                <>
+                  <RenderSquare
+                    title={exercise?.rpe}
+                    desc="RPE"
+                    icon={require("../../../assets/images/squatsIcon1.png")}
+                  />
+                  <View style={styles.dividerStyle} />
+                </>
+              }
+              {exercise?.rir &&
+              <>
+                <RenderSquare
+                  title="2"
+                  desc="RIR"
+                  icon={require("../../../assets/images/squatsIcon1.png")}
+                />
+                <View style={styles.dividerStyle} />
+                </>
+              }
+           
           </View>
+            <View style={{ alignItems: 'center' }}>
+              <Text style={{ ...styles.text, fontFamily: fonts.UBo, textAlign: 'center' }}>
+                {exercise?.notes}
+              </Text>
+              <View style={[styles.rowDividerSTyle,{marginVertical:10}]} />
+            </View>
           <View style={styles.rowContainerSTyle}>
             <View style={styles.rowDividerSTyle} />
             <Text style={styles.workingSetSTyle}>{exercise?.sets?.length > 1 ? exercise?.sets?.length + " WORKING SETS" : exercise?.sets?.length + " WORKING SET"}</Text>
