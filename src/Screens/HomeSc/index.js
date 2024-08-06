@@ -51,6 +51,8 @@ const HomeSc = ({ navigation, route }) => {
   const [events,setEvents] = useState();
   const [eventDescription,setEventDescription] = useState("");
   const [upComingEvent, setUpcomingEvent] = useState();
+  const [todayWorkout,setTodayWorkout] = useState();
+
 
   const handleDayPress = (day) => {
     let find = events?.find(x=> getFormattedDate(x.start) == day.dateString);
@@ -93,8 +95,31 @@ const HomeSc = ({ navigation, route }) => {
   }, []);
   useEffect(() => {
     getAdminAlert();
-    getEvents()
+    getEvents();
+    getTodayWorkout();
   }, []);
+
+  const getTodayWorkout = async () => {
+    let currentDate = new Date();
+    try {
+      const res = await ApiCall({
+        route: `assignProgram/given-date-workouts/${
+          user?.plan_id
+        }&${currentDate.toISOString()}`,
+        verb: "get",
+        token: token,
+      });
+      if (res?.status == "200") {
+        console.log("innerWorkout",res?.response?.Workout[0]?.innerWorkout[0])
+        setTodayWorkout(res?.response?.Workout[0]?.innerWorkout[0]);
+        dispatch(setLoader(false));
+      } else {
+        dispatch(setLoader(false));
+      }
+    } catch (e) {
+      console.log("api get skill errorrrr -- ", e.toString());
+    }
+  };
 
   const getEvents = async () => {
     dispatch(setLoader(true));
@@ -149,7 +174,7 @@ const HomeSc = ({ navigation, route }) => {
     console.log(allDates);
     setCalendarMarkedDates(allDates);
   }
-
+ 
   const getFormattedDate = (_date) => {
     const date = new Date(_date);
     
@@ -244,7 +269,7 @@ const HomeSc = ({ navigation, route }) => {
         <View style={styles.subNav}>
           <View style={styles.vidTitle}>
             <Text style={styles.subNavText}>Today's Workout</Text>
-            <Text style={styles.vidTitleText}>(25)</Text>
+            <Text style={styles.vidTitleText}>({todayWorkout?.workoutLength || 0})</Text>
           </View>
 
           <View style={styles.moreVertical}>
@@ -266,7 +291,7 @@ const HomeSc = ({ navigation, route }) => {
                     source={require("../../assets/images/homeclockicon.png")}
                   />
                 </View>
-                <Text style={styles.fitnessText}>25min</Text>
+                <Text style={styles.fitnessText}>{`${todayWorkout?.workoutLength || 0} min`}</Text>
               </View>
               <View style={styles.fitnessInfo}>
                 <View style={styles.fitnessIcon}>
@@ -274,14 +299,14 @@ const HomeSc = ({ navigation, route }) => {
                     source={require("../../assets/images/homefireicon.png")}
                   />
                 </View>
-                <Text style={styles.fitnessText}>412kcal</Text>
+                <Text style={styles.fitnessText}> {`${todayWorkout?.calories || 0} Cal`}</Text>
               </View>
             </View>
             <View style={styles.frameContentLower}>
               <View style={styles.frameText}>
-                <Text style={styles.frameTitle}>Upper Strength 2</Text>
+                <Text style={styles.frameTitle}>{todayWorkout?.workoutName}</Text>
                 <View style={styles.frameSubtitle}>
-                  <Text style={styles.frameSubtitleText}>8 Series Workout</Text>
+                  <Text style={styles.frameSubtitleText}>{todayWorkout?.description}</Text>
                   <View style={styles.tagMaster}>
                     <Text style={styles.tagText}>INTENSE</Text>
                   </View>

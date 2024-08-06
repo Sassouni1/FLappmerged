@@ -39,6 +39,7 @@ const UpdateProfiles = () => {
   const [fullname, setFullname] = useState(user?.full_name);
   const [fullnameError, setFullnameError] = useState("");
   const [weight, setWeight] = useState(user?.weight);
+  const [targetWeight, setTargetWeight] = useState(user?.target_weight);
   const [weightError, setWeightError] = useState("");
   const [height, setHeight] = useState(user?.height);
   const [heightError, setHeightError] = useState("");
@@ -47,12 +48,14 @@ const UpdateProfiles = () => {
     fullname: useRef(null),
     weight: useRef(null),
     height: useRef(null),
+    target_weight:useRef(null)
   };
 
   useFocusEffect(
     React.useCallback(() => {
       setFullname(user?.full_name);
       setWeight(user?.weight);
+      setTargetWeight(user?.target_weight)
       setHeight(user?.height);
       setFullnameError("");
       setWeightError("");
@@ -146,6 +149,8 @@ const UpdateProfiles = () => {
         formData.append("full_name", fullname);
         formData.append("height", height);
         formData.append("weight", weight);
+        formData.append("target_weight", targetWeight);
+
         formData.append("profile_image", imageCrop);
 
         const res = await ApiCall({
@@ -155,7 +160,7 @@ const UpdateProfiles = () => {
           verb: "put",
         });
 
-        if (res?.status === "200") {
+        if (res?.response) {
           navigation.goBack();
           dispatch(getSingleUser(token));
           toast.show(res?.response?.message);
@@ -163,7 +168,8 @@ const UpdateProfiles = () => {
           Keyboard.dismiss();
         } else {
           dispatch(setLoader(false));
-          Alert.alert('Awesome!','Profile update successful');
+          console.log(res);
+          // Alert.alert('Awesome!','Profile update successful');
         }
       } catch (e) {
         console.log("profile update error -- ", e.toString());
@@ -297,13 +303,35 @@ const UpdateProfiles = () => {
                 onBlur={() => setWeightError(validateFields(weight, "Weight"))}
                 returnKeyType={"done"}
                 ref={inputRefs.weight}
-                onSubmitEditing={() => inputRefs?.height?.current?.focus()}
+                onSubmitEditing={() => inputRefs?.target_weight?.current?.focus()}
                 blurOnSubmit={false}
               />
             </View>
             {weightError && <Text style={styles.errorText}>{weightError}</Text>}
           </View>
-
+          <View style={styles.inputFieldContainer}>
+            <Text style={styles.inputLabel}>Goal Weight</Text>
+            <View
+              style={[styles.inputField, weightError && styles.inputFieldError]}
+            >
+              <Image
+                source={require("../../assets/images/Monotone-user.png")}
+                style={styles.icon}
+              />
+              <TextInput
+                style={styles.inputText}
+                value={targetWeight?.toString()}
+                onChangeText={setTargetWeight}
+                placeholder="Goal Weight"
+                placeholderTextColor="#393C43"
+                keyboardType={"numeric"}
+                returnKeyType={"done"}
+                ref={inputRefs.target_weight}
+                onSubmitEditing={() => inputRefs?.height?.current?.focus()}
+                blurOnSubmit={false}
+              />
+            </View>
+          </View>
           <View style={styles.inputFieldContainer}>
             <Text style={styles.inputLabel}>Height</Text>
             <View

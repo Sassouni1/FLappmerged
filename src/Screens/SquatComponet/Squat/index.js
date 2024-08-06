@@ -77,7 +77,7 @@ export default function Squat({ navigation, route }) {
   const [showTimer, setShowTimer] = useState(false);
   const [additionalSets, setAdditionalSets] = useState([]);
   const [seconds, setSeconds] = useState(0);
-  const [restTime, setRestTime] = useState(0);
+  const [restTime, setRestTime] = useState('');
   const [weights, setWeights] = useState([]);
   const [selectedSetKey,setSelectedSetKey] = useState('');
 
@@ -113,8 +113,32 @@ export default function Squat({ navigation, route }) {
   );
 
   useMemo(() => {
-    setSeconds(60 * restTime)
-  }, [restTime])
+    let _resttime = convertToSeconds(restTime)
+    setSeconds(_resttime)
+  }, [restTime,selectedSetKey])
+  
+  function convertToSeconds(time) {
+    if(time){
+    // Split the time string into minutes and seconds
+    let [minutes, seconds] = time.split(':');
+    
+    // If seconds are missing, set them to "00"
+    if (seconds === undefined) {
+        seconds = "00";
+    }
+    
+    // Convert minutes and seconds to numbers
+    minutes = Number(minutes);
+    seconds = Number(seconds);
+    
+    // Convert minutes to seconds and add the remaining seconds
+    const totalSeconds = (minutes * 60) + seconds;
+    
+    return totalSeconds;
+  }
+  else
+   return 0
+}
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -162,14 +186,14 @@ export default function Squat({ navigation, route }) {
     setIsChecked(newIsChecked);
     
     let isDisableRest  = disableRest?.includes(index);
-    if (!isDisableRest && !valueIncludes && set?.rest_time && set?.rest_time != 0) {
+    if (!isDisableRest && !valueIncludes && set?.rest_time && set?.rest_time != "") {
       setSelectedSetKey(index);
-      setRestTime(parseInt(set?.rest_time))
+      setRestTime(set?.rest_time)
       // onPressReset(set?.rest_time);
     }
     else{
       setSelectedSetKey('');
-      setRestTime(parseInt(0))
+      setRestTime('')
     }
   };
 
@@ -426,7 +450,7 @@ export default function Squat({ navigation, route }) {
           <View style={[styles.categoryContainer,{justifyContent:'center'}]}>
           <View style={styles.dividerStyle} />
             <RenderSquare
-              title={`${exercise?.lbs || 0}x${exercise?.no_of_sets}`}
+              title={`${exercise?.lbs || 0}x${exercise?.sets?.length }`}
               desc="Reps"
               icon={require("../../../assets/images/squatsIcon3.png")}
             />
@@ -464,7 +488,7 @@ export default function Squat({ navigation, route }) {
               {exercise?.rir &&
               <>
                 <RenderSquare
-                  title="2"
+                  title={exercise?.rir}
                   desc="RIR"
                   icon={require("../../../assets/images/squatsIcon1.png")}
                 />

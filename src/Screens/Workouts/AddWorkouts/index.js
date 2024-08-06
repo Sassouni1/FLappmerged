@@ -47,11 +47,12 @@ const AddWorkouts = () => {
   const handleDateChange = (selectedDate) => {
     setDate(selectedDate);
     dispatch(setLoader(true));
-    getSingleExcercise(date);
+    getSingleExcercise(selectedDate);
   };
 
   const getSingleExcercise = async (selectedDate) => {
     try {
+      setAssigWorkout({});
       const res = await ApiCall({
         route: `assignProgram/given-date-workouts/${
           user?.plan_id
@@ -60,10 +61,10 @@ const AddWorkouts = () => {
         token: token,
       });
       if (res?.status == "200") {
-        console.log(
-          "respone of add workoutss..",
-          res?.response?.Workout[0].innerWorkout[0]
-        );
+        // console.log(
+        //   "respone of add workoutss..",
+        //   res?.response?.Workout[0].innerWorkout[0]
+        // );
         setWorkout(res?.response?.Workout[0]);
         setAssigWorkout(res?.response?.Workout[0]?.innerWorkout[0]);
         setExercises(res?.response?.Workout[0]?.innerWorkout[0]?.exercise)
@@ -109,6 +110,7 @@ const AddWorkouts = () => {
 
   useFocusEffect(
     React.useCallback(() => {
+      setDate(date);
       dispatch(setLoader(true));
       exerciseProgress(date);
       getSingleExcercise(date);

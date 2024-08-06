@@ -1,6 +1,7 @@
 import {
   Dimensions,
   ImageBackground,
+  Image,
   Platform,
   SafeAreaView,
   SectionList,
@@ -33,7 +34,6 @@ import session from "redux-persist/lib/storage/session";
 const defaultDropDownValue = "Last 7 Days";
 
 export default function TrainingStats({ navigation }) {
-  const [sliderValue, setSliderValue] = React.useState(200);
   const [value, setValue] = React.useState("");
 
   const dispatch = useDispatch();
@@ -292,6 +292,7 @@ export default function TrainingStats({ navigation }) {
 
   const [assigWorkout, setAssigWorkout] = useState([]);
   const user = useSelector((state) => state.auth.userData);
+  const [sliderValue, setSliderValue] = React.useState([user?.weight,user?.target_weight]);
   const token = useSelector((state) => state.auth.userToken);
 
   const onChangeDropDown = (selectedType,section) => {
@@ -1556,7 +1557,6 @@ export default function TrainingStats({ navigation }) {
     }
   };
 
-  const onChangeSlider = (value) => setSliderValue(value);
 
   const renderItem = (item) => {
     return (
@@ -1583,13 +1583,22 @@ export default function TrainingStats({ navigation }) {
     );
   };
 
-  const CustomMarker = ({ currentValue }) => {
+  const CustomMarkerLeft = ({currentValue }) => {
     return (
       <View style={styles.customMarkerStyle}>
         <Text style={styles.sliderTextStyle}>{currentValue}</Text>
       </View>
     );
   };
+  const CustomMarkerRight = ({currentValue }) => {
+    return (
+      <View style={styles.targetMarkerContainer}>
+        <Text style={styles.targetMarkerTextStyle}>{"Weight Goal: "+ currentValue}</Text>
+        <Image  style={styles.targetMarker} source={require("../../assets/images/down-arrow.png")}/>
+      </View>
+    );
+  };
+
 
   const RenderDropdown = ({value,section}) => {
     return (
@@ -1835,18 +1844,22 @@ export default function TrainingStats({ navigation }) {
           <Text style={styles.lbsTextStyle}>Lbs</Text>
         </View>
         <MultiSLider
-          value={sliderValue}
-          onValueChange={onChangeSlider}
+          values={sliderValue}
+          onValuesChangeFinish={(values)=>setSliderValue(values)}
           trackStyle={styles.sliderStyle}
-          customMarker={(e) => <CustomMarker currentValue={e.currentValue} />}
-          min={100}
-          max={500}
+          customMarkerLeft={(e) => <CustomMarkerLeft currentValue={e.currentValue} />}
+          customMarkerRight={(e) => <CustomMarkerRight  currentValue={e.currentValue} />}
+          isMarkersSeparated={true}
+          min={80}
+          max={450}
           sliderLength={getWidth(90)}
           markerOffsetY={0}
           step={1}
-          selectedStyle={{ backgroundColor: colors.green }}
+          allowOverlap={true}
+          selectedStyle={{ backgroundColor: colors.orange }}
         />
-        <TouchableOpacity>
+     
+        <TouchableOpacity onPress={()=>{setSliderValue([user?.weight,user?.target_weight])}}>
           <Text style={styles.updateTextStyle}>Update Weight</Text>
         </TouchableOpacity>
       </View>
@@ -2038,13 +2051,13 @@ const styles = StyleSheet.create({
   },
   sliderStyle: {
     height: getHeight(2),
-    borderRadius: 40,
+    borderRadius: 20,
     backgroundColor: colors.orange,
   },
   customMarkerStyle: {
     paddingHorizontal: getWidth(2.5),
     height: getHeight(4),
-    width: getWidth(12),
+    width: getWidth(11),
     backgroundColor: colors.green,
     borderRadius: 3,
     marginTop: getHeight(2),
@@ -2052,6 +2065,21 @@ const styles = StyleSheet.create({
     borderColor: colors.white,
     alignItems: "center",
     justifyContent: "center",
+  },
+  targetMarkerContainer:{
+    width: getWidth(10),
+  },
+  targetMarker:{
+    height: getHeight(2),
+    width: getWidth(5),
+    alignSelf:'center',
+    marginBottom:34,
+  },
+  targetMarkerTextStyle:{
+    textAlign:'center',
+    fontSize: getFontSize(1),
+    color: colors.black,
+    fontFamily: fonts.WB,
   },
   sliderTextStyle: {
     fontSize: getFontSize(1.3),

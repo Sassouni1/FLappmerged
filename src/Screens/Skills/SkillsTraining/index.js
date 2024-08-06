@@ -7,9 +7,12 @@ import {
   View,
   SafeAreaView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { ApiCall } from "../../../Services/Apis";
+import {useDispatch, useSelector } from "react-redux";
+import { setLoader } from "../../../Redux/actions/GernalActions";
 
 // Local Imports
 import GeneralStatusBar from "../../../Components/GeneralStatusBar";
@@ -23,12 +26,38 @@ import { fonts } from "../../../constants/fonts";
 
 export default function SkillsTraining({ navigation }) {
   const [selectedTab, setSelectedTab] = useState(0);
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.userToken);
+  const [skills,setSkills] = useState();
 
   const onPressTab = (id) => {
     if (id === 1) {
       navigation.navigate("TrainingStats");
     }
     setSelectedTab(id);
+  };
+
+  useEffect(() => {
+    getSkills();
+  }, []);
+
+  const getSkills = async () => {
+    try {
+      const res = await ApiCall({
+        route: `skillVideo/active_skill_videos`,
+        verb: "get",
+        token: token,
+      });
+      console.log("list",res?.response?.video_list);
+      if (res?.response) {
+        setSkills(res?.response?.video_list);
+        dispatch(setLoader(false));
+      } else {
+        dispatch(setLoader(false));
+      }
+    } catch (e) {
+      console.log("api get skill errorrrr -- ", e.toString());
+    }
   };
 
   const onPressSearch = () => navigation.navigate("SearchWorkout");
@@ -64,12 +93,12 @@ export default function SkillsTraining({ navigation }) {
     <TouchableOpacity onPress={onPressDetail} style={styles.container1Style}>
       <View style={styles.rowContainer}>
         <Image
-          source={require("../../../assets/images/home1.png")}
+          source={{uri:item?.parent_Image}}
           style={styles.imageSTyle}
         />
         <View style={{ gap: getHeight(1), flex: 1 }}>
           <View style={styles.categoryContainer}>
-            <Text style={styles.categoryTextStyle}>Category</Text>
+            <Text style={styles.categoryTextStyle}>{item?.parent_title}</Text>
           </View>
           <Text style={styles.titleSTyle} numberOfLines={1}>
             Category
@@ -146,6 +175,8 @@ export default function SkillsTraining({ navigation }) {
   );
 
   const renderItem = ({ item }) => {
+    return <RenderSkillItem item={item} />;
+
     if (item.type === "skill") {
       return <RenderSkillItem item={item} />;
     } else if (item.type === "popularSkill") {
@@ -178,10 +209,9 @@ export default function SkillsTraining({ navigation }) {
     <View style={styles.root}>
       {RenderHeader()}
       <FlatList
-        data={data}
+        data={skills}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        // stickyHeaderIndices={[0]}
+        keyExtractor={(item) => item._id}
         contentContainerStyle={{ paddingBottom: getHeight(4) }}
       />
     </View>
