@@ -28,7 +28,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { setLoader } from "../../Redux/actions/GernalActions";
 import { ApiCall } from "../../Services/Apis";
 import SelectDropdown from "react-native-select-dropdown";
-import session from "redux-persist/lib/storage/session";
+// import session from "redux-persist/lib/storage/session";
 
 
 const defaultDropDownValue = "Last 7 Days";

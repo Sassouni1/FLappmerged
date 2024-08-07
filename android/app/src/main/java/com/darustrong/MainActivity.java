@@ -1,4 +1,4 @@
-package com.darustrong;
+package com.app.fightlife;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
