@@ -37,6 +37,8 @@
 	<string>This app requires access to your camera to allow you to take photos and videos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app requires access to your photo library to allow you to upload photos.</string>
+	<key>App Uses Non-Exempt Encryption</key>
+	<false/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>icon.ttf</string>
