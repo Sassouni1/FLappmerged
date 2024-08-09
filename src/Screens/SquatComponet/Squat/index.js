@@ -65,7 +65,7 @@ export default function Squat({ navigation, route }) {
   const onPressBack = () => {
     navigation.goBack();
   };
-  const {exercise,workout} = route?.params;
+  const {exercise,workout,task} = route?.params;
   const user = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
 
@@ -254,7 +254,20 @@ export default function Squat({ navigation, route }) {
     }
     setAdditionalSets((prevItems) => [...prevItems, newItem]);
   }
-
+  const findMaxReps = (exercise) => {
+    try {
+      const sets = exercise?.sets;
+      if (sets) {
+        const maxReps = Math.max(...sets?.map(set => Number(set.reps)));
+        return maxReps;
+      }
+      else
+        return 0
+    }
+    catch {
+      return 0;
+    }
+  }
   const singleSetComplete = async ( set,weight ) => {
     try {
       dispatch(setLoader(true));
@@ -314,8 +327,8 @@ export default function Squat({ navigation, route }) {
     );
   };
 
-  const RenderCategory = ({no,set, reps, isSuccess = true, isBottom = true,isAdditional }) => {
-    const uniqueKey = isAdditional ? 'additionalSet'+no : 'set'+no;
+  const RenderCategory = ({no,set, reps, isSuccess = true, isBottom = true,isAdditional,addon='' }) => {
+    const uniqueKey = isAdditional ? 'additionalSet'+no : addon+'set'+no;
     return (
       <View key={no} style={styles.mainContainer}>
         <View style={styles.outerContainer}>
@@ -341,6 +354,7 @@ export default function Squat({ navigation, route }) {
               style={{ width: getWidth(15),textAlign:'center', letterSpacing: 2, paddingTop: 0, paddingBottom: 0, }}
               placeholder="--------"
               keyboardType="numeric"
+              onBlur = {(event)=>{handleSubmitEditing(event,uniqueKey)}}
               onSubmitEditing={(event)=>{handleSubmitEditing(event,uniqueKey)}}
               returnKeyType="done"
             />
@@ -374,38 +388,98 @@ export default function Squat({ navigation, route }) {
       </View>
     );
   };
+ const RenderExercise = ({exercise,addon}) =>{
+  return(
+    <View>
+              {/* Exercise Video */}
+              <View>
+                <VideoSkills
+                  data={{ video: exercise?.video, Name: exercise?.exercise_name }}
+                />
+                <TouchableOpacity
+                  onPress={onPressBack}
+                  style={[styles.headerBtnStyle, { position: 'absolute', top: 10, left: 10 }]}
+                >
+                  <Ionicons
+                    name="chevron-back"
+                    size={getFontSize(2.5)}
+                    color={colors.black}
+                  />
+                </TouchableOpacity>
+              </View>
+              {/* Exercise bulets */}
+              <View style={[styles.categoryContainer, { justifyContent: 'center' }]}>
+                <View style={styles.dividerStyle} />
+                <RenderSquare
+                  title={`${exercise?.sets?.length}x${findMaxReps(exercise)}`}
+                  desc="Reps"
+                  icon={require("../../../assets/images/squatsIcon3.png")}
+                />
+                <View style={styles.dividerStyle} />
+                {exercise?.tempo &&
+                  <>
+                    <RenderSquare
+                      title={exercise?.tempo}
+                      desc="Tempo"
+                      icon={require("../../../assets/images/squatsIcon2.png")}
+                    />
+                    <View style={styles.dividerStyle} />
+                  </>
+                }
+                {exercise?.max &&
+                  <>
+                    <RenderSquare
+                      title={exercise?.max}
+                      desc="Max"
+                      icon={require("../../../assets/images/squatsIcon1.png")}
+                    />
+                    <View style={styles.dividerStyle} />
+                  </>
+                }
+                {exercise?.rpe &&
+                  <>
+                    <RenderSquare
+                      title={exercise?.rpe}
+                      desc="RPE"
+                      icon={require("../../../assets/images/squatsIcon1.png")}
+                    />
+                    <View style={styles.dividerStyle} />
+                  </>
+                }
+                {exercise?.rir &&
+                  <>
+                    <RenderSquare
+                      title={exercise?.rir}
+                      desc="RIR"
+                      icon={require("../../../assets/images/squatsIcon1.png")}
+                    />
+                    <View style={styles.dividerStyle} />
+                  </>
+                }
 
+              </View>
+              {/* Exercise Note */}
+              <View style={{ alignItems: 'center' }}>
+                <Text style={{ ...styles.text, fontFamily: fonts.UBo, textAlign: 'center' }}>
+                  {exercise?.notes}
+                </Text>
+                <View style={[styles.rowDividerSTyle, { marginVertical: 10 }]} />
+              </View>
+              {/* Workout Sets*/}
+              <View style={styles.rowContainerSTyle}>
+                <View style={styles.rowDividerSTyle} />
+                <Text style={styles.workingSetSTyle}>{exercise?.sets?.length > 1 ? exercise?.sets?.length + " WORKING SETS" : exercise?.sets?.length + " WORKING SET"}</Text>
+                <View style={styles.rowDividerSTyle} />
+              </View>
+              {exercise?.sets?.map((item, index) => (
+                <RenderCategory key={index + 1} set={item} no={index + 1} reps={item?.reps || 0} isSuccess={true} isAdditional={false} addon={addon} />
+              ))}
+            </View> 
+  )
+ }
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
-      {/* {showTimer && <Timer isVisible={showTimer} onTimerEnd={handleTimerEnd} />} */}
       {isVisible ? (
-        // <View style={{ backgroundColor: colors.white, flex: 1 }}>
-        //   <View
-        //     style={{
-        //       justifyContent: "center",
-        //       alignItems: "center",
-        //       flex: 1,
-        //       flexDirection: "column",
-        //     }}
-        //   >
-        //     <Text
-        //       style={{
-        //         ...styles.text,
-        //         fontSize: getFontSize(3.5),
-        //         fontFamily: fonts.UBo,
-        //       }}
-        //     >
-        //       Are you ready?
-        //     </Text>
-        //     <View style={{ ...styles.headerTime, marginTop: getFontSize(1) }}>
-        //       <Text style={{ ...styles.text, fontFamily: fonts.UBo }}>00:</Text>
-        //       <Text style={{ ...styles.text, fontFamily: fonts.UBo }}>
-        //         {readySeconds.toString().padStart(2, "0")}
-        //       </Text>
-        //     </View>
-        //   </View>
-        // </View>
-
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
           <View
             style={{
@@ -432,85 +506,18 @@ export default function Squat({ navigation, route }) {
         </SafeAreaView>
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View>
-            <VideoSkills
-              data={{ video: exercise?.video, Name: exercise?.exercise_name }}
-            />
-            <TouchableOpacity
-              onPress={onPressBack}
-              style={[styles.headerBtnStyle,{position:'absolute',top:10,left:10}]}
-            >
-              <Ionicons
-                name="chevron-back"
-                size={getFontSize(2.5)}
-                color={colors.black}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={[styles.categoryContainer,{justifyContent:'center'}]}>
-          <View style={styles.dividerStyle} />
-            <RenderSquare
-              title={`${exercise?.lbs || 0}x${exercise?.sets?.length }`}
-              desc="Reps"
-              icon={require("../../../assets/images/squatsIcon3.png")}
-            />
-            <View style={styles.dividerStyle} />
-              {exercise?.tempo &&
-                <>
-                  <RenderSquare
-                    title={exercise?.tempo}
-                    desc="Tempo"
-                    icon={require("../../../assets/images/squatsIcon2.png")}
-                  />
-                  <View style={styles.dividerStyle} />
-                </>
-              }
-              {exercise?.max &&
-                <>
-                  <RenderSquare
-                    title={exercise?.max}
-                    desc="Max"
-                    icon={require("../../../assets/images/squatsIcon1.png")}
-                  />
-                  <View style={styles.dividerStyle} />
-                </>
-              }
-              {exercise?.rpe &&
-                <>
-                  <RenderSquare
-                    title={exercise?.rpe}
-                    desc="RPE"
-                    icon={require("../../../assets/images/squatsIcon1.png")}
-                  />
-                  <View style={styles.dividerStyle} />
-                </>
-              }
-              {exercise?.rir &&
-              <>
-                <RenderSquare
-                  title={exercise?.rir}
-                  desc="RIR"
-                  icon={require("../../../assets/images/squatsIcon1.png")}
-                />
-                <View style={styles.dividerStyle} />
-                </>
-              }
-           
-          </View>
-            <View style={{ alignItems: 'center' }}>
-              <Text style={{ ...styles.text, fontFamily: fonts.UBo, textAlign: 'center' }}>
-                {exercise?.notes}
-              </Text>
-              <View style={[styles.rowDividerSTyle,{marginVertical:10}]} />
-            </View>
-          <View style={styles.rowContainerSTyle}>
-            <View style={styles.rowDividerSTyle} />
-            <Text style={styles.workingSetSTyle}>{exercise?.sets?.length > 1 ? exercise?.sets?.length + " WORKING SETS" : exercise?.sets?.length + " WORKING SET"}</Text>
-            <View style={styles.rowDividerSTyle} />
-          </View>
-            {exercise?.sets?.map((item, index) => (
-              <RenderCategory key={index+1}  set={item} no={index+1} reps={item?.reps || 0} isSuccess={true} isAdditional={false} />
-            ))}
+            {task ?
+              task?.map((item, index) => (
+                <View>
+                <RenderExercise key={index} exercise={item} addon={'task'+index} />
+                  {task?.length != index + 1 &&
+                    <View style={styles.divider} />
+                  }
+                </View>
+              ))
+              :
+              <RenderExercise exercise={exercise} />
+            }
 
             {additionalSets?.length > 0 &&
               <View>
@@ -781,4 +788,10 @@ const styles = StyleSheet.create({
     fontFamily: fonts.WMe,
     marginRight: getWidth(2),
   },
+  divider: {
+    borderWidth: 5,
+    backgroundColor: colors.orange,
+    borderColor: colors.orange,
+    marginVertical: 10
+  }
 });

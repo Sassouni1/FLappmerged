@@ -61,10 +61,10 @@ const AddWorkouts = () => {
         token: token,
       });
       if (res?.status == "200") {
-        // console.log(
-        //   "respone of add workoutss..",
-        //   res?.response?.Workout[0].innerWorkout[0]
-        // );
+        console.log(
+          "exercise..",
+          res?.response?.Workout[0].innerWorkout[0]
+        );
         setWorkout(res?.response?.Workout[0]);
         setAssigWorkout(res?.response?.Workout[0]?.innerWorkout[0]);
         setExercises(res?.response?.Workout[0]?.innerWorkout[0]?.exercise)
@@ -92,11 +92,11 @@ const AddWorkouts = () => {
       });
 
       if (res?.status == "200") {
-        console.log(
-          "workouts progress response",
-          res?.response?.workoutProgress,
-          selectedDate
-        );
+        // console.log(
+        //   "workouts progress response",
+        //   res?.response?.workoutProgress,
+        //   selectedDate
+        // );
         setUserWorkoutProgress(res?.response?.workoutProgress)
         dispatch(setLoader(false));
       } else {
@@ -159,6 +159,165 @@ const AddWorkouts = () => {
 
     setCustomDatesStyles(dates);
   }, [userWorkoutProgress]);
+
+  const renderItem = (item, index) => (
+    <TouchableOpacity
+      style={{
+        backgroundColor: "#F3F3F4",
+        borderRadius: 25,
+        width: "100%",
+        alignItems: "center",
+        marginTop: 10,
+        flexDirection: "row",
+        padding: 10,
+      }}
+      onPress={() => {
+        navigation.navigate("Squat", {
+          exercise: item,
+          workout: workout,
+          task:null
+        })
+      }}
+      activeOpacity={0.8}
+    >
+      <Image
+        source={{ uri: item?.video_thumbnail }}
+        style={{
+          width: 90,
+          height: 90,
+        }}
+      />
+      <Image
+        source={require("../../../assets/images/exersiseplaybtn.png")}
+        style={{
+          width: 50,
+          height: 50,
+          position: "absolute",
+          right: 20,
+        }}
+      />
+      <View
+        style={{
+          flexDirection: "column",
+          gap: 6,
+          marginLeft: 15,
+          alignItems: "flex-start",
+        }}
+      >
+        <Text
+          style={{
+            color: "#676C75",
+          }}
+        >
+          {`Exercise ${index + 1}`}
+        </Text>
+        <Text
+          style={{
+            fontWeight: "700",
+            width: 120,
+            fontSize: 20,
+          }}
+        >
+          {item?.exercise_name}
+        </Text>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 4,
+          }}
+        >
+          <Image
+            source={require("../../../assets/images/workoutsclockicon.png")}
+            style={{ height: 20, width: 20 }}
+          />
+          <Text>5:30</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  )
+  const renderMergedItem = (parentitem, parentIndex) => (
+    parentitem?.task?.map((item, index) => (
+      <TouchableOpacity
+      style={{
+        backgroundColor: "#F3F3F4",
+        borderRadius: 25,
+        width: "100%",
+        alignItems: "center",
+        marginTop: 10,
+        flexDirection: "row",
+        padding: 10,
+      }}
+      onPress={() => {
+        navigation.navigate("Squat", {
+          exercise: item,
+          workout: workout,
+          task:parentitem?.task
+        })
+      }}
+      key={index}
+      activeOpacity={0.8}
+    >
+      <Image
+        source={{ uri: item?.video_thumbnail }}
+        style={{
+          width: 90,
+          height: 90,
+        }}
+      />
+      <Image
+        source={require("../../../assets/images/exersiseplaybtn.png")}
+        style={{
+          width: 50,
+          height: 50,
+          position: "absolute",
+          right: 20,
+        }}
+      />
+      <View
+        style={{
+          flexDirection: "column",
+          gap: 6,
+          marginLeft: 15,
+          alignItems: "flex-start",
+        }}
+      >
+        <Text
+          style={{
+            color: "#676C75",
+          }}
+        >
+          {`Exercise ${index + 1}`}
+        </Text>
+        <Text
+          style={{
+            fontWeight: "700",
+            width: 120,
+            fontSize: 20,
+          }}
+        >
+          {item?.exercise_name}
+        </Text>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 4,
+          }}
+        >
+          <Image
+            source={require("../../../assets/images/workoutsclockicon.png")}
+            style={{ height: 20, width: 20 }}
+          />
+          <Text>5:30</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+    ))
+  )
+  
 
   return (
     <View style={{flex: 1,marginTop: getFontSize(1)}}>
@@ -422,80 +581,7 @@ const AddWorkouts = () => {
         )}
         renderItem={({ item, index }) => {
           return (
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#F3F3F4",
-                borderRadius: 25,
-                width: "100%",
-                alignItems: "center",
-                marginTop: 10,
-                flexDirection: "row",
-                padding: 10,
-              }}
-              onPress={() => {
-                navigation.navigate("Squat", {
-                  exercise: item,
-                  workout:workout
-                })
-              }}
-              activeOpacity={0.8}
-            >
-              <Image
-                source={{ uri: item?.video_thumbnail }}
-                style={{
-                  width: 90,
-                  height: 90,
-                }}
-              />
-              <Image
-                source={require("../../../assets/images/exersiseplaybtn.png")}
-                style={{
-                  width: 50,
-                  height: 50,
-                  position: "absolute",
-                  right: 20,
-                }}
-              />
-              <View
-                style={{
-                  flexDirection: "column",
-                  gap: 6,
-                  marginLeft: 15,
-                  alignItems: "flex-start",
-                }}
-              >
-                <Text
-                  style={{
-                    color: "#676C75",
-                  }}
-                >
-                  {`Exercise ${index + 1}`}
-                </Text>
-                <Text
-                  style={{
-                    fontWeight: "700",
-                    width: 120,
-                    fontSize: 20,
-                  }}
-                >
-                  {item?.exercise_name}
-                </Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 4,
-                  }}
-                >
-                  <Image
-                    source={require("../../../assets/images/workoutsclockicon.png")}
-                    style={{ height: 20, width: 20 }}
-                  />
-                  <Text>5:30</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
+            item?.exercise_name  ? renderItem(item,index) : renderMergedItem(item,index)
           );
         }}
       />
