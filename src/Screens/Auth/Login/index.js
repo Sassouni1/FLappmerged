@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Text, View, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { Text, View, TouchableOpacity, Image, StyleSheet,ScrollView } from "react-native";
 import { TextInput } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { validateFields } from "../../../../utils/validation/validate-fields";
@@ -49,7 +49,7 @@ const Login = ({ navigation }) => {
   };
   const changeHandler = (type, value) => setState({ ...state, [type]: value });
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Image
         source={require("../../../assets/images/jakajake.jpg")}
         style={styles.backgroundImage}
@@ -181,7 +181,7 @@ const Login = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.socialContainer}>
+        {/* <View style={styles.socialContainer}>
           <TouchableOpacity style={styles.socialButton}>
             <Image
               source={require("../../../assets/images/SocialIcons.png")}
@@ -200,13 +200,13 @@ const Login = ({ navigation }) => {
               style={styles.socialIcon}
             />
           </TouchableOpacity>
-        </View>
+        </View> */}
 
-        <View style={styles.footerContainer}>
+        {/* <View style={styles.footerContainer}>
           <Text style={styles.footerText}>Don't have an account? Sign Up</Text>
-        </View>
+        </View> */}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

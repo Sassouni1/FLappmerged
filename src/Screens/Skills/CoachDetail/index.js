@@ -10,20 +10,19 @@ import { colors } from "../../../constants/colors";
 import { fonts } from "../../../constants/fonts";
 import CKeyBoardAvoidWrapper from "../../../Components/Common/CKeyBoardAvoidWrapper";
 
-export default function CoachDetail({ navigation }) {
-  const onPressDetail = () => navigation.navigate("WorkoutDetail");
+export default function CoachDetail({ navigation,route }) {
+  const {selectedSkill,selectedCoach} = route?.params;
 
+  const onPressDetail = (selectedVideo) => navigation.navigate("WorkoutDetail",{selectedVideo:selectedVideo});
   const onPressPlay = () => navigation.navigate("LessonComplete");
-
-  const onPressStart = () => navigation.navigate("WorkoutDetail");
-
+  const onPressStart = () => {};
   const onPressBack = () => navigation.goBack();
 
   const RenderItem = ({ item }) => {
     return (
-      <TouchableOpacity onPress={onPressDetail} style={styles.container1Style}>
+      <TouchableOpacity onPress={()=>{onPressDetail(item)}} style={styles.container1Style}>
         <View style={[styles.rowContainer, { flex: 1 }]}>
-          <Image source={require("../../../assets/images/home1.png")} style={styles.imageSTyle} />
+          <Image source={{uri:item?.video_thumbnail}} style={styles.imageSTyle} />
           <View
             style={{
               gap: getHeight(1.5),
@@ -34,7 +33,7 @@ export default function CoachDetail({ navigation }) {
               Foundations
             </Text>
             <Text style={styles.titleSTyle} numberOfLines={1}>
-              Category
+              {item?.title}
             </Text>
             <View style={styles.rowContainer}>
               <MaterialIcons name="watch-later" size={getFontSize(2)} color={colors.graytext4} />
@@ -54,7 +53,7 @@ export default function CoachDetail({ navigation }) {
   return (
     <CKeyBoardAvoidWrapper containerStyle={{ flexGrow: 1 }}>
       <View style={styles.root}>
-        <ImageBackground source={require("../../../assets/images/home1.png")} style={styles.topContainer}>
+        <ImageBackground source={{uri:selectedCoach?.folder_Image}} style={styles.topContainer}>
           <GeneralStatusBar
             barStyle="light-content"
             hidden={false}
@@ -78,22 +77,22 @@ export default function CoachDetail({ navigation }) {
             </TouchableOpacity>
           </View>
           <View style={styles.categoryTitleContainer}>
-            <Text style={styles.cTextStyle}>Boxing Lessons</Text>
+            <Text style={styles.cTextStyle}>{selectedSkill?.parent_title}</Text>
           </View>
-          <Text style={styles.headerTextStyles}>Jeff Mayweather</Text>
+          <Text style={styles.headerTextStyles}>{selectedCoach?.folder_title}</Text>
           <Text style={styles.beginSTyle}>Let’s Begin</Text>
         </ImageBackground>
         <View style={styles.bottomContainer}>
           <Text style={styles.descTextStyle}>
-            Here you will learn how to master the foundations & the art of boxing.
+           {selectedCoach?.folder_description}
           </Text>
           <View style={styles.subHeaderStyle}>
             <Text style={styles.subHeaderTestStyle}>The Foundations</Text>
           </View>
           <FlatList
-            data={[1, 2, 3]}
+            data={selectedCoach?.videos}
             renderItem={RenderItem}
-            keyExtractor={(item) => item.toString()}
+            keyExtractor={(item) => item._id.toString()}
             scrollEnabled={false}
           />
           <TouchableOpacity onPress={onPressStart} style={styles.nextBtnStyle}>

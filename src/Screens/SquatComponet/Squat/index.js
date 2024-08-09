@@ -508,8 +508,8 @@ export default function Squat({ navigation, route }) {
         <ScrollView showsVerticalScrollIndicator={false}>
             {task ?
               task?.map((item, index) => (
-                <View>
-                <RenderExercise key={index} exercise={item} addon={'task'+index} />
+                <View key={index}>
+                <RenderExercise  exercise={item} addon={'task'+index} />
                   {task?.length != index + 1 &&
                     <View style={styles.divider} />
                   }

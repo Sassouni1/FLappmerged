@@ -48,7 +48,7 @@ export default function SkillsTraining({ navigation }) {
         verb: "get",
         token: token,
       });
-      console.log("list",res?.response?.video_list);
+      console.log("list",res?.response?.video_list[0].child_folder[0]);
       if (res?.response) {
         setSkills(res?.response?.video_list);
         dispatch(setLoader(false));
@@ -60,8 +60,22 @@ export default function SkillsTraining({ navigation }) {
     }
   };
 
+  const getLessonsCount = (dataArray) => {
+    let totalVideos = 0;
+    if (dataArray) {
+      totalVideos = dataArray.reduce((total, item) => {
+        return total + item?.videos?.length;
+      }, 0);
+    }
+
+    return totalVideos;
+  }
+
   const onPressSearch = () => navigation.navigate("SearchWorkout");
-  const onPressDetail = () => navigation.navigate("CoachDetail");
+
+  const onPressDetail = (selectedSkill,selectedCoach) => {
+    navigation.navigate("CoachDetail",{selectedSkill:selectedSkill,selectedCoach:selectedCoach})
+  };
   const onPressCategory = () => navigation.navigate("Squat");
 
   const RenderHeader = () => (
@@ -90,10 +104,11 @@ export default function SkillsTraining({ navigation }) {
   );
 
   const RenderSkillItem = ({ item }) => (
-    <TouchableOpacity onPress={onPressDetail} style={styles.container1Style}>
+    item?.child_folder?.map((childItem, index) => (
+      <TouchableOpacity key={index} onPress={()=>{onPressDetail(item,childItem)}} style={styles.container1Style}>
       <View style={styles.rowContainer}>
         <Image
-          source={{uri:item?.parent_Image}}
+          source={{uri:childItem?.folder_Image}}
           style={styles.imageSTyle}
         />
         <View style={{ gap: getHeight(1), flex: 1 }}>
@@ -101,13 +116,13 @@ export default function SkillsTraining({ navigation }) {
             <Text style={styles.categoryTextStyle}>{item?.parent_title}</Text>
           </View>
           <Text style={styles.titleSTyle} numberOfLines={1}>
-            Category
+            {childItem?.folder_title}
           </Text>
           <View style={styles.descRowContainer}>
             <View style={styles.rowContainer}>
               <Entypo name="star" size={getFontSize(2)} color={colors.orange} />
               <Text numberOfLines={1} style={styles.lessonTextStyle}>
-                37 lessons
+                {getLessonsCount(item?.child_folder)+ " lessons"}
               </Text>
             </View>
             <Text style={styles.lessonTextStyle}>•</Text>
@@ -118,7 +133,7 @@ export default function SkillsTraining({ navigation }) {
                 color={colors.darkBlue}
               />
               <Text numberOfLines={1} style={styles.lessonTextStyle}>
-                5 Coaches
+                 {item?.child_folder?.length+ " Coaches"}
               </Text>
             </View>
           </View>
@@ -132,6 +147,7 @@ export default function SkillsTraining({ navigation }) {
         />
       </TouchableOpacity>
     </TouchableOpacity>
+    ))
   );
 
   const RenderPopularSkillItem = ({ item }) => (

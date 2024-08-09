@@ -239,6 +239,7 @@ const AddWorkouts = () => {
   )
   const renderMergedItem = (parentitem, parentIndex) => (
     parentitem?.task?.map((item, index) => (
+      <View key={index}>
       <TouchableOpacity
       style={{
         backgroundColor: "#F3F3F4",
@@ -256,7 +257,6 @@ const AddWorkouts = () => {
           task:parentitem?.task
         })
       }}
-      key={index}
       activeOpacity={0.8}
     >
       <Image
@@ -315,6 +315,10 @@ const AddWorkouts = () => {
         </View>
       </View>
     </TouchableOpacity>
+        {parentitem?.task?.length != index + 1 &&
+          <View style={{ height: 40,marginTop:5,alignSelf:'center', width: 8, backgroundColor: colors.black }} />
+        }
+    </View>
     ))
   )
   
