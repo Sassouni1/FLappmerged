@@ -117,6 +117,21 @@ const AddWorkouts = () => {
     }, [])
   );
 
+  const findMaxReps = (exercise) => {
+    try {
+      const sets = exercise?.sets;
+      if (sets) {
+        const maxReps = Math.max(...sets?.map(set => Number(set.reps)));
+        return maxReps;
+      }
+      else
+        return 0
+    }
+    catch {
+      return 0;
+    }
+  }
+
   useEffect(() => {
     console.log("call for check",userWorkoutProgress);
     // Generate styles for each date in the current month
@@ -160,13 +175,64 @@ const AddWorkouts = () => {
     setCustomDatesStyles(dates);
   }, [userWorkoutProgress]);
 
+  const RenderExercise = ({item}) => {
+    return (
+      <View style={{ flex: 1, flexDirection: 'row' }}>
+        <View style={{ flex: 1 }}>
+          <Image
+            source={{ uri: item?.video_thumbnail }}
+            style={{
+              width: '100%',
+              height: 90,
+              resizeMode:'cover',
+              borderRadius:10
+            }}
+          />
+        </View>
+        <View
+          style={{
+            paddingLeft: 10,
+            gap: 6,
+            flex: 2,
+            justifyContent:'center',
+            alignItems: "flex-start",
+          }}
+        >
+          <View style={{flex:3,justifyContent:'flex-end'}}>
+          <Text style={{fontWeight: "700",fontSize: 20,}} >
+            {item?.exercise_name}
+          </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "column",
+              flex:1,
+              justifyContent:'flex-end',
+              alignItems: 'flex-end'
+            }}
+          >
+            <Text>{`Reps: ${item?.sets?.length}x${findMaxReps(item)}`}</Text>
+          </View>
+        </View>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end' }}>
+          <Image
+            source={require("../../../assets/images/exersiseplaybtn.png")}
+            style={{
+              width: 50,
+              height: 50,
+            }}
+          />
+        </View>
+      </View>
+    )
+  }
+
   const renderItem = (item, index) => (
     <TouchableOpacity
       style={{
         backgroundColor: "#F3F3F4",
         borderRadius: 25,
         width: "100%",
-        alignItems: "center",
         marginTop: 10,
         flexDirection: "row",
         padding: 10,
@@ -180,61 +246,7 @@ const AddWorkouts = () => {
       }}
       activeOpacity={0.8}
     >
-      <Image
-        source={{ uri: item?.video_thumbnail }}
-        style={{
-          width: 90,
-          height: 90,
-        }}
-      />
-      <Image
-        source={require("../../../assets/images/exersiseplaybtn.png")}
-        style={{
-          width: 50,
-          height: 50,
-          position: "absolute",
-          right: 20,
-        }}
-      />
-      <View
-        style={{
-          flexDirection: "column",
-          gap: 6,
-          marginLeft: 15,
-          alignItems: "flex-start",
-        }}
-      >
-        <Text
-          style={{
-            color: "#676C75",
-          }}
-        >
-          {`Exercise ${index + 1}`}
-        </Text>
-        <Text
-          style={{
-            fontWeight: "700",
-            width: 120,
-            fontSize: 20,
-          }}
-        >
-          {item?.exercise_name}
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 4,
-          }}
-        >
-          <Image
-            source={require("../../../assets/images/workoutsclockicon.png")}
-            style={{ height: 20, width: 20 }}
-          />
-          <Text>5:30</Text>
-        </View>
-      </View>
+      <RenderExercise item={item} />
     </TouchableOpacity>
   )
   const renderMergedItem = (parentitem, parentIndex) => (
@@ -245,7 +257,6 @@ const AddWorkouts = () => {
         backgroundColor: "#F3F3F4",
         borderRadius: 25,
         width: "100%",
-        alignItems: "center",
         marginTop: 10,
         flexDirection: "row",
         padding: 10,
@@ -259,61 +270,7 @@ const AddWorkouts = () => {
       }}
       activeOpacity={0.8}
     >
-      <Image
-        source={{ uri: item?.video_thumbnail }}
-        style={{
-          width: 90,
-          height: 90,
-        }}
-      />
-      <Image
-        source={require("../../../assets/images/exersiseplaybtn.png")}
-        style={{
-          width: 50,
-          height: 50,
-          position: "absolute",
-          right: 20,
-        }}
-      />
-      <View
-        style={{
-          flexDirection: "column",
-          gap: 6,
-          marginLeft: 15,
-          alignItems: "flex-start",
-        }}
-      >
-        <Text
-          style={{
-            color: "#676C75",
-          }}
-        >
-          {`Exercise ${index + 1}`}
-        </Text>
-        <Text
-          style={{
-            fontWeight: "700",
-            width: 120,
-            fontSize: 20,
-          }}
-        >
-          {item?.exercise_name}
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 4,
-          }}
-        >
-          <Image
-            source={require("../../../assets/images/workoutsclockicon.png")}
-            style={{ height: 20, width: 20 }}
-          />
-          <Text>5:30</Text>
-        </View>
-      </View>
+    <RenderExercise item={item} />
     </TouchableOpacity>
         {parentitem?.task?.length != index + 1 &&
           <View style={{ height: 40,marginTop:5,alignSelf:'center', width: 8, backgroundColor: colors.black }} />
@@ -324,7 +281,7 @@ const AddWorkouts = () => {
   
 
   return (
-    <View style={{flex: 1,marginTop: getFontSize(1)}}>
+    <View style={{flex: 1}}>
       <ReactNativeCalendarStrip
         showMonth={false}
         selectedDate={date}
@@ -335,7 +292,6 @@ const AddWorkouts = () => {
         highlightDateNumberStyle={{ color: 'black' }}
         highlightDateContainerStyle={{
           backgroundColor: 'white',
-          borderWidth: 0,
           width: getWidth(11),
           borderRadius: 13,
         }}
@@ -348,7 +304,7 @@ const AddWorkouts = () => {
       />
 
       <FlatList
-        style={{ marginTop: 40 }}
+        style={{ paddingTop:20 }}
         data={exercises}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}

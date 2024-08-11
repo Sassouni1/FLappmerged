@@ -60,7 +60,7 @@ const Workouts = ({ route }) => {
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
-      <GeneralStatusBar hidden={false} translucent={true} />
+      {/* <GeneralStatusBar hidden={false} translucent={true} /> */}
 
       <View
         style={{
@@ -69,7 +69,7 @@ const Workouts = ({ route }) => {
         }}
       >
         {index === 0 && (
-          <View style={styles.header}>
+          <View style={[styles.header,{marginTop:10}]}>
             <View style={styles.headerLeft}>
               <Image
                 source={require("../../assets/images/workoutsgirlpic.png")}
@@ -120,15 +120,18 @@ const Workouts = ({ route }) => {
               source={require("../../assets/images/guyback.png")}
               style={{
                 width: Dimensions.get("screen").width,
-                height: 360,
-                position: "absolute",
-                top: -60,
+                height: 200,
+                // position: "absolute",
+                borderBottomLeftRadius:15,
+                borderBottomRightRadius:15,
+                borderWidth:10,
+                // top: -60,
                 right: 0,
                 left: -10,
                 resizeMode: "cover",
               }}
             />
-            <View
+            {/* <View
               style={{
                 borderRadius: 30,
                 width: Dimensions.get("screen").width + 5,
@@ -139,7 +142,7 @@ const Workouts = ({ route }) => {
                 right: 0,
                 left: -12,
               }}
-            />
+            /> */}
           </View>
         )}
         <TabView
@@ -166,7 +169,7 @@ const Workouts = ({ route }) => {
                 backgroundColor: "transparent",
               }}
               style={{
-                marginBottom: 10,
+                marginBottom:index ==2 ? 2 : 10,
                 backgroundColor: "#f3f3f4",
                 borderRadius: 15,
               }}

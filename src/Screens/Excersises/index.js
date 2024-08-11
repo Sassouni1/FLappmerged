@@ -32,15 +32,7 @@ const Excercises = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState([]);
 
-  const [allTypes, setAllTypes] = useState([
-    "All Exercises",
-    "Abs",
-    "Back",
-    "Biceps",
-    "Calves",
-    "Chest",
-    "Forearms",
-  ]);
+  const [allTypes, setAllTypes] = useState([]);
 
   const toggleTypeSelection = (selectedType) => {
     setSelectedTypes([selectedType]);
@@ -53,8 +45,8 @@ const Excercises = () => {
       if (selectedTypes.includes("All Exercises")) {
         setFilteredData(data);
       } else {
-        const filtered = data.filter((item) =>
-          selectedTypes.includes(item.type)
+        const filtered = data?.filter((item) =>
+          selectedTypes.includes(item.category)
         );
         setFilteredData(filtered);
       }
@@ -66,8 +58,8 @@ const Excercises = () => {
   }, [selectedTypes]);
 
   useEffect(() => {
-    const filtered = data.filter((item) => {
-      const title = item.title || "";
+    const filtered = data?.filter((item) => {
+      const title = item?.exercise_name || "";
       return (
         title.toUpperCase().includes(searchQuery.toUpperCase()) ||
         title.trim() === ""
@@ -75,7 +67,7 @@ const Excercises = () => {
     });
     setFilteredData(filtered);
     setIsRefreshing(true);
-    if (filtered.length === 0 && searchQuery) {
+    if (filtered?.length === 0 && searchQuery) {
       setInvalidEntry(true);
     } else {
       setInvalidEntry(false);
@@ -86,15 +78,14 @@ const Excercises = () => {
     try {
       const res = await ApiCall({
         params: { category_name: "skill" },
-        route: "exercise/exercise_video",
+        route: "exercise/active_exercises",
         verb: "get",
         token: token,
       });
-
+       console.log("resssss",res?.response?.newData)
       if (res?.status == "200") {
-        console.log("res of exercise video", res?.response);
-        setData(res?.response?.video_list);
-        setFilteredData(res?.response?.video_list);
+        setData(res?.response?.newData);
+        setFilteredData(res?.response?.newData);
         dispatch(setLoader(false));
       } else {
         console.log("error", res?.response);
@@ -107,10 +98,31 @@ const Excercises = () => {
       console.log("api get skill error -- ", e.toString());
     }
   };
+  const getAllCategories = async () => {
+    try {
+      const res = await ApiCall({
+        params: "",
+        route: "category/get_all_categories",
+        verb: "get",
+        token: token,
+      });
+
+      if (res?.status == "200") {
+        console.log("categories",res?.response?.detail)
+        const categoryNames = ['All Exercises', ...res?.response?.detail.map(item => item.category_name)];
+        setAllTypes(categoryNames);
+      } else {
+        console.log("error", res.response);
+      }
+    } catch (e) {
+      console.log("Error getting Categories -- ", e.toString());
+    }
+  };
 
   const handleRefresh = () => {
     dispatch(setLoader(true));
     getSkills();
+    getAllCategories();
     setIsRefreshing(true);
   };
 
@@ -157,7 +169,12 @@ const Excercises = () => {
           <SearchSvg height={20} width={20} style={styles.searchIcon} />
         </View>
         <Text style={styles.searchResultText}>
-          251 results found for "{searchQuery}"
+          {
+            searchQuery ?
+              filteredData?.length + " results found for '" + searchQuery+"'"
+              :
+              ""
+          }
         </Text>
       </View>
       <View style={styles.dropdownContainer}>
@@ -185,11 +202,11 @@ const Excercises = () => {
         />
       </View>
       <View style={styles.listContainer}>
-        {invalidEntry || filteredData.length === 0 ? (
+        {invalidEntry || filteredData?.length === 0 ? (
           <View style={styles.noResultsContainer}>
             <AntDesign name="exclamationcircleo" size={24} color="#676C75" />
             <Text style={styles.noResultsText}>
-              No videos on Exercise found.
+              No Exercise found.
             </Text>
           </View>
         ) : (
@@ -222,8 +239,8 @@ const Excercises = () => {
                   )}
                 </View>
                 <View style={styles.exerciseDetails}>
-                  <Text style={styles.exerciseType}>{item.type}</Text>
-                  <Text style={styles.exerciseTitle}>{item?.title}</Text>
+                  <Text style={styles.exerciseType}>{item?.category}</Text>
+                  <Text style={styles.exerciseTitle}>{item?.exercise_name}</Text>
                 </View>
               </TouchableOpacity>
             )}
