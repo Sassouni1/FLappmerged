@@ -29,7 +29,7 @@ import { setLoader } from "../../Redux/actions/GernalActions";
 import { ApiCall } from "../../Services/Apis";
 import SelectDropdown from "react-native-select-dropdown";
 // import session from "redux-persist/lib/storage/session";
-
+import PopupModal from "../../Components/ErrorPopup";
 
 const defaultDropDownValue = "Last 7 Days";
 
@@ -39,6 +39,17 @@ export default function TrainingStats({ navigation }) {
   const dispatch = useDispatch();
   const [date, setDate] = useState(new Date());
   const { height, width } = Dimensions.get("window");
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user.isAssigned != true)
+        setModalVisible(true);
+    }, [])
+  );
+  const toggleModal = () => {
+      setModalVisible(!isModalVisible);
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -1832,6 +1843,7 @@ export default function TrainingStats({ navigation }) {
 
   return (
     <ScrollView>
+      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
       {TopImageComponent}
       <View style={styles.innerContainerStyle}>
         {TrainingCompletionComponent}

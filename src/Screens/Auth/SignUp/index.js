@@ -4,14 +4,19 @@ import { TextInput } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { validateFields } from "../../../../utils/validation/validate-fields";
 import { useDispatch } from "react-redux";
-import { loginRequest } from "../../../Redux/actions/AuthActions";
+import { loginRequest,setLoginData } from "../../../Redux/actions/AuthActions";
 import validator from "../../../../utils/validation/validator";
 import { setLoader } from "../../../Redux/actions/GernalActions";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useFocusEffect } from "@react-navigation/native";
+import randomstring from 'randomstring';
+import {put} from 'redux-saga/effects';
+import {ApiCall} from '../../../Services/Apis';
 
-const Login = ({ navigation }) => {
+const SignUp = ({ navigation }) => {
   const dispatch = useDispatch();
+  const [hidePass, setHidePass] = useState(true);
+
   const inputRefs = {
     email: useRef(null),
     password: useRef(null),
@@ -32,23 +37,48 @@ const Login = ({ navigation }) => {
       });
     }, [])
   );
-  const [hidePass, setHidePass] = useState(true);
 
-  const login = async () => {
-    const { email, password } = state;
-    const emailError = await validator("email", email);
-    const passwordError = await validator("password", password);
-    if (!emailError && !passwordError) {
-      dispatch(setLoader(true));
-      dispatch(
-        loginRequest({ email: email, password: password, role: "customer" })
-      );
-    } else {
-      dispatch(setLoader(false));
-      setState({ ...state, emailError, passwordError });
-    }
-  };
-  
+    
+    const onClickSignUp = async () => {
+        const { email, password } = state;
+        const emailError = await validator("email", email);
+        const passwordError = await validator("password", password);
+        if (!emailError && !passwordError) {
+            let obj = {
+                email: email,
+                password: password,
+                weight: 0,
+                height: 0
+            }
+            try {
+                dispatch(setLoader(true));
+                const res = await ApiCall({
+                    params: obj,
+                    route: "admin/add_client",
+                    verb: "post",
+                });
+                if (res.status == 200 || res?.response?.message == 'Email already exist') {
+                    dispatch(
+                        loginRequest({ email: email, password: password, role: "customer", isGuestUser: true })
+                    );
+                }
+                else {
+                    dispatch(setLoader(false));
+                }
+            }
+            catch (e) {
+                dispatch(setLoader(false));
+            }
+        } else {
+            dispatch(setLoader(false));
+            setState({ ...state, emailError, passwordError });
+        }
+    };
+  const generateRendomPassword =()=>{
+    const generatedString = randomstring.generate(6);
+    setState({ ...state, password: generatedString });
+  }
+
   const changeHandler = (type, value) => setState({ ...state, [type]: value });
   return (
     <ScrollView style={styles.container}>
@@ -70,7 +100,7 @@ const Login = ({ navigation }) => {
             />
           </View>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>Sign In To Fight Life</Text>
+            <Text style={styles.title}>LogIn as guest user To Fight Life</Text>
             <Text style={styles.subtitle}>Train Like a World Champion</Text>
           </View>
         </View>
@@ -127,6 +157,7 @@ const Login = ({ navigation }) => {
                   label={<Text style={styles.inputPlaceholder}>Password</Text>}
                   theme={{ roundness: 19 }}
                   outlineColor="#F3F3F4"
+                  editable={false}
                   activeOutlineColor="#F3F3F4"
                   style={styles.input}
                   ref={inputRefs.password}
@@ -151,14 +182,12 @@ const Login = ({ navigation }) => {
                       setState({ ...state, passwordError: error })
                     )
                   }
-                  onSubmitEditing={() => login()}
                   onChangeText={(password) =>
                     changeHandler("password", password.trim())
                   }
                   blurOnSubmit={false}
                 />
               </View>
-              {/* <Image source={require('../../../assets/images/Solideye.png')} style={styles.eyeIcon} /> */}
             </View>
           </View>
           {state.passwordError && (
@@ -167,12 +196,12 @@ const Login = ({ navigation }) => {
 
           <TouchableOpacity
             style={styles.forgotPasswordButton}
-            onPress={() => navigation.navigate("ForgotPassword")}
+            onPress={() => generateRendomPassword()}
           >
-            <Text style={styles.forgotPasswordText}>Forgot Password</Text>
+            <Text style={styles.forgotPasswordText}>Generate Password</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={() => login()}>
+          <TouchableOpacity style={styles.button} onPress={() => onClickSignUp()}>
             <View style={styles.buttonContent}>
               <Text style={styles.buttonText}>Sign In</Text>
               <Image
@@ -182,30 +211,8 @@ const Login = ({ navigation }) => {
             </View>
           </TouchableOpacity>
         </View>
-
-        {/* <View style={styles.socialContainer}>
-          <TouchableOpacity style={styles.socialButton}>
-            <Image
-              source={require("../../../assets/images/SocialIcons.png")}
-              style={styles.socialIcon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialButton}>
-            <Image
-              source={require("../../../assets/images/Socialicons-2.png")}
-              style={styles.socialIcon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialButton}>
-            <Image
-              source={require("../../../assets/images/Vector.png")}
-              style={styles.socialIcon}
-            />
-          </TouchableOpacity>
-        </View> */}
-
-        <TouchableOpacity onPress={()=>{navigation.navigate("SignUp")}} style={styles.footerContainer}>
-          <Text style={styles.footerText}>Login as Guest</Text>
+        <TouchableOpacity onPress={()=>{navigation.navigate("Login")}} style={styles.footerContainer}>
+          <Text style={styles.footerText}>Back to Login</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -331,7 +338,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   forgotPasswordButton: {
-    alignSelf: "flex-end",
+    // alignSelf: "flex-end",
     marginBottom: 24,
   },
   forgotPasswordText: {
@@ -397,4 +404,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default SignUp;

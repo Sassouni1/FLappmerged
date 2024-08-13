@@ -12,6 +12,8 @@ import {
 } from "react-native";
 import moment from "moment"; // Import moment for date manipulation
 import Entypo from "react-native-vector-icons/Entypo";
+import PopupModal from "../../Components/ErrorPopup";
+
 const openMyFitnessPal = async () => {
   const myFitnessPalURL = "myfitnesspal://"; // MyFitnessPal URL scheme
   const appStoreURL = "https://apps.apple.com/us/app/myfitnesspal/id341232718"; // MyFitnessPal App Store URL
@@ -39,6 +41,7 @@ import { setLoader } from "../../Redux/actions/GernalActions";
 import { useNavigation } from "@react-navigation/native";
 import { Calendar } from 'react-native-calendars';
 import { colors } from "../../constants/colors";
+import { useFocusEffect } from '@react-navigation/native';
 
 const HomeSc = ({ navigation, route }) => {
   const navigate = useNavigation();
@@ -52,8 +55,19 @@ const HomeSc = ({ navigation, route }) => {
   const [eventDescription,setEventDescription] = useState("");
   const [upComingEvent, setUpcomingEvent] = useState();
   const [todayWorkout,setTodayWorkout] = useState();
+  const [isModalVisible, setModalVisible] = useState(false);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user.isAssigned != true)
+        setModalVisible(true);
+    }, [])
+  );
+  const toggleModal = () => {
+      setModalVisible(!isModalVisible);
+  };
 
+  
   const handleDayPress = (day) => {
     let find = events?.find(x=> getFormattedDate(x.start) == day.dateString);
     if (find)
@@ -224,6 +238,7 @@ const HomeSc = ({ navigation, route }) => {
 
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps={"handled"}>
+      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
       <View style={styles.header}>
         <Image
           source={require("../../assets/images/HomeTopBack.png")}

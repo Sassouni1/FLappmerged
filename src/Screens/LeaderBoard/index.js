@@ -16,9 +16,24 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from "../../constants/colors";
 import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
 import { fonts } from "../../constants/fonts";
+import PopupModal from "../../Components/ErrorPopup";
+import { useFocusEffect } from '@react-navigation/native';
+import { useSelector } from "react-redux";
 
 export default function Achievements({ navigation }) {
   const [selectedTab, setSelectedTab] = useState(0);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const user = useSelector((state) => state.auth.userData);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user.isAssigned != true)
+        setModalVisible(true);
+    }, [])
+  );
+  const toggleModal = () => {
+      setModalVisible(!isModalVisible);
+  };
 
   const onPressTab = (id) => {
     setSelectedTab(id);
@@ -90,6 +105,8 @@ export default function Achievements({ navigation }) {
   return (
     // <SafeAreaView style={styles.root}>
       <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
+
         <ImageBackground
           source={require("../../assets/images/home1.png")}
           style={styles.imageBgStyle}

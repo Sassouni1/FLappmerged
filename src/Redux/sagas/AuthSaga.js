@@ -7,7 +7,9 @@ import Toast from 'react-native-simple-toast';
 import { panGestureHandlerCustomNativeProps } from 'react-native-gesture-handler/lib/typescript/handlers/PanGestureHandler';
 import { Alert, Linking } from 'react-native';
 
-function* loginRequest(params) { try {
+function* loginRequest(params) { 
+  console.log(params);
+  try {
     const res = yield ApiCall({
       params: params.data,
       route: 'auth/login',

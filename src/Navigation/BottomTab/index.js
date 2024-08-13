@@ -109,8 +109,7 @@ export default function BottomTab() {
       />
       <Tab.Screen
         name="Workouts"
-        // component={user?.plan_id?WorkoutHistory:Workouts}
-        component={user?.isAssigned === true ? Workouts : Workouts}
+        component={Workouts}
         initialParams={
           user?.isAssigned !== true ? { data: "tab2" } : { data: "tab1" }
         }

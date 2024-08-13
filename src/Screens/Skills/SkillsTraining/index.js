@@ -23,12 +23,27 @@ import {
 } from "../../../../utils/ResponsiveFun";
 import { colors } from "../../../constants/colors";
 import { fonts } from "../../../constants/fonts";
+import { useFocusEffect } from '@react-navigation/native';
+import PopupModal from "../../../Components/ErrorPopup";
+
 
 export default function SkillsTraining({ navigation }) {
   const [selectedTab, setSelectedTab] = useState(0);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.userToken);
   const [skills,setSkills] = useState();
+  const [isModalVisible, setModalVisible] = useState(false);
+  const user = useSelector((state) => state.auth.userData);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user.isAssigned != true)
+        setModalVisible(true);
+    }, [])
+  );
+  const toggleModal = () => {
+      setModalVisible(!isModalVisible);
+  };
 
   const onPressTab = (id) => {
     if (id === 1) {
@@ -223,6 +238,7 @@ export default function SkillsTraining({ navigation }) {
 
   return (
     <View style={styles.root}>
+      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
       {RenderHeader()}
       <FlatList
         data={skills}

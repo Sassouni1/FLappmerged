@@ -1,7 +1,7 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "../../Screens/Auth/Login";
-
+import SignUp from "../../Screens/Auth/SignUp";
 import ForgotPassword from "../../Screens/Auth/ForgotPassword";
 
 import MyDrawer from "../drawer";
@@ -66,6 +66,13 @@ const AuthStack = () => {
         }}
         name="Login"
         component={Login}
+      />
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="SignUp"
+        component={SignUp}
       />
       <stack.Screen
         options={{

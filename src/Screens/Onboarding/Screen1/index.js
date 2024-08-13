@@ -54,6 +54,11 @@ const WelcomeScreen = ({ navigation }) => {
                 <Text style={styles.signInLink}>Sign In</Text>
               </Text>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+              <Text style={styles.signInText}>
+                <Text style={styles.signInLink}>Continue as Guest</Text>
+              </Text>
+            </TouchableOpacity>
             <Text style={styles.poweredByText}>
               Powered By Sassouni Digital Media
             </Text>
@@ -94,7 +99,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 400,
+    marginTop: 300,
   },
   heading: {
     fontFamily: "Work Sans",

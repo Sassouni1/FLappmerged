@@ -36,7 +36,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>FightLife requires access to your camera to allow you to capture and share images directly within the chat feature. This enables seamless communication with your training partners, coaches, and friends by sending photos of your progress, techniques, and fight moments in real-time.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app requires access to your photo library to allow you to upload photos.</string>
+	<string>FightLife requires access to your photo library to allow you to share images directly within the chat feature. This enables seamless communication with your training partners, coaches, and friends by sending photos of your progress, techniques, and fight moments in real-time.</string>
 	<key>App Uses Non-Exempt Encryption</key>
 	<false/>
 	<key>UIAppFonts</key>

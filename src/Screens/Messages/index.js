@@ -44,6 +44,9 @@ import {
 import HeaderChatBot from "../../Components/HeaderChatBot";
 import { ApiCall } from "../../Services/Apis";
 import { setLoader } from "../../Redux/actions/GernalActions";
+import PopupModal from "../../Components/ErrorPopup";
+import { useFocusEffect } from '@react-navigation/native';
+
 
 const STATUSBAR_HEIGHT =
   Platform.OS === "ios" ? getStatusBarHeight(true) : StatusBar.currentHeight;
@@ -55,6 +58,17 @@ const BotAllChatScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const [admin, setAdmin] = useState([]);
   const [community, setCommunity] = useState([]);
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user.isAssigned != true)
+        setModalVisible(true);
+    }, [])
+  );
+  const toggleModal = () => {
+      setModalVisible(!isModalVisible);
+  };
 
   useEffect(() => {
     dispatch(setLoader(true));
@@ -111,6 +125,7 @@ const BotAllChatScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
+      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
       <StatusBar
         barStyle="light-content"
         style={{ backgroundColor: colors.white }}

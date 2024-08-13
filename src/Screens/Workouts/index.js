@@ -21,6 +21,9 @@ import Entypo from "react-native-vector-icons/Entypo";
 import StandAlone from "./StandAlone";
 import { ScrollView } from "react-native-gesture-handler";
 import AdditionalWorkout from "./AdditionalWorkout";
+import { useFocusEffect } from '@react-navigation/native';
+import {  useSelector } from "react-redux";
+import PopupModal from "../../Components/ErrorPopup";
 
 const Tab1 = () => <WorkoutDetails />;
 const Tab2 = () => <AddWorkouts />;
@@ -30,9 +33,20 @@ const initialLayout = { width: Dimensions.get("window").width };
 
 const Workouts = ({ route }) => {
   const navigation = useNavigation();
-
+  const user = useSelector((state) => state.auth.userData);
   const [index, setIndex] = useState(0);
   const [focusedTab, setfocusedTab] = useState(0);
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user.isAssigned != true)
+        setModalVisible(true);
+    }, [])
+  );
+  const toggleModal = () => {
+      setModalVisible(!isModalVisible);
+  };
 
   const renderScene = SceneMap({
     tab1: Tab1,
@@ -60,6 +74,7 @@ const Workouts = ({ route }) => {
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
+      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
       {/* <GeneralStatusBar hidden={false} translucent={true} /> */}
 
       <View
