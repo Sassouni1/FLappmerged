@@ -105,7 +105,8 @@ const HomeSc = ({ navigation, route }) => {
   }, []);
   useEffect(() => {
     if (token) {
-      dispatch(getSingleUser(token));
+      if (user.isAssigned)
+        dispatch(getSingleUser(token));
       appListner(navigation);
     }
   }, []);
