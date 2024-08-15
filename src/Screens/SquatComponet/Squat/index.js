@@ -65,7 +65,7 @@ export default function Squat({ navigation, route }) {
   const onPressBack = () => {
     navigation.goBack();
   };
-  const {exercise,workout,task,exercises} = route?.params;
+  const {exercise,workout,task,exercises,calories} = route?.params;
   const user = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
 
@@ -301,7 +301,7 @@ export default function Squat({ navigation, route }) {
       dispatch(setLoader(true));
       const submittedData = {
         parameter: set?.parameter,
-        remaining_time: '',
+        remaining_time: 0,
         [set?.parameter]: weight,
       };
 
@@ -311,6 +311,7 @@ export default function Squat({ navigation, route }) {
         exercise_objId: exercise?._id,
         inner_objId: workout?.innerWorkout[0]?._id,
         submittedData: submittedData,
+        calories:calories
       };
 
       // if (exercise?.task?.length > 0) {
@@ -322,14 +323,61 @@ export default function Squat({ navigation, route }) {
         token: token,
         params: requestParams,
       });
-      console.log("requestParams",requestParams);
+      console.log(requestParams);
+      console.log("updateresponse",res);
       if (res?.status == "200") {
-        toast.show("set successfully completed");
-        navigation.navigate("RestTimeScreen", { restTime: set?.rest_time });
+        toast.show("Successfully completed");
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        // toast.show("Enter correct sets");
+        toast.show("Enter correct sets");
+      }
+    } catch (e) {
+      console.log("api get skill error -- ", e.toString());
+    }
+  };
+
+  const singleExerciseComplete = async () => {
+    try {
+      dispatch(setLoader(true));
+      let requestParams = {
+        workout_objId: workout?._id,
+        exercise_objId: exercise?._id,
+        inner_objId: workout?.innerWorkout[0]?._id,
+        calories: calories,
+        given_sets:
+          exercise?.task?.length > 0
+            ? JSON.stringify(exercise?.task?.[nextIncompleteIndex]?.sets)
+            : JSON.stringify(given_sets),
+        submitted_sets: JSON.stringify(submittedSets),
+        additional_sets: JSON.stringify(additionalSet),
+        submitted_time: `${hours}:${minutes}:${seconds}`,
+      };
+
+      if (exercise?.task?.length > 0) {
+        requestParams.task_objId = exercise?.task?.[nextIncompleteIndex]?._id;
+      }
+      const res = await ApiCall({
+        route: `assignProgram/update_exercise/${user?.plan_id}`,
+        verb: "post",
+        token: token,
+        params: requestParams,
+      });
+      console.log("submit....", res?.response);
+      if (res?.status == "200") {
+        toast.show("Exercise successfully completed");
+        setSubmittedSets([]);
+        setAdditionalSets([]);
+        if (exercise?.sets?.length > 0) {
+          navigation.navigate("Workouts", { data: "tab2" });
+        }
+        if (nextIncompleteIndex === exercise.task.length - 1) {
+          navigation.navigate("Workouts", { data: "tab2" });
+        }
+        dispatch(setLoader(false));
+      } else {
+        dispatch(setLoader(false));
+        toast.show("Enter correct sets");
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
@@ -355,7 +403,7 @@ export default function Squat({ navigation, route }) {
     );
   };
 
-  const RenderCategory = ({no,set, reps, isSuccess = true, isBottom = true,isAdditional,addon='' }) => {
+  const RenderCategory = ({no,set, reps, isBottom = true,isAdditional,addon='' }) => {
     const uniqueKey = isAdditional ? 'additionalSet'+no : addon+'set'+no;
     return (
       <View key={no} style={styles.mainContainer}>
@@ -393,13 +441,14 @@ export default function Squat({ navigation, route }) {
           <TouchableOpacity
             style={{ marginRight: getWidth(5) }}
             onPress={() => {
-              handleCheckmarkPress(uniqueKey,set);
+              if (!isChecked.includes(uniqueKey) && set?.complete != 'true')
+                handleCheckmarkPress(uniqueKey, set);
             }}
           >
             <Ionicons
               name="checkmark-circle"
               size={getFontSize(5)}
-              color={!isChecked.includes(uniqueKey) ? colors.axisColor : colors.orange}
+              color={!isChecked.includes(uniqueKey) && set?.complete != 'true' ? colors.axisColor : colors.orange}
               style={{ marginRight: getWidth(5) }}
             />
           </TouchableOpacity>

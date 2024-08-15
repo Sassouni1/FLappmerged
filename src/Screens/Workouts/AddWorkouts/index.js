@@ -267,7 +267,8 @@ const AddWorkouts = () => {
           exercise: item,
           workout: workout,
           task:parentitem?.task,
-          exercises:exercises
+          exercises:exercises,
+          calories:assigWorkout?.calories || 0
         })
       }}
       activeOpacity={0.8}
