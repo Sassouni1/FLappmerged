@@ -132,6 +132,17 @@ function CustomDrawerContent(props) {
     ]);
   };
 
+  const DeleteFun = () => {
+    Alert.alert("", "Are you sure you want to delete your account ?", [
+      {
+        text: "No",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "destructive",
+      },
+      { text: "Yes", onPress: () => dispatch(logout()), style: "default" },
+    ]);
+  };
+
   return (
     <DrawerContentScrollView
       contentContainerStyle={{ flex: 1, backgroundColor: "#0B0B0D" }}
@@ -194,6 +205,20 @@ function CustomDrawerContent(props) {
         <View style={{ height: marginTop }}>
           <Divider style={{ marginBottom: marginTop }} />
         </View>
+
+        <DrawerItem
+          label={"Delete Account"}
+          labelStyle={{ fontFamily: "Ubuntu-Bold", color: "#EB5757" }}
+          onPress={() => DeleteFun()}
+          inactiveTintColor={"#EB5757"}
+          activeTintColor={"#EB5757"}
+          activeBackgroundColor={"#EB5757"}
+          icon={({ color, size, focuced }) => (
+            <MaterialIcons name={"delete"} size={20} color={"#EB5757"} />
+          )}
+        />
+
+
         <DrawerItem
           label={"Logout"}
           labelStyle={{ fontFamily: "Ubuntu-Bold", color: "#EB5757" }}

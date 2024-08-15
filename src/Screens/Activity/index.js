@@ -1843,7 +1843,7 @@ export default function TrainingStats({ navigation }) {
 
   return (
     <ScrollView>
-      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
+      {/* <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} /> */}
       {TopImageComponent}
       <View style={styles.innerContainerStyle}>
         {TrainingCompletionComponent}

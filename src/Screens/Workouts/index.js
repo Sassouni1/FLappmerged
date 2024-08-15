@@ -74,7 +74,7 @@ const Workouts = ({ route }) => {
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
-      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
+      {/* <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} /> */}
       {/* <GeneralStatusBar hidden={false} translucent={true} /> */}
 
       <View

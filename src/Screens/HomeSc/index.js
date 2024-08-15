@@ -14,24 +14,7 @@ import moment from "moment"; // Import moment for date manipulation
 import Entypo from "react-native-vector-icons/Entypo";
 import PopupModal from "../../Components/ErrorPopup";
 
-const openMyFitnessPal = async () => {
-  const myFitnessPalURL = "myfitnesspal://"; // MyFitnessPal URL scheme
-  const appStoreURL = "https://apps.apple.com/us/app/myfitnesspal/id341232718"; // MyFitnessPal App Store URL
 
-  try {
-    // Try to open MyFitnessPal app
-    const supported = await Linking.canOpenURL(myFitnessPalURL);
-    if (supported) {
-      await Linking.openURL(myFitnessPalURL);
-    } else {
-      // If the app is not installed, open the App Store link
-      await Linking.openURL(appStoreURL);
-    }
-  } catch (error) {
-    console.error("Error opening MyFitnessPal: ", error);
-    Alert.alert("Error", "Unable to open MyFitnessPal.");
-  }
-};
 
 import { useDispatch, useSelector } from "react-redux";
 import { appListner, requestUserPermission } from "../Notifications";
@@ -65,6 +48,25 @@ const HomeSc = ({ navigation, route }) => {
   );
   const toggleModal = () => {
       setModalVisible(!isModalVisible);
+  };
+
+  const openMyFitnessPal = async () => {
+    const myFitnessPalURL = "myfitnesspal://"; // MyFitnessPal URL scheme
+    const appStoreURL = "https://apps.apple.com/us/app/myfitnesspal/id341232718"; // MyFitnessPal App Store URL
+  
+    try {
+      // Check if MyFitnessPal is installed
+      const isAppInstalled = await Linking.canOpenURL(myFitnessPalURL);
+      if (isAppInstalled) {
+        // Open MyFitnessPal if installed
+        await Linking.openURL(myFitnessPalURL);
+      } else {
+        // If the app is not installed, open the App Store link
+        await Linking.openURL(appStoreURL);
+      }
+    } catch (error) {
+      console.error("Error opening MyFitnessPal:", error);
+    }
   };
 
   
@@ -238,7 +240,7 @@ const HomeSc = ({ navigation, route }) => {
 
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps={"handled"}>
-      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
+      {/* <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} /> */}
       <View style={styles.header}>
         <Image
           source={require("../../assets/images/HomeTopBack.png")}
@@ -391,7 +393,7 @@ const HomeSc = ({ navigation, route }) => {
     </View>
     {/* Calendar End */}
 
-      <View style={styles.coachBooking}>
+      {/* <View style={styles.coachBooking}>
         <View style={styles.coachBookingHeader}>
           <Text style={styles.coachBookingTitle}>Shop & Upgrades</Text>
           <Text style={styles.coachBookingSeeAll}>See All</Text>
@@ -466,7 +468,7 @@ const HomeSc = ({ navigation, route }) => {
             </View>
           </View>
         </View>
-      </View>
+      </View> */}
 
       <View style={styles.mealPlan}>
         <View style={styles.mealPlanHeader}>

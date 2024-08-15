@@ -238,7 +238,7 @@ export default function SkillsTraining({ navigation }) {
 
   return (
     <View style={styles.root}>
-      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
+      {/* <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} /> */}
       {RenderHeader()}
       <FlatList
         data={skills}

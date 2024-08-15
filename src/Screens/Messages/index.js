@@ -125,7 +125,7 @@ const BotAllChatScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
+      {/* <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} /> */}
       <StatusBar
         barStyle="light-content"
         style={{ backgroundColor: colors.white }}
