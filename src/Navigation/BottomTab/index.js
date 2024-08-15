@@ -222,7 +222,7 @@ export default function BottomTab() {
         }}
       />
 
-      <Tab.Screen
+      {/* <Tab.Screen
         name="LeaderBoard"
         component={LeaderBoard}
         options={{
@@ -243,7 +243,7 @@ export default function BottomTab() {
             />
           ),
         }}
-      />
+      /> */}
 
       <Tab.Screen
         name="Activity"

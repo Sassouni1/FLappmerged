@@ -141,18 +141,18 @@ export default function Achievements({ navigation }) {
             </View>
           ) : (
             <View>
-              <Text style={styles.sectionTextStyle}>Workouts</Text>
+              {/* <Text style={styles.sectionTextStyle}>Workouts</Text> */}
+              {/* <View style={styles.workoutsStyle}>
+                {data.map((item, index) => (
+                  <RenderItemAchievements key={index} item={item} />
+                ))}
+              </View> */}
+              {/* <Text style={styles.sectionTextStyle}>Programs</Text>
               <View style={styles.workoutsStyle}>
                 {data.map((item, index) => (
                   <RenderItemAchievements key={index} item={item} />
                 ))}
-              </View>
-              <Text style={styles.sectionTextStyle}>Programs</Text>
-              <View style={styles.workoutsStyle}>
-                {data.map((item, index) => (
-                  <RenderItemAchievements key={index} item={item} />
-                ))}
-              </View>
+              </View> */}
             </View>
           )}
           <View style={styles.mostConsistentUserStyle}>
