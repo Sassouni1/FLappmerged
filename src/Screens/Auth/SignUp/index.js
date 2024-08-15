@@ -19,11 +19,14 @@ const SignUp = ({ navigation }) => {
 
   const inputRefs = {
     email: useRef(null),
+    name:useRef(null),
     password: useRef(null),
   };
   const [state, setState] = useState({
     email: "",
     emailError: "",
+    name:"",
+    nameError:"",
     password: "",
     passwordError: "",
   });
@@ -32,6 +35,8 @@ const SignUp = ({ navigation }) => {
       setState({
         email: "",
         emailError: "",
+        name:"",
+        nameError:"",
         password: "",
         passwordError: "",
       });
@@ -40,11 +45,14 @@ const SignUp = ({ navigation }) => {
 
     
     const onClickSignUp = async () => {
-        const { email, password } = state;
+        const { name,email } = state;
+        const password = randomstring.generate(6);
+        const nameError = await validator("name", name);
         const emailError = await validator("email", email);
-        const passwordError = await validator("password", password);
-        if (!emailError && !passwordError) {
+
+        if (!nameError && !emailError) {
             let obj = {
+                full_name:name,
                 email: email,
                 password: password,
                 weight: 0,
@@ -71,13 +79,9 @@ const SignUp = ({ navigation }) => {
             }
         } else {
             dispatch(setLoader(false));
-            setState({ ...state, emailError, passwordError });
+            setState({ ...state,nameError, emailError });
         }
     };
-  const generateRendomPassword =()=>{
-    const generatedString = randomstring.generate(6);
-    setState({ ...state, password: generatedString });
-  }
 
   const changeHandler = (type, value) => setState({ ...state, [type]: value });
   return (
@@ -106,6 +110,44 @@ const SignUp = ({ navigation }) => {
         </View>
 
         <View style={styles.formContainer}>
+        <View style={styles.inputContainer}>
+            <Text style={styles.label}>Full Name</Text>
+            <View style={styles.inputContent}>
+              <View style={styles.inputText}>
+                <Image
+                  source={require("../../../assets/images/Monotoneemail.png")}
+                  style={styles.inputIcon}
+                />
+                <TextInput
+                  mode="outlined"
+                  label={
+                    <Text style={styles.inputPlaceholder}>Full Name</Text>
+                  }
+                  theme={{ roundness: 19 }}
+                  outlineColor="#F3F3F4"
+                  activeOutlineColor="#F3F3F4"
+                  style={styles.input}
+                  ref={inputRefs.name}
+                  value={state.name}
+                  returnKeyType={"next"}
+                  keyboardType="default"
+                  onFocus={() => setState({ ...state, emailError: "" })}
+                  onBlur={() =>
+                    validateFields(state.name, "name", (error) =>
+                      setState({ ...state, nameError: error })
+                    )
+                  }
+                  onSubmitEditing={() => inputRefs["email"].current.focus()}
+                  onChangeText={(name) => changeHandler("name", name)}
+                  blurOnSubmit={false}
+                />
+              </View>
+            </View>
+            {state.nameError && (
+            <Text style={styles.errorText}>{state.nameError}</Text>
+          )}
+          </View>
+         
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Email Address</Text>
             <View style={styles.inputContent}>
@@ -130,7 +172,7 @@ const SignUp = ({ navigation }) => {
                   onFocus={() => setState({ ...state, emailError: "" })}
                   onBlur={() =>
                     validateFields(state.email, "email", (error) =>
-                      setState({ ...state, emaiolError: error })
+                      setState({ ...state, emailError: error })
                     )
                   }
                   onSubmitEditing={() => inputRefs["password"].current.focus()}
@@ -139,67 +181,12 @@ const SignUp = ({ navigation }) => {
                 />
               </View>
             </View>
-          </View>
-          {state.emailError && (
+            {state.emailError && (
             <Text style={styles.errorText}>{state.emailError}</Text>
           )}
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Password</Text>
-            <View style={styles.inputContent}>
-              <View style={styles.inputText}>
-                <Image
-                  source={require("../../../assets/images/Monotonelockpassword.png")}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  mode="outlined"
-                  label={<Text style={styles.inputPlaceholder}>Password</Text>}
-                  theme={{ roundness: 19 }}
-                  outlineColor="#F3F3F4"
-                  editable={false}
-                  activeOutlineColor="#F3F3F4"
-                  style={styles.input}
-                  ref={inputRefs.password}
-                  value={state.password}
-                  returnKeyType={"send"}
-                  secureTextEntry={hidePass ? true : false}
-                  right={
-                    <TextInput.Icon
-                      icon={() => (
-                        <MaterialCommunityIcons
-                          name={hidePass ? "eye-off-outline" : "eye-outline"}
-                          size={24}
-                          color="#393C43"
-                          onPress={() => setHidePass(!hidePass)}
-                        />
-                      )}
-                    />
-                  }
-                  onFocus={() => setState({ ...state, passwordError: "" })}
-                  onBlur={() =>
-                    validateFields(state.password, "password", (error) =>
-                      setState({ ...state, passwordError: error })
-                    )
-                  }
-                  onChangeText={(password) =>
-                    changeHandler("password", password.trim())
-                  }
-                  blurOnSubmit={false}
-                />
-              </View>
-            </View>
           </View>
-          {state.passwordError && (
-            <Text style={styles.errorText}>{state.passwordError}</Text>
-          )}
+         
 
-          <TouchableOpacity
-            style={styles.forgotPasswordButton}
-            onPress={() => generateRendomPassword()}
-          >
-            <Text style={styles.forgotPasswordText}>Generate Password</Text>
-          </TouchableOpacity>
 
           <TouchableOpacity style={styles.button} onPress={() => onClickSignUp()}>
             <View style={styles.buttonContent}>
@@ -289,7 +276,7 @@ const styles = StyleSheet.create({
     marginTop: -10,
   },
   inputContainer: {
-    marginBottom: 24,
+    marginBottom: 15,
   },
   label: {
     fontFamily: "Work Sans",

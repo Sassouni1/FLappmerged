@@ -65,7 +65,7 @@ export default function Squat({ navigation, route }) {
   const onPressBack = () => {
     navigation.goBack();
   };
-  const {exercise,workout,task} = route?.params;
+  const {exercise,workout,task,exercises} = route?.params;
   const user = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
 
@@ -80,6 +80,8 @@ export default function Squat({ navigation, route }) {
   const [restTime, setRestTime] = useState('');
   const [weights, setWeights] = useState([]);
   const [selectedSetKey,setSelectedSetKey] = useState('');
+  const [selectedExercise,setSelectedExercise] = useState(exercise);
+  const [selectedTask,setSelectedTask] = useState(task);
 
   const [isVisible, setIsVisible] = useState(true);
   useEffect(() => {
@@ -163,6 +165,32 @@ export default function Squat({ navigation, route }) {
   console.log("exercise ....", exercise)
   const onPressReset = (restTime) => navigation.navigate("ResetTimer",{restTime:restTime});
 
+  const onPressNextExercise = ()=>{
+    const currentIndex = exercises?.findIndex(ex => ex._id === selectedExercise._id || ex?.task?.some(taskEX => taskEX._id === selectedExercise._id));
+    let nextExercise = exercises[currentIndex+1]
+    if (nextExercise) {
+      if (nextExercise?.exercise_name)
+        setSelectedExercise(nextExercise)
+      else {
+        setSelectedTask(nextExercise?.task)
+        setSelectedExercise(nextExercise?.task[0])
+      }
+    }
+  }
+  const onPressPreviousExercise = ()=>{
+    const currentIndex = exercises?.findIndex(ex => ex._id === selectedExercise._id || ex?.task?.some(taskEX => taskEX._id === selectedExercise._id));
+    let previousExercise = exercises[currentIndex - 1]
+    if (previousExercise) {
+      if (previousExercise?.exercise_name)
+        setSelectedExercise(previousExercise)
+      else {
+        setSelectedTask(previousExercise?.task)
+        setSelectedExercise(previousExercise?.task[0])
+      }
+    }
+    else
+      onPressBack()
+  }
   const RenderSquare = ({ title, desc, icon }) => {
     return (
       <View style={styles.innerContainer}>
@@ -246,7 +274,7 @@ export default function Squat({ navigation, route }) {
       _id: (Math.random() * 1000).toString(),
       lbs: "",
       parameter: "lbs",
-      reps: "10",
+      reps: findMaxReps(selectedExercise),
       rest_time: "0",
       task: [],
       video: "",
@@ -506,17 +534,17 @@ export default function Squat({ navigation, route }) {
         </SafeAreaView>
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
-            {task ?
-              task?.map((item, index) => (
+            {selectedTask ?
+              selectedTask?.map((item, index) => (
                 <View key={index}>
                 <RenderExercise  exercise={item} addon={'task'+index} />
-                  {task?.length != index + 1 &&
+                  {selectedTask?.length != index + 1 &&
                     <View style={styles.divider} />
                   }
                 </View>
               ))
               :
-              <RenderExercise exercise={exercise} />
+              <RenderExercise exercise={selectedExercise} />
             }
 
             {additionalSets?.length > 0 &&
@@ -537,7 +565,7 @@ export default function Squat({ navigation, route }) {
           </TouchableOpacity>
           <View style={styles.bottomBtnStyle}>
             <TouchableOpacity
-              onPress={onPressBack}
+              onPress={()=>{onPressPreviousExercise()}}
               style={styles.rightContainer}
             >
               <Ionicons
@@ -547,7 +575,7 @@ export default function Squat({ navigation, route }) {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={()=>{}}
+              onPress={()=>{onPressNextExercise()}}
               style={styles.leftContainer}
             >
               <Text style={styles.nextExerciseStyle}>Next Exercise</Text>

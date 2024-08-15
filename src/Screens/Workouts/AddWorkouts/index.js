@@ -241,7 +241,8 @@ const AddWorkouts = () => {
         navigation.navigate("Squat", {
           exercise: item,
           workout: workout,
-          task:null
+          task:null,
+          exercises:exercises
         })
       }}
       activeOpacity={0.8}
@@ -265,7 +266,8 @@ const AddWorkouts = () => {
         navigation.navigate("Squat", {
           exercise: item,
           workout: workout,
-          task:parentitem?.task
+          task:parentitem?.task,
+          exercises:exercises
         })
       }}
       activeOpacity={0.8}

@@ -18,7 +18,7 @@ const PopupModal = ({isVisible,toggleModal}) => {
           
           <View style={{flexDirection:'row'}}>
           <Text style={{fontSize:14,marginBottom:15}}>To subscribe please visit:</Text>
-          <TouchableOpacity onPress={()=>{Linking.openURL('https://fightlife.io/')}}><Text style={{fontSize:14, color:'blue'}}>FightLife.io</Text></TouchableOpacity>
+          <Text style={{fontSize:14, color:'blue'}}>FightLife.io</Text>
           </View>
 
           <View style={styles.buttonContainer}>

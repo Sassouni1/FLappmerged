@@ -93,7 +93,7 @@ const ViewProgram = ({ route }) => {
       } else {
         dispatch(setLoader(false));
 
-        Alert.alert(res?.response?.message, [
+        Alert.alert(res?.response?.message || 'Error', [
           { text: "OK", onPress: () => console.log("OK Pressed") },
         ]);
       }
@@ -124,7 +124,7 @@ const ViewProgram = ({ route }) => {
       } else {
         dispatch(setLoader(false));
 
-        Alert.alert(res?.response?.message, [
+        Alert.alert(res?.response?.message || 'Error', [
           { text: "OK", onPress: () => console.log("OK Pressed") },
         ]);
       }
