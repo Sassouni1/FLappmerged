@@ -48,6 +48,23 @@ const Login = ({ navigation }) => {
       setState({ ...state, emailError, passwordError });
     }
   };
+
+  const loginAsGuest = async () => {
+    const email = "Guestuser@gmail.com";
+    const password = "123456";
+    try {
+      dispatch(setLoader(true));
+      dispatch(
+        loginRequest({ email: email, password: password, role: "customer", isGuestUser: true })
+      );
+      setTimeout(() => {
+        dispatch(setLoader(false));
+      }, 3000);
+    }
+    catch (e) {
+      dispatch(setLoader(false));
+    }
+  };
   
   const changeHandler = (type, value) => setState({ ...state, [type]: value });
   return (
@@ -204,8 +221,8 @@ const Login = ({ navigation }) => {
           </TouchableOpacity>
         </View> */}
 
-        <TouchableOpacity onPress={()=>{navigation.navigate("SignUp")}} style={styles.footerContainer}>
-          <Text style={styles.footerText}>Login as Guest</Text>
+        <TouchableOpacity onPress={()=>{loginAsGuest()}} style={styles.footerContainer}>
+          <Text style={styles.footerText}>Continue as Guest</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -243,7 +260,7 @@ const styles = StyleSheet.create({
   },
   frame: {
     alignItems: "center",
-    marginBottom: 48,
+    marginBottom: 20,
   },
   iconContainer: {
     backgroundColor: "#FF8036",
@@ -278,8 +295,8 @@ const styles = StyleSheet.create({
     color: "#393C43",
   },
   formContainer: {
-    marginBottom: 48,
-    marginTop: -10,
+    marginBottom: 20,
+    // marginTop: -10,
   },
   inputContainer: {
     marginBottom: 24,

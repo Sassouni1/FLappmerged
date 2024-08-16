@@ -14,6 +14,7 @@ import BackgroundImage from "../../../assets/images/Jake.png";
 import OverlayImage from "../../../assets/images/BlackBackground.png";
 import LogoImage from "../../../assets/images/Vector-20.png";
 
+
 const WelcomeScreen = ({ navigation }) => {
   return (
     <ImageBackground source={BackgroundImage} style={styles.backgroundImage}>
@@ -54,11 +55,11 @@ const WelcomeScreen = ({ navigation }) => {
                 <Text style={styles.signInLink}>Sign In</Text>
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+            {/* <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
               <Text style={styles.signInText}>
                 <Text style={styles.signInLink}>Continue as Guest</Text>
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <Text style={styles.poweredByText}>
               Powered By Sassouni Digital Media
             </Text>
