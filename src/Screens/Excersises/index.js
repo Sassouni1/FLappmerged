@@ -217,12 +217,12 @@ const Excercises = () => {
             showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (
               <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("VideoSkills", {
-                    video: item?.video,
-                    name: item?.title,
-                  })
-                }
+                // onPress={() =>
+                //   navigation.navigate("VideoSkills", {
+                //     video: item?.video,
+                //     name: item?.title,
+                //   })
+                // }
                 style={styles.exerciseCard}
               >
                 <View style={styles.thumbnailContainer}>

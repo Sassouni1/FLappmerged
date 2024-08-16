@@ -109,10 +109,11 @@ import {
       }
     };
   
+
     useFocusEffect(
       React.useCallback(() => {
         dispatch(setLoader(true));
-        exerciseProgress(date);
+        // exerciseProgress(date);
         getSingleExcercise(date);
       }, [])
     );
@@ -179,6 +180,7 @@ import {
         <FlatList
           style={{ marginTop: 35 }}
           data={exercises}
+          initialNumToRender={5}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={() => (

@@ -137,7 +137,7 @@ const SignUp = ({ navigation }) => {
                       setState({ ...state, nameError: error })
                     )
                   }
-                  // onSubmitEditing={() => inputRefs["email"].current.focus()}
+                  onSubmitEditing={() => inputRefs["email"].current.focus()}
                   onChangeText={(name) => changeHandler("name", name)}
                   blurOnSubmit={false}
                 />
@@ -175,7 +175,7 @@ const SignUp = ({ navigation }) => {
                       setState({ ...state, emailError: error })
                     )
                   }
-                  // onSubmitEditing={() => inputRefs["password"].current.focus()}
+                  onSubmitEditing={() => onClickSignUp()}
                   onChangeText={(email) => changeHandler("email", email.trim())}
                   blurOnSubmit={false}
                 />

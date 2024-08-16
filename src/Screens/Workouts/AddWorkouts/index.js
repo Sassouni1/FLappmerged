@@ -108,6 +108,7 @@ const AddWorkouts = () => {
     }
   };
 
+
   useFocusEffect(
     React.useCallback(() => {
       setDate(date);
@@ -309,6 +310,7 @@ const AddWorkouts = () => {
       <FlatList
         style={{ paddingTop:20 }}
         data={exercises}
+        initialNumToRender={5}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={() => (

@@ -163,7 +163,7 @@ const WorkoutDetails = () => {
 
   return (
     <ScrollView>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={() => navigation.navigate("Howtoreadprogram")}
         style={{ width: "100%", marginTop: -30, marginBottom: -10 }}
       >
@@ -180,7 +180,7 @@ const WorkoutDetails = () => {
           source={require("../../assets/images/workoutsquizbtn.png")}
           style={{ width: "100%", resizeMode: "contain" }}
         />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <View
         style={{
           padding: 6,
