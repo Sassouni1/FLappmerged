@@ -13,9 +13,31 @@ import LinearGradient from "react-native-linear-gradient";
 import BackgroundImage from "../../../assets/images/Jake.png";
 import OverlayImage from "../../../assets/images/BlackBackground.png";
 import LogoImage from "../../../assets/images/Vector-20.png";
+import { useDispatch } from "react-redux";
+import { setLoader } from "../../../Redux/actions/GernalActions";
+import { loginRequest } from "../../../Redux/actions/AuthActions";
 
 
 const WelcomeScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+
+  const loginAsGuest = async () => {
+    const email = "Guestuser@gmail.com";
+    const password = "123456";
+    try {
+      dispatch(setLoader(true));
+      dispatch(
+        loginRequest({ email: email, password: password, role: "customer", isGuestUser: true })
+      );
+      setTimeout(() => {
+        dispatch(setLoader(false));
+      }, 3000);
+    }
+    catch (e) {
+      dispatch(setLoader(false));
+    }
+  };
+
   return (
     <ImageBackground source={BackgroundImage} style={styles.backgroundImage}>
       <ImageBackground source={OverlayImage} style={styles.overlayImage}>
@@ -55,11 +77,11 @@ const WelcomeScreen = ({ navigation }) => {
                 <Text style={styles.signInLink}>Sign In</Text>
               </Text>
             </TouchableOpacity>
-            {/* <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+            <TouchableOpacity onPress={() => {loginAsGuest()}}>
               <Text style={styles.signInText}>
                 <Text style={styles.signInLink}>Continue as Guest</Text>
               </Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
             <Text style={styles.poweredByText}>
               Powered By Sassouni Digital Media
             </Text>
