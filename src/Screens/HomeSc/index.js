@@ -25,6 +25,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Calendar } from 'react-native-calendars';
 import { colors } from "../../constants/colors";
 import { useFocusEffect } from '@react-navigation/native';
+import TodoList from "../../Components/TodoList";
 
 const HomeSc = ({ navigation, route }) => {
   const navigate = useNavigation();
@@ -450,6 +451,10 @@ const HomeSc = ({ navigation, route }) => {
       </View>
     </View>
     {/* Calendar End */}
+    
+      <View style={{ padding: 20 }}>
+        <TodoList />
+      </View>
 
       {/* <View style={styles.coachBooking}>
         <View style={styles.coachBookingHeader}>
