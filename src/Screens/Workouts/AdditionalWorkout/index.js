@@ -5,7 +5,8 @@ import {
     FlatList,
     Image,
     Dimensions,
-    TextInput
+    TextInput,
+    ImageBackground,
   } from "react-native";
   import React, { useEffect, useState } from "react";
   import { colors } from "../../../constants/colors";
@@ -28,6 +29,8 @@ import {
   import { fonts } from "../../../constants/fonts";
   import ReactNativeCalendarStrip from "react-native-calendar-strip";
   import moment from 'moment';
+import TabBarComponent from "../../../Components/TabBarComponent";
+const {height,width} = Dimensions.get("screen");
   
   const AdditionalWorkout = () => {
     const navigation = useNavigation();
@@ -110,13 +113,11 @@ import {
     };
   
 
-    useFocusEffect(
-      React.useCallback(() => {
-        dispatch(setLoader(true));
-        // exerciseProgress(date);
-        getSingleExcercise(date);
-      }, [])
-    );
+    useEffect(() => {
+      dispatch(setLoader(true));
+      getSingleExcercise(date);
+      }, []);
+      
   
     useEffect(() => {
       console.log("call for check",userWorkoutProgress);
@@ -162,23 +163,43 @@ import {
     }, [userWorkoutProgress]);
   
     return (
-      <View style={{flex: 1,marginTop: getFontSize(1)}}>
-         <View style={styles.searchBox}>
-          <TextInput
-            placeholder="Search an exercise"
-            placeholderTextColor="white"
-            style={styles.searchInput}
-            onChangeText={(text) => setSearchQuery(text)}
-            value={searchQuery}
-          />
-          <SearchSvg height={20} width={20} style={styles.searchIcon} />
+      <View style={{flex: 1}}>
+         <View>
+            <ImageBackground
+              source={require("../../../assets/images/guyback.png")}
+              style={{
+                width: width,
+                height: height/3.3,
+                resizeMode: "cover",
+                paddingBottom:14,
+                justifyContent:'flex-end',
+                borderRadius: 16,
+                overflow: 'hidden'
+              }}
+          >
+             <TabBarComponent activeTab={1} setActiveTab={(index) => {
+              if (index == 0)
+                navigation.navigate("Workouts")
+              else if (index == 2)
+                navigation.navigate("AddWorkouts")
+            }} />
+            <View style={styles.searchBox}>
+              <TextInput
+                placeholder="Search an exercise"
+                placeholderTextColor="white"
+                style={styles.searchInput}
+                onChangeText={(text) => setSearchQuery(text)}
+                value={searchQuery}
+              />
+              <SearchSvg height={20} width={20} style={styles.searchIcon} />
+            </View>
+            <Text style={styles.searchResultText}>
+              251 results found for "{searchQuery}"
+            </Text>
+          </ImageBackground>
         </View>
-        <Text style={styles.searchResultText}>
-          251 results found for "{searchQuery}"
-        </Text>
-
         <FlatList
-          style={{ marginTop: 35 }}
+          style={{ marginTop: 20 }}
           data={exercises}
           initialNumToRender={5}
           showsHorizontalScrollIndicator={false}

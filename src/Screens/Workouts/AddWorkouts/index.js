@@ -5,6 +5,7 @@ import {
   FlatList,
   Image,
   Dimensions,
+  ImageBackground
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { colors } from "../../../constants/colors";
@@ -27,6 +28,9 @@ import { ApiCall } from "../../../Services/Apis";
 import { fonts } from "../../../constants/fonts";
 import ReactNativeCalendarStrip from "react-native-calendar-strip";
 import moment from 'moment';
+import TabBarComponent from "../../../Components/TabBarComponent";
+
+const {height,width} = Dimensions.get("screen");
 
 const AddWorkouts = () => {
   const navigation = useNavigation();
@@ -286,27 +290,47 @@ const AddWorkouts = () => {
 
   return (
     <View style={{flex: 1}}>
-      <ReactNativeCalendarStrip
-        showMonth={false}
-        selectedDate={date}
-        onDateSelected={handleDateChange}
-        calendarAnimation={{ type: "sequence", duration: 30 }}
-        customDatesStyles={customDatesStyles}
-        highlightDateNameStyle={{ color: 'black' }} 
-        highlightDateNumberStyle={{ color: 'black' }}
-        highlightDateContainerStyle={{
-          backgroundColor: 'white',
-          width: getWidth(11),
-          borderRadius: 13,
-        }}
-        style={{
-          height: getHeight(8),
-          paddingHorizontal: 2,
-        }}
-        calendarHeaderStyle={{color:'white'}}
-        iconContainer={{ flex: 0.05 }}
-      />
-
+        <View>
+        <ImageBackground
+          source={require("../../../assets/images/guyback.png")}
+          style={{
+            width: width,
+            height: height/3.3,
+            resizeMode: "cover",
+            paddingBottom: 14,
+            justifyContent: 'flex-end',
+            borderRadius: 16,
+            overflow: 'hidden'
+          }}
+        >
+             <TabBarComponent activeTab={2} setActiveTab={(index) => {
+              if (index == 0)
+                navigation.navigate("Workouts")
+              else if (index == 1)
+                navigation.navigate("AdditionalWorkout")
+            }} />
+          <ReactNativeCalendarStrip
+            showMonth={false}
+            selectedDate={date}
+            onDateSelected={handleDateChange}
+            calendarAnimation={{ type: "sequence", duration: 30 }}
+            customDatesStyles={customDatesStyles}
+            highlightDateNameStyle={{ color: 'black' }}
+            highlightDateNumberStyle={{ color: 'black' }}
+            highlightDateContainerStyle={{
+              backgroundColor: 'white',
+              width: getWidth(11),
+              borderRadius: 13,
+            }}
+            style={{
+              height: getHeight(8),
+              paddingHorizontal: 2,
+            }}
+            calendarHeaderStyle={{ color: 'white' }}
+            iconContainer={{ flex: 0.05 }}
+          />
+        </ImageBackground>
+      </View>
       <FlatList
         style={{ paddingTop:20 }}
         data={exercises}

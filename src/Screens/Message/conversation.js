@@ -415,6 +415,36 @@ const BotChatScreen = ({ navigation, route }) => {
     );
   };
 
+  const RenderUserName = ({ props }) => {
+    return (
+      <View style={{ padding: 5 }}>
+        <Text style={{ color: props?.currentMessage?.user?._id == user?._id ? colors.white : colors.black, fontWeight: 'bold' }}>
+          {props?.currentMessage?.user?.full_name}
+        </Text>
+      </View>
+    )
+  }
+
+  const RenderProfilePic = ({props}) => {
+    return (
+      <View
+        style={[
+          styles.customView,
+          {
+            borderWidth: 1,
+            borderColor: props.currentMessage.user._id
+              ? colors.orange
+              : colors.greyMedium,
+          },
+        ]}
+      >
+        <Image
+          source={{ uri: props?.currentMessage?.user?.profile_image }}
+          style={{ height: '88%', width: '99%', borderRadius: getWidth(3), }}
+        />
+      </View>
+    )
+  }
   const backHandler = () => navigation.goBack();
 
   return (
@@ -423,7 +453,7 @@ const BotChatScreen = ({ navigation, route }) => {
       <HeaderChatBot
         title={
           <Text>
-            Coach Jarvis.AI
+            Fight Life Team
             <Text style={styles.headerSubText}>{`\n251 Chats Left`}</Text>
           </Text>
         }
@@ -471,6 +501,7 @@ const BotChatScreen = ({ navigation, route }) => {
           renderMessageText={(props) => {
             return (
               <View>
+                 <RenderUserName props={props} />
                 {props.currentMessage?.text != "" ||
                 props.currentMessage?.text != null ? (
                   <View
@@ -482,24 +513,7 @@ const BotChatScreen = ({ navigation, route }) => {
                       paddingVertical: getHeight(1),
                     }}
                   >
-                    <View
-                      style={{
-                        width: getWidth(10),
-                        height: getWidth(10),
-                        backgroundColor: props.currentMessage.user._id
-                          ? colors.orange
-                          : colors.greyMedium,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        borderRadius: getWidth(3),
-                      }}
-                    >
-                      {props.currentMessage.user._id ? (
-                        <UserChat height={25} width={25} />
-                      ) : (
-                        <BotChat height={25} width={25} />
-                      )}
-                    </View>
+                    <RenderProfilePic props={props} />
                     <Text
                       style={{
                         paddingHorizontal: getWidth(2),
@@ -522,35 +536,23 @@ const BotChatScreen = ({ navigation, route }) => {
                 {props.currentMessage?.fileType == "image/jpeg" ||
                 props.currentMessage?.fileType == "image/png" ||
                 props.currentMessage?.fileType == "image/jpg" ? (
+                  <View>
+                    <RenderUserName props={props} />
                   <View
                     style={{
-                      flexDirection: props.currentMessage.user._id
+                      flexDirection: props?.currentMessage?.user?._id
                         ? "row-reverse"
                         : "row",
                     }}
                   >
-                    <View
-                      style={[
-                        styles.customView,
-                        {
-                          backgroundColor: props.currentMessage.user._id
-                            ? colors.orange
-                            : colors.greyMedium,
-                        },
-                      ]}
-                    >
-                      {props.currentMessage.user._id ? (
-                        <UserChat height={25} width={25} />
-                      ) : (
-                        <BotChat height={25} width={25} />
-                      )}
-                    </View>
+                   <RenderProfilePic props={props} />
                     <ImageModal
                       style={[styles.image, props.imageStyle]}
                       resizeMode={"cover"}
                       modalImageResizeMode="contain"
                       source={{ uri: props.currentMessage?.PdfFile }}
                     />
+                  </View>
                   </View>
                 ) : null}
                 {props.currentMessage?.fileType == "image/svg+xml" ? (

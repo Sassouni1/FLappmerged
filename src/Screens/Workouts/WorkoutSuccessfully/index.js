@@ -40,7 +40,7 @@ const WorkoutSucessfully = ({route}) => {
       </View>
       
       <TouchableOpacity
-        onPress={() => navigation.popToTop()}
+        onPress={() => navigation.navigate("AddWorkouts")}
         style={{
           position: "absolute",
           bottom: getHeight(3),

@@ -6,7 +6,9 @@ import {
   ImageBackground,
   Alert,
   Image,
+  StyleSheet,
   ScrollView,
+  SafeAreaView
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
@@ -14,6 +16,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../Redux/actions/GernalActions";
 import { ApiCall } from "../../Services/Apis";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getHeight, getFontSize, getWidth } from "../../../utils/ResponsiveFun";
+import { fonts } from "../../constants/fonts";
+import { colors } from "../../constants/colors";
+import TabBarComponent from "../../Components/TabBarComponent";
 
 const WorkoutDetails = () => {
   const navigation = useNavigation();
@@ -162,6 +168,30 @@ const WorkoutDetails = () => {
   };
 
   return (
+    <SafeAreaView>
+        <View style={[styles.header]}>
+            <View style={styles.headerLeft}>
+              <Image
+                source={{uri:user?.profile_image}}
+                style={styles.profileImage}
+              />
+              <View style={styles.headerWords}>
+                <Text style={styles.headerSubtext}>Fight Life 👊 </Text>
+                <Text style={styles.headerText}> Start Training</Text>
+              </View>
+            </View>
+            <TouchableOpacity>
+              <Image
+                source={require("../../assets/images/workoutssearch.png")}
+              />
+            </TouchableOpacity>
+          </View>
+      <TabBarComponent activeTab={0} setActiveTab={(index) => {
+        if (index == 1)
+          navigation.navigate("AdditionalWorkout")
+        else if (index == 2)
+          navigation.navigate("AddWorkouts")
+      }} />
     <ScrollView>
       {/* <TouchableOpacity
         onPress={() => navigation.navigate("Howtoreadprogram")}
@@ -540,9 +570,66 @@ const WorkoutDetails = () => {
             </TouchableOpacity>
           ))}
       </View>
-      <View style={{height:100}} />
+      <View style={{height:200}} />
     </ScrollView>
+    </SafeAreaView>
   );
 };
 
 export default WorkoutDetails;
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+
+    paddingVertical: getHeight(2),
+  },
+  profileImage: {
+    width: 55,
+    height: 55,
+    marginLeft:5,
+    borderRadius:10,
+    resizeMode: "cover",
+  },
+  header1: {
+    marginTop: 1,
+  },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  headerWords: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+  },
+  headerSubtext: {
+    fontFamily: "Ubuntu",
+
+    fontWeight: "500",
+    fontStyle: "normal",
+
+    textAlign: "center",
+    color: "gray",
+  },
+  headerText: {
+    fontFamily: "Ubuntu",
+    fontSize: 26,
+    fontWeight: "700",
+    fontStyle: "normal",
+
+    color: "black",
+  },
+  title: {
+    flex: 1,
+    fontSize: getFontSize(3.2),
+    fontFamily: fonts.Re,
+    color: colors.white,
+    marginLeft: getWidth(2),
+    marginRight: getWidth(8),
+    textAlign: "center",
+  },
+ 
+});

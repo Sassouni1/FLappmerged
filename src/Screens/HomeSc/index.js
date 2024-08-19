@@ -35,7 +35,7 @@ const HomeSc = ({ navigation, route }) => {
   const [selectedDate, setSelectedDate] = useState('');
   const [calendarMarkedDates,setCalendarMarkedDates] = useState({});
   const [events,setEvents] = useState();
-  const [eventDescription,setEventDescription] = useState("");
+  const [eventDescription,setEventDescription] = useState("asdasd");
   const [upComingEvent, setUpcomingEvent] = useState();
   const [todayWorkout,setTodayWorkout] = useState();
   const [isModalVisible, setModalVisible] = useState(false);
@@ -227,6 +227,63 @@ const HomeSc = ({ navigation, route }) => {
     }
   }
 
+  const formatCalendarEventDate = (dateStr) => {
+    try {
+      if (dateStr) {
+        // Create a new Date object
+        const currentDate = new Date();
+        const date = new Date(dateStr);
+
+        // Compare only the date part (ignoring the time)
+        const currentDateOnly = new Date(currentDate.toDateString());
+        const eventDateOnly = new Date(date.toDateString());
+
+        if (eventDateOnly >= currentDateOnly) {
+          // Options for formatting the date and time
+          const options = {
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true,
+            timeZone: 'America/New_York',
+            timeZoneName: 'short'
+          };
+
+          // Format the date
+          const formattedDate = date.toLocaleString('en-US', options);
+
+          // Adjust the output to match the desired format
+          const [monthDay, timeAndTimezone] = formattedDate.split(',');
+
+          // Check if time and timezone are defined
+          if (timeAndTimezone) {
+            const [time, timezone] = timeAndTimezone.trim().split(' ');
+
+            // Check if the event is on the same day
+            if (eventDateOnly.getTime() === currentDateOnly.getTime()) {
+              const finalFormattedDate = `Upcoming call: Today at ${time?.toLowerCase()} ${timezone?.toLowerCase()}`;
+              return finalFormattedDate;
+            } else {
+              const finalFormattedDate = `Upcoming call: ${monthDay?.trim()} at ${time?.toLowerCase()} ${timezone?.toLowerCase()}`;
+              return finalFormattedDate;
+            }
+          } else {
+            // Fallback if split fails
+            return `Upcoming call: ${formattedDate}`;
+          }
+        } else {
+          return "";
+        }
+      } else {
+        return "";
+      }
+    }
+    catch (e) {
+      return ""
+    }
+  };
+
   const openURL = async (url) => {
     const supported = await Linking.canOpenURL(url);
 
@@ -257,12 +314,12 @@ const HomeSc = ({ navigation, route }) => {
         <View style={styles.headerInfo}>
           <View style={styles.profilePicture}>
             <Image
-              source={require("../../assets/images/ProfilePicture.png")}
+              source={{uri:user?.profile_image}}
               style={styles.profileImage}
             />
           </View>
           <View style={styles.headerContent}>
-            <Text style={styles.greeting}>Hello Chris</Text>
+            <Text style={styles.greeting}>{"Hello "+user?.full_name?.split(" ")[0]}</Text>
           </View>
           <Entypo
             size={30}
@@ -388,7 +445,7 @@ const HomeSc = ({ navigation, route }) => {
       />
       <View style={styles.eventContainer}>
           <Text style={styles.eventText}>
-            {eventDescription}
+            {formatCalendarEventDate(upComingEvent?.start)}
           </Text>
       </View>
     </View>
@@ -1212,7 +1269,7 @@ const styles = StyleSheet.create({
     width:'100%',
   },
   eventText: {
-    fontSize: 16,
+    fontSize: 14,
     left:0,
     color: colors.black,
   },

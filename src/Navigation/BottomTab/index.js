@@ -21,6 +21,7 @@ import AddWorkouts from "../../Screens/Workouts/AddWorkouts";
 import WorkoutHistory from "../../Screens/Workouts/WorkoutHistory";
 import LeaderBoard from "../../Screens/LeaderBoard";
 import SkillsTraining from "../../Screens/Skills/SkillsTraining";
+import WorkoutDetails from "../../Screens/WorkoutDetails";
 
 const Tab = createBottomTabNavigator();
 const borderRadius = 30;
@@ -109,7 +110,7 @@ export default function BottomTab() {
       />
       <Tab.Screen
         name="Workouts"
-        component={Workouts}
+        component={WorkoutDetails}
         initialParams={
           user?.isAssigned !== true ? { data: "tab2" } : { data: "tab1" }
         }

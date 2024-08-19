@@ -189,6 +189,26 @@ const BotChatScreen = ({ navigation, route }) => {
   
   const backHandler = () => navigation.navigate("HomeSc");
 
+  const RenderProfilePic = ({props}) => {
+    return (
+      <View
+        style={[
+          styles.customView,
+          {
+            borderWidth: 1,
+            borderColor: props.currentMessage.user._id
+              ? colors.orange
+              : colors.greyMedium,
+          },
+        ]}
+      >
+        <Image
+          source={{ uri: user?.profile_image }}
+          style={{ height: '88%', width: '99%', borderRadius: getWidth(3), }}
+        />
+      </View>
+    )
+  }
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" style={{ backgroundColor: "white" }} />
@@ -239,24 +259,28 @@ const BotChatScreen = ({ navigation, route }) => {
                       paddingVertical: getHeight(1),
                     }}
                   >
-                    <View
-                      style={{
-                        width: getWidth(10),
-                        height: getWidth(10),
-                        backgroundColor: props.currentMessage.user._id
-                          ? colors.orange
-                          : colors.greyMedium,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        borderRadius: getWidth(3),
-                      }}
-                    >
-                      {props.currentMessage.user._id ? (
-                        <UserChat height={25} width={25} />
-                      ) : (
-                        <BotChat height={25} width={25} />
-                      )}
-                    </View>
+                      {props.currentMessage.user._id == user?._id ?
+                        <RenderProfilePic props={props} />
+                        :
+                        <View
+                          style={{
+                            width: getWidth(10),
+                            height: getWidth(10),
+                            backgroundColor: props.currentMessage.user._id
+                              ? colors.orange
+                              : colors.greyMedium,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            borderRadius: getWidth(3),
+                          }}
+                        >
+                          {props.currentMessage.user._id ? (
+                            <UserChat height={25} width={25} />
+                          ) : (
+                            <BotChat height={25} width={25} />
+                          )}
+                        </View>
+                      }
                     <Text
                       style={{
                         paddingHorizontal: getWidth(2),
