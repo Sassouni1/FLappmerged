@@ -47,8 +47,8 @@ const WorkoutDetails = () => {
   };
 
   useEffect(() => {
-    getContinuousProgram();
     getAllProgram();
+    getContinuousProgram();
   }, []);
 
   const handleDayPress = (day) => {
@@ -77,6 +77,7 @@ const WorkoutDetails = () => {
       });
 
       if (res?.status == "200") {
+        console.log(res?.response?.detail?.length)
         setData(res?.response?.detail?.filter((el) => !el?.isDeleted));
         dispatch(setLoader(false));
       } else {
@@ -96,13 +97,14 @@ const WorkoutDetails = () => {
 
     try {
       const res = await ApiCall({
-        route: "program/all_programs",
+        route: "program/all_active_programs",
         verb: "get",
         token: token,
       });
 
       if (res?.status == "200") {
-        setProgram(res?.response?.detail?.filter((el) => !el?.isDeleted));
+        console.log(res?.response?.detail?.length)
+        setProgram(res?.response?.detail);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -115,18 +117,18 @@ const WorkoutDetails = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchSelectedItemId = async () => {
-      const latestSelectedItemId = await AsyncStorage.getItem(
-        "latestSelectedItemId"
-      );
+  // useEffect(() => {
+  //   const fetchSelectedItemId = async () => {
+  //     const latestSelectedItemId = await AsyncStorage.getItem(
+  //       "latestSelectedItemId"
+  //     );
 
-      if (latestSelectedItemId) {
-        setSelectedItemId(latestSelectedItemId);
-      }
-    };
-    fetchSelectedItemId();
-  }, []);
+  //     if (latestSelectedItemId) {
+  //       setSelectedItemId(latestSelectedItemId);
+  //     }
+  //   };
+  //   fetchSelectedItemId();
+  // }, []);
 
   const toggleSelection = async (item) => {
     console.log("item inside toggle selection", item);
