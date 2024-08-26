@@ -182,11 +182,11 @@ const WorkoutDetails = () => {
                 <Text style={styles.headerText}> Start Training</Text>
               </View>
             </View>
-            <TouchableOpacity>
+            {/* <TouchableOpacity>
               <Image
                 source={require("../../assets/images/workoutssearch.png")}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
       <TabBarComponent activeTab={0} setActiveTab={(index) => {
         if (index == 1)
@@ -234,13 +234,13 @@ const WorkoutDetails = () => {
           >
             All programs
           </Text>
-          <Text
+          {/* <Text
             style={{
               color: "darkorange",
             }}
           >
             See all
-          </Text>
+          </Text> */}
         </View>
         {program.length > 0 &&
           program.map((item, index) => (
@@ -386,7 +386,7 @@ const WorkoutDetails = () => {
             </TouchableOpacity>
           ))}
       </View>
-      <View
+      {/* <View
         style={{
           padding: 6,
           gap: 14,
@@ -571,7 +571,7 @@ const WorkoutDetails = () => {
               </View>
             </TouchableOpacity>
           ))}
-      </View>
+      </View> */}
       <View style={{height:200}} />
     </ScrollView>
     </SafeAreaView>
@@ -591,7 +591,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 55,
     height: 55,
-    marginLeft:5,
+    marginLeft:15,
     borderRadius:10,
     resizeMode: "cover",
   },

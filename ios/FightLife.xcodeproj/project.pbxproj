@@ -20,6 +20,7 @@
 		512B773AB5B346E8A487ACCA /* Ubuntu-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CAE02712402F4A6F90B7D743 /* Ubuntu-LightItalic.ttf */; };
 		58ABB3486E2449609283AE31 /* Ubuntu-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 95635F615CF849329FD8F9D3 /* Ubuntu-Light.ttf */; };
 		5CF24008A3FC4BEFB1F2DA6A /* WorkSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4031E5B800AA4AE4A8B06081 /* WorkSans-Regular.ttf */; };
+		613DFBDE2C7C5A0800C079A9 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 613DFBDD2C7C5A0800C079A9 /* Media.xcassets */; };
 		6ED4DB45044943FEA55F289A /* Ubuntu-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A9AA85BC63FB45D596F2561C /* Ubuntu-BoldItalic.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		A0F9D1E456F4FB4CF69D3561 /* libPods-FightLife-FightLifeTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE8090CE4FB300CDB51E09E0 /* libPods-FightLife-FightLifeTests.a */; };
@@ -60,6 +61,7 @@
 		1D09A433A8C64E32960C3925 /* .ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = .ttf; path = ../src/assets/fonts/.ttf; sourceTree = "<group>"; };
 		26892FE9F0925AA2F1799B3D /* Pods-FightLife.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FightLife.release.xcconfig"; path = "Target Support Files/Pods-FightLife/Pods-FightLife.release.xcconfig"; sourceTree = "<group>"; };
 		4031E5B800AA4AE4A8B06081 /* WorkSans-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "WorkSans-Regular.ttf"; path = "../src/assets/fonts/WorkSans-Regular.ttf"; sourceTree = "<group>"; };
+		613DFBDD2C7C5A0800C079A9 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		6DE17E66089A63B4A874A7DD /* Pods-FightLife-FightLifeTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FightLife-FightLifeTests.release.xcconfig"; path = "Target Support Files/Pods-FightLife-FightLifeTests/Pods-FightLife-FightLifeTests.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = FightLife/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		93D7F4A16F884797B0081987 /* Ubuntu-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Ubuntu-Italic.ttf"; path = "../src/assets/fonts/Ubuntu-Italic.ttf"; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				613DFBDD2C7C5A0800C079A9 /* Media.xcassets */,
 			);
 			name = FightLife;
 			sourceTree = "<group>";
@@ -315,6 +318,7 @@
 				18601C382B0B400800E3801C /* GoogleService-Info.plist in Resources */,
 				F01868CDA7404463920AEA51 /* WorkSans-Bold.ttf in Resources */,
 				4F23BAA326FA4E998C6E89C4 /* WorkSans-Medium.ttf in Resources */,
+				613DFBDE2C7C5A0800C079A9 /* Media.xcassets in Resources */,
 				5CF24008A3FC4BEFB1F2DA6A /* WorkSans-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

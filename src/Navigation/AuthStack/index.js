@@ -15,14 +15,22 @@ import Screen4 from "../../Screens/Onboarding/Screen4";
 import Screen5 from "../../Screens/Onboarding/Screen5";
 
 import WelcomeChatScreen from "../../Screens/ChatBot/WelcomeChat";
+import {SplashScreenAuth} from "../../Screens/SplashScreen";
 
 const stack = createNativeStackNavigator();
 const AuthStack = () => {
   return (
     <stack.Navigator
-      initialRouteName={"Screen1"}
+      initialRouteName={"SplashScreenAuth"}
       screenOptions={{ headerShown: false }}
     >
+        <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="SplashScreenAuth"
+        component={SplashScreenAuth}
+      />
       <stack.Screen
         options={{
           headerShown: false,

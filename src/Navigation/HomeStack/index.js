@@ -59,14 +59,22 @@ import AddWorkouts from "../../Screens/Workouts/AddWorkouts";
 import AdditionalWorkout from "../../Screens/Workouts/AdditionalWorkout";
 
 import HTUA from "../../Screens/HTUA";
+import {SplashScreen} from "../../Screens/SplashScreen";
 
 const stack = createNativeStackNavigator();
 const HomeStack = () => {
   return (
     <stack.Navigator
-      initialRouteName={"Home"}
+      initialRouteName={"SplashScreen"}
       screenOptions={{ headerShown: false }}
     >
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="SplashScreen"
+        component={SplashScreen}
+      />
       <stack.Screen
         options={{
           headerShown: false,
