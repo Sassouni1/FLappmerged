@@ -510,11 +510,14 @@ const AddWorkouts = () => {
           <View style={{}}>
             <View style={{ height: 200, marginTop: 20 }}>
               <Button
-                onPress={() => { }
-                  // navigation.navigate("Squat", {
-                  //     program:program,
-                  //     workoutId: "66642342de69c0b3aaa8511f",
-                  // })
+                onPress={() => {
+                  navigation.navigate("Squat", {
+                    exercise: exercises[0],
+                    workout: workout,
+                    task:null,
+                    exercises:exercises
+                  })
+                 }
                 }
                 text={`Start Workout`}
                 btnStyle={{

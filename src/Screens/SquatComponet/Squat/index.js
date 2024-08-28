@@ -83,7 +83,7 @@ export default function Squat({ navigation, route }) {
   const [selectedExercise,setSelectedExercise] = useState(exercise);
   const [selectedTask,setSelectedTask] = useState(task);
 
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setIsVisible(false);
@@ -555,7 +555,7 @@ export default function Squat({ navigation, route }) {
   )
  }
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
+    <View style={{ flex: 1, backgroundColor: colors.white }}>
       {isVisible ? (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
           <View
@@ -637,7 +637,7 @@ export default function Squat({ navigation, route }) {
           </View>
         </ScrollView>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 

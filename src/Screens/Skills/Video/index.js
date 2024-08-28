@@ -42,7 +42,7 @@ const VideoSkills = ({ data }) => {
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.mainCon}>
-        <View style={{ width: getWidth(100), height: getHeight(26) }}>
+        <View style={{ width: getWidth(100), height: getHeight(31) }}>
           <YoutubePlayer
             ref={youtubePlayerRef}
             height={'100%'}
