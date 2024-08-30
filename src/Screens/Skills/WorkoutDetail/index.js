@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import React from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import VideoPlayer from "react-native-video-player";
+import VideoComponent from "../../../Components/VideoComponent";
 
 // Local Imports
 import GeneralStatusBar from "../../../Components/GeneralStatusBar";
@@ -54,13 +54,7 @@ export default function WorkoutDetail({ navigation,route }) {
         </Text>
         <Text style={styles.subHeaderTestStyle}>Video</Text>
         <View style={styles.videoStyle}>
-          <VideoPlayer
-            video={{uri:selectedVideo?.video}}
-            videoWidth={width - getWidth(10)}
-            videoHeight={getHeight(25)}
-            thumbnail={{ uri: selectedVideo?.video_thumbnail }}
-            showDuration={true}
-          />
+        <VideoComponent videoUrl={selectedVideo?.video} thumbnail={selectedVideo?.video_thumbnail} />
         </View>
         {/* <Text style={styles.subHeaderTestStyle}>Notes:</Text>
         <Text style={styles.descTextStyle}>
@@ -150,7 +144,7 @@ const styles = StyleSheet.create({
   },
   videoStyle: {
     width: "90%",
-    height: getHeight(25),
+    height: getHeight(28),
     alignSelf: "center",
     borderRadius: getWidth(6),
   },

@@ -45,8 +45,7 @@ import HeaderChatBot from "../../Components/HeaderChatBot";
 import { ApiCall } from "../../Services/Apis";
 import { setLoader } from "../../Redux/actions/GernalActions";
 import PopupModal from "../../Components/ErrorPopup";
-import { useFocusEffect } from '@react-navigation/native';
-
+import { useFocusEffect } from "@react-navigation/native";
 
 const STATUSBAR_HEIGHT =
   Platform.OS === "ios" ? getStatusBarHeight(true) : StatusBar.currentHeight;
@@ -62,12 +61,11 @@ const BotAllChatScreen = ({ navigation, route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user.isAssigned != true)
-        setModalVisible(true);
+      if (user.isAssigned != true) setModalVisible(true);
     }, [])
   );
   const toggleModal = () => {
-      setModalVisible(!isModalVisible);
+    setModalVisible(!isModalVisible);
   };
 
   useEffect(() => {
@@ -159,29 +157,22 @@ const BotAllChatScreen = ({ navigation, route }) => {
                 ...community.map((item) => ({
                   _id: item._id,
                   title: "Fight Life Team",
-                  subText: "GPT-4",
-                  msgCount: item?.messages
-                    ? item?.messages.length.toString()
-                    : "0",
-                  iconUrl: require("../../assets/images/support.png"),
+                  subText: "Chat with our community", // Custom subtext
+                  iconUrl: require("../../assets/images/fistemoji.png"),
                   colors: colors.greenlight,
                 })),
                 {
                   _id: "team",
                   title: "Coach Jarvis.AI",
-                  subText: "Team",
-                  msgCount: "1.7K",
-                  iconUrl: require("../../assets/images/teamIcon.png"),
+                  subText: "Chat with Coach Jarvis.AI", // Custom subtext
+                  iconUrl: require("../../assets/images/Robot.png"), // Use iconUrl again
                   colors: colors.lightBlue,
                 },
                 ...admin.map((item) => ({
                   _id: item._id,
-                  title: "Customer Support",
-                  subText: "Support",
-                  msgCount: item?.messages
-                    ? item?.messages.length.toString()
-                    : "0",
-                  iconUrl: require("../../assets/images/aiIcon.png"),
+                  title: "Upcoming Updates & Announcements",
+                  subText: "Upcoming updates", // Custom subtext
+                  iconUrl: require("../../assets/images/Accouncements.png"),
                   colors: colors.lightRed,
                   admin: item?.admin,
                 })),
@@ -193,7 +184,6 @@ const BotAllChatScreen = ({ navigation, route }) => {
           renderSectionHeader={({ section: { title } }) => (
             <View style={styles.titleWrapperRow}>
               <Text style={styles.headingText}>{title}</Text>
-              <Text style={[styles.sellAllText]}>{"See all"}</Text>
             </View>
           )}
         />
@@ -246,11 +236,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     paddingTop: getHeight(2),
     color: colors.white,
-    fontSize: 30,
+    fontSize: 25,
     fontFamily: fonts.WB,
     fontWeight: "700",
     textAlign: "left",
     alignSelf: "flex-start",
+    paddingLeft: getWidth(4),
     paddingBottom: getHeight(2),
   },
   titleWrapper: {
@@ -265,7 +256,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   headingText: {
-    paddingTop: getHeight(2),
+    paddingTop: getHeight(4),
     color: colors.black,
     fontSize: 16,
     fontFamily: fonts.WB,
@@ -281,31 +272,3 @@ const styles = StyleSheet.create({
 });
 
 export default BotAllChatScreen;
-
-const DATA = [
-  {
-    title: "Chats",
-    data: [
-      { title: "Fight Life Team", subText: "Team", msgCount: "1.7K" },
-      {
-        title: "Coach Jarvis.AI",
-        subText: "My AI Coach",
-        msgCount: "870",
-        iconUrl: require("../../assets/images/aiIcon.png"),
-        colors: colors.lightRed,
-      },
-    ],
-  },
-  {
-    title: "Customer Support",
-    data: [
-      {
-        title: "Customer Support",
-        subText: "GPT-4",
-        msgCount: "875",
-        iconUrl: require("../../assets/images/support.png"),
-        colors: colors.greenlight,
-      },
-    ],
-  },
-];

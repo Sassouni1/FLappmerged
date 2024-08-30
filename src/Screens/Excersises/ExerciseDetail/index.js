@@ -6,10 +6,9 @@ import {
     View,
     Image
   } from "react-native";
-  import React, { useState } from "react";
+  import React, { useState,useRef } from "react";
   import Ionicons from "react-native-vector-icons/Ionicons";
-  import VideoPlayer from "react-native-video-player";
-  
+import VideoComponent from "../../../Components/VideoComponent";
   // Local Imports
   import GeneralStatusBar from "../../../Components/GeneralStatusBar";
   import {
@@ -23,11 +22,9 @@ import {
   
   export default function ExerciseDetail({ navigation,route }) {
     const {exercise,exercises} = route?.params;
-    const { height, width } = Dimensions.get("window");
     const [selectedExercise,setSelectedExercise] = useState(exercise);
 
     const onPressBack = () => navigation.goBack();
-
     const onPressNextExercise = ()=>{
       const currentIndex = exercises?.findIndex(ex => ex?._doc?._id == selectedExercise?._id || ex?._doc?._id == selectedExercise?._doc?._id);
       let nextExercise = exercises[currentIndex+1]
@@ -64,13 +61,7 @@ import {
         </View>
         <CKeyBoardAvoidWrapper contentContainerStyle={styles.topSTyle}>
           <View style={styles.videoStyle}>
-            <VideoPlayer
-              video={{uri:selectedExercise?.video}}
-              videoWidth={width - getWidth(10)}
-              videoHeight={getHeight(25)}
-              thumbnail={{ uri: selectedExercise?.video_thumbnail }}
-              showDuration={true}
-            />
+            <VideoComponent videoUrl={selectedExercise?.video} thumbnail={selectedExercise?.video_thumbnail} />
           </View>
           <TouchableOpacity onPress={onPressNextExercise} style={styles.nextBtnStyle}>
           <Text style={styles.backBtnTextStyle}>Next Exercise</Text>
@@ -153,9 +144,9 @@ import {
     },
     videoStyle: {
       width: "90%",
-      height: getHeight(25),
+      height: getHeight(28),
       alignSelf: "center",
-      borderRadius: getWidth(6),
+      borderRadius: 15,
     },
     topSTyle: {
       paddingBottom: getHeight(10),

@@ -7,11 +7,11 @@ import {
   View,
   SafeAreaView,
 } from "react-native";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { ApiCall } from "../../../Services/Apis";
-import {useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../../Redux/actions/GernalActions";
 
 // Local Imports
@@ -23,26 +23,24 @@ import {
 } from "../../../../utils/ResponsiveFun";
 import { colors } from "../../../constants/colors";
 import { fonts } from "../../../constants/fonts";
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "@react-navigation/native";
 import PopupModal from "../../../Components/ErrorPopup";
-
 
 export default function SkillsTraining({ navigation }) {
   const [selectedTab, setSelectedTab] = useState(0);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.userToken);
-  const [skills,setSkills] = useState();
+  const [skills, setSkills] = useState();
   const [isModalVisible, setModalVisible] = useState(false);
   const user = useSelector((state) => state.auth.userData);
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user.isAssigned != true)
-        setModalVisible(true);
+      if (user.isAssigned != true) setModalVisible(true);
     }, [])
   );
   const toggleModal = () => {
-      setModalVisible(!isModalVisible);
+    setModalVisible(!isModalVisible);
   };
 
   const onPressTab = (id) => {
@@ -63,7 +61,7 @@ export default function SkillsTraining({ navigation }) {
         verb: "get",
         token: token,
       });
-      console.log("list",res?.response?.video_list[0].child_folder[0]);
+      console.log("list", res?.response?.video_list[0].child_folder[0]);
       if (res?.response) {
         setSkills(res?.response?.video_list);
         dispatch(setLoader(false));
@@ -84,12 +82,15 @@ export default function SkillsTraining({ navigation }) {
     }
 
     return totalVideos;
-  }
+  };
 
   const onPressSearch = () => navigation.navigate("SearchWorkout");
 
-  const onPressDetail = (selectedSkill,selectedCoach) => {
-    navigation.navigate("CoachDetail",{selectedSkill:selectedSkill,selectedCoach:selectedCoach})
+  const onPressDetail = (selectedSkill, selectedCoach) => {
+    navigation.navigate("CoachDetail", {
+      selectedSkill: selectedSkill,
+      selectedCoach: selectedCoach,
+    });
   };
   const onPressCategory = () => navigation.navigate("Squat");
 
@@ -118,52 +119,61 @@ export default function SkillsTraining({ navigation }) {
     </View>
   );
 
-  const RenderSkillItem = ({ item }) => (
+  const RenderSkillItem = ({ item }) =>
     item?.child_folder?.map((childItem, index) => (
-      <TouchableOpacity key={index} onPress={()=>{onPressDetail(item,childItem)}} style={styles.container1Style}>
-      <View style={styles.rowContainer}>
-        <Image
-          source={{uri:childItem?.folder_Image}}
-          style={styles.imageSTyle}
-        />
-        <View style={{ gap: getHeight(1), flex: 1 }}>
-          <View style={styles.categoryContainer}>
-            <Text style={styles.categoryTextStyle}>{item?.parent_title}</Text>
-          </View>
-          <Text style={styles.titleSTyle} numberOfLines={1}>
-            {childItem?.folder_title}
-          </Text>
-          <View style={styles.descRowContainer}>
-            <View style={styles.rowContainer}>
-              <Entypo name="star" size={getFontSize(2)} color={colors.orange} />
-              <Text numberOfLines={1} style={styles.lessonTextStyle}>
-                {getLessonsCount(item?.child_folder)+ " lessons"}
-              </Text>
+      <TouchableOpacity
+        key={index}
+        onPress={() => {
+          onPressDetail(item, childItem);
+        }}
+        style={styles.container1Style}
+      >
+        <View style={styles.rowContainer}>
+          <Image
+            source={{ uri: childItem?.folder_Image }}
+            style={styles.imageSTyle}
+          />
+          <View style={{ gap: getHeight(1), flex: 1 }}>
+            <View style={styles.categoryContainer}>
+              <Text style={styles.categoryTextStyle}>{item?.parent_title}</Text>
             </View>
-            <Text style={styles.lessonTextStyle}>•</Text>
-            <View style={styles.rowContainer}>
-              <Ionicons
-                name="person"
-                size={getFontSize(2)}
-                color={colors.darkBlue}
-              />
-              <Text numberOfLines={1} style={styles.lessonTextStyle}>
-                 {item?.child_folder?.length+ " Coaches"}
-              </Text>
+            <Text style={styles.titleSTyle} numberOfLines={1}>
+              {childItem?.folder_title}
+            </Text>
+            <View style={styles.descRowContainer}>
+              <View style={styles.rowContainer}>
+                <Entypo
+                  name="star"
+                  size={getFontSize(2)}
+                  color={colors.orange}
+                />
+                <Text numberOfLines={1} style={styles.lessonTextStyle}>
+                  {getLessonsCount(item?.child_folder) + " lessons"}
+                </Text>
+              </View>
+              <Text style={styles.lessonTextStyle}>•</Text>
+              <View style={styles.rowContainer}>
+                <Ionicons
+                  name="person"
+                  size={getFontSize(2)}
+                  color={colors.darkBlue}
+                />
+                <Text numberOfLines={1} style={styles.lessonTextStyle}>
+                  {item?.child_folder?.length + " Coaches"}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
-      </View>
-      <TouchableOpacity>
-        <Ionicons
-          name="chevron-forward-outline"
-          size={getFontSize(4)}
-          color={colors.slateGray}
-        />
+        <TouchableOpacity>
+          <Ionicons
+            name="chevron-forward-outline"
+            size={getFontSize(4)}
+            color={colors.slateGray}
+          />
+        </TouchableOpacity>
       </TouchableOpacity>
-    </TouchableOpacity>
-    ))
-  );
+    ));
 
   const RenderPopularSkillItem = ({ item }) => (
     <TouchableOpacity onPress={onPressCategory} style={styles.container1Style}>

@@ -5,7 +5,7 @@ import {
   FlatList,
   Image,
   Dimensions,
-  ImageBackground
+  ImageBackground,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { colors } from "../../../constants/colors";
@@ -27,10 +27,10 @@ import { setLoader } from "../../../Redux/actions/GernalActions";
 import { ApiCall } from "../../../Services/Apis";
 import { fonts } from "../../../constants/fonts";
 import ReactNativeCalendarStrip from "react-native-calendar-strip";
-import moment from 'moment';
+import moment from "moment";
 import TabBarComponent from "../../../Components/TabBarComponent";
 
-const {height,width} = Dimensions.get("screen");
+const { height, width } = Dimensions.get("screen");
 
 const AddWorkouts = () => {
   const navigation = useNavigation();
@@ -38,7 +38,7 @@ const AddWorkouts = () => {
   const dispatch = useDispatch();
   const [date, setDate] = useState(new Date());
 
-  const [workout,setWorkout] = useState({});
+  const [workout, setWorkout] = useState({});
   const [assigWorkout, setAssigWorkout] = useState({});
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
@@ -65,19 +65,16 @@ const AddWorkouts = () => {
         token: token,
       });
       if (res?.status == "200") {
-        console.log(
-          "exercise..",
-          res?.response?.Workout[0].innerWorkout[0]
-        );
+        console.log("exercise..", res?.response?.Workout[0].innerWorkout[0]);
         setWorkout(res?.response?.Workout[0]);
         setAssigWorkout(res?.response?.Workout[0]?.innerWorkout[0]);
-        setExercises(res?.response?.Workout[0]?.innerWorkout[0]?.exercise)
+        setExercises(res?.response?.Workout[0]?.innerWorkout[0]?.exercise);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        setWorkout({})
+        setWorkout({});
         setAssigWorkout({});
-        setExercises([])
+        setExercises([]);
       }
     } catch (e) {
       console.log("api get skill errorrrr -- ", e.toString());
@@ -101,7 +98,7 @@ const AddWorkouts = () => {
         //   res?.response?.workoutProgress,
         //   selectedDate
         // );
-        setUserWorkoutProgress(res?.response?.workoutProgress)
+        setUserWorkoutProgress(res?.response?.workoutProgress);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -111,7 +108,6 @@ const AddWorkouts = () => {
       console.log("api get skill error -- ", e.toString());
     }
   };
-
 
   useFocusEffect(
     React.useCallback(() => {
@@ -126,48 +122,49 @@ const AddWorkouts = () => {
     try {
       const sets = exercise?.sets;
       if (sets) {
-        const maxReps = Math.max(...sets?.map(set => Number(set.reps)));
+        const maxReps = Math.max(...sets?.map((set) => Number(set.reps)));
         return maxReps;
-      }
-      else
-        return 0
-    }
-    catch {
+      } else return 0;
+    } catch {
       return 0;
     }
-  }
+  };
 
   useEffect(() => {
-    console.log("call for check",userWorkoutProgress);
+    console.log("call for check", userWorkoutProgress);
     // Generate styles for each date in the current month
-    const startOfMonth = moment(currentDate).startOf('month');
-    const endOfMonth = moment(currentDate).endOf('year');
+    const startOfMonth = moment(currentDate).startOf("month");
+    const endOfMonth = moment(currentDate).endOf("year");
     const dates = [];
-    
-    let textColor = colors.white;
-    let backgroundColor = '#393C43';
 
-    for (let m = moment(startOfMonth); m.isBefore(endOfMonth); m.add(1, 'days')) {
-      let find = userWorkoutProgress?.find(x=> new Date(x.workoutDate).toLocaleDateString() == new Date(m.clone()).toLocaleDateString());
-      if (find && find.status == 'assigned')
+    let textColor = colors.white;
+    let backgroundColor = "#393C43";
+
+    for (
+      let m = moment(startOfMonth);
+      m.isBefore(endOfMonth);
+      m.add(1, "days")
+    ) {
+      let find = userWorkoutProgress?.find(
+        (x) =>
+          new Date(x.workoutDate).toLocaleDateString() ==
+          new Date(m.clone()).toLocaleDateString()
+      );
+      if (find && find.status == "assigned")
         textColor = colors.calendarAssigned;
-      else if (find && find.status == 'not assigned')
-        textColor = colors.gray1;
-      else if (find && find.status == 'partially complete')
+      else if (find && find.status == "not assigned") textColor = colors.gray1;
+      else if (find && find.status == "partially complete")
         textColor = colors.buttonColor;
-      else if (find && find.status == 'complete')
-        textColor = colors.greenlight;
-      else if (find && find.status == 'missed')
-        textColor = colors.redtime;
-      else if (find && find.status == 'coming soon')
+      else if (find && find.status == "complete") textColor = colors.greenlight;
+      else if (find && find.status == "missed") textColor = colors.redtime;
+      else if (find && find.status == "coming soon")
         textColor = colors.calendarAssigned;
-      else
-        textColor = colors.white
+      else textColor = colors.white;
 
       dates.push({
         startDate: m.clone(),
         dateNameStyle: { color: textColor },
-        dateNumberStyle: { color: textColor},
+        dateNumberStyle: { color: textColor },
         dateContainerStyle: {
           backgroundColor: backgroundColor,
           borderWidth: 0,
@@ -180,17 +177,18 @@ const AddWorkouts = () => {
     setCustomDatesStyles(dates);
   }, [userWorkoutProgress]);
 
-  const RenderExercise = ({item}) => {
+  const RenderExercise = ({ item }) => {
     return (
-      <View style={{ flex: 1, flexDirection: 'row' }}>
+      <View style={{ flex: 1, flexDirection: "row", zIndex: 1 }}>
         <View style={{ flex: 1 }}>
           <Image
             source={{ uri: item?.video_thumbnail }}
             style={{
-              width: '100%',
+              width: "100%",
               height: 90,
-              resizeMode:'cover',
-              borderRadius:10
+              resizeMode: "cover",
+              borderRadius: 10,
+              zIndex: 1, // Ensure the image is above other elements
             }}
           />
         </View>
@@ -199,38 +197,42 @@ const AddWorkouts = () => {
             paddingLeft: 10,
             gap: 6,
             flex: 2,
-            justifyContent:'center',
+            justifyContent: "center",
             alignItems: "flex-start",
+            zIndex: 1, // Ensure the text is above other elements
           }}
         >
-          <View style={{flex:3,justifyContent:'flex-end'}}>
-          <Text style={{fontWeight: "700",fontSize: 20,}} >
-            {item?.exercise_name}
-          </Text>
+          <View style={{ flex: 3, justifyContent: "flex-end" }}>
+            <Text style={{ fontWeight: "700", fontSize: 20 }}>
+              {item?.exercise_name}
+            </Text>
           </View>
           <View
             style={{
               flexDirection: "column",
-              flex:1,
-              justifyContent:'flex-end',
-              alignItems: 'flex-end'
+              flex: 1,
+              justifyContent: "flex-end",
+              alignItems: "flex-end",
             }}
           >
             <Text>{`Reps: ${item?.sets?.length}x${findMaxReps(item)}`}</Text>
           </View>
         </View>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end' }}>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "flex-end" }}
+        >
           <Image
             source={require("../../../assets/images/exersiseplaybtn.png")}
             style={{
               width: 50,
               height: 50,
+              zIndex: 1, // Ensure the play button is above other elements
             }}
           />
         </View>
       </View>
-    )
-  }
+    );
+  };
 
   const renderItem = (item, index) => (
     <TouchableOpacity
@@ -238,87 +240,121 @@ const AddWorkouts = () => {
         backgroundColor: "#F3F3F4",
         borderRadius: 25,
         width: "100%",
-        marginTop: 10,
-        flexDirection: "row",
+        marginTop: 0, // Change this to 0 if it was positive before
+        marginBottom: 0, // Ensure this is 0
         padding: 10,
+        borderWidth: 0, // Ensure there's no border
       }}
       onPress={() => {
         navigation.navigate("Squat", {
           exercise: item,
           workout: workout,
-          task:null,
-          exercises:exercises
-        })
+          task: null,
+          exercises: exercises,
+        });
       }}
       activeOpacity={0.8}
     >
       <RenderExercise item={item} />
     </TouchableOpacity>
-  )
+  );
+
   const renderMergedItem = (parentitem, parentIndex) => (
-    parentitem?.task?.map((item, index) => (
-      <View key={index}>
-      <TouchableOpacity
-      style={{
-        backgroundColor: "#F3F3F4",
-        borderRadius: 25,
-        width: "100%",
-        marginTop: 10,
-        flexDirection: "row",
-        padding: 10,
-      }}
-      onPress={() => {
-        navigation.navigate("Squat", {
-          exercise: item,
-          workout: workout,
-          task:parentitem?.task,
-          exercises:exercises,
-          calories:assigWorkout?.calories || 0
-        })
-      }}
-      activeOpacity={0.8}
-    >
-    <RenderExercise item={item} />
-    </TouchableOpacity>
-        {parentitem?.task?.length != index + 1 &&
-          <View style={{ height: 40,marginTop:5,alignSelf:'center', width: 8, backgroundColor: colors.black }} />
+    <View>
+      {parentitem?.task?.map((item, index) => (
+        <View key={index} style={{  }}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#F3F3F4",
+              borderRadius: 25,
+              width: "100%",
+              padding: 10,
+              zIndex: 2,
+            }}
+            onPress={() => {
+              navigation.navigate("Squat", {
+                exercise: item,
+                workout: workout,
+                task: parentitem?.task,
+                exercises: exercises,
+                calories: assigWorkout?.calories || 0,
+              });
+            }}
+            activeOpacity={0.8}
+          >
+            <RenderExercise item={item} />
+          </TouchableOpacity>
+          {index < parentitem?.task?.length-1 ? (
+            <View
+              style={{
+                left: 30,
+                width: 8,
+                height: 40,
+                backgroundColor: colors.black,
+              }}
+            />
+          )
+          :
+          <View style={{marginBottom:10}} />
         }
+        </View>
+      ))}
     </View>
-    ))
-  )
-  
+  );
 
   return (
-    <View style={{flex: 1}}>
-        <View>
+    <View style={{ flex: 1 }}>
+      <View>
         <ImageBackground
           source={require("../../../assets/images/guyback.png")}
           style={{
             width: width,
-            height: height/3.3,
+            height: height / 3.3,
             resizeMode: "cover",
             paddingBottom: 14,
-            justifyContent: 'flex-end',
-            borderRadius: 16,
-            overflow: 'hidden'
+            justifyContent: "flex-end",
+            borderBottomLeftRadius: 16,
+            borderBottomRightRadius: 16,
+            overflow: "hidden",
           }}
         >
-             <TabBarComponent activeTab={2} setActiveTab={(index) => {
-              if (index == 0)
-                navigation.navigate("Workouts")
-              else if (index == 1)
-                navigation.navigate("AdditionalWorkout")
-            }} />
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{
+              position: "absolute",
+              top: -55, // Adjust this value as needed
+              left: 0, // Adjust this value as needed
+              zIndex: 1,
+            }}
+          >
+            <Image
+              source={require("../../../assets/images/Monotone3chevron3left.png")}
+              style={{
+                tintColor: colors.white,
+                height: 30,
+                width: 30,
+                marginLeft: 31,
+                marginTop: 100,
+              }}
+            />
+          </TouchableOpacity>
+          <TabBarComponent
+            activeTab={2}
+            setActiveTab={(index) => {
+              if (index == 0) navigation.navigate("Workouts");
+              else if (index == 1) navigation.navigate("AdditionalWorkout");
+            }}
+          />
           <ReactNativeCalendarStrip
             showMonth={false}
             selectedDate={date}
             onDateSelected={handleDateChange}
             calendarAnimation={{ type: "sequence", duration: 30 }}
             customDatesStyles={customDatesStyles}
-            highlightDateNameStyle={{ color: 'black' }}
-            highlightDateNumberStyle={{ color: 'black' }}
+            highlightDateNameStyle={{ color: "black" }}
+            highlightDateNumberStyle={{ color: "black" }}
             highlightDateContainerStyle={{
-              backgroundColor: 'white',
+              backgroundColor: "white",
               width: getWidth(11),
               borderRadius: 13,
             }}
@@ -326,13 +362,13 @@ const AddWorkouts = () => {
               height: getHeight(8),
               paddingHorizontal: 2,
             }}
-            calendarHeaderStyle={{ color: 'white' }}
+            calendarHeaderStyle={{ color: "white" }}
             iconContainer={{ flex: 0.05 }}
           />
         </ImageBackground>
       </View>
       <FlatList
-        style={{ paddingTop:20 }}
+        style={{ paddingTop: 20 }}
         data={exercises}
         initialNumToRender={5}
         showsHorizontalScrollIndicator={false}
@@ -340,29 +376,34 @@ const AddWorkouts = () => {
         ListEmptyComponent={() => (
           <View
             style={{
-              justifyContent: 'center',
-              alignItems: 'center',
+              justifyContent: "center",
+              alignItems: "center",
               height: getFontSize(5),
             }}
           >
             <Text
               style={{
-                fontSize: getFontSize(2),
+                fontSize: getFontSize(3),
                 color: colors.black,
-                marginTop: getHeight(1)
-              }}>
-              No workout found on selected date
+                marginTop: getHeight(1),
+              }}
+            >
+              Rest Day & Recovery! {"\n"} Enjoy your!
             </Text>
           </View>
         )}
         refreshing={false}
         onRefresh={() => getSingleExcercise(date)}
         ListHeaderComponent={() => (
-          <View style={{
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
-            <Text style={{ fontWeight: "700",textAlign:'center', fontSize: 20 }}>
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text
+              style={{ fontWeight: "700", textAlign: "center", fontSize: 20 }}
+            >
               {assigWorkout?.workoutName}
             </Text>
             <Text
@@ -514,11 +555,10 @@ const AddWorkouts = () => {
                   navigation.navigate("Squat", {
                     exercise: exercises[0],
                     workout: workout,
-                    task:null,
-                    exercises:exercises
-                  })
-                 }
-                }
+                    task: null,
+                    exercises: exercises,
+                  });
+                }}
                 text={`Start Workout`}
                 btnStyle={{
                   ...GernalStyle.btn,
@@ -536,45 +576,17 @@ const AddWorkouts = () => {
                   borderRadius: 15,
                   height: 45,
                   backgroundColor: colors.greentick,
-                  marginTop: 20
+                  marginTop: 20,
                 }}
                 btnTextStyle={GernalStyle.btnText}
               />
             </View>
-            {/* <TouchableOpacity
-                            activeOpacity={0.8}
-                            onPress={() =>
-                                navigation.navigate("Squat", {
-                                    workoutId: "66642342de69c0b3aaa8511f",
-                                })
-                            }
-                        >
-                            <Image
-                                source={require("../../../assets/images/startworkoutsbtn.png")}
-                                style={{
-                                    objectFit: "contain",
-                                    width: Dimensions.get("screen").width - 24,
-                                    marginTop: -30,
-                                }}
-                            />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity activeOpacity={0.8}>
-                            <Image
-                                source={require("../../../assets/images/exercisebtn2.png")}
-                                style={{
-                                    objectFit: "contain",
-                                    width: Dimensions.get("screen").width - 18,
-                                    marginTop: -90,
-                                }}
-                            />
-                        </TouchableOpacity> */}
           </View>
         )}
         renderItem={({ item, index }) => {
-          return (
-            item?.exercise_name  ? renderItem(item,index) : renderMergedItem(item,index)
-          );
+          return item?.exercise_name
+            ? renderItem(item, index)
+            : renderMergedItem(item, index);
         }}
       />
     </View>

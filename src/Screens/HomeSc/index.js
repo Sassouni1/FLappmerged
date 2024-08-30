@@ -14,17 +14,15 @@ import moment from "moment"; // Import moment for date manipulation
 import Entypo from "react-native-vector-icons/Entypo";
 import PopupModal from "../../Components/ErrorPopup";
 
-
-
 import { useDispatch, useSelector } from "react-redux";
 import { appListner, requestUserPermission } from "../Notifications";
 import { getSingleUser } from "../../Redux/actions/AuthActions";
 import { ApiCall } from "../../Services/Apis";
 import { setLoader } from "../../Redux/actions/GernalActions";
 import { useNavigation } from "@react-navigation/native";
-import { Calendar } from 'react-native-calendars';
+import { Calendar } from "react-native-calendars";
 import { colors } from "../../constants/colors";
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "@react-navigation/native";
 import TodoList from "../../Components/TodoList";
 
 const HomeSc = ({ navigation, route }) => {
@@ -33,28 +31,28 @@ const HomeSc = ({ navigation, route }) => {
   const user = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
   const [adminAlert, setAdminAlert] = useState("");
-  const [selectedDate, setSelectedDate] = useState('');
-  const [calendarMarkedDates,setCalendarMarkedDates] = useState({});
-  const [events,setEvents] = useState();
-  const [eventDescription,setEventDescription] = useState("asdasd");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [calendarMarkedDates, setCalendarMarkedDates] = useState({});
+  const [events, setEvents] = useState();
+  const [eventDescription, setEventDescription] = useState("asdasd");
   const [upComingEvent, setUpcomingEvent] = useState();
-  const [todayWorkout,setTodayWorkout] = useState();
+  const [todayWorkout, setTodayWorkout] = useState();
   const [isModalVisible, setModalVisible] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user.isAssigned != true)
-        setModalVisible(true);
+      if (user.isAssigned != true) setModalVisible(true);
     }, [])
   );
   const toggleModal = () => {
-      setModalVisible(!isModalVisible);
+    setModalVisible(!isModalVisible);
   };
 
   const openMyFitnessPal = async () => {
     const myFitnessPalURL = "myfitnesspal://"; // MyFitnessPal URL scheme
-    const appStoreURL = "https://apps.apple.com/us/app/myfitnesspal/id341232718"; // MyFitnessPal App Store URL
-  
+    const appStoreURL =
+      "https://apps.apple.com/us/app/myfitnesspal/id341232718"; // MyFitnessPal App Store URL
+
     try {
       // Check if MyFitnessPal is installed
       const isAppInstalled = await Linking.canOpenURL(myFitnessPalURL);
@@ -70,13 +68,10 @@ const HomeSc = ({ navigation, route }) => {
     }
   };
 
-  
   const handleDayPress = (day) => {
-    let find = events?.find(x=> getFormattedDate(x.start) == day.dateString);
-    if (find)
-      setEventDescription(find?.title)
-    else
-      setEventDescription('')
+    let find = events?.find((x) => getFormattedDate(x.start) == day.dateString);
+    if (find) setEventDescription(find?.title);
+    else setEventDescription("");
     setSelectedDate(day.dateString);
   };
 
@@ -106,8 +101,7 @@ const HomeSc = ({ navigation, route }) => {
   }, []);
   useEffect(() => {
     if (token) {
-      if (user.isAssigned)
-        dispatch(getSingleUser(token));
+      if (user.isAssigned) dispatch(getSingleUser(token));
       appListner(navigation);
     }
   }, []);
@@ -128,7 +122,7 @@ const HomeSc = ({ navigation, route }) => {
         token: token,
       });
       if (res?.status == "200") {
-        console.log("innerWorkout",res?.response?.Workout[0]?.innerWorkout[0])
+        console.log("innerWorkout", res?.response?.Workout[0]?.innerWorkout[0]);
         setTodayWorkout(res?.response?.Workout[0]?.innerWorkout[0]);
         dispatch(setLoader(false));
       } else {
@@ -154,12 +148,14 @@ const HomeSc = ({ navigation, route }) => {
         console.log("events", res?.response?.admin);
         setEvents(res?.response?.admin);
         setMarkedDates(res?.response?.admin);
-       
+
         let _events = res?.response?.admin;
         let latestEvent = _events?.reduce((latest, current) => {
-          return new Date(current.start) > new Date(latest.start) ? current : latest;
+          return new Date(current.start) > new Date(latest.start)
+            ? current
+            : latest;
         }, _events[0]);
-        setUpcomingEvent(latestEvent)
+        setUpcomingEvent(latestEvent);
 
         dispatch(setLoader(false));
       } else {
@@ -176,7 +172,7 @@ const HomeSc = ({ navigation, route }) => {
   const setMarkedDates = (records) => {
     let allDates = {};
     let currentDate = getFormattedDate(new Date());
-    records.forEach(item => {
+    records.forEach((item) => {
       let formatedDate = getFormattedDate(item.start);
       if (formatedDate >= currentDate) {
         let obj = {
@@ -185,21 +181,21 @@ const HomeSc = ({ navigation, route }) => {
             // marked: true,
             selectedColor: colors.blueColor,
           },
-        }
-        allDates = { ...allDates, ...obj }
+        };
+        allDates = { ...allDates, ...obj };
       }
     });
     console.log(allDates);
     setCalendarMarkedDates(allDates);
-  }
- 
+  };
+
   const getFormattedDate = (_date) => {
     const date = new Date(_date);
-    
+
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-  
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
     return `${year}-${month}-${day}`;
   };
 
@@ -207,24 +203,24 @@ const HomeSc = ({ navigation, route }) => {
     const now = new Date();
     const endDate = new Date(targetDate);
     const timeDiff = endDate - now;
-  
+
     if (timeDiff <= 0) {
       return "The date has already passed.";
     }
-  
+
     const seconds = Math.floor((timeDiff / 1000) % 60);
     const minutes = Math.floor((timeDiff / (1000 * 60)) % 60);
     const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
     const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-    
+
     if (days > 0) {
-      return `${days} day${days > 1 ? 's' : ''}`;
+      return `${days} day${days > 1 ? "s" : ""}`;
     } else if (hours > 0) {
-      return `${hours} hour${hours > 1 ? 's' : ''}`;
+      return `${hours} hour${hours > 1 ? "s" : ""}`;
     } else if (minutes > 0) {
-      return `${minutes} minute${minutes > 1 ? 's' : ''}`;
+      return `${minutes} minute${minutes > 1 ? "s" : ""}`;
     } else {
-      return `${seconds} second${seconds > 1 ? 's' : ''}`;
+      return `${seconds} second${seconds > 1 ? "s" : ""}`;
     }
   }
 
@@ -242,36 +238,39 @@ const HomeSc = ({ navigation, route }) => {
         if (eventDateOnly >= currentDateOnly) {
           // Options for formatting the date and time
           const options = {
-            month: 'long',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
             hour12: true,
-            timeZone: 'America/New_York',
-            timeZoneName: 'short'
+            timeZone: "America/New_York",
+            timeZoneName: "short",
           };
 
           // Format the date
-          const formattedDate = date.toLocaleString('en-US', options);
+          const formattedDate = date.toLocaleString("en-US", options);
 
           // Adjust the output to match the desired format
-          const [monthDay, timeAndTimezone] = formattedDate.split(',');
+          const [monthDay, timeAndTimezone] = formattedDate.split(",");
 
           // Check if time and timezone are defined
           if (timeAndTimezone) {
-            const [time, timezone] = timeAndTimezone.trim().split(' ');
+            const [time, timezone] = timeAndTimezone.trim().split(" ");
 
             // Check if the event is on the same day
             if (eventDateOnly.getTime() === currentDateOnly.getTime()) {
               const finalFormattedDate = `Upcoming call: Today at ${time?.toLowerCase()} ${timezone?.toLowerCase()}`;
               return finalFormattedDate;
             } else {
-              const finalFormattedDate = `Upcoming call: ${monthDay?.trim()} at ${time?.toLowerCase()} ${timezone?.toLowerCase()}`;
+              const finalFormattedDate = `Upcoming call: ${monthDay?.trim()} at ${time?.toLowerCase()} ${timezone?.toLowerCase()} with ${
+                upComingEvent?.speakers[0]?.name
+              }`;
+
               return finalFormattedDate;
             }
           } else {
             // Fallback if split fails
-            return `Upcoming call: ${formattedDate}`;
+            return `Upcoming call: ${formattedDate} with ${upComingEvent?.speakers[0]?.name}`;
           }
         } else {
           return "";
@@ -279,9 +278,8 @@ const HomeSc = ({ navigation, route }) => {
       } else {
         return "";
       }
-    }
-    catch (e) {
-      return ""
+    } catch (e) {
+      return "";
     }
   };
 
@@ -315,12 +313,14 @@ const HomeSc = ({ navigation, route }) => {
         <View style={styles.headerInfo}>
           <View style={styles.profilePicture}>
             <Image
-              source={{uri:user?.profile_image}}
+              source={{ uri: user?.profile_image }}
               style={styles.profileImage}
             />
           </View>
           <View style={styles.headerContent}>
-            <Text style={styles.greeting}>{"Hello "+user?.full_name?.split(" ")[0]}</Text>
+            <Text style={styles.greeting}>
+              {"Hello " + user?.full_name?.split(" ")[0]}
+            </Text>
           </View>
           <Entypo
             size={30}
@@ -345,7 +345,7 @@ const HomeSc = ({ navigation, route }) => {
         <View style={styles.subNav}>
           <View style={styles.vidTitle}>
             <Text style={styles.subNavText}>Today's Workout</Text>
-            <Text style={styles.vidTitleText}>({todayWorkout?.workoutLength || 0})</Text>
+            <Text style={styles.vidTitleText}>({todayWorkout ? 1 : 0})</Text>
           </View>
 
           <View style={styles.moreVertical}>
@@ -354,104 +354,109 @@ const HomeSc = ({ navigation, route }) => {
             <View style={styles.moreVerticalLine} />
           </View>
         </View>
-        <View style={styles.frameContainer}>
+        <TouchableOpacity
+          style={styles.frameContainer}
+          onPress={() => navigation.navigate("AddWorkouts")}
+        >
           <Image
-            source={require("../../assets/images/homevidthumb.png")}
+            source={
+              todayWorkout
+                ? require("../../assets/images/homevidthumb.png")
+                : require("../../assets/images/homevidthumb.png")
+            }
             style={styles.vidThumb}
+          />
+          <Image
+            source={require("../../assets/images/blackshadow.png")}
+            style={styles.overlay}
           />
           <View style={styles.frameContent}>
             <View style={styles.frameContentUpper}>
-              <View style={styles.fitnessInfo}>
-                <View style={styles.fitnessIcon}>
-                  <Image
-                    source={require("../../assets/images/homeclockicon.png")}
-                  />
-                </View>
-                <Text style={styles.fitnessText}>{`${todayWorkout?.workoutLength || 0} min`}</Text>
-              </View>
-              <View style={styles.fitnessInfo}>
-                <View style={styles.fitnessIcon}>
-                  <Image
-                    source={require("../../assets/images/homefireicon.png")}
-                  />
-                </View>
-                <Text style={styles.fitnessText}> {`${todayWorkout?.calories || 0} Cal`}</Text>
+              <View style={styles.workoutMessageContainer}>
+                <Image
+                  source={require("../../assets/images/firefire2.png")}
+                  style={styles.fireIcon}
+                />
+                <Text style={styles.workoutMessage}>Enjoy your workout</Text>
               </View>
             </View>
             <View style={styles.frameContentLower}>
               <View style={styles.frameText}>
-                <Text style={styles.frameTitle}>{todayWorkout?.workoutName}</Text>
+                <Text style={styles.frameTitle}>
+                  {todayWorkout ? todayWorkout.workoutName : "No Workout Today"}
+                </Text>
                 <View style={styles.frameSubtitle}>
-                  <Text style={styles.frameSubtitleText}>{todayWorkout?.description}</Text>
-                  <View style={styles.tagMaster}>
-                    <Text style={styles.tagText}>INTENSE</Text>
-                  </View>
+                  <Text style={styles.frameSubtitleText}>
+                    {todayWorkout
+                      ? todayWorkout.description
+                      : "Enjoy your rest day!"}
+                  </Text>
                 </View>
               </View>
               <View>
                 <Image
-                  source={require("../../assets/images/homeplaybtn.png")}
+                  source={require("../../assets/images/button13.png")}
+                  style={styles.playButton}
                 />
               </View>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
-      {upComingEvent &&
-        <TouchableOpacity
-          style={styles.liveCallsBtn}
-          onPress={() => { }}
-        >
+      {upComingEvent && (
+        <TouchableOpacity style={styles.liveCallsBtn} onPress={() => {}}>
           <Image
             source={require("../../assets/images/WhiteCalendar.png")}
             style={styles.whiteCalendar}
           />
           <Text style={styles.liveCallsBtnText}>
-            {`Next Live Call Is In ${timeRemaining(upComingEvent?.start)} With ${upComingEvent?.speakers[0]?.name}`}
+            {`Next Live Call Is In ${timeRemaining(
+              upComingEvent?.start
+            )} with ${upComingEvent?.speakers[0]?.name}`}
           </Text>
         </TouchableOpacity>
-      }
+      )}
       {/* Calendar Start */}
       <View style={styles.calendarContainer}>
-      <Calendar
-        onDayPress={handleDayPress}
-        markedDates={calendarMarkedDates}
-        style={{
-          borderRadius:20,
-          backgroundColor:'#f2f2f2',
-          margin:18,
-          height: 350,
-        }}
-        theme={{
-          calendarBackground: '#f2f2f2',
-          textSectionTitleColor: '#b6c1cd',
-          // selectedDayBackgroundColor: '#00adf5',
-          selectedDayTextColor: '#ffffff',
-          todayTextColor: '#00adf5',
-          dayTextColor: '#2d4150',
-          textDisabledColor: '#d9e1e8',
-          arrowColor: colors.black,
-          monthTextColor: colors.black,
-          indicatorColor: 'blue',
-          textDayFontFamily: 'monospace',
-          textMonthFontFamily: 'monospace',
-          textDayHeaderFontFamily: 'monospace',
-          textDayFontWeight: '300',
-          textMonthFontWeight: 'bold',
-          textDayHeaderFontWeight: '300',
-          textDayFontSize: 16,
-          textMonthFontSize: 16,
-          textDayHeaderFontSize: 16,
-        }}
-      />
-      <View style={styles.eventContainer}>
+        <Calendar
+          onDayPress={handleDayPress}
+          markedDates={calendarMarkedDates}
+          style={{
+            borderRadius: 20,
+            backgroundColor: "#f2f2f2",
+            margin: 18,
+            height: 350,
+          }}
+          theme={{
+            calendarBackground: "#f2f2f2",
+            textSectionTitleColor: "#b6c1cd",
+            // selectedDayBackgroundColor: '#00adf5',
+            selectedDayTextColor: "#ffffff",
+            todayTextColor: "#00adf5",
+            dayTextColor: "#2d4150",
+            textDisabledColor: "#d9e1e8",
+            arrowColor: colors.black,
+            monthTextColor: colors.black,
+            indicatorColor: "blue",
+            textDayFontFamily: "monospace",
+            textMonthFontFamily: "monospace",
+            textDayHeaderFontFamily: "monospace",
+            textDayFontWeight: "300",
+            textMonthFontWeight: "bold",
+            textDayHeaderFontWeight: "300",
+            textDayFontSize: 16,
+            textMonthFontSize: 16,
+            textDayHeaderFontSize: 16,
+          }}
+        />
+        <View style={styles.eventContainer}>
           <Text style={styles.eventText}>
             {formatCalendarEventDate(upComingEvent?.start)}
           </Text>
+        </View>
       </View>
-    </View>
-    {/* Calendar End */}
-    
+      {/* Calendar End */}
+
       <View style={{ padding: 20 }}>
         <TodoList />
       </View>
@@ -615,6 +620,17 @@ const styles = StyleSheet.create({
     width: "100%",
     objectFit: "cover",
   },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+    opacity: 0.2,
+  },
   header: {
     flexDirection: "column", // Changed to column
     alignItems: "center",
@@ -624,6 +640,9 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 32,
     marginTop: 20,
     position: "relative",
+  },
+  menuIcon: {
+    marginleft: 25,
   },
   headerImage: {
     position: "absolute",
@@ -655,6 +674,23 @@ const styles = StyleSheet.create({
     color: "#c8c8c9",
     opacity: 0.8,
   },
+  workoutMessageContainer: {
+    flexDirection: "row",
+    alignItems: "left",
+    justifyContent: "left",
+    width: "100%",
+  },
+  fireIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 6,
+  },
+  workoutMessage: {
+    marginTop: 2,
+    fontSize: 17,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+  },
   headerInfo: {
     alignItems: "center",
     flexDirection: "row",
@@ -662,8 +698,8 @@ const styles = StyleSheet.create({
     marginTop: 90,
   },
   profilePicture: {
-    width: 64,
-    height: 64,
+    width: 54,
+    height: 54,
     borderRadius: 18,
     overflow: "hidden",
   },
@@ -855,7 +891,7 @@ const styles = StyleSheet.create({
     height: 20,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 4,
+    marginRight: 1,
   },
   fitnessText: {
     fontSize: 14,
@@ -891,6 +927,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 8,
     backgroundColor: "rgba(255, 255, 255, 0.32)",
+  },
+  greeting: {
+    fontSize: 25,
+    color: "#FFFFFF",
+    fontWeight: "bold",
   },
   tagText: {
     fontSize: 10,
@@ -1268,15 +1309,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   eventContainer: {
-    position:'absolute',
-    bottom:30,
-    alignItems:'center',
-    width:'100%',
+    position: "absolute",
+    bottom: 38,
+    alignItems: "center",
+    width: "100%",
   },
   eventText: {
-    fontSize: 14,
-    left:0,
+    fontSize: 10,
+    left: 0,
     color: colors.black,
+  },
+  playButton: {
+    width: 52, // or whatever size you want
+    height: 52,
+    resizeMode: "contain",
   },
 });
 

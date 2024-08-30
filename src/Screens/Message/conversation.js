@@ -74,7 +74,7 @@ const BotChatScreen = ({ navigation, route }) => {
         groupChatId: channelId,
         senderId: sender?._id,
         date: date,
-        _id:date.valueOf()
+        _id: date.valueOf(),
       });
     } else if (chatRoomType == "chat") {
       socket.emit("chat", {
@@ -82,7 +82,7 @@ const BotChatScreen = ({ navigation, route }) => {
         chatroomId: channelId,
         senderId: sender?._id,
         date: date,
-        _id:date.valueOf()
+        _id: date.valueOf(),
       });
     }
 
@@ -418,14 +418,22 @@ const BotChatScreen = ({ navigation, route }) => {
   const RenderUserName = ({ props }) => {
     return (
       <View style={{ padding: 5 }}>
-        <Text style={{ color: props?.currentMessage?.user?._id == user?._id ? colors.white : colors.black, fontWeight: 'bold' }}>
+        <Text
+          style={{
+            color:
+              props?.currentMessage?.user?._id == user?._id
+                ? colors.white
+                : colors.black,
+            fontWeight: "bold",
+          }}
+        >
           {props?.currentMessage?.user?.full_name}
         </Text>
       </View>
-    )
-  }
+    );
+  };
 
-  const RenderProfilePic = ({props}) => {
+  const RenderProfilePic = ({ props }) => {
     return (
       <View
         style={[
@@ -440,11 +448,11 @@ const BotChatScreen = ({ navigation, route }) => {
       >
         <Image
           source={{ uri: props?.currentMessage?.user?.profile_image }}
-          style={{ height: '88%', width: '99%', borderRadius: getWidth(3), }}
+          style={{ height: "88%", width: "99%", borderRadius: getWidth(3) }}
         />
       </View>
-    )
-  }
+    );
+  };
   const backHandler = () => navigation.goBack();
 
   return (
@@ -453,7 +461,7 @@ const BotChatScreen = ({ navigation, route }) => {
       <HeaderChatBot
         title={
           <Text>
-            Fight Life Team
+            Fight Life Teams
             <Text style={styles.headerSubText}>{`\n251 Chats Left`}</Text>
           </Text>
         }
@@ -501,7 +509,7 @@ const BotChatScreen = ({ navigation, route }) => {
           renderMessageText={(props) => {
             return (
               <View>
-                 <RenderUserName props={props} />
+                <RenderUserName props={props} />
                 {props.currentMessage?.text != "" ||
                 props.currentMessage?.text != null ? (
                   <View
@@ -538,21 +546,21 @@ const BotChatScreen = ({ navigation, route }) => {
                 props.currentMessage?.fileType == "image/jpg" ? (
                   <View>
                     <RenderUserName props={props} />
-                  <View
-                    style={{
-                      flexDirection: props?.currentMessage?.user?._id
-                        ? "row-reverse"
-                        : "row",
-                    }}
-                  >
-                   <RenderProfilePic props={props} />
-                    <ImageModal
-                      style={[styles.image, props.imageStyle]}
-                      resizeMode={"cover"}
-                      modalImageResizeMode="contain"
-                      source={{ uri: props.currentMessage?.PdfFile }}
-                    />
-                  </View>
+                    <View
+                      style={{
+                        flexDirection: props?.currentMessage?.user?._id
+                          ? "row-reverse"
+                          : "row",
+                      }}
+                    >
+                      <RenderProfilePic props={props} />
+                      <ImageModal
+                        style={[styles.image, props.imageStyle]}
+                        resizeMode={"cover"}
+                        modalImageResizeMode="contain"
+                        source={{ uri: props.currentMessage?.PdfFile }}
+                      />
+                    </View>
                   </View>
                 ) : null}
                 {props.currentMessage?.fileType == "image/svg+xml" ? (

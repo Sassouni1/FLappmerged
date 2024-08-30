@@ -1,4 +1,4 @@
-import React, { useState,useEffect,useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -20,7 +20,7 @@ import moment from "moment";
 import fs from "react-native-fs";
 import { GernalStyle } from "../../../constants/GernalStyle";
 import { colors } from "../../../constants/colors";
-import * as Animatable from 'react-native-animatable';
+import * as Animatable from "react-native-animatable";
 import {
   CameraPicker,
   SendMsg,
@@ -54,65 +54,72 @@ const BotChatScreen = ({ navigation, route }) => {
     setMessages([
       {
         _id: 1,
-        text: 'Hello! How can I assist you today?',
+        text: "Hello! How can I assist you today?",
         createdAt: new Date(),
         user: {
           _id: 2,
-          name: 'ChatGPT',
+          name: "ChatGPT",
         },
       },
     ]);
   }, []);
 
   const handleSend = useCallback((newMessages = []) => {
-    setSms('');
-    setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages));
+    setSms("");
+    setMessages((previousMessages) =>
+      GiftedChat.append(previousMessages, newMessages)
+    );
 
     const message = newMessages[0].text;
 
     // Add a waiting indicator message
-    setMessages(previousMessages => GiftedChat.append(previousMessages, [{
-      _id: Math.random().toString(36).substring(7),
-      text: 'waiting...',
-      createdAt: new Date(),
-      user: {
-        _id: 2,
-        name: 'ChatGPT',
-      },
-    }]));
+    setMessages((previousMessages) =>
+      GiftedChat.append(previousMessages, [
+        {
+          _id: Math.random().toString(36).substring(7),
+          text: "waiting...",
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: "ChatGPT",
+          },
+        },
+      ])
+    );
 
-    fetch('http://54.147.3.191/assistant', {
-      method: 'POST',
+    fetch("http://54.147.3.191/assistant", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ text: message }),
     })
-      .then(response => response.json())
-      .then(data => {
-        console.log(user)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(user);
         const responseMessage = {
           _id: Math.random().toString(36).substring(7),
           text: data?.message,
           createdAt: new Date(),
           user: {
             _id: 2,
-            name: 'ChatGPT',
+            name: "ChatGPT",
           },
         };
-        setMessages(previousMessages => {
-          const filteredMessages = previousMessages.filter(msg => msg.text !== 'waiting...');
+        setMessages((previousMessages) => {
+          const filteredMessages = previousMessages.filter(
+            (msg) => msg.text !== "waiting..."
+          );
           return GiftedChat.append(filteredMessages, responseMessage);
         });
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
   }, []);
 
   const sendChat = async (sms) => {
     // setSms("");
-
     // navigation.navigate("TestChatSceen");
   };
 
@@ -163,33 +170,55 @@ const BotChatScreen = ({ navigation, route }) => {
   const WaitingDots = () => {
     return (
       <View style={styles.dotsContainer}>
-        <Animatable.Text animation="bounce" iterationCount="infinite" style={styles.dot}>.</Animatable.Text>
-        <Animatable.Text animation="bounce" iterationCount="infinite" delay={100} style={styles.dot}>.</Animatable.Text>
-        <Animatable.Text animation="bounce" iterationCount="infinite" delay={200} style={styles.dot}>.</Animatable.Text>
+        <Animatable.Text
+          animation="bounce"
+          iterationCount="infinite"
+          style={styles.dot}
+        >
+          .
+        </Animatable.Text>
+        <Animatable.Text
+          animation="bounce"
+          iterationCount="infinite"
+          delay={100}
+          style={styles.dot}
+        >
+          .
+        </Animatable.Text>
+        <Animatable.Text
+          animation="bounce"
+          iterationCount="infinite"
+          delay={200}
+          style={styles.dot}
+        >
+          .
+        </Animatable.Text>
       </View>
     );
   };
 
   const renderBubble = (props) => {
-    if (props.currentMessage.text === 'waiting...') {
+    if (props.currentMessage.text === "waiting...") {
       return <WaitingDots />;
     }
-    return  <Bubble
-    {...props}
-    wrapperStyle={{
-      right: styles.rightBuble,
-      left: styles.leftBuble,
-    }}
-    textStyle={{
-      left: styles.leftBubleText,
-      right: styles.rightBubleText,
-    }}
-  />;
+    return (
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          right: styles.rightBuble,
+          left: styles.leftBuble,
+        }}
+        textStyle={{
+          left: styles.leftBubleText,
+          right: styles.rightBubleText,
+        }}
+      />
+    );
   };
-  
+
   const backHandler = () => navigation.navigate("HomeSc");
 
-  const RenderProfilePic = ({props}) => {
+  const RenderProfilePic = ({ props }) => {
     return (
       <View
         style={[
@@ -204,11 +233,11 @@ const BotChatScreen = ({ navigation, route }) => {
       >
         <Image
           source={{ uri: user?.profile_image }}
-          style={{ height: '88%', width: '99%', borderRadius: getWidth(3), }}
+          style={{ height: "88%", width: "99%", borderRadius: getWidth(3) }}
         />
       </View>
-    )
-  }
+    );
+  };
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" style={{ backgroundColor: "white" }} />
@@ -216,7 +245,7 @@ const BotChatScreen = ({ navigation, route }) => {
         title={
           <Text>
             Coach Jarvis.AI
-            <Text style={styles.headerSubText}>{`\n251 Chats Left`}</Text>
+            <Text style={styles.headerSubText}>{`\t`}</Text>
           </Text>
         }
         titelStyle={styles.headerTitle}
@@ -225,17 +254,6 @@ const BotChatScreen = ({ navigation, route }) => {
           <Pressable style={styles.headerIconWraaper} onPress={backHandler}>
             <Image
               source={require("../../../assets/images/Monotonechevronleft.png")}
-              style={styles.headerIcons}
-            />
-          </Pressable>
-        }
-        RightIcon={
-          <Pressable
-            style={styles.headerIconWraaper}
-            onPress={() => navigation.navigate("BotAllChatScreen")}
-          >
-            <Image
-              source={require("../../../assets/images/settings.png")}
               style={styles.headerIcons}
             />
           </Pressable>
@@ -259,34 +277,35 @@ const BotChatScreen = ({ navigation, route }) => {
                       paddingVertical: getHeight(1),
                     }}
                   >
-                      {props.currentMessage.user._id == user?._id ?
-                        <RenderProfilePic props={props} />
-                        :
-                        <View
-                          style={{
-                            width: getWidth(10),
-                            height: getWidth(10),
-                            backgroundColor: props.currentMessage.user._id
-                              ? colors.orange
-                              : colors.greyMedium,
-                            justifyContent: "center",
-                            alignItems: "center",
-                            borderRadius: getWidth(3),
-                          }}
-                        >
-                          {props.currentMessage.user._id ? (
-                            <UserChat height={25} width={25} />
-                          ) : (
-                            <BotChat height={25} width={25} />
-                          )}
-                        </View>
-                      }
+                    {props.currentMessage.user._id == user?._id ? (
+                      <RenderProfilePic props={props} />
+                    ) : (
+                      <View
+                        style={{
+                          width: getWidth(10),
+                          height: getWidth(10),
+                          backgroundColor: props.currentMessage.user._id
+                            ? colors.orange
+                            : colors.greyMedium,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          borderRadius: getWidth(3),
+                        }}
+                      >
+                        {props.currentMessage.user._id ? (
+                          <UserChat height={25} width={25} />
+                        ) : (
+                          <BotChat height={25} width={25} />
+                        )}
+                      </View>
+                    )}
                     <Text
                       style={{
                         paddingHorizontal: getWidth(2),
-                        color: props.currentMessage.user._id == user?._id
-                          ? colors.white
-                          : colors.black,
+                        color:
+                          props.currentMessage.user._id == user?._id
+                            ? colors.white
+                            : colors.black,
                         fontFamily: fonts.WM,
                         fontSize: getFontSize(2),
                         maxWidth: "90%",
@@ -363,7 +382,7 @@ const BotChatScreen = ({ navigation, route }) => {
                       width: getWidth(60),
                       marginTop: 0,
                       paddingLeft: getWidth(3),
-                      color:colors.black,
+                      color: colors.black,
                       backgroundColor: colors.greyLight,
                     }}
                     value={sms}
@@ -374,9 +393,7 @@ const BotChatScreen = ({ navigation, route }) => {
                   />
                   <TouchableOpacity
                     onPress={() => setPickerModalVisibile(false)}
-                  >
-                    <CameraPicker height={20} width={20} />
-                  </TouchableOpacity>
+                  ></TouchableOpacity>
                 </View>
                 <TouchableOpacity
                   onPress={() => {
@@ -387,10 +404,10 @@ const BotChatScreen = ({ navigation, route }) => {
                         createdAt: new Date(),
                         user: {
                           _id: user?._id,
-                          name: 'User',
+                          name: "User",
                         },
                       },
-                    ]
+                    ];
                     handleSend(newMessages);
                   }}
                   style={styles.sendBtn}
@@ -448,7 +465,7 @@ const BotChatScreen = ({ navigation, route }) => {
           showAvatarForEveryMessage={true}
           showScrollIndicator={false}
           messages={messages}
-          onSend={newMessages => handleSend(newMessages)}
+          onSend={(newMessages) => handleSend(newMessages)}
           user={{
             _id: user?._id,
           }}
@@ -473,7 +490,6 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     paddingTop: STATUSBAR_HEIGHT,
-    borderBottomLeftRadius: getWidth(10),
     borderBottomRightRadius: getWidth(10),
     alignItems: "center",
     paddingBottom: getHeight(2),
@@ -507,6 +523,8 @@ const styles = StyleSheet.create({
     fontFamily: "Russo_One",
     fontWeight: "600",
     textAlign: "left",
+    marginRight: getWidth(10),
+    marginBottom: getHeight(1),
   },
   headerSubText: {
     fontSize: getFontSize(2),
@@ -589,11 +607,11 @@ const styles = StyleSheet.create({
     borderTopRightRadius: getWidth(10),
   },
   dotsContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   dot: {
     fontSize: 40,
-    color: '#007AFF',
+    color: "#007AFF",
   },
 });
 
