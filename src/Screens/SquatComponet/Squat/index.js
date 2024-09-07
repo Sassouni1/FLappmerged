@@ -59,6 +59,32 @@ const Timer = ({ isVisible, onTimerEnd }) => {
     </View>
   ) : null;
 };
+const TopVideo = React.memo(({ videoUrl, title, onPressBack }) => {
+  // Component logic
+  return (
+    <View>
+      <VideoSkills data={{ video: videoUrl, Name: title }} />
+      <TouchableOpacity
+        onPress={onPressBack}
+        style={[
+          styles.headerBtnStyle,
+          { position: "absolute", top: 10, left: 10 },
+        ]}
+      >
+        <Ionicons
+          name="chevron-back"
+          size={getFontSize(2.5)}
+          color={colors.black}
+        />
+      </TouchableOpacity>
+    </View>
+  );
+}, (prevProps, nextProps) => {
+  return prevProps.videoUrl === nextProps.videoUrl &&
+         prevProps.title === nextProps.title &&
+         prevProps.onPressBack === nextProps.onPressBack;
+});
+
 
 export default function Squat({ navigation, route }) {
   const onPressBack = () => {
@@ -299,9 +325,11 @@ export default function Squat({ navigation, route }) {
     try {
       dispatch(setLoader(true));
       const submittedData = {
+        set_id:set._id,
         parameter: set?.parameter,
         remaining_time: 0,
-        [set?.parameter]: weight,
+        [set?.parameter]: set?.reps,
+        weight:weight
       };
 
       let requestParams = {
@@ -310,7 +338,7 @@ export default function Squat({ navigation, route }) {
         exercise_objId: exercise?._id,
         inner_objId: workout?.innerWorkout[0]?._id,
         submittedData: submittedData,
-        calories: calories,
+        calories: calories || 0,
       };
 
       // if (exercise?.task?.length > 0) {
@@ -497,28 +525,10 @@ export default function Squat({ navigation, route }) {
       </View>
     );
   };
+  
   const RenderExercise = ({ exercise, addon }) => {
     return (
       <View>
-        {/* Exercise Video */}
-        <View>
-            <VideoSkills
-              data={{ video: exercise?.video, Name: exercise?.exercise_name }}
-            />
-          <TouchableOpacity
-            onPress={onPressBack}
-            style={[
-              styles.headerBtnStyle,
-              { position: "absolute", top: 10, left: 10 },
-            ]}
-          >
-            <Ionicons
-              name="chevron-back"
-              size={getFontSize(2.5)}
-              color={colors.black}
-            />
-          </TouchableOpacity>
-        </View>
         {/* Exercise bulets */}
         <View style={[styles.categoryContainer, { justifyContent: "center" }]}>
           <View style={styles.dividerStyle} />
@@ -606,6 +616,7 @@ export default function Squat({ navigation, route }) {
       </View>
     );
   };
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.white }}>
       {isVisible ? (
@@ -638,6 +649,7 @@ export default function Squat({ navigation, route }) {
           {selectedTask ? (
             selectedTask?.map((item, index) => (
               <View key={index}>
+              <TopVideo videoUrl={item?.video} title={item?.exercise_name} onPressBack={onPressBack} />
                 <RenderExercise exercise={item} addon={"task" + index} />
                 {selectedTask?.length != index + 1 && (
                   <View style={styles.divider} />
@@ -645,7 +657,11 @@ export default function Squat({ navigation, route }) {
               </View>
             ))
           ) : (
+            <>
+           <TopVideo videoUrl={selectedExercise?.video} title={selectedExercise?.exercise_name} onPressBack={onPressBack} />
             <RenderExercise exercise={selectedExercise} />
+            </>
+
           )}
 
           {additionalSets?.length > 0 && (

@@ -58,12 +58,9 @@ export default function TrainingStats({ navigation }) {
       set_sp_dropdown(defaultDropDownValue)
 
       dispatch(setLoader(true));
-      // getSingleExcercise(date);
-      // exerciseWeekProgress(date);
-      // getMessagesProgress();
-      exerciseProgress();
-      getCaloriesProgress();
-      getWeightProgress();
+      getExerciseProgress("weekly", setWeeklyProgress, true);
+      getCaloriesProgress("weekly", setCaloriesProgress, true);
+      getWeightProgress("weekly", setWeightProgress);
     }, [])
   );
 
@@ -240,7 +237,6 @@ export default function TrainingStats({ navigation }) {
     workoutsThisWeek?.forEach(dayWorkout => {
       dayWorkout?.innerWorkout?.forEach(element => {
         element?.exercise?.forEach(exercise => {
-          console.log("submitted_sets",exercise?.submitted_sets)
           exercise?.sets?.forEach(additionalSet => {
             let _exerciseName = exercise?.exercise_name?.toLowerCase();
             if(_exerciseName?.includes("squat") && (additionalSet.parameter == 'lbs' || additionalSet.parameter == 'weight'))
@@ -318,476 +314,101 @@ export default function TrainingStats({ navigation }) {
       set_sp_dropdown(selectedType)
   }
 
-  // all exercise progress apis functions
-  const exerciseProgress = async () => {
+
+  const getExerciseProgress = async (timePeriod, setProgressFunction, isPost = false) => {
+    const routes = {
+      weekly: `assignProgram/user_progress/${user?.user_id}`,
+      monthly: `assignProgram/monthly_progress/${user?.user_id}`,
+      threeMonth: `assignProgram/last_three_months_progress/${user?.user_id}`,
+      sixMonth: `assignProgram/last_six_months_progress/${user?.user_id}`,
+      allMonths: `assignProgram/all_months_progress/${user?.user_id}`
+    };
+  
     try {
       const res = await ApiCall({
-        route: `assignProgram/user_progress/${user?.user_id}`,
-        verb: "post",
+        route: routes[timePeriod],
+        verb: isPost ? "post" : "get",
         token: token,
-        params: {
-          givenDate: new Date(),
-        },
+        ...(isPost && { params: { givenDate: new Date() } }), // Include params if it's a POST request
       });
-
+  
       if (res?.status == "200") {
-        setWorkoutsThisWeek(res?.response?.workoutsThisWeek);
-        setWeeklyProgress(res?.response?.weeklyProgress);
+        setProgressFunction(
+          res?.response?.weeklyProgress || res?.response?.monthlyProgress || res?.response?.yearlyProgress
+        );
+        if (timePeriod === "weekly") {
+          setWorkoutsThisWeek(res?.response?.workoutsThisWeek); // Additional data for weekly progress
+        }
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
+        console.log(`error in ${timePeriod} exercise progress`);
       }
     } catch (e) {
-      console.log("api get user_progress error -- ", e.toString());
+      console.log(`api get ${timePeriod}Progress error -- `, e.toString());
     }
   };
 
-  const getExerciseMonthProgress = async () => {
+  const getWeightProgress = async (timePeriod, setProgressFunction) => {
+    const routes = {
+      weekly: `assignProgram/weeklyWeight/${user?.plan_id}`,
+      monthly: `assignProgram/monthlyWeight/${user?.plan_id}`,
+      threeMonth: `assignProgram/lastThreeMonthWeight/${user?.plan_id}`,
+      sixMonth: `assignProgram/lastSixMonthWeight/${user?.plan_id}`,
+      allMonths: `assignProgram/allMonthsWeight/${user?.plan_id}`
+    };
+  
     try {
       const res = await ApiCall({
-        route: `assignProgram/monthly_progress/${user?.user_id}`,
+        route: routes[timePeriod],
         verb: "get",
         token: token,
       });
-      console.log("responseeeeee", res?.response);
+  
+      console.log(`response of getWeight${timePeriod}Progress`, res?.response);
+  
       if (res?.status == "200") {
-        setMonthlyProgress(res?.response?.weeklyProgress);
+        setProgressFunction(res?.response?.monthlyWeight || res?.response?.weeklyWeight);
+        setTotal_lbs(res?.response?.total_lbs);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        console.log("errorrrr in montly exercise progress");
+        console.log(`error in ${timePeriod} progress`);
       }
     } catch (e) {
-      console.log("api gettttt monthly_progress error -- ", e.toString());
+      console.log(`api get ${timePeriod}Weight error -- `, e.toString());
     }
   };
 
-  const getExerciseThreeMonthProgress = async () => {
+  const getCaloriesProgress = async (timePeriod, setProgressFunction, isPost = false) => {
+    const routes = {
+      weekly: `assignProgram/user_weekly_calories/${user?.user_id}`,
+      monthly: `assignProgram/monthly_calories/${user?.user_id}`,
+      threeMonth: `assignProgram/last_three_months_calories/${user?.user_id}`,
+      sixMonth: `assignProgram/last_six_months_calories/${user?.user_id}`,
+      allMonths: `assignProgram/all_months_calories/${user?.user_id}`,
+    };
+  
     try {
       const res = await ApiCall({
-        route: `assignProgram/last_three_months_progress/${user?.user_id}`,
-        verb: "get",
+        route: routes[timePeriod],
+        verb: isPost ? "post" : "get",
         token: token,
+        ...(isPost && { params: { givenDate: new Date() } }), // Include params if it's a POST request
       });
+  
       if (res?.status == "200") {
-        setProgressThreeMonth(res?.response?.monthlyProgress);
+        setProgressFunction(
+          res?.response?.weeklyProgress || res?.response?.monthlyProgress || res?.response?.yearlyProgress
+        );
+        setCaloriesBurned(res?.response?.totalCalories); // Common for all progress types
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        console.log("errorrrr in three month exercise progress");
+        console.log(`error in ${timePeriod} calories progress`);
       }
     } catch (e) {
-      console.log("api get last_three_months_progress error -- ", e.toString());
-    }
-  };
-
-  const getExerciseSixMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/last_six_months_progress/${user?.user_id}`,
-        verb: "get",
-        token: token,
-      });
-      if (res?.status == "200") {
-        setProgressSixMonth(res?.response?.monthlyProgress);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in six month exercise progress");
-      }
-    } catch (e) {
-      console.log("api get last_six_months_progress error -- ", e.toString());
-    }
-  };
-
-  const getExerciseAllMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/all_months_progress/${user?.user_id}`,
-        verb: "get",
-        token: token,
-      });
-      if (res?.status == "200") {
-        setYearProgress(res?.response?.yearlyProgress);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in all month exercise progress");
-      }
-    } catch (e) {
-      console.log("api gettt all_months_progress error -- ", e.toString());
-    }
-  };
-
-  // all messages progress apis functions
-  const getMessagesProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/totalMessages/${user?._id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("setMessagesProgress", res?.response);
-      if (res?.status == "200") {
-        setMessagesProgress(res?.response?.weeklyProgress);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get totalMessages error -- ", e.toString());
-    }
-  };
-
-  const getMessagesMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/monthlyMessages/${user?._id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of month", res?.response);
-      if (res?.status == "200") {
-        setMessagesProgressMonth(res?.response?.weeklyProgress);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get monthlyMessages error -- ", e.toString());
-    }
-  };
-
-  const getMessagesThreeMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/last_three_monthly_messages/${user?._id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("last_three_monthly_messages", res?.response);
-      if (res?.status == "200") {
-        setMessagesProgressThreeMonth(res?.response?.monthlyProgress);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log(
-        "api get last_three_monthly_messages error -- ",
-        e.toString()
-      );
-    }
-  };
-
-  const getMessagesSixMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/last_six_monthly_messages/${user?._id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of last_six_monthly_messages", res?.response);
-      if (res?.status == "200") {
-        setMessagesProgressSixMonth(res?.response?.monthlyProgress);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get last_six_monthly_messages error -- ", e.toString());
-    }
-  };
-
-  const getMessagesAllMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/all_monthly_messages/${user?._id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of all_monthly_messages", res?.response);
-      if (res?.status == "200") {
-        setMessagesProgressAllMonth(res?.response?.yearlyProgress);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get all_monthly_messages error -- ", e.toString());
-    }
-  };
-
-  // all weight progress apis functions
-  const getWeightProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/weeklyWeight/${user?.plan_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("getWeightProgress", res);
-      if (res?.status == "200") {
-        setWeightProgress(res?.response?.weeklyWeight);
-        setTotal_lbs(res?.response?.total_lbs)
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get weeklyWeight error -- ", e.toString());
-    }
-  };
-
-  const getWeightMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/monthlyWeight/${user?.plan_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of getWeightMonthProgress", res?.response);
-
-      if (res?.status == "200") {
-        setMonthlyWeightProgess(res?.response?.monthlyWeight);
-        setTotal_lbs(res?.response?.total_lbs)
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get monthlyWeight error -- ", e.toString());
-    }
-  };
-
-  const getWeightThreeMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/lastThreeMonthWeight/${user?.plan_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of getWeightThreeMonthProgress", res?.response);
-      if (res?.status == "200") {
-        setWeightProgressThreeMonth(res?.response?.monthlyWeight);
-        setTotal_lbs(res?.response?.total_lbs)
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get lastThreeMonthWeight error -- ", e.toString());
-    }
-  };
-
-  const getWeightSixMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/lastSixMonthWeight/${user?.plan_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of getWeightSixMonthProgress", res?.response);
-
-      if (res?.status == "200") {
-        setWeightProgressSixMonth(res?.response?.monthlyWeight);
-        setTotal_lbs(res?.response?.total_lbs)
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get lastSixMonthWeight error -- ", e.toString());
-    }
-  };
-
-  const getWeightAllMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/allMonthsWeight/${user?.plan_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of getWeightAllMonthProgress", res?.response);
-
-      if (res?.status == "200") {
-        setWeightProgressAllMonth(res?.response?.monthlyWeight);
-        setTotal_lbs(res?.response?.total_lbs)
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get allMonthsWeight error -- ", e.toString());
-    }
-  };
-
-  // all Calories progress apis functions
-  const getCaloriesProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/user_weekly_calories/${user?.user_id}`,
-        verb: "post",
-        token: token,
-        params: {
-          givenDate: new Date(),
-        },
-      });
-      console.log("ressss", res?.response);
-      if (res?.status == "200") {
-        setCaloriesProgress(res?.response?.weeklyProgress);
-        setCaloriesBurned(res?.response?.totalCalories);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get weeklyWeight error -- ", e.toString());
-    }
-  };
-
-  const getCaloriesMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/monthly_calories/${user?.user_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of weight", res?.response);
-
-      if (res?.status == "200") {
-        setMonthlyCaloriesProgess(res?.response?.weeklyProgress);
-        setCaloriesBurned(res?.response?.totalCalories);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get monthlyWeight error -- ", e.toString());
-    }
-  };
-
-  const getCaloriesThreeMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/last_three_months_calories/${user?.user_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of weightLKL", res?.response);
-      if (res?.status == "200") {
-        setCaloriesProgressThreeMonth(res?.response?.monthlyProgress);
-        setCaloriesBurned(res?.response?.totalCalories);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get lastThreeMonthWeight error -- ", e.toString());
-    }
-  };
-
-  const getCaloriesSixMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/last_six_months_calories/${user?.user_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of weightHJJH", res?.response);
-
-      if (res?.status == "200") {
-        setCaloriesProgressSixMonth(res?.response?.monthlyProgress);
-        setCaloriesBurned(res?.response?.totalCalories);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get lastSixMonthWeight error -- ", e.toString());
-    }
-  };
-
-  const getCaloriesAllMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/all_months_calories/${user?.user_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of weightJKJK", res?.response);
-
-      if (res?.status == "200") {
-        setCaloriesProgressAllMonth(res?.response?.yearlyProgress);
-        setCaloriesBurned(res?.response?.totalCalories);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get allMonthsWeight error -- ", e.toString());
-    }
-  };
-
-  // all calender progress apis functions
-  const getSingleExcercise = async (selectedDate) => {
-    console.log(selectedDate);
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/given_date_workout/${user?.plan_id
-          }&${selectedDate.toISOString()}`,
-        verb: "get",
-        token: token,
-      });
-      if (res?.status == "200") {
-        setAssigWorkout(res?.response?.Workout);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        setAssigWorkout([]);
-        console.log("errorrrr in calenders");
-      }
-    } catch (e) {
-      console.log("api get skill error -- ", e.toString());
-    }
-  };
-
-  const exerciseWeekProgress = async (selectedDate) => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/user_status/${user?.user_id}`,
-        verb: "post",
-        token: token,
-        params: {
-          givenDate: selectedDate,
-        },
-      });
-
-      if (res?.status == "200") {
-        setWeekDataProgress(res?.response?.weeklyProgress);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get skill error -- ", e.toString());
+      console.log(`api get ${timePeriod}Calories error -- `, e.toString());
     }
   };
 
@@ -949,56 +570,61 @@ export default function TrainingStats({ navigation }) {
   }
 
   // select api function from dropdown
-  const toggleTypeSelection = (selectedType,section) => {
+  const toggleTypeSelection = (selectedType, section) => {
     dispatch(setLoader(true));
-
-    if (selectedType == "Last 7 Days") {
-      if (section == 'tc')
-        exerciseProgress();
-      else if (section == 'cb')
-        getCaloriesProgress();
-      else if (section == 'sp')
-        getWeightProgress();
-
-    } else if (selectedType == "This Month") {
-
-      if (section == 'tc')
-        getExerciseMonthProgress();
-      else if (section == 'cb')
-        getCaloriesMonthProgress();
-      else if (section == 'sp')
-        getWeightMonthProgress();
-
-    } else if (selectedType == "Last 3 Months") {
-
-      if (section == 'tc')
-        getExerciseThreeMonthProgress();
-      else if (section == 'cb')
-        getCaloriesThreeMonthProgress();
-      else if (section == 'sp')
-        getWeightThreeMonthProgress();
-      
-    } else if (selectedType == "Last 6 Months") {
-
-      if (section == 'tc')
-        getExerciseSixMonthProgress();
-      else if (section == 'cb')
-        getCaloriesSixMonthProgress();
-      else if (section == 'sp')
-        getWeightSixMonthProgress();
-
-
-    } else if (selectedType == "All Time") {
-
-      if (section == 'tc')
-        getExerciseAllMonthProgress();
-      else if (section == 'cb')
-        getCaloriesAllMonthProgress();
-      else if (section == 'sp')
-        getWeightAllMonthProgress();
-
+  
+    // Define the mappings for selectedType to progress type
+    const progressMap = {
+      "Last 7 Days": "weekly",
+      "This Month": "monthly",
+      "Last 3 Months": "threeMonth",
+      "Last 6 Months": "sixMonth",
+      "All Time": "allMonths",
+    };
+  
+    // Define the mappings for section to their respective progress functions
+    const sectionMap = {
+      tc: getExerciseProgress,
+      cb: getCaloriesProgress,
+      sp: getWeightProgress,
+    };
+  
+    const setProgressMap = {
+      tc: {
+        weekly: setWeeklyProgress,
+        monthly: setMonthlyProgress,
+        threeMonth: setProgressThreeMonth,
+        sixMonth: setProgressSixMonth,
+        allMonths: setYearProgress,
+      },
+      cb: {
+        weekly: setCaloriesProgress,
+        monthly: setMonthlyCaloriesProgess,
+        threeMonth: setCaloriesProgressThreeMonth,
+        sixMonth: setCaloriesProgressSixMonth,
+        allMonths: setCaloriesProgressAllMonth,
+      },
+      sp: {
+        weekly: setWeightProgress,
+        monthly: setMonthlyWeightProgess,
+        threeMonth: setWeightProgressThreeMonth,
+        sixMonth: setWeightProgressSixMonth,
+        allMonths: setWeightProgressAllMonth,
+      },
+    };
+  
+    // Retrieve the progressType based on the selectedType
+    const progressType = progressMap[selectedType];
+  
+    // Ensure progressType and section are valid
+    if (progressType && sectionMap[section]) {
+      const setProgress = setProgressMap[section][progressType];
+      const isPost = selectedType === "Last 7 Days"; // Weekly requires POST request
+  
+      // Call the respective function
+      sectionMap[section](progressType, setProgress, isPost);
     } else {
-      console.log("NO select type selected");
+      console.log("No valid type or section selected");
     }
   };
 
@@ -1442,7 +1068,6 @@ export default function TrainingStats({ navigation }) {
     }
   };
 
-
   const strengthProgressData = () => {
     switch (sp_dropdown) {
       case "Last 7 Days":
@@ -1567,7 +1192,6 @@ export default function TrainingStats({ navigation }) {
         ];
     }
   };
-
 
   const renderItem = (item) => {
     return (
@@ -1808,7 +1432,8 @@ export default function TrainingStats({ navigation }) {
           <BarChart
             frontColor={colors.orange}
             data={strengthProgressData()}
-            maxValue={20000}
+            // maxValue={Math.round(total_lbs) > 10 ? Math.round(total_lbs) : 10}
+            maxValue={100}
             dashGap={0}
             spacing={8}
             barBorderRadius={4}
