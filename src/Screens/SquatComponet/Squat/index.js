@@ -185,7 +185,6 @@ export default function Squat({ navigation, route }) {
     return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
   };
 
-  console.log("exercise ....", exercise);
   const onPressReset = (restTime) =>
     navigation.navigate("ResetTimer", { restTime: restTime });
 
@@ -230,9 +229,9 @@ export default function Squat({ navigation, route }) {
     );
   };
 
-  const handleCheckmarkPress = async (index, set) => {
+  const handleCheckmarkPress = async (index, set,isBodyweightExercise=false,isDynamicWarmUp=false) => {
     let find_lbs_value = findInputValueWithKey(index);
-    await singleSetComplete(set, find_lbs_value);
+    await singleSetComplete(set, find_lbs_value,isBodyweightExercise,isDynamicWarmUp);
     let newIsChecked = [...isChecked];
     let valueIncludes = newIsChecked.includes(index);
     if (valueIncludes) newIsChecked = newIsChecked.filter((x) => x != index);
@@ -321,15 +320,17 @@ export default function Squat({ navigation, route }) {
       return 0;
     }
   };
-  const singleSetComplete = async (set, weight) => {
+  const singleSetComplete = async (set, weight,isBodyweightExercise=false,isDynamicWarmUp=false) => {
+    console.log("isBodyweightExercise",isBodyweightExercise)
+    console.log("isDynamicWarmUp",isDynamicWarmUp)
     try {
       dispatch(setLoader(true));
       const submittedData = {
         set_id:set._id,
         parameter: set?.parameter,
         remaining_time: 0,
-        [set?.parameter]: set?.reps,
-        weight:weight
+        [set?.parameter]: isBodyweightExercise ? weight :  set?.reps,//is case of BodyWeight( weigth use as reps)
+        weight:isBodyweightExercise ? user?.weight : (!isDynamicWarmUp ?  weight : 0)
       };
 
       let requestParams = {
@@ -341,9 +342,10 @@ export default function Squat({ navigation, route }) {
         calories: calories || 0,
       };
 
-      // if (exercise?.task?.length > 0) {
-      //   requestParams.task_objId = exercise?.task?.[nextIncompleteIndex]?._id;
-      // }
+      dispatch(setLoader(false));
+      if (exercise?.task?.length > 0) {
+        requestParams.task_objId = exercise?.task?.[nextIncompleteIndex]?._id;
+      }
       const res = await ApiCall({
         route: `assignProgram/update_set/${user?.plan_id}`,
         verb: "post",
@@ -390,7 +392,6 @@ export default function Squat({ navigation, route }) {
         token: token,
         params: requestParams,
       });
-      console.log("submit....", res?.response);
       if (res?.status == "200") {
         toast.show("Exercise successfully completed");
         setSubmittedSets([]);
@@ -450,55 +451,66 @@ export default function Squat({ navigation, route }) {
     addon = "",
   }) => {
     const uniqueKey = isAdditional ? "additionalSet" + no : addon + "set" + no;
+  
+    // Check if it's a bodyweight exercise
+    const isBodyweightExercise = exercise?.category === "Bodyweight";
+    const isDynamicWarmUp = exercise?.category === "Dynamic Warm Up";
+  
     return (
       <View key={no} style={styles.mainContainer}>
         <View style={styles.outerContainer}>
           <View style={styles.numberContainer}>
             <Text style={styles.numberTextSTyle}>{no}</Text>
           </View>
-          <View
-            style={{
-              gap: getWidth(1.5),
-            }}
-          >
+          <View style={{ gap: getWidth(1.5) }}>
             <Text style={styles.titleStyle}>{reps}</Text>
             <Text style={styles.descStyle}>
-              {reps}
-              {" Reps"}
+              {reps} Reps
             </Text>
           </View>
           <View style={styles.semiDividerSTyle} />
-
+  
           <View style={styles.rowSTyle}>
+            {/* Input field for reps */}
             <TextInput
               style={{
                 width: getWidth(15),
                 textAlign: "center",
                 letterSpacing: 2,
                 paddingTop: 0,
-                paddingBottom: 0,
+                paddingBottom: getWidth(1.5),
               }}
-              placeholder="--------"
+              placeholder={"_______"}
               keyboardType="numeric"
-              onBlur={(event) => {
-                handleSubmitEditing(event, uniqueKey);
-              }}
-              onSubmitEditing={(event) => {
-                handleSubmitEditing(event, uniqueKey);
-              }}
+              editable={isDynamicWarmUp ? false : true}
+              onBlur={(event) => handleSubmitEditing(event, uniqueKey)}
+              onSubmitEditing={(event) => handleSubmitEditing(event, uniqueKey)}
               returnKeyType="done"
             />
-            <Text style={styles.descStyle}>{`${findInputValueWithKey(
-              uniqueKey
-            )} lbs`}</Text>
+            
+            {/* Show user's weight only for bodyweight exercises */}
+            {isBodyweightExercise ? (
+              <>
+               <Text style={styles.descStyle}>{`${findInputValueWithKey(
+                  uniqueKey
+                )} Reps`}</Text>
+              <Text style={styles.descStyle}>{`${user?.weight} lbs`}</Text>
+              </>
+            ) : (
+              !isDynamicWarmUp && (
+                <Text style={styles.descStyle}>{`${findInputValueWithKey(
+                  uniqueKey
+                )} lbs`}</Text>
+              )
+            )}
           </View>
-
+  
           <View style={styles.dividerStyle} />
           <TouchableOpacity
             style={{ marginRight: getWidth(5) }}
             onPress={() => {
               if (!isChecked.includes(uniqueKey) && set?.complete != "true")
-                handleCheckmarkPress(uniqueKey, set);
+                handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp); // Pass isBodyweightExercise, and isDynamicWarmUp
             }}
           >
             <Ionicons
@@ -516,15 +528,12 @@ export default function Squat({ navigation, route }) {
         {set?.rest_time && set?.rest_time != 0 ? (
           <RenderRest uniqueKey={uniqueKey} restTime={set?.rest_time || 0} />
         ) : (
-          <View
-            style={{
-              marginTop: 25,
-            }}
-          />
+          <View style={{ marginTop: 25 }} />
         )}
       </View>
     );
   };
+  
   
   const RenderExercise = ({ exercise, addon }) => {
     return (

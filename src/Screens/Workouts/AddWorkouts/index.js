@@ -68,7 +68,7 @@ const AddWorkouts = () => {
         console.log("exercise..", res?.response?.Workout[0].innerWorkout[0]);
         setWorkout(res?.response?.Workout[0]);
         setAssigWorkout(res?.response?.Workout[0]?.innerWorkout[0]);
-        setExercises(res?.response?.Workout[0]?.innerWorkout[0]?.exercise);
+        setExercises(res?.response?.exercises);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
