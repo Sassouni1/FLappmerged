@@ -107,7 +107,7 @@ export default function Squat({ navigation, route }) {
   const [selectedSetKey, setSelectedSetKey] = useState("");
   const [selectedExercise, setSelectedExercise] = useState(exercise);
   const [selectedTask, setSelectedTask] = useState(task);
-
+  const [timerActive, setTimerActive] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -165,19 +165,37 @@ export default function Squat({ navigation, route }) {
     } else return 0;
   }
 
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setSeconds((prevSeconds) => {
+  //       if (prevSeconds > 0) {
+  //         return prevSeconds - 1;
+  //       } else {
+  //         clearInterval(interval);
+  //         return 0;
+  //       }
+  //     });
+  //   }, 1000);
+  //   return () => clearInterval(interval);
+  // }, [restTime]);
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setSeconds((prevSeconds) => {
-        if (prevSeconds > 0) {
-          return prevSeconds - 1;
-        } else {
-          clearInterval(interval);
-          return 0;
-        }
-      });
-    }, 1000);
+    let interval;
+    if (timerActive) {
+      interval = setInterval(() => {
+        setSeconds((prevSeconds) => {
+          if (prevSeconds > 0) {
+            return prevSeconds - 1;
+          } else {
+            setTimerActive(false)
+            clearInterval(interval);
+            return 0;
+          }
+        });
+      }, 1000);
+    }
     return () => clearInterval(interval);
-  }, [restTime]);
+  }, [timerActive]);
 
   const convertTimeToMinutes = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -240,19 +258,19 @@ export default function Squat({ navigation, route }) {
     setIsChecked(newIsChecked);
 
     let isDisableRest = disableRest?.includes(index);
-    if (
-      !isDisableRest &&
-      !valueIncludes &&
-      set?.rest_time &&
-      set?.rest_time != ""
-    ) {
-      setSelectedSetKey(index);
-      setRestTime(set?.rest_time);
-      // onPressReset(set?.rest_time);
-    } else {
-      setSelectedSetKey("");
-      setRestTime("");
-    }
+    // if (
+    //   !isDisableRest &&
+    //   !valueIncludes &&
+    //   set?.rest_time &&
+    //   set?.rest_time != ""
+    // ) {
+    //   setSelectedSetKey(index);
+    //   setRestTime(set?.rest_time);
+    //   // onPressReset(set?.rest_time);
+    // } else {
+    //   setSelectedSetKey("");
+    //   setRestTime("");
+    // }
   };
 
   const handleRestButton = async (index) => {
@@ -321,8 +339,6 @@ export default function Squat({ navigation, route }) {
     }
   };
   const singleSetComplete = async (set, weight,isBodyweightExercise=false,isDynamicWarmUp=false) => {
-    console.log("isBodyweightExercise",isBodyweightExercise)
-    console.log("isDynamicWarmUp",isDynamicWarmUp)
     try {
       dispatch(setLoader(true));
       const submittedData = {
@@ -426,17 +442,52 @@ export default function Squat({ navigation, route }) {
             </Text>
           </View>
         </View>
-        <View style={{ flex: 1 }}>
-          <TouchableOpacity
+        <View style={{ flex: 1,justifyContent:'center' }}>
+          {selectedSetKey == uniqueKey ?
+            !timerActive ?
+              <TouchableOpacity
+                style={{ width: 27 }}
+                onPress={() => {
+                  setRestTime(restTime);
+                  setSelectedSetKey(uniqueKey);
+                  setTimerActive(true)
+                }}
+              >
+                <Image source={require("../../../assets/images/homeplaybtn.png")} style={styles.iconStyle} />
+              </TouchableOpacity>
+              :
+              <TouchableOpacity
+                style={{ width: 27 }}
+                onPress={() => {
+                  setTimerActive(false)
+                }}
+              >
+                <Image source={require("../../../assets/images/pause.png")} style={styles.iconStyle} />
+              </TouchableOpacity>
+            :
+            <TouchableOpacity
+              style={{ width: 27 }}
+              onPress={() => {
+                setRestTime(restTime);
+                setSelectedSetKey(uniqueKey);
+                setTimerActive(true)
+              }}
+            >
+              <Image source={require("../../../assets/images/homeplaybtn.png")} style={styles.iconStyle} />
+            </TouchableOpacity>
+          }
+          {/* <TouchableOpacity
             onPress={() => {
-              handleRestButton(uniqueKey);
+              setRestTime(restTime);
+              setSelectedSetKey(uniqueKey);
+              // handleRestButton(uniqueKey);
             }}
             style={{ alignItems: "flex-end", marginTop: 25 }}
           >
             <Text style={{ color: colors.darkBlue }}>
               {disableRest.includes(uniqueKey) ? `Enable Rest` : `Disable Rest`}
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     );
