@@ -19,6 +19,7 @@ export default function CoachDetail({ navigation,route }) {
   const onPressBack = () => navigation.goBack();
 
   const RenderItem = ({ item }) => {
+    console.log("item",item);
     return (
       <TouchableOpacity onPress={()=>{onPressDetail(item)}} style={styles.container1Style}>
         <View style={[styles.rowContainer, { flex: 1 }]}>

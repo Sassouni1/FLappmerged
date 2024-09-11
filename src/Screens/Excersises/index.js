@@ -82,7 +82,7 @@ const Excercises = () => {
         verb: "get",
         token: token,
       });
-       console.log("resssss",res?.response?.newData)
+      console.log("resssss", res?.response?.newData);
       if (res?.status == "200") {
         setData(res?.response?.newData);
         setFilteredData(res?.response?.newData);
@@ -108,8 +108,11 @@ const Excercises = () => {
       });
 
       if (res?.status == "200") {
-        console.log("categories",res?.response?.detail)
-        const categoryNames = ['All Exercises', ...res?.response?.detail.map(item => item.category_name)];
+        console.log("categories", res?.response?.detail);
+        const categoryNames = [
+          "All Exercises",
+          ...res?.response?.detail.map((item) => item.category_name),
+        ];
         setAllTypes(categoryNames);
       } else {
         console.log("error", res.response);
@@ -169,12 +172,9 @@ const Excercises = () => {
           <SearchSvg height={20} width={20} style={styles.searchIcon} />
         </View>
         <Text style={styles.searchResultText}>
-          {
-            searchQuery ?
-              filteredData?.length + " results found for '" + searchQuery+"'"
-              :
-              ""
-          }
+          {searchQuery
+            ? filteredData?.length + " results found for '" + searchQuery + "'"
+            : ""}
         </Text>
       </View>
       <View style={styles.dropdownContainer}>
@@ -205,9 +205,7 @@ const Excercises = () => {
         {invalidEntry || filteredData?.length === 0 ? (
           <View style={styles.noResultsContainer}>
             <AntDesign name="exclamationcircleo" size={24} color="#676C75" />
-            <Text style={styles.noResultsText}>
-              No Exercise found.
-            </Text>
+            <Text style={styles.noResultsText}>No Exercise found.</Text>
           </View>
         ) : (
           <FlatList
@@ -218,7 +216,10 @@ const Excercises = () => {
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate("ExerciseDetail", {exercise:item,exercises:data})
+                  navigation.navigate("ExerciseDetail", {
+                    exercise: item,
+                    exercises: data,
+                  })
                 }
                 style={styles.exerciseCard}
               >
@@ -237,7 +238,9 @@ const Excercises = () => {
                 </View>
                 <View style={styles.exerciseDetails}>
                   <Text style={styles.exerciseType}>{item?.category}</Text>
-                  <Text style={styles.exerciseTitle}>{item?.exercise_name}</Text>
+                  <Text style={styles.exerciseTitle}>
+                    {item?.exercise_name}
+                  </Text>
                 </View>
               </TouchableOpacity>
             )}
@@ -304,7 +307,7 @@ const styles = StyleSheet.create({
   },
   dropdownContainer: {
     padding: 16,
-    paddingBottom:0,
+    paddingBottom: 0,
     // marginBottom: -10,
   },
   dropdownLabel: {

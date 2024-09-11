@@ -24,6 +24,7 @@ import { ApiCall } from "../../../Services/Apis";
 import Button from "../../../Components/Button";
 import Modal from "react-native-modal";
 import { Calendar } from "react-native-calendars";
+import VideoComponent from "../../../Components/VideoComponent";
 
 const ViewProgram = ({ route }) => {
   const navigation = useNavigation();
@@ -362,14 +363,23 @@ const ViewProgram = ({ route }) => {
           >
             Video
           </Text>
-          <Image
+          <View
+            style={{
+              width: Dimensions.get("screen").width - 38,
+              objectFit: "contain",
+              height:400,
+            }}
+          >
+            <VideoComponent videoUrl={data?.video} thumbnail={data?.video_thumbnail} />
+          </View>
+          {/* <Image
             source={require("../../../assets/images/workoutsvideo.png")}
             style={{
               width: Dimensions.get("screen").width - 38,
               objectFit: "contain",
               marginTop: -200,
             }}
-          />
+          /> */}
         </View>
         <View
           style={{

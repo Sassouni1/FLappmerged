@@ -68,6 +68,41 @@ const HomeSc = ({ navigation, route }) => {
     }
   };
 
+  function timeRemaining(targetDate) {
+    if (!targetDate) return null; // If there's no date, return null (no upcoming event)
+
+    const now = new Date();
+    const endDate = new Date(targetDate);
+    const timeDiff = endDate - now;
+
+    if (timeDiff <= 0) {
+      return "Live call is now!"; // If the event has started or is live
+    }
+
+    // Event is in the future, calculate time remaining
+    const seconds = Math.floor((timeDiff / 1000) % 60);
+    const minutes = Math.floor((timeDiff / (1000 * 60)) % 60);
+    const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
+    if (days > 0) {
+      return `${days} day${days > 1 ? "s" : ""}`;
+    } else if (hours > 0) {
+      return `${hours} hour${hours > 1 ? "s" : ""}`;
+    } else if (minutes > 0) {
+      return `${minutes} minute${minutes > 1 ? "s" : ""}`;
+    } else {
+      return `${seconds} second${seconds > 1 ? "s" : ""}`;
+    }
+  }
+
+  // Additional helper function to check if an event is in the past
+  function isEventInPast(targetDate) {
+    const now = new Date();
+    const endDate = new Date(targetDate);
+    return endDate < now; // Returns true if the event is in the past
+  }
+
   const handleDayPress = (day) => {
     let find = events?.find((x) => getFormattedDate(x.start) == day.dateString);
     if (find) setEventDescription(find?.title);
@@ -403,19 +438,42 @@ const HomeSc = ({ navigation, route }) => {
           </View>
         </TouchableOpacity>
       </View>
-      {upComingEvent && (
-        <TouchableOpacity style={styles.liveCallsBtn} onPress={() => {}}>
+      {upComingEvent ? (
+        <TouchableOpacity
+          style={styles.liveCallsBtn}
+          onPress={() => {
+            if (timeRemaining(upComingEvent?.start) === "Live call is now!") {
+              // Join the live call action
+            }
+          }}
+        >
           <Image
             source={require("../../assets/images/WhiteCalendar.png")}
             style={styles.whiteCalendar}
           />
           <Text style={styles.liveCallsBtnText}>
-            {`Next Live Call Is In ${timeRemaining(
-              upComingEvent?.start
-            )} with ${upComingEvent?.speakers[0]?.name}`}
+            {isEventInPast(upComingEvent?.start)
+              ? "No Current Upcoming Calls" // If the event is in the past, show no calls
+              : timeRemaining(upComingEvent?.start) === "Live call is now!"
+              ? "Live call is now! Click here to Join"
+              : `Next Live Call Is In ${timeRemaining(upComingEvent?.start)}`}
           </Text>
+          {/* Upcoming call details */}
+          {!isEventInPast(upComingEvent?.start) && (
+            <Text style={styles.callDetailsText}>
+              Upcoming Call with {upComingEvent?.speakers[0]?.name} on{" "}
+              {moment(upComingEvent?.start).format(
+                "MMMM Do YYYY, h:mm a (EST)"
+              )}
+            </Text>
+          )}
         </TouchableOpacity>
+      ) : (
+        <View style={styles.noCallsContainer}>
+          <Text style={styles.noCallsText}>No Current Upcoming Calls</Text>
+        </View>
       )}
+
       {/* Calendar Start */}
       <View style={styles.calendarContainer}>
         <Calendar
@@ -423,21 +481,19 @@ const HomeSc = ({ navigation, route }) => {
           markedDates={calendarMarkedDates}
           style={{
             borderRadius: 20,
-            backgroundColor: "#f2f2f2",
+            backgroundColor: "#f2f2f2", // Matching the gray background of the calendar
             margin: 18,
-            height: 350,
+            height: 300,
           }}
           theme={{
             calendarBackground: "#f2f2f2",
             textSectionTitleColor: "#b6c1cd",
-            // selectedDayBackgroundColor: '#00adf5',
             selectedDayTextColor: "#ffffff",
             todayTextColor: "#00adf5",
             dayTextColor: "#2d4150",
             textDisabledColor: "#d9e1e8",
             arrowColor: colors.black,
             monthTextColor: colors.black,
-            indicatorColor: "blue",
             textDayFontFamily: "monospace",
             textMonthFontFamily: "monospace",
             textDayHeaderFontFamily: "monospace",
@@ -449,12 +505,17 @@ const HomeSc = ({ navigation, route }) => {
             textDayHeaderFontSize: 16,
           }}
         />
-        <View style={styles.eventContainer}>
-          <Text style={styles.eventText}>
-            {formatCalendarEventDate(upComingEvent?.start)}
-          </Text>
-        </View>
+        {/* Upcoming call information */}
+        {upComingEvent && !isEventInPast(upComingEvent?.start) && (
+          <View style={styles.upcomingCallInGray}>
+            <Text style={styles.upcomingCallTextInGray}>
+              Upcoming call with {upComingEvent?.speakers[0]?.name} on{" "}
+              {moment(upComingEvent?.start).format("MMMM Do YYYY, h:mm a")}
+            </Text>
+          </View>
+        )}
       </View>
+
       {/* Calendar End */}
 
       <View style={{ padding: 20 }}>
@@ -746,6 +807,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "gray",
   },
+  callDetailsText: {
+    fontSize: 14,
+    color: "#FFF",
+    textAlign: "center",
+    marginTop: 5,
+  },
+
   calendarIconInner: {
     width: 10,
     height: 10,
@@ -1306,7 +1374,25 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   calendarContainer: {
-    flex: 1,
+    alignSelf: "center", // Ensures the calendar is centered within its parent
+    width: Dimensions.get("window").width * 0.89, // Set the width to 95% of the screen width
+    backgroundColor: "#f2f2f2", // Gray background
+    borderRadius: 20,
+    padding: 10,
+    marginTop: 20,
+  },
+  upcomingCallInGray: {
+    backgroundColor: "#f2f2f2", // Keeps the call info inside the gray area
+    padding: 10,
+    alignItems: "center",
+    borderTopWidth: 1,
+    borderTopColor: "#d1d1d1", // Optional border for visual separation
+  },
+  upcomingCallTextInGray: {
+    fontSize: 10,
+    color: "#000", // Dark text color for visibility
+    fontWeight: "400",
+    textAlign: "center",
   },
   eventContainer: {
     position: "absolute",

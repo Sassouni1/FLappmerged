@@ -61,7 +61,7 @@ export default function SkillsTraining({ navigation }) {
         verb: "get",
         token: token,
       });
-      console.log("list", res?.response?.video_list[0].child_folder[0]);
+      console.log("list", res);
       if (res?.response) {
         setSkills(res?.response?.video_list);
         dispatch(setLoader(false));

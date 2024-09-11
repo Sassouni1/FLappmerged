@@ -1,428 +1,352 @@
 import * as React from "react";
-import { Alert, Platform, Text, View } from "react-native";
+import { Alert, Linking, Platform, Text, View, Image } from "react-native";
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
   DrawerItem,
   DrawerItemList,
 } from "@react-navigation/drawer";
-import Image from "react-native-image-modal";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
+import { Divider } from "react-native-paper";
+import ImageModal from "react-native-image-modal";
+
+import Ionicons from "react-native-vector-icons/Ionicons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import Fontisto from "react-native-vector-icons/Fontisto";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import { getFontSize, getHeight, getWidth } from "../../../utils/ResponsiveFun";
 import BottomTab from "../BottomTab";
-import { useDispatch, useSelector } from "react-redux";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { Divider } from "react-native-paper";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import Fontisto from "react-native-vector-icons/Fontisto";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { useNavigation } from "@react-navigation/native";
-// import WorkOut from '../../Screens/Workouts/WorkOut';
-import Message from "../../Screens/Message";
 import { logout } from "../../Redux/actions/AuthActions";
-import ConversationScreen from "../../Screens/Message/conversation";
-import ChangePassword from "../../Screens/ChangePassword";
-import UpdateProfiles from "../../Screens/UpdateProfile";
-import ContactUs from "../../Screens/ContactUs";
-import Help from "../../Screens/Help";
-import ImageModal from "react-native-image-modal";
-import { useWindowDimensions } from "react-native";
-import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
-import Notification from "../../Screens/Notifications";
 import { colors } from "../../constants/colors";
-import Events from "../../Screens/Events/Events";
 
-import WelcomeChatScreen from "../../Screens/ChatBot/WelcomeChat";
-import AllChats from "../../Screens/ChatBot/AllChats";
-import ChatScreen from "../../Screens/ChatBot/ChatScreen";
-import CreateChat from "../../Screens/ChatBot/CreateChat";
+import moneyIcon from "../../assets/images/money.png";
+
+import UpdateProfiles from "../../Screens/UpdateProfile";
+import ChangePassword from "../../Screens/ChangePassword";
+import Help from "../../Screens/Help";
+import Notification from "../../Screens/Notifications";
+import HTUA from "../../Screens/HTUA";
 
 const Drawer = createDrawerNavigator();
-function NavHeader(props) {
+
+const NavHeader = () => {
   const user = useSelector((state) => state.auth.userData);
-  const token = useSelector((state) => state.auth.userToken);
-  const navigation = useNavigation();
+
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        width: "100%",
-        height: getHeight(12),
-      }}
-    >
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          alignSelf: "center",
-          // justifyContent: 'space-around',
-          width: "100%",
-        }}
-      >
+    <View style={styles.headerContainer}>
+      <View style={styles.headerContent}>
         <ImageModal
-          style={{
-            width: getWidth(15),
-            height: getHeight(7),
-            borderRadius: 10,
-            marginLeft: getWidth(3),
-            marginTop: getHeight(3),
-          }}
+          style={styles.profileImage}
           resizeMode="cover"
           modalImageResizeMode="contain"
           source={
             user?.profile_image
-              ? { uri: user?.profile_image }
+              ? { uri: user.profile_image }
               : require("../../assets/images/Pimg.jpeg")
           }
         />
-        <View
-          style={{
-            marginLeft: getWidth(3),
-          }}
-        >
-          <Text
-            style={{
-              fontFamily: "Ubuntu-Bold",
-              color: "white",
-              marginBottom: getFontSize(0.5),
-              width: getWidth(50),
-              fontSize: getFontSize(2),
-              marginTop: getWidth(5),
-            }}
-          >
-            {user?.full_name}
-          </Text>
-          <Text
-            style={{
-              color: "white",
-              width: "60%",
-              fontSize: getFontSize(1.5),
-              fontFamily: "Ubuntu-Regular",
-              // marginRight: getWidth(20),
-            }}
-            numberOfLines={1}
-          >
+        <View style={styles.userInfo}>
+          <Text style={styles.userName}>{user?.full_name}</Text>
+          <Text style={styles.userEmail} numberOfLines={1}>
             {user?.email}
           </Text>
         </View>
-        {/* )} */}
       </View>
     </View>
   );
-}
-function CustomDrawerContent(props) {
-  const navigation = useNavigation();
-  const user = useSelector((state) => state.auth.userData);
-  const { height } = useWindowDimensions();
-  const dispatch = useDispatch();
-  const marginTop = Platform.OS === "android" ? getHeight(-2) : 0;
-  const margin = Platform.OS === "android" ? getHeight(1.9) : height * 0.026;
-  // const marginBo = Platform.OS === "android" ? getHeight(-0.5) : height * 0.03;
+};
 
-  const logoutFun = () => {
-    Alert.alert("", " Do you want to logout?", [
+const CustomDrawerContent = (props) => {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.userData);
+
+  const handleLogout = () => {
+    Alert.alert("", "Do you want to logout?", [
       {
         text: "No",
-        onPress: () => console.log("Cancel Pressed"),
-        style: "destructive",
+        style: "cancel",
       },
-      { text: "Yes", onPress: () => dispatch(logout()), style: "default" },
+      { text: "Yes", onPress: () => dispatch(logout()) },
+    ]);
+  };
+  const howToUseAppOptions = {
+    ...drawerScreenOptions,
+    drawerIcon: ({ color }) => (
+      <MaterialIcons name="help-outline" size={20} color={color} />
+    ),
+  };
+  const handleDeleteAccount = () => {
+    Alert.alert("", "Are you sure you want to delete your account?", [
+      {
+        text: "No",
+        style: "cancel",
+      },
+      { text: "Yes", onPress: () => dispatch(logout()) },
     ]);
   };
 
-  const DeleteFun = () => {
-    Alert.alert("", "Are you sure you want to delete your account ?", [
-      {
-        text: "No",
-        onPress: () => console.log("Cancel Pressed"),
-        style: "destructive",
-      },
-      { text: "Yes", onPress: () => dispatch(logout()), style: "default" },
-    ]);
+  const handleContactSupport = () => {
+    Linking.openURL("https://www.fightlife.io/contactus");
   };
 
   return (
     <DrawerContentScrollView
-      contentContainerStyle={{ flex: 1, backgroundColor: "#0B0B0D" }}
       {...props}
+      contentContainerStyle={styles.drawerContent}
     >
-      <NavHeader {...props} />
-      <Divider
-        style={{
-          height: 2,
-          backgroundColor: "#333333",
-          borderRadius: 10,
-          marginBottom: getHeight(1),
-          width: "93%",
-          alignSelf: "center",
-        }}
-      />
-
+      <NavHeader />
+      <Divider style={styles.divider} />
       <DrawerItemList {...props} />
+      <View style={styles.bottomItems}>
+        <Divider style={styles.secondaryDivider} />
+        {renderSecondaryDrawerItem("Privacy Policy & Terms", "PrivacyPolicy")}
 
-      <View style={{ flex: 1, justifyContent: "flex-end", bottom: margin }}>
-        {/* <DrawerItem
-          label={"Notifications"}
-          labelStyle={{ fontFamily: "Ubuntu-Bold" }}
-          onPress={() => navigation.navigate("Notification")}
-          inactiveTintColor={"#7B7A7A"}
-          activeTintColor={"#7B7A7A"}
-          labelStyle={{ color: "#7B7A7A" }}
-          activeBackgroundColor={"#7B7A7A"}
-        /> */}
-
-        <DrawerItem
-          //style={{ marginTop: getHeight(-1) }}
-          label={"Privacy Policy"}
-          labelStyle={{ fontFamily: "Ubuntu-Bold", color: "#7B7A7A" }}
-          onPress={() => navigation.navigate("PrivacyPolicy")}
-          inactiveTintColor={"#7B7A7A"}
-          activeTintColor={"#7B7A7A"}
-          activeBackgroundColor={"#7B7A7A"}
-        />
-
-        <DrawerItem
-          style={{ marginTop: getHeight(-1) }}
-          label={"Term of Use"}
-          labelStyle={{ fontFamily: "Ubuntu-Bold", color: "#7B7A7A" }}
-          onPress={() => navigation.navigate("TermOfUse")}
-          inactiveTintColor={"#7B7A7A"}
-          activeTintColor={"#7B7A7A"}
-          activeBackgroundColor={"#7B7A7A"}
-        />
-
-        <DrawerItem
-          style={{ marginTop: getHeight(-1), marginBottom: getHeight(2) }}
-          label={"About this app"}
-          labelStyle={{ fontFamily: "Ubuntu-Bold", color: "#7B7A7A" }}
-          onPress={() => navigation.navigate("About")}
-          inactiveTintColor={"#7B7A7A"}
-          activeTintColor={"#7B7A7A"}
-          activeBackgroundColor={"#7B7A7A"}
-        />
-        <View style={{ height: marginTop }}>
-          <Divider style={{ marginBottom: marginTop }} />
-        </View>
-
-        <DrawerItem
-          label={"Delete Account"}
-          labelStyle={{ fontFamily: "Ubuntu-Bold", color: "#EB5757" }}
-          onPress={() => DeleteFun()}
-          inactiveTintColor={"#EB5757"}
-          activeTintColor={"#EB5757"}
-          activeBackgroundColor={"#EB5757"}
-          icon={({ color, size, focuced }) => (
-            <MaterialIcons name={"delete"} size={20} color={"#EB5757"} />
-          )}
-        />
-
-
-        <DrawerItem
-          label={"Logout"}
-          labelStyle={{ fontFamily: "Ubuntu-Bold", color: "#EB5757" }}
-          onPress={() => logoutFun()}
-          inactiveTintColor={"#EB5757"}
-          activeTintColor={"#EB5757"}
-          activeBackgroundColor={"#EB5757"}
-          icon={({ color, size, focuced }) => (
-            <MaterialIcons name={"logout"} size={20} color={"#EB5757"} />
-          )}
-        />
+        <Divider style={styles.bottomDivider} />
+        {user?.isGuestUser == true &&
+          renderDrawerItem(
+            "Delete Account",
+            handleDeleteAccount,
+            "delete",
+            "#EB5757"
+          )
+        }
+        {renderDrawerItem("Logout", handleLogout, "logout", "#EB5757")}
       </View>
     </DrawerContentScrollView>
   );
-}
-export default function MyDrawer() {
+};
+
+const renderDrawerItem = (label, onPress, iconName, color = "white") => (
+  <DrawerItem
+    label={label}
+    labelStyle={[styles.drawerItemLabel, { color }]}
+    onPress={onPress}
+    icon={() => <MaterialIcons name={iconName} size={20} color={color} />}
+  />
+);
+
+const renderSecondaryDrawerItem = (label, screenName) => (
+  <DrawerItem
+    label={label}
+    labelStyle={styles.secondaryDrawerItemLabel}
+    onPress={() => navigation.navigate(screenName)}
+    style={styles.secondaryDrawerItem}
+  />
+);
+
+const MyDrawer = () => {
+  const dispatch = useDispatch();
+
+  const handleBilling = () => {
+    Linking.openURL("https://billing.stripe.com/p/login/dR68wAbVE4nOb4Y5kk");
+  };
+
   return (
     <Drawer.Navigator
       drawerPosition="right"
-      screenOptions={(drawerPosition = "right")}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
+      screenOptions={drawerScreenOptions}
     >
+      <Drawer.Screen name="Home" component={BottomTab} options={homeOptions} />
       <Drawer.Screen
-        options={{
-          headerShown: false,
-          drawerInactiveTintColor: "white",
-          drawerActiveTintColor: "#333333",
-          drawerActiveBackgroundColor: "white",
-          drawerIcon: ({ color, size, focuced }) => (
-            <Fontisto
-              name={"home"}
-              size={getFontSize(1.3)}
-              color={color}
-              style={{ marginLeft: getFontSize(-0.4) }}
-            />
-          ),
-          drawerLabelStyle: {
-            fontFamily: "Ubuntu",
-            fontSize: getFontSize(1.3),
-            marginLeft: getFontSize(0.3),
-          },
-        }}
-        name="Home"
-        component={BottomTab}
-      />
-      <Drawer.Screen
-        options={{
-          headerShown: false,
-          drawerInactiveTintColor: "white",
-          drawerActiveTintColor: "#333333",
-          drawerActiveBackgroundColor: "white",
-          drawerIcon: ({ color, size, focuced }) => (
-            <MaterialIcons
-              name={"chat"}
-              size={getFontSize(3.3)}
-              color={color}
-              style={{ marginLeft: getFontSize(-0.4) }}
-            />
-          ),
-          drawerLabelStyle: {
-            fontFamily: "Ubuntu",
-            fontSize: getFontSize(1.7),
-            marginLeft: getFontSize(0.3),
-          },
-        }}
-        name="Ai ChatBot"
-        component={WelcomeChatScreen}
-      />
-      <Drawer.Screen
-        options={{
-          headerShown: false,
-          drawerInactiveTintColor: "white",
-          drawerActiveTintColor: "#333333",
-          drawerActiveBackgroundColor: "white",
-          drawerIcon: ({ color, size, focuced }) => (
-            <MaterialIcons
-              name={"emoji-events"}
-              size={getFontSize(3.3)}
-              color={color}
-              style={{ marginLeft: getFontSize(-0.4) }}
-            />
-          ),
-          drawerLabelStyle: {
-            fontFamily: "Ubuntu",
-            fontSize: getFontSize(1.7),
-            marginLeft: getFontSize(0.3),
-          },
-        }}
-        name="Events"
-        component={Events}
-      />
-      <Drawer.Screen
-        options={{
-          headerShown: false,
-          drawerInactiveTintColor: "white",
-          drawerActiveTintColor: "#333333",
-          drawerActiveBackgroundColor: "white",
-          drawerIcon: ({ color, size, focuced }) => (
-            <FontAwesome6
-              name="user-gear"
-              size={18}
-              color={"white"}
-              style={{ marginLeft: getFontSize(-0.2) }}
-            />
-          ),
-          drawerLabelStyle: {
-            fontFamily: "Ubuntu",
-            fontSize: getFontSize(1.7),
-            marginLeft: getFontSize(-0.1),
-          },
-        }}
-        name="Profile Settings"
+        name="Profile & Weight Goals"
         component={UpdateProfiles}
+        options={profileOptions}
       />
       <Drawer.Screen
+        name="How to Use App"
+        component={HTUA}
         options={{
-          headerShown: false,
-          drawerInactiveTintColor: "white",
-          drawerActiveTintColor: "#333333",
-          drawerActiveBackgroundColor: "white",
-          drawerIcon: ({ color, size, focuced }) => (
-            <MaterialIcons
-              name="lock-reset"
-              size={30}
-              color={"white"}
-              style={{ marginLeft: getFontSize(-1) }}
-            />
+          drawerLabel: "How to Use App",
+          drawerIcon: ({ color }) => (
+            <Ionicons name="help-circle-outline" size={20} color={color} />
           ),
-          drawerLabelStyle: {
-            fontFamily: "Ubuntu",
-            fontSize: getFontSize(1.7),
-            marginLeft: getFontSize(-0.3),
+          ...drawerScreenOptions,
+        }}
+      />
+      <Drawer.Screen
+        name="Become an Affiliate"
+        component={() => null}
+        options={affiliateOptions}
+        listeners={{
+          drawerItemPress: (e) => {
+            e.preventDefault();
+            Linking.openURL(
+              "http://www.fightlife.io/member1720966880869/2fbb29de64a"
+            );
           },
         }}
+      />
+      <Drawer.Screen
         name="Change Password"
         component={ChangePassword}
+        options={passwordOptions}
       />
-
       <Drawer.Screen
+        name="Billing"
+        component={() => null}
         options={{
-          headerShown: false,
-          drawerInactiveTintColor: "white",
-          drawerActiveTintColor: "#333333",
-          drawerActiveBackgroundColor: "white",
-          drawerIcon: ({ color, size, focuced }) => (
-            <Ionicons
-              name="information-circle"
-              size={25}
-              color={"white"}
-              style={{ marginLeft: getFontSize(-0.55) }}
-            />
+          ...drawerScreenOptions,
+          drawerIcon: ({ color }) => (
+            <MaterialIcons name="credit-card" size={20} color={color} />
           ),
-          drawerLabelStyle: {
-            fontFamily: "Ubuntu",
-            fontSize: getFontSize(1.7),
-            //marginLeft: getFontSize(-0.3),
+        }}
+        listeners={{
+          drawerItemPress: (e) => {
+            e.preventDefault();
+            handleBilling();
           },
         }}
-        name="Help"
-        component={Help}
       />
-
       <Drawer.Screen
-        options={{
-          headerShown: false,
-          drawerInactiveTintColor: "white",
-          drawerActiveTintColor: "#333333",
-          drawerActiveBackgroundColor: "white",
-          drawerIcon: ({ color, size, focuced }) => (
-            <FontAwesome name="envelope" size={18} color={"white"} />
-          ),
-          drawerLabelStyle: {
-            fontFamily: "Ubuntu",
-            fontSize: getFontSize(1.7),
-            marginLeft: getFontSize(0.1),
+        name="Contact Support"
+        component={() => null} // Remove the Help component and set to null
+        options={helpOptions}
+        listeners={{
+          drawerItemPress: (e) => {
+            e.preventDefault();
+            Linking.openURL("https://www.fightlife.io/contactus"); // Open website URL
           },
         }}
-        name="Contact Us"
-        component={ContactUs}
       />
-
       <Drawer.Screen
-        options={{
-          headerShown: false,
-          drawerInactiveTintColor: "white",
-          drawerActiveTintColor: "#333333",
-          drawerActiveBackgroundColor: "white",
-          drawerIcon: ({ color, size, focuced }) => (
-            <MaterialCommunityIcons
-              name={"bell-ring-outline"}
-              size={20}
-              color={colors.white}
-            />
-          ),
-          drawerLabelStyle: {
-            fontFamily: "Ubuntu",
-            fontSize: getFontSize(1.7),
-            //marginLeft: getFontSize(-0.3),
-          },
-        }}
-        // style={{ fontFamily: "Ubuntu-Bold", fontSize: 12 }}
         name="Notifications"
         component={Notification}
+        options={notificationOptions}
       />
     </Drawer.Navigator>
   );
-}
+};
+
+const drawerScreenOptions = {
+  headerShown: false,
+  drawerInactiveTintColor: "white",
+  drawerActiveTintColor: "#333333",
+  drawerActiveBackgroundColor: "white",
+  drawerLabelStyle: {
+    fontFamily: "Ubuntu-Medium",
+    fontSize: getFontSize(1.7),
+  },
+};
+
+const homeOptions = {
+  ...drawerScreenOptions,
+  drawerIcon: ({ color }) => <Fontisto name="home" size={20} color={color} />,
+};
+
+const affiliateOptions = {
+  ...drawerScreenOptions,
+  drawerIcon: ({ color }) => (
+    <Image source={moneyIcon} style={{ width: 20, height: 20 }} />
+  ),
+};
+
+const profileOptions = {
+  ...drawerScreenOptions,
+  drawerIcon: ({ color }) => (
+    <FontAwesome6 name="user-gear" size={20} color={color} />
+  ),
+};
+
+const passwordOptions = {
+  ...drawerScreenOptions,
+  drawerIcon: ({ color }) => (
+    <MaterialIcons name="lock-reset" size={20} color={color} />
+  ),
+};
+
+const helpOptions = {
+  ...drawerScreenOptions,
+  drawerIcon: ({ color }) => (
+    <Ionicons name="information-circle" size={20} color={color} />
+  ),
+};
+
+const notificationOptions = {
+  ...drawerScreenOptions,
+  drawerIcon: ({ color }) => (
+    <MaterialCommunityIcons name="bell-ring-outline" size={20} color={color} />
+  ),
+};
+
+const styles = {
+  headerContainer: {
+    flexDirection: "row",
+    width: "100%",
+    height: getHeight(12),
+  },
+  headerContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "center",
+    width: "100%",
+  },
+  profileImage: {
+    width: getWidth(9.5),
+    height: getHeight(5.5),
+    borderRadius: 10,
+    marginLeft: getWidth(3),
+    marginTop: getHeight(3),
+  },
+  userInfo: {
+    marginLeft: getWidth(3),
+  },
+  userName: {
+    fontFamily: "Ubuntu-Bold",
+    color: "white",
+    marginBottom: getFontSize(0.5),
+    width: getWidth(50),
+    fontSize: getFontSize(2),
+    marginTop: getWidth(5),
+  },
+  userEmail: {
+    color: "white",
+    width: "60%",
+    fontSize: getFontSize(1.5),
+    fontFamily: "Ubuntu-Regular",
+  },
+  drawerContent: {
+    flex: 1,
+    backgroundColor: "#0B0B0D",
+  },
+  divider: {
+    height: 2,
+    backgroundColor: "#333333",
+    borderRadius: 10,
+    marginBottom: getHeight(1),
+    width: "93%",
+    alignSelf: "center",
+  },
+  bottomItems: {
+    marginTop: getHeight(2),
+  },
+  drawerItemLabel: {
+    fontFamily: "Ubuntu-Medium",
+    fontSize: getFontSize(1.7),
+  },
+  secondaryDrawerItemLabel: {
+    fontFamily: "Ubuntu-Regular",
+    fontSize: getFontSize(1.5),
+    color: "#7B7A7A",
+  },
+  secondaryDrawerItem: {
+    marginVertical: 0,
+  },
+  secondaryDivider: {
+    height: 1,
+    backgroundColor: "#333333",
+    marginVertical: getHeight(1),
+  },
+  bottomDivider: {
+    height: 1,
+    backgroundColor: "#333333",
+    marginVertical: getHeight(1),
+  },
+};
+
+export default MyDrawer;

@@ -1,13 +1,11 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { getWidth } from "../../../utils/ResponsiveFun";
 import { fonts } from "../../constants/fonts";
 
 const TabBarComponent = ({ activeTab, setActiveTab }) => {
-
   const tabs = [
     { key: "tab1", title: "Programs" },
-    { key: "tab3", title: "Additional" },
     { key: "tab2", title: "Calendar" },
   ];
 
@@ -20,7 +18,12 @@ const TabBarComponent = ({ activeTab, setActiveTab }) => {
             style={[styles.tab, activeTab === index && styles.activeTab]}
             onPress={() => setActiveTab(index)}
           >
-            <Text style={[styles.tabText, activeTab === index && styles.activeTabText]}>
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === index && styles.activeTabText,
+              ]}
+            >
               {tab.title}
             </Text>
           </TouchableOpacity>
@@ -31,17 +34,21 @@ const TabBarComponent = ({ activeTab, setActiveTab }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-  },
+  container: {},
   content: {
     flex: 1,
   },
   tabContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: "#e1e1e3",
-    marginHorizontal:4,
-    borderRadius: 15,
+    flexDirection: "row",
+    justifyContent: "space-between", // Create space between the tabs
+    alignItems: "center",
+    backgroundColor: "#e1e1e3", // Keep background color
+    borderRadius: 10, // Round the corners
+    marginHorizontal: 20, // Prevent container from touching screen edges
+    paddingHorizontal: 1, // Keep padding within bounds
+    alignSelf: "center", // Center the container
+    width: "auto", // Let the width adjust to the content
+    maxWidth: "95%", // Prevent overhang by limiting max width
   },
   tab: {
     borderWidth: 0,
@@ -51,28 +58,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: getWidth(31.6),
   },
-    tabText: {
-        color: "#686c74",
-        fontFamily: fonts.Re,
-        fontSize: 15,
-        fontWeight: "700",
-    },
-    activeTab: {
-        borderWidth: 4,
-        borderColor: "#babbbc",
-        backgroundColor: "black",
-        borderRadius: 15,
-        height: 43,
-        justifyContent: "center",
-        alignItems: "center",
-        width: getWidth(31.6),
-    },
-    activeTabText: {
-        color: "white",
-        fontFamily: fonts.Re,
-        fontSize: 15,
-        fontWeight: "700",
-    },
+  tabText: {
+    color: "#686c74",
+    fontFamily: fonts.Re,
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  activeTab: {
+    borderWidth: 4,
+    borderColor: "#babbbc",
+    backgroundColor: "black",
+    borderRadius: 15,
+    height: 43,
+    justifyContent: "center",
+    alignItems: "center",
+    width: getWidth(31.6),
+  },
+  activeTabText: {
+    color: "white",
+    fontFamily: fonts.Re,
+    fontSize: 15,
+    fontWeight: "700",
+  },
 });
 
 export default TabBarComponent;

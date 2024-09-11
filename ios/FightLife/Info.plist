@@ -89,6 +89,7 @@
 	<key>LSApplicationQueriesSchemes</key>
 <array>
     <string>myfitnesspal</string>
+	<string>about</string>
 </array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>

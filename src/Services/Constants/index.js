@@ -9,7 +9,7 @@
 
 export const IMAGE_URL = "http://54.147.3.191/";
 export const SOCKET_URL = "http://54.147.3.191/";
-export const BASE_URL = "http://54.147.3.191/api";
+export const BASE_URL = "http://localhost:8000/api";
 
 
 // export const IMAGE_URL = 'http://54.234.223.198/';

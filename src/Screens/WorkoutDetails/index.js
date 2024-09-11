@@ -8,7 +8,7 @@ import {
   Image,
   StyleSheet,
   ScrollView,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
@@ -77,7 +77,7 @@ const WorkoutDetails = () => {
       });
 
       if (res?.status == "200") {
-        console.log(res?.response?.detail?.length)
+        console.log(res?.response?.detail?.length);
         setData(res?.response?.detail?.filter((el) => !el?.isDeleted));
         dispatch(setLoader(false));
       } else {
@@ -103,7 +103,7 @@ const WorkoutDetails = () => {
       });
 
       if (res?.status == "200") {
-        console.log(res?.response?.detail?.length)
+        console.log(res?.response?.detail?.length);
         setProgram(res?.response?.detail);
         dispatch(setLoader(false));
       } else {
@@ -171,31 +171,32 @@ const WorkoutDetails = () => {
 
   return (
     <SafeAreaView>
-        <View style={[styles.header]}>
-            <View style={styles.headerLeft}>
-              <Image
-                source={{uri:user?.profile_image}}
-                style={styles.profileImage}
-              />
-              <View style={styles.headerWords}>
-                <Text style={styles.headerSubtext}>Fight Life 👊 </Text>
-                <Text style={styles.headerText}> Start Training</Text>
-              </View>
-            </View>
-            {/* <TouchableOpacity>
+      <View style={[styles.header]}>
+        <View style={styles.headerLeft}>
+          <Image
+            source={{ uri: user?.profile_image }}
+            style={styles.profileImage}
+          />
+          <View style={styles.headerWords}>
+            <Text style={styles.headerSubtext}>Fight Life 👊 </Text>
+            <Text style={styles.headerText}>Start Training</Text>
+          </View>
+        </View>
+        {/* <TouchableOpacity>
               <Image
                 source={require("../../assets/images/workoutssearch.png")}
               />
             </TouchableOpacity> */}
-          </View>
-      <TabBarComponent activeTab={0} setActiveTab={(index) => {
-        if (index == 1)
-          navigation.navigate("AdditionalWorkout")
-        else if (index == 2)
-          navigation.navigate("AddWorkouts")
-      }} />
-    <ScrollView>
-      {/* <TouchableOpacity
+      </View>
+      <TabBarComponent
+        activeTab={0}
+        setActiveTab={(index) => {
+          if (index == 1) navigation.navigate("AddWorkouts");
+          else if (index == 2) navigation.navigate("AddWorkouts");
+        }}
+      />
+      <ScrollView>
+        {/* <TouchableOpacity
         onPress={() => navigation.navigate("Howtoreadprogram")}
         style={{ width: "100%", marginTop: -30, marginBottom: -10 }}
       >
@@ -213,180 +214,177 @@ const WorkoutDetails = () => {
           style={{ width: "100%", resizeMode: "contain" }}
         />
       </TouchableOpacity> */}
-      <View
-        style={{
-          padding: 6,
-          gap: 14,
-        }}
-      >
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
+            padding: 6,
+            gap: 14,
           }}
         >
-          <Text
+          <View
             style={{
-              fontSize: 18,
-              fontWeight: "700",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "flex-end",
             }}
           >
-            All programs
-          </Text>
-          {/* <Text
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "700",
+              }}
+            >
+              All programs
+            </Text>
+            {/* <Text
             style={{
               color: "darkorange",
             }}
           >
             See all
           </Text> */}
-        </View>
-        {program.length > 0 &&
-          program.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() =>
-                navigation.navigate("ViewProgram", {
-                  passData: item,
-                  url: "program/detail_program/",
-                })
-              }
-            >
-              <View
-                style={{
-                  borderRadius: 30,
-                  marginBottom: 10,
-                }}
+          </View>
+          {program.length > 0 &&
+            program.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() =>
+                  navigation.navigate("ViewProgram", {
+                    passData: item,
+                    url: "program/detail_program/",
+                  })
+                }
               >
-                <Image
-                  source={{ uri: item?.program_Image }}
-                  style={{
-                    width: "100%",
-                    objectFit: "cover",
-                    borderRadius: 30,
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    right: 0,
-                  }}
-                />
                 <View
                   style={{
-                    padding: 20,
-                    justifyContent: "space-between",
-                    height: 220,
+                    borderRadius: 30,
+                    marginBottom: 10,
                   }}
                 >
+                  <Image
+                    source={{ uri: item?.program_Image }}
+                    style={{
+                      width: "100%",
+                      objectFit: "cover",
+                      borderRadius: 30,
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      bottom: 0,
+                      right: 0,
+                    }}
+                  />
                   <View
                     style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 10,
+                      padding: 20,
+                      justifyContent: "space-between",
+                      height: 220,
                     }}
                   >
                     <View
                       style={{
                         flexDirection: "row",
                         alignItems: "center",
-                        gap: 6,
+                        gap: 10,
                       }}
                     >
-                      <Image
-                        source={require("../../assets/images/homeclockicon.png")}
-                      />
-                      <Text
-                        style={{
-                          color: "white",
-                        }}
-                      >
-                        {item?.equipments_needed}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        height: 5,
-                        width: 5,
-                        backgroundColor: "gray",
-                        borderRadius: 10,
-                      }}
-                    />
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 6,
-                      }}
-                    >
-                      <Image
-                        source={require("../../assets/images/homefireicon.png")}
-                      />
-                      <Text
-                        style={{
-                          color: "white",
-                        }}
-                      >
-                        {item?.program_for}
-                      </Text>
-                    </View>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "column",
-                      gap: 6,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 22,
-                        color: "white",
-                        fontWeight: "700",
-                      }}
-                    >
-                      {item?.title}
-                    </Text>
-
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <View style={{flex:1}}>
-                      <Text
-                        style={{color: "white"}}
-                        numberOfLines={1}
-                      >
-                        {item?.description}
-                      </Text>
-                      </View>
                       <View
                         style={{
-                          backgroundColor: "rgba(170, 170, 170, 0.42)",
-                          paddingVertical: 6,
-                          paddingHorizontal: 10,
-                          borderRadius: 12,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 6,
                         }}
                       >
+                        <Image
+                          source={require("../../assets/images/homeclockicon.png")}
+                        />
                         <Text
                           style={{
                             color: "white",
-                            fontWeight: "600",
-                            fontSize: 12,
                           }}
                         >
-                          START
+                          {item?.equipments_needed}
                         </Text>
+                      </View>
+                      <View
+                        style={{
+                          height: 5,
+                          width: 5,
+                          backgroundColor: "gray",
+                          borderRadius: 10,
+                        }}
+                      />
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 6,
+                        }}
+                      >
+                        <Image
+                          source={require("../../assets/images/homefireicon.png")}
+                        />
+                        <Text
+                          style={{
+                            color: "white",
+                          }}
+                        >
+                          {item?.program_for}
+                        </Text>
+                      </View>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: "column",
+                        gap: 6,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 22,
+                          color: "white",
+                          fontWeight: "700",
+                        }}
+                      >
+                        {item?.title}
+                      </Text>
+
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        <View style={{ flex: 1 }}>
+                          <Text style={{ color: "white" }} numberOfLines={1}>
+                            {item?.description}
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            backgroundColor: "rgba(170, 170, 170, 0.42)",
+                            paddingVertical: 6,
+                            paddingHorizontal: 10,
+                            borderRadius: 12,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: "white",
+                              fontWeight: "600",
+                              fontSize: 12,
+                            }}
+                          >
+                            START
+                          </Text>
+                        </View>
                       </View>
                     </View>
                   </View>
                 </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-      </View>
-      {/* <View
+              </TouchableOpacity>
+            ))}
+        </View>
+        {/* <View
         style={{
           padding: 6,
           gap: 14,
@@ -572,8 +570,8 @@ const WorkoutDetails = () => {
             </TouchableOpacity>
           ))}
       </View> */}
-      <View style={{height:200}} />
-    </ScrollView>
+        <View style={{ height: 200 }} />
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -591,8 +589,8 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 55,
     height: 55,
-    marginLeft:15,
-    borderRadius:10,
+    marginLeft: 15,
+    borderRadius: 20,
     resizeMode: "cover",
   },
   header1: {
@@ -633,5 +631,4 @@ const styles = StyleSheet.create({
     marginRight: getWidth(8),
     textAlign: "center",
   },
- 
 });

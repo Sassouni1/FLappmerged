@@ -9,7 +9,7 @@ import {
   Text,
   TouchableOpacity,
   View,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -17,6 +17,8 @@ import { BarChart, LineChart } from "react-native-gifted-charts";
 import Entypo from "react-native-vector-icons/Entypo";
 import MultiSLider from "@ptomasroos/react-native-multi-slider";
 import { Dropdown } from "react-native-element-dropdown";
+import UpdateProfiles from "../../Screens/UpdateProfile";
+import MetricsComponent from "../../Components/MetricsComponent";
 
 //Local Imports
 import { colors } from "../../constants/colors";
@@ -43,19 +45,35 @@ export default function TrainingStats({ navigation }) {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user.isAssigned != true)
-        setModalVisible(true);
+      if (user.isAssigned != true) setModalVisible(true);
     }, [])
   );
   const toggleModal = () => {
-      setModalVisible(!isModalVisible);
+    setModalVisible(!isModalVisible);
   };
+
+  function calculatePercentage(value) {
+    const minValue = 80;
+    const maxValue = 450;
+    const maxPercentage = 90;
+
+    // Ensure the value is within the expected range
+    if (value < minValue) {
+        return 0;
+    } else if (value > maxValue) {
+        return maxPercentage;
+    }
+
+    // Calculate the percentage
+    const percentage = ((value - minValue) / (maxValue - minValue)) * maxPercentage;
+    return percentage;
+}
 
   useFocusEffect(
     React.useCallback(() => {
-      set_tc_dropdown(defaultDropDownValue)
-      set_cb_dropdown(defaultDropDownValue)
-      set_sp_dropdown(defaultDropDownValue)
+      set_tc_dropdown(defaultDropDownValue);
+      set_cb_dropdown(defaultDropDownValue);
+      set_sp_dropdown(defaultDropDownValue);
 
       dispatch(setLoader(true));
       getExerciseProgress("weekly", setWeeklyProgress, true);
@@ -210,55 +228,63 @@ export default function TrainingStats({ navigation }) {
   const [tc_dropdown, set_tc_dropdown] = useState();
   const [cb_dropdown, set_cb_dropdown] = useState();
   const [sp_dropdown, set_sp_dropdown] = useState();
-  const [caloriesBurned,setCaloriesBurned] = useState(0);
-  const [total_lbs,setTotal_lbs] = useState(0);
-  const [workoutsThisWeek,setWorkoutsThisWeek] = useState();
+  const [caloriesBurned, setCaloriesBurned] = useState(0);
+  const [total_lbs, setTotal_lbs] = useState(0);
+  const [workoutsThisWeek, setWorkoutsThisWeek] = useState();
 
-  const [maxLBS,setMaxLBS] = useState();
-  const [exerciseName,setExerciseName] = useState();
-  const [exerciseDate,setExerciseDate] = useState();
-  const [parameter,setParameter] = useState();
+  const [maxLBS, setMaxLBS] = useState();
+  const [exerciseName, setExerciseName] = useState();
+  const [exerciseDate, setExerciseDate] = useState();
+  const [parameter, setParameter] = useState();
 
-  const [maxLBS_DL,setMaxLBS_DL] = useState();
-  const [exerciseName_DL,setExerciseName_DL] = useState();
-  const [exerciseDate_DL,setExerciseDate_DL] = useState();
-  const [parameter_DL,setParameter_DL] = useState();
+  const [maxLBS_DL, setMaxLBS_DL] = useState();
+  const [exerciseName_DL, setExerciseName_DL] = useState();
+  const [exerciseDate_DL, setExerciseDate_DL] = useState();
+  const [parameter_DL, setParameter_DL] = useState();
 
-  useEffect(()=>{
+  useEffect(() => {
     let maxLBS = 0;
-    let exerciseName = '';
-    let exerciseDate = '';
-    let parameter = '';
+    let exerciseName = "";
+    let exerciseDate = "";
+    let parameter = "";
 
     let maxLBS_DL = 0;
-    let exerciseName_DL = '';
-    let exerciseDate_DL = '';
-    let parameter_DL = '';
-    workoutsThisWeek?.forEach(dayWorkout => {
-      dayWorkout?.innerWorkout?.forEach(element => {
-        element?.exercise?.forEach(exercise => {
-          exercise?.sets?.forEach(additionalSet => {
+    let exerciseName_DL = "";
+    let exerciseDate_DL = "";
+    let parameter_DL = "";
+    workoutsThisWeek?.forEach((dayWorkout) => {
+      dayWorkout?.innerWorkout?.forEach((element) => {
+        element?.exercise?.forEach((exercise) => {
+          exercise?.sets?.forEach((additionalSet) => {
             let _exerciseName = exercise?.exercise_name?.toLowerCase();
-            if(_exerciseName?.includes("squat") && (additionalSet.parameter == 'lbs' || additionalSet.parameter == 'weight'))
-            {
-              let isLBS = additionalSet.parameter == 'lbs';
-              let _max = isLBS ? parseInt(additionalSet?.lbs || 0) : parseInt(additionalSet?.weight || 0);
-              if (maxLBS < _max)
-              {
+            if (
+              _exerciseName?.includes("squat") &&
+              (additionalSet.parameter == "lbs" ||
+                additionalSet.parameter == "weight")
+            ) {
+              let isLBS = additionalSet.parameter == "lbs";
+              let _max = isLBS
+                ? parseInt(additionalSet?.lbs || 0)
+                : parseInt(additionalSet?.weight || 0);
+              if (maxLBS < _max) {
                 maxLBS = _max;
-                parameter= isLBS ? additionalSet.parameter : 'kg'
+                parameter = isLBS ? additionalSet.parameter : "kg";
                 exerciseName = exercise?.exercise_name;
                 exerciseDate = dayWorkout?.workoutDate;
               }
             }
-            if(_exerciseName?.includes("deadlift") && (additionalSet.parameter == 'lbs' || additionalSet.parameter == 'weight'))
-            {
-              let isLBS = additionalSet.parameter == 'lbs';
-              let _max = isLBS ? parseInt(additionalSet?.lbs || 0) : parseInt(additionalSet?.weight || 0);
-              if (maxLBS_DL < _max)
-              {
+            if (
+              _exerciseName?.includes("deadlift") &&
+              (additionalSet.parameter == "lbs" ||
+                additionalSet.parameter == "weight")
+            ) {
+              let isLBS = additionalSet.parameter == "lbs";
+              let _max = isLBS
+                ? parseInt(additionalSet?.lbs || 0)
+                : parseInt(additionalSet?.weight || 0);
+              if (maxLBS_DL < _max) {
                 maxLBS_DL = _max;
-                parameter_DL= isLBS ? additionalSet.parameter : 'kg'
+                parameter_DL = isLBS ? additionalSet.parameter : "kg";
                 exerciseName_DL = exercise?.exercise_name;
                 exerciseDate_DL = dayWorkout?.workoutDate;
               }
@@ -276,15 +302,15 @@ export default function TrainingStats({ navigation }) {
     setParameter_DL(parameter_DL);
     setExerciseName_DL(exerciseName_DL);
     setExerciseDate_DL(exerciseDate_DL);
-  }, [workoutsThisWeek])
+  }, [workoutsThisWeek]);
 
   function formatDate(date) {
     date = new Date(date);
     // Get the day, month, and year from the date object
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
     const year = date.getFullYear();
-  
+
     // Return the formatted date string
     return `${month}/${day}/${year}`;
   }
@@ -299,31 +325,34 @@ export default function TrainingStats({ navigation }) {
 
   const [assigWorkout, setAssigWorkout] = useState([]);
   const user = useSelector((state) => state.auth.userData);
-  const [sliderValue, setSliderValue] = React.useState([user?.weight,user?.target_weight]);
+  const [sliderValue, setSliderValue] = React.useState([
+    user?.weight,
+    user?.target_weight,
+  ]);
   const token = useSelector((state) => state.auth.userToken);
 
-  const onChangeDropDown = (selectedType,section) => {
+  const onChangeDropDown = (selectedType, section) => {
     console.log("selectedType", selectedType);
-    toggleTypeSelection(selectedType,section);
+    toggleTypeSelection(selectedType, section);
 
-    if (section == "tc")
-      set_tc_dropdown(selectedType)
-    else if (section == "cb")
-      set_cb_dropdown(selectedType)
-    else if (section == "sp")
-      set_sp_dropdown(selectedType)
-  }
+    if (section == "tc") set_tc_dropdown(selectedType);
+    else if (section == "cb") set_cb_dropdown(selectedType);
+    else if (section == "sp") set_sp_dropdown(selectedType);
+  };
 
-
-  const getExerciseProgress = async (timePeriod, setProgressFunction, isPost = false) => {
+  const getExerciseProgress = async (
+    timePeriod,
+    setProgressFunction,
+    isPost = false
+  ) => {
     const routes = {
       weekly: `assignProgram/user_progress/${user?.user_id}`,
       monthly: `assignProgram/monthly_progress/${user?.user_id}`,
       threeMonth: `assignProgram/last_three_months_progress/${user?.user_id}`,
       sixMonth: `assignProgram/last_six_months_progress/${user?.user_id}`,
-      allMonths: `assignProgram/all_months_progress/${user?.user_id}`
+      allMonths: `assignProgram/all_months_progress/${user?.user_id}`,
     };
-  
+
     try {
       const res = await ApiCall({
         route: routes[timePeriod],
@@ -331,10 +360,12 @@ export default function TrainingStats({ navigation }) {
         token: token,
         ...(isPost && { params: { givenDate: new Date() } }), // Include params if it's a POST request
       });
-  
+
       if (res?.status == "200") {
         setProgressFunction(
-          res?.response?.weeklyProgress || res?.response?.monthlyProgress || res?.response?.yearlyProgress
+          res?.response?.weeklyProgress ||
+            res?.response?.monthlyProgress ||
+            res?.response?.yearlyProgress
         );
         if (timePeriod === "weekly") {
           setWorkoutsThisWeek(res?.response?.workoutsThisWeek); // Additional data for weekly progress
@@ -355,20 +386,22 @@ export default function TrainingStats({ navigation }) {
       monthly: `assignProgram/monthlyWeight/${user?.plan_id}`,
       threeMonth: `assignProgram/lastThreeMonthWeight/${user?.plan_id}`,
       sixMonth: `assignProgram/lastSixMonthWeight/${user?.plan_id}`,
-      allMonths: `assignProgram/allMonthsWeight/${user?.plan_id}`
+      allMonths: `assignProgram/allMonthsWeight/${user?.plan_id}`,
     };
-  
+
     try {
       const res = await ApiCall({
         route: routes[timePeriod],
         verb: "get",
         token: token,
       });
-  
+
       console.log(`response of getWeight${timePeriod}Progress`, res?.response);
-  
+
       if (res?.status == "200") {
-        setProgressFunction(res?.response?.monthlyWeight || res?.response?.weeklyWeight);
+        setProgressFunction(
+          res?.response?.monthlyWeight || res?.response?.weeklyWeight
+        );
         setTotal_lbs(res?.response?.total_lbs);
         dispatch(setLoader(false));
       } else {
@@ -380,7 +413,11 @@ export default function TrainingStats({ navigation }) {
     }
   };
 
-  const getCaloriesProgress = async (timePeriod, setProgressFunction, isPost = false) => {
+  const getCaloriesProgress = async (
+    timePeriod,
+    setProgressFunction,
+    isPost = false
+  ) => {
     const routes = {
       weekly: `assignProgram/user_weekly_calories/${user?.user_id}`,
       monthly: `assignProgram/monthly_calories/${user?.user_id}`,
@@ -388,7 +425,121 @@ export default function TrainingStats({ navigation }) {
       sixMonth: `assignProgram/last_six_months_calories/${user?.user_id}`,
       allMonths: `assignProgram/all_months_calories/${user?.user_id}`,
     };
-  
+
+    const defaultHeartRateValue = "Last 7 Days";
+
+    // Adding new states for heart metrics
+    const [averageHeartRate, setAverageHeartRate] = useState({});
+    const [HRV, setHRV] = useState({});
+    const [maximumHR, setMaximumHR] = useState({});
+    const [VO2Max, setVO2Max] = useState({});
+    const [caloriesBurned, setCaloriesBurned] = useState(0);
+
+    // Additional dropdowns for heart metrics
+    const [heartRateDropdown, setHeartRateDropdown] = useState(
+      defaultHeartRateValue
+    );
+    const [HRVDropdown, setHRVDropdown] = useState(defaultHeartRateValue);
+    const [maxHRDropdown, setMaxHRDropdown] = useState(defaultHeartRateValue);
+    const [VO2MaxDropdown, setVO2MaxDropdown] = useState(defaultHeartRateValue);
+
+    // Function to handle the dropdown selection for heart metrics
+    const onChangeHeartMetricsDropdown = (selectedType, metricType) => {
+      console.log(`Selected ${metricType}:`, selectedType);
+
+      switch (metricType) {
+        case "averageHeartRate":
+          setHeartRateDropdown(selectedType);
+          fetchHeartRateData(selectedType); // This function should fetch and set average heart rate data
+          break;
+        case "HRV":
+          setHRVDropdown(selectedType);
+          fetchHRVData(selectedType); // Function to fetch HRV data
+          break;
+        case "maxHR":
+          setMaxHRDropdown(selectedType);
+          fetchMaxHRData(selectedType); // Function to fetch maximum HR data
+          break;
+        case "VO2Max":
+          setVO2MaxDropdown(selectedType);
+          fetchVO2MaxData(selectedType); // Function to fetch VO2 Max data
+          break;
+        default:
+          console.log("No metric selected");
+      }
+    };
+
+    // Render each heart metric component
+    const _HeartRateComponent = React.memo(() => {
+      return (
+        <View>
+          <View style={styles.trainingContainerStyle}>
+            <Text style={styles.trainingFontStyle}>Average Heart Rate</Text>
+            <RenderDropdown
+              value={heartRateDropdown}
+              section={"averageHeartRate"}
+            />
+          </View>
+          <Text style={styles.metricValueText}>{averageHeartRate} bpm</Text>
+        </View>
+      );
+    });
+
+    const _HRVComponent = React.memo(() => {
+      return (
+        <View>
+          <View style={styles.trainingContainerStyle}>
+            <Text style={styles.trainingFontStyle}>
+              Heart Rate Variability (HRV)
+            </Text>
+            <RenderDropdown value={HRVDropdown} section={"HRV"} />
+          </View>
+          <Text style={styles.metricValueText}>{HRV} ms</Text>
+        </View>
+      );
+    });
+
+    const _MaxHRComponent = React.memo(() => {
+      return (
+        <View>
+          <View style={styles.trainingContainerStyle}>
+            <Text style={styles.trainingFontStyle}>Maximum Heart Rate</Text>
+            <RenderDropdown value={maxHRDropdown} section={"maxHR"} />
+          </View>
+          <Text style={styles.metricValueText}>{maximumHR} bpm</Text>
+        </View>
+      );
+    });
+
+    const _VO2MaxComponent = React.memo(() => {
+      return (
+        <View>
+          <View style={styles.trainingContainerStyle}>
+            <Text style={styles.trainingFontStyle}>VO2 Max</Text>
+            <RenderDropdown value={VO2MaxDropdown} section={"VO2Max"} />
+          </View>
+          <Text style={styles.metricValueText}>{VO2Max} ml/kg/min</Text>
+        </View>
+      );
+    });
+
+    // Memoized Components
+    const HeartRateComponent = useMemo(() => {
+      return <_HeartRateComponent />;
+    }, [averageHeartRate, heartRateDropdown]);
+
+    const HRVComponent = useMemo(() => {
+      return <_HRVComponent />;
+    }, [HRV, HRVDropdown]);
+
+    const MaxHRComponent = useMemo(() => {
+      return <_MaxHRComponent />;
+    }, [maximumHR, maxHRDropdown]);
+
+    const VO2MaxComponent = useMemo(() => {
+      return <_VO2MaxComponent />;
+    }, [VO2Max, VO2MaxDropdown]);
+
     try {
       const res = await ApiCall({
         route: routes[timePeriod],
@@ -396,10 +547,12 @@ export default function TrainingStats({ navigation }) {
         token: token,
         ...(isPost && { params: { givenDate: new Date() } }), // Include params if it's a POST request
       });
-  
+
       if (res?.status == "200") {
         setProgressFunction(
-          res?.response?.weeklyProgress || res?.response?.monthlyProgress || res?.response?.yearlyProgress
+          res?.response?.weeklyProgress ||
+            res?.response?.monthlyProgress ||
+            res?.response?.yearlyProgress
         );
         setCaloriesBurned(res?.response?.totalCalories); // Common for all progress types
         dispatch(setLoader(false));
@@ -572,7 +725,7 @@ export default function TrainingStats({ navigation }) {
   // select api function from dropdown
   const toggleTypeSelection = (selectedType, section) => {
     dispatch(setLoader(true));
-  
+
     // Define the mappings for selectedType to progress type
     const progressMap = {
       "Last 7 Days": "weekly",
@@ -581,14 +734,14 @@ export default function TrainingStats({ navigation }) {
       "Last 6 Months": "sixMonth",
       "All Time": "allMonths",
     };
-  
+
     // Define the mappings for section to their respective progress functions
     const sectionMap = {
       tc: getExerciseProgress,
       cb: getCaloriesProgress,
       sp: getWeightProgress,
     };
-  
+
     const setProgressMap = {
       tc: {
         weekly: setWeeklyProgress,
@@ -612,15 +765,15 @@ export default function TrainingStats({ navigation }) {
         allMonths: setWeightProgressAllMonth,
       },
     };
-  
+
     // Retrieve the progressType based on the selectedType
     const progressType = progressMap[selectedType];
-  
+
     // Ensure progressType and section are valid
     if (progressType && sectionMap[section]) {
       const setProgress = setProgressMap[section][progressType];
       const isPost = selectedType === "Last 7 Days"; // Weekly requires POST request
-  
+
       // Call the respective function
       sectionMap[section](progressType, setProgress, isPost);
     } else {
@@ -789,13 +942,13 @@ export default function TrainingStats({ navigation }) {
 
     if (data) {
       let length = data?.length;
-      data.forEach(element => {
+      data.forEach((element) => {
         total = total + element.value;
       });
-      completionRate = (total/(100*length))*100
+      completionRate = (total / (100 * length)) * 100;
     }
     return Math.round(completionRate);
-  }
+  };
 
   const trainingCompletionData = () => {
     switch (tc_dropdown) {
@@ -843,7 +996,7 @@ export default function TrainingStats({ navigation }) {
           },
           {
             value: monthlyProgress.Week4,
-            label: "Week4"
+            label: "Week4",
           },
         ];
       case "Last 3 Months":
@@ -1218,30 +1371,34 @@ export default function TrainingStats({ navigation }) {
     );
   };
 
-  const CustomMarkerLeft = ({currentValue }) => {
+  const CustomMarkerLeft = ({ currentValue,customStyles }) => {
     return (
-      <View style={styles.customMarkerStyle}>
-        <Text style={styles.sliderTextStyle}>{currentValue}</Text>
+      <View style={[styles.customMarkerStyle,customStyles]}>
+        <Text style={[styles.sliderTextStyle]}>{currentValue}</Text>
       </View>
     );
   };
-  const CustomMarkerRight = ({currentValue }) => {
+  const CustomMarkerRight = ({ currentValue,customStyles }) => {
     return (
-      <View style={styles.targetMarkerContainer}>
-        <Text style={styles.targetMarkerTextStyle}>{"Weight Goal: "+ currentValue}</Text>
-        <Image  style={styles.targetMarker} source={require("../../assets/images/down-arrow.png")}/>
+      <View style={[styles.targetMarkerContainer,customStyles]}>
+        <Text style={styles.targetMarkerTextStyle}>
+          {"Weight Goal: " + currentValue}
+        </Text>
+        <Image
+          style={styles.targetMarker}
+          source={require("../../assets/images/down-arrow.png")}
+        />
       </View>
     );
   };
 
-
-  const RenderDropdown = ({value,section}) => {
+  const RenderDropdown = ({ value, section }) => {
     return (
       <SelectDropdown
         defaultValue={value}
         data={allTypes}
         onSelect={(value) => {
-          onChangeDropDown(value,section)
+          onChangeDropDown(value, section);
         }}
         // defaultButtonText={defaultDropDownValue}
         buttonTextAfterSelection={(selectedItem, index) => {
@@ -1336,7 +1493,9 @@ export default function TrainingStats({ navigation }) {
         <View style={styles.chartOuterContainer}>
           <View style={styles.headerTopContainer}>
             <View style={styles.headerTextStyle}>
-              <Text style={styles.percentageStyle}>{trainingCompletionRate()+"%"}</Text>
+              <Text style={styles.percentageStyle}>
+                {trainingCompletionRate() + "%"}
+              </Text>
               <Text style={styles.completionStyle}>Completion rate</Text>
             </View>
             <RenderDropdown value={tc_dropdown} section={"tc"} />
@@ -1358,7 +1517,7 @@ export default function TrainingStats({ navigation }) {
           />
         </View>
       </View>
-    )
+    );
   });
   const _CaloriesBurnedComponent = React.memo(() => {
     return (
@@ -1377,7 +1536,7 @@ export default function TrainingStats({ navigation }) {
               <Text style={styles.percentageStyle}>{caloriesBurned}</Text>
               <Text style={styles.completionStyle}>Calories Burned</Text>
             </View>
-            <RenderDropdown value = {cb_dropdown} section={"cb"} />
+            <RenderDropdown value={cb_dropdown} section={"cb"} />
           </View>
           <LineChart
             areaChart
@@ -1401,7 +1560,7 @@ export default function TrainingStats({ navigation }) {
           />
         </View>
       </View>
-    )
+    );
   });
   const _StrengthProgressComponent = React.memo(() => {
     return (
@@ -1420,14 +1579,14 @@ export default function TrainingStats({ navigation }) {
         <View style={styles.chartOuterContainer}>
           <View style={styles.headerTopContainer}>
             <View style={styles.headerTextStyle}>
-              <Text style={styles.percentageStyle}>{Math.round(total_lbs)}</Text>
-              <Text
-                style={[styles.completionStyle, { fontSize: getWidth(3) }]}
-              >
+              <Text style={styles.percentageStyle}>
+                {Math.round(total_lbs)}
+              </Text>
+              <Text style={[styles.completionStyle, { fontSize: getWidth(3) }]}>
                 Total lbs lifted
               </Text>
             </View>
-            <RenderDropdown value = {sp_dropdown}  section={"sp"}  />
+            <RenderDropdown value={sp_dropdown} section={"sp"} />
           </View>
           <BarChart
             frontColor={colors.orange}
@@ -1446,8 +1605,8 @@ export default function TrainingStats({ navigation }) {
           />
         </View>
       </View>
-    )
-  })
+    );
+  });
 
   const TopImageComponent = useMemo(() => {
     return <TopImage onPressBack={onPressBack} />;
@@ -1465,7 +1624,6 @@ export default function TrainingStats({ navigation }) {
     return <_StrengthProgressComponent />;
   }, [strengthProgressData()]);
 
-
   return (
     <ScrollView>
       {/* <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} /> */}
@@ -1475,17 +1633,40 @@ export default function TrainingStats({ navigation }) {
         {CaloriesBurnedComponent}
         {StrengthProgressComponent}
 
+        {/* New metrics */}
+        {MetricsComponent}
 
         <View style={styles.weightContainer}>
           <Text style={styles.bodyTextStyle}>Bodyweight Goal</Text>
           <Text style={styles.lbsTextStyle}>Lbs</Text>
         </View>
-        <MultiSLider
-          values={sliderValue}
-          onValuesChangeFinish={(values)=>setSliderValue(values)}
+        <View style={{
+          height: 13,
+          borderRadius: 10,
+          marginVertical: 15,
+          backgroundColor: colors.orange
+        }}>
+          <CustomMarkerLeft customStyles={{
+            position: 'absolute',
+            top: -6,
+            left: calculatePercentage(user?.weight)+"%",
+          }} currentValue={user?.weight} />
+          <CustomMarkerRight customStyles={{
+            position: 'absolue',
+            top: -33,
+            left:calculatePercentage(user?.target_weight)+"%",
+          }} currentValue={user?.target_weight} />
+        </View>
+
+        {/* <MultiSLider
+          values={sliderValue} // Bind slider value from state
           trackStyle={styles.sliderStyle}
-          customMarkerLeft={(e) => <CustomMarkerLeft currentValue={e.currentValue} />}
-          customMarkerRight={(e) => <CustomMarkerRight  currentValue={e.currentValue} />}
+          customMarkerLeft={(e) => (
+            <CustomMarkerLeft currentValue={e.currentValue} />
+          )}
+          customMarkerRight={(e) => (
+            <CustomMarkerRight currentValue={e.currentValue} />
+          )}
           isMarkersSeparated={true}
           min={80}
           max={450}
@@ -1494,9 +1675,16 @@ export default function TrainingStats({ navigation }) {
           step={1}
           allowOverlap={true}
           selectedStyle={{ backgroundColor: colors.orange }}
-        />
-     
-        <TouchableOpacity onPress={()=>{setSliderValue([user?.weight,user?.target_weight])}}>
+          enabled={false} // Completely disables interaction with the slider
+          touchableTrack={false} // Disable track interaction
+          onValuesChange={() => {}} // Disable any value change functionality
+        /> */}
+
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("UpdateProfiles");
+          }}
+        >
           <Text style={styles.updateTextStyle}>Update Weight</Text>
         </TouchableOpacity>
       </View>
@@ -1505,9 +1693,19 @@ export default function TrainingStats({ navigation }) {
       {renderItem({ title: "Steps", des: "40,000 steps" })}
 
       {RenderSectionHeader("Personal Records")}
-     
-      {renderItem({ title: "Deadlift Variations", des: `${maxLBS_DL} ${parameter_DL} max: ${exerciseName_DL} - ${exerciseDate_DL ? formatDate(exerciseDate_DL) : ''}`})}
-      {renderItem({ title: "Squat Variation", des: `${maxLBS} ${parameter} max: ${exerciseName} - ${exerciseDate ? formatDate(exerciseDate) : ''}`})}
+
+      {renderItem({
+        title: "Deadlift Variations",
+        des: `${maxLBS_DL} ${parameter_DL} max: ${exerciseName_DL} - ${
+          exerciseDate_DL ? formatDate(exerciseDate_DL) : ""
+        }`,
+      })}
+      {renderItem({
+        title: "Squat Variation",
+        des: `${maxLBS} ${parameter} max: ${exerciseName} - ${
+          exerciseDate ? formatDate(exerciseDate) : ""
+        }`,
+      })}
 
       <View style={{ height: 100 }} />
     </ScrollView>
@@ -1614,6 +1812,11 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontSize: getFontSize(2),
     fontFamily: fonts.WB,
+    // Move the text up by 10 pixels (adjust as needed)
+    marginBottom: 20, // Reduce bottom margin
+    // Alternatively, use position
+    // position: 'relative',
+    // top: -10,  // Moves it 10 pixels up
   },
   lbsTextStyle: {
     color: colors.grayText1,
@@ -1697,23 +1900,23 @@ const styles = StyleSheet.create({
     width: getWidth(11),
     backgroundColor: colors.green,
     borderRadius: 3,
-    marginTop: getHeight(2),
+    // marginTop: getHeight(2),
     borderWidth: 4,
     borderColor: colors.white,
     alignItems: "center",
     justifyContent: "center",
   },
-  targetMarkerContainer:{
+  targetMarkerContainer: {
     width: getWidth(10),
   },
-  targetMarker:{
+  targetMarker: {
     height: getHeight(2),
     width: getWidth(5),
-    alignSelf:'center',
-    marginBottom:34,
+    alignSelf: "center",
+    marginBottom: 34,
   },
-  targetMarkerTextStyle:{
-    textAlign:'center',
+  targetMarkerTextStyle: {
+    textAlign: "center",
     fontSize: getFontSize(1),
     color: colors.black,
     fontFamily: fonts.WB,

@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import { useNavigation } from '@react-navigation/native'
 import {
   Image,
@@ -7,13 +8,46 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { useDispatch, useSelector } from "react-redux";
+import { setLoader } from '../../Redux/actions/GernalActions';
+import { ApiCall } from "../../Services/Apis";
+import VideoComponent from "../../Components/VideoComponent";
 
 const HTUA = () => {
   const navigation = useNavigation()
+  const token = useSelector((state) => state.auth.userToken);
+  const dispatch = useDispatch();
+  const [dataList, setDataList] = useState([]);
+
+  useEffect(() => {
+    getInstructions();
+}, []);
+
+  const getInstructions = async () => {
+    try {
+      dispatch(setLoader(true));
+      const res = await ApiCall({
+        route: `appInstruction/all_instructions`,
+        verb: "get",
+        token: token,
+      });
+      console.log("res..",res);
+      if (res?.status == 200) {
+        setDataList(res?.response?.data);
+        dispatch(setLoader(false));
+      } else {
+        console.log(res?.response);
+        dispatch(setLoader(false));
+      }
+    } catch (error) {
+      console.log(error);
+      dispatch(setLoader(false));
+    }
+  };
+  
   return (
     <ScrollView>
-      <View style={{}}>
+      <View style={{marginBottom:310}}>
         <Image
           source={require('../../assets/images/HTUATopBack.png')}
           style={{
@@ -38,78 +72,27 @@ const HTUA = () => {
           />
         </TouchableOpacity>
       </View>
-      <View style={{ marginTop: 310, paddingHorizontal: 15 }}>
+      {dataList.map((item, index) => (
+      <View key={index} style={{paddingHorizontal: 15 }}>
         <View style={{ gap: 10 }}>
           <Text style={{ fontWeight: 700, fontSize: 18 }}>
-            Welcome to Fight Life
+            {item.title}
           </Text>
           <Text
-            style={{ lineHeight: 22, color: '#676C75', letterSpacing: 0.8 }}
+            style={{ lineHeight: 22,textAlign:'left', color: '#676C75', letterSpacing: 0.8 }}
           >
-            Embrace the morning sun and revitalize your body and mind with our
-            'Morning Boost' routine. This energizing workout is designed to
-            kickstart your metabolism, increase your energy levels, and set a
-            positive tone for the day ahead.
+            {item.description}
           </Text>
         </View>
-        <Image
-          source={require('../../assets/images/HTUAVid.png')}
-          style={{
-            width: Dimensions.get('window').width - 30,
-            objectFit: 'contain',
-            marginTop: -175,
-          }}
-        />
-      </View>
-      <View style={{ marginTop: -150, paddingHorizontal: 15 }}>
-        <View style={{ gap: 10 }}>
-          <Text style={{ fontWeight: 700, fontSize: 18 }}>How to Use App</Text>
-          <Text
-            style={{ lineHeight: 22, color: '#676C75', letterSpacing: 0.8 }}
-          >
-            Embrace the morning sun and revitalize your body and mind with our
-            'Morning Boost' routine. This energizing workout is designed to
-            kickstart your metabolism, increase your energy levels, and set a
-            positive tone for the day ahead.
-          </Text>
+        <View style={{marginVertical:21}}>
+        <VideoComponent videoUrl={item?.video} thumbnail={item?.video_thumbnail} />
         </View>
-        <Image
-          source={require('../../assets/images/HTUAVid.png')}
-          style={{
-            width: Dimensions.get('window').width - 30,
-            objectFit: 'contain',
-            marginTop: -175,
-          }}
-        />
       </View>
-      <View style={{ marginTop: -150, paddingHorizontal: 15 }}>
-        <View style={{ gap: 10 }}>
-          <Text style={{ fontWeight: 700, fontSize: 18 }}>
-            Meet Your Strength Coach
-          </Text>
-          <Text
-            style={{ lineHeight: 22, color: '#676C75', letterSpacing: 0.8 }}
-          >
-            Embrace the morning sun and revitalize your body and mind with our
-            'Morning Boost' routine. This energizing workout is designed to
-            kickstart your metabolism, increase your energy levels, and set a
-            positive tone for the day ahead.
-          </Text>
-        </View>
-        <Image
-          source={require('../../assets/images/HTUAVid.png')}
-          style={{
-            width: Dimensions.get('window').width - 30,
-            objectFit: 'contain',
-            marginTop: -175,
-          }}
-        />
-      </View>
+      ))}
       <View
         style={{
           justifyContent: 'center',
           alignItems: 'center',
-          marginTop: -170,
           height: 80,
           marginBottom: 80,
         }}

@@ -21,11 +21,9 @@ import Entypo from "react-native-vector-icons/Entypo";
 import StandAlone from "./StandAlone";
 import { ScrollView } from "react-native-gesture-handler";
 import AdditionalWorkout from "./AdditionalWorkout";
-import { useFocusEffect } from '@react-navigation/native';
-import {  useSelector } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
+import { useSelector } from "react-redux";
 import PopupModal from "../../Components/ErrorPopup";
-
-
 
 const initialLayout = { width: Dimensions.get("window").width };
 
@@ -38,12 +36,11 @@ const Workouts = ({ route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user.isAssigned != true)
-        setModalVisible(true);
+      if (user.isAssigned != true) setModalVisible(true);
     }, [])
   );
   const toggleModal = () => {
-      setModalVisible(!isModalVisible);
+    setModalVisible(!isModalVisible);
   };
 
   const renderScene = SceneMap({
@@ -57,7 +54,6 @@ const Workouts = ({ route }) => {
     { key: "tab3", title: "Additional" },
     { key: "tab2", title: "Calendar" },
   ]);
-
 
   console.log(route);
 
@@ -73,7 +69,7 @@ const Workouts = ({ route }) => {
         }}
       >
         {index === 0 && (
-          <View style={[styles.header,{marginTop:20}]}>
+          <View style={[styles.header, { marginTop: 20 }]}>
             <View style={styles.headerLeft}>
               <Image
                 source={require("../../assets/images/workoutsgirlpic.png")}
@@ -125,9 +121,9 @@ const Workouts = ({ route }) => {
               style={{
                 width: Dimensions.get("screen").width,
                 height: 200,
-                borderBottomLeftRadius:15,
-                borderBottomRightRadius:15,
-                borderWidth:10,
+                borderBottomLeftRadius: 15,
+                borderBottomRightRadius: 15,
+                borderWidth: 10,
                 right: 0,
                 left: -10,
                 resizeMode: "cover",
@@ -159,7 +155,7 @@ const Workouts = ({ route }) => {
                 backgroundColor: "transparent",
               }}
               style={{
-                marginBottom:index ==2 ? 2 : 10,
+                marginBottom: index == 2 ? 2 : 10,
                 backgroundColor: "#f3f3f4",
                 borderRadius: 15,
               }}
