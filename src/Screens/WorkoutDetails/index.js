@@ -15,7 +15,6 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../Redux/actions/GernalActions";
 import { ApiCall } from "../../Services/Apis";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getHeight, getFontSize, getWidth } from "../../../utils/ResponsiveFun";
 import { fonts } from "../../constants/fonts";
 import { colors } from "../../constants/colors";
@@ -23,47 +22,17 @@ import TabBarComponent from "../../Components/TabBarComponent";
 
 const WorkoutDetails = () => {
   const navigation = useNavigation();
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const [data, setData] = useState([]);
   const [program, setProgram] = useState([]);
-  const [selectedItemId, setSelectedItemId] = useState();
-  const [betweenTwoHandles, setbetweenTwoHandles] = useState(false);
   const token = useSelector((state) => state.auth.userToken);
   const user = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
-
-  const toggleModal = () => {
-    setModalVisible(true);
-  };
-
-  const handleDoubleTap = (item) => {
-    navigation.navigate("ViewProgram", {
-      passData: item,
-      url: betweenTwoHandles
-        ? "cont_program/detail_cont_program/"
-        : "program/detail_program/",
-    });
-  };
 
   useEffect(() => {
     getAllProgram();
     getContinuousProgram();
   }, []);
 
-  const handleDayPress = (day) => {
-    setSelectedDate(day.dateString);
-  };
-
-  const handleSelect = (index) => {
-    if (index == "S&C Program") {
-      setbetweenTwoHandles(false);
-      getAllProgram();
-    } else {
-      setbetweenTwoHandles(true);
-      getContinuousProgram();
-    }
-  };
 
   const getContinuousProgram = async () => {
     dispatch(setLoader(true));
@@ -117,60 +86,9 @@ const WorkoutDetails = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const fetchSelectedItemId = async () => {
-  //     const latestSelectedItemId = await AsyncStorage.getItem(
-  //       "latestSelectedItemId"
-  //     );
-
-  //     if (latestSelectedItemId) {
-  //       setSelectedItemId(latestSelectedItemId);
-  //     }
-  //   };
-  //   fetchSelectedItemId();
-  // }, []);
-
-  const toggleSelection = async (item) => {
-    console.log("item inside toggle selection", item);
-    let prevSelectedItems = await AsyncStorage.getItem("selectedItems");
-    prevSelectedItems = JSON.parse(prevSelectedItems) || [];
-
-    const index = prevSelectedItems.findIndex(
-      (selectedItem) => selectedItem._id === item._id
-    );
-
-    if (index !== -1) {
-      prevSelectedItems.splice(index, 1);
-    } else {
-      prevSelectedItems.push(item);
-    }
-
-    await AsyncStorage.setItem(
-      "selectedItems",
-      JSON.stringify(prevSelectedItems)
-    );
-
-    await AsyncStorage.setItem("latestSelectedItemId", item._id);
-    setSelectedItemId(item._id);
-  };
-
-  const handleAddToCalendar = () => {
-    if (user?.isAssigned === true) {
-      Alert.alert("", " Do you want to switch to new program?", [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "destructive",
-        },
-        { text: "Continue", onPress: () => toggleModal(), style: "default" },
-      ]);
-    } else {
-      toggleModal();
-    }
-  };
-
   return (
     <SafeAreaView>
+      {/* Fix Header */}
       <View style={[styles.header]}>
         <View style={styles.headerLeft}>
           <Image
@@ -182,11 +100,6 @@ const WorkoutDetails = () => {
             <Text style={styles.headerText}>Start Training</Text>
           </View>
         </View>
-        {/* <TouchableOpacity>
-              <Image
-                source={require("../../assets/images/workoutssearch.png")}
-              />
-            </TouchableOpacity> */}
       </View>
       <TabBarComponent
         activeTab={0}
@@ -196,24 +109,6 @@ const WorkoutDetails = () => {
         }}
       />
       <ScrollView>
-        {/* <TouchableOpacity
-        onPress={() => navigation.navigate("Howtoreadprogram")}
-        style={{ width: "100%", marginTop: -30, marginBottom: -10 }}
-      >
-        <Image
-          source={require("../../assets/images/workoutsbtn1.png")}
-          style={{ width: "100%", resizeMode: "contain" }}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => navigation.navigate("Fitnesssurvey")}
-        style={{ width: "100%", marginTop: -50 }}
-      >
-        <Image
-          source={require("../../assets/images/workoutsquizbtn.png")}
-          style={{ width: "100%", resizeMode: "contain" }}
-        />
-      </TouchableOpacity> */}
         <View
           style={{
             padding: 6,
@@ -235,13 +130,6 @@ const WorkoutDetails = () => {
             >
               All programs
             </Text>
-            {/* <Text
-            style={{
-              color: "darkorange",
-            }}
-          >
-            See all
-          </Text> */}
           </View>
           {program.length > 0 &&
             program.map((item, index) => (
