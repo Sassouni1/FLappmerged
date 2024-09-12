@@ -88,6 +88,7 @@ const WorkoutDetails = () => {
 
   return (
     <SafeAreaView>
+      <ScrollView>
       {/* Fix Header */}
       <View style={[styles.header]}>
         <View style={styles.headerLeft}>
@@ -108,7 +109,7 @@ const WorkoutDetails = () => {
           else if (index == 2) navigation.navigate("AddWorkouts");
         }}
       />
-      <ScrollView>
+      
         <View
           style={{
             padding: 6,

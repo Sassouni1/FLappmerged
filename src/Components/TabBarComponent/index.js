@@ -44,11 +44,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#e1e1e3", // Keep background color
     borderRadius: 10, // Round the corners
-    marginHorizontal: 20, // Prevent container from touching screen edges
-    paddingHorizontal: 1, // Keep padding within bounds
+    //marginHorizontal: 20, // Prevent container from touching screen edges
+    //paddingHorizontal: 1, // Keep padding within bounds
     alignSelf: "center", // Center the container
     width: "auto", // Let the width adjust to the content
-    maxWidth: "95%", // Prevent overhang by limiting max width
+    maxWidth: "97%", // Prevent overhang by limiting max width
   },
   tab: {
     borderWidth: 0,
@@ -56,13 +56,7 @@ const styles = StyleSheet.create({
     height: 43,
     justifyContent: "center",
     alignItems: "center",
-    width: getWidth(31.6),
-  },
-  tabText: {
-    color: "#686c74",
-    fontFamily: fonts.Re,
-    fontSize: 15,
-    fontWeight: "700",
+    width: '50%',//if tabs 3 then 33.3%
   },
   activeTab: {
     borderWidth: 4,
@@ -72,7 +66,13 @@ const styles = StyleSheet.create({
     height: 43,
     justifyContent: "center",
     alignItems: "center",
-    width: getWidth(31.6),
+    width: '50%',//if tabs 3 then 33.3%
+  },
+  tabText: {
+    color: "#686c74",
+    fontFamily: fonts.Re,
+    fontSize: 15,
+    fontWeight: "700",
   },
   activeTabText: {
     color: "white",

@@ -339,7 +339,7 @@ const AddWorkouts = () => {
             />
           </TouchableOpacity>
           <TabBarComponent
-            activeTab={2}
+            activeTab={1}
             setActiveTab={(index) => {
               if (index == 0) navigation.navigate("Workouts");
               else if (index == 1) navigation.navigate("AdditionalWorkout");
