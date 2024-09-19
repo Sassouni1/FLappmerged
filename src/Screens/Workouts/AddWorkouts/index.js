@@ -394,7 +394,7 @@ const AddWorkouts = () => {
           <TabBarComponent
             activeTab={1}
             setActiveTab={(index) => {
-              if (index == 0) navigation.navigate("Workouts");
+              if (index == 0) navigation.navigate("WorkoutDetails");
               else if (index == 1) navigation.navigate("AddWorkouts");
             }}
           />

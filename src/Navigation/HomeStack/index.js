@@ -451,22 +451,8 @@ const HomeStack = () => {
         options={{
           headerShown: false,
         }}
-        name="AddWorkouts"
-        component={AddWorkouts}
-      />
-      <stack.Screen
-        options={{
-          headerShown: false,
-        }}
         name="AdditionalWorkout"
         component={AdditionalWorkout}
-      />
-        <stack.Screen
-        options={{
-          headerShown: false,
-        }}
-        name="WorkoutDetails"
-        component={WorkoutDetails}
       />
     </stack.Navigator>
   );

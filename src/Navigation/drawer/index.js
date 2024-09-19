@@ -171,7 +171,7 @@ const MyDrawer = () => {
       />
       <Drawer.Screen
         name="Become an Affiliate"
-        component={() => null}
+        component={React.Fragment}
         options={affiliateOptions}
         listeners={{
           drawerItemPress: (e) => {
@@ -189,7 +189,7 @@ const MyDrawer = () => {
       />
       <Drawer.Screen
         name="Billing"
-        component={() => null}
+        component={React.Fragment}
         options={{
           ...drawerScreenOptions,
           drawerIcon: ({ color }) => (
@@ -205,7 +205,7 @@ const MyDrawer = () => {
       />
       <Drawer.Screen
         name="Contact Support"
-        component={() => null} // Remove the Help component and set to null
+        component={React.Fragment} // Remove the Help component and set to null
         options={helpOptions}
         listeners={{
           drawerItemPress: (e) => {

@@ -169,6 +169,7 @@ const WorkoutDetails = () => {
               </TouchableOpacity>
             ))}
         </View>
+        <View style={{height:100}} />
       </Animated.ScrollView>
     </SafeAreaView>
   );

@@ -1,4 +1,5 @@
 import React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Text, View, StyleSheet, ImageBackground } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
@@ -31,6 +32,32 @@ const tabBarActiveColor = "#F79300";
 const tabBarActiveIconColor = "#000000";
 const tabBarInActiveColor = "#808082";
 const image = require("../../assets/images/tabbaricon.png");
+
+const stack = createNativeStackNavigator();
+const WorkoutStack = ({ route }) => {
+  const { tab } = route.params || {};
+  return (
+    <stack.Navigator
+      initialRouteName={tab == "tab1" ? "WorkoutDetails" : "AddWorkouts"}
+      screenOptions={{ headerShown: false }}
+    >
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="AddWorkouts"
+        component={AddWorkouts}
+      />
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="WorkoutDetails"
+        component={WorkoutDetails}
+      />
+    </stack.Navigator>
+  )
+}
 
 const TabBarText = (title, focused) =>
   !focused ? (
@@ -110,9 +137,9 @@ export default function BottomTab() {
       />
       <Tab.Screen
         name="Workouts"
-        component={WorkoutDetails}
+        component={WorkoutStack}
         initialParams={
-          user?.isAssigned !== true ? { data: "tab2" } : { data: "tab1" }
+          user?.isAssigned !== true ? { tab: "tab1" } : { tab: "tab2" }
         }
         options={{
           headerShown: false,
