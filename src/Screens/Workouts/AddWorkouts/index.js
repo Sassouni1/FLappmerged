@@ -29,6 +29,7 @@ import { fonts } from "../../../constants/fonts";
 import ReactNativeCalendarStrip from "react-native-calendar-strip";
 import moment from "moment";
 import TabBarComponent from "../../../Components/TabBarComponent";
+import VideoComponent from "../../../Components/VideoComponent";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -38,6 +39,7 @@ const AddWorkouts = () => {
   const dispatch = useDispatch();
   const [date, setDate] = useState(new Date());
 
+  const [program,setProgram] = useState();
   const [workout, setWorkout] = useState({});
   const [assigWorkout, setAssigWorkout] = useState({});
   const user = useSelector((state) => state.auth.userData);
@@ -47,6 +49,7 @@ const AddWorkouts = () => {
   const [exercises, setExercises] = useState([]);
   const currentDate = new Date();
   const [customDatesStyles, setCustomDatesStyles] = useState([]);
+  const [offDayVideos, setOffDayVideos] = useState([]);
 
   const handleDateChange = (selectedDate) => {
     setDate(selectedDate);
@@ -78,6 +81,42 @@ const AddWorkouts = () => {
       }
     } catch (e) {
       console.log("api get skill errorrrr -- ", e.toString());
+    }
+  };
+
+  const getViewProgram = async () => {
+    dispatch(setLoader(true));
+    try {
+      const res = await ApiCall({
+        params: { category_name: "skill" },
+        route: `program/detail_program/${user?.program_id}`,
+        verb: "get",
+        token: token,
+      });
+      if (res?.status == "200") {
+        setProgram(res?.response?.detail);
+      } else {
+        console.log(res?.response?.message)
+      }
+    } catch (e) {
+      console.log("api get skill error -- ", e.toString());
+    }
+  };
+
+  const getInstructions = async () => {
+    try {
+      const res = await ApiCall({
+        route: `appInstruction/all_instructions`,
+        verb: "get",
+        token: token,
+      });
+      if (res?.status == 200) {
+        setOffDayVideos(res?.response?.data?.filter(x=>x.type == "Off Day"));
+      } else {
+        console.log(res?.response);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -115,6 +154,8 @@ const AddWorkouts = () => {
       dispatch(setLoader(true));
       exerciseProgress(date);
       getSingleExcercise(date);
+      getInstructions()
+      getViewProgram()
     }, [])
   );
 
@@ -318,15 +359,16 @@ const AddWorkouts = () => {
             overflow: "hidden",
           }}
         >
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
+          <View
             style={{
-              position: "absolute",
-              top: -55, // Adjust this value as needed
-              left: 0, // Adjust this value as needed
-              zIndex: 1,
+              borderColor:'white',
+              flexDirection:'row',
+              marginBottom:10
             }}
           >
+            <TouchableOpacity
+            onPress={() => navigation.goBack()}
+             style={{flex:1}}>
             <Image
               source={require("../../../assets/images/Monotone3chevron3left.png")}
               style={{
@@ -334,15 +376,26 @@ const AddWorkouts = () => {
                 height: 30,
                 width: 30,
                 marginLeft: 31,
-                marginTop: 100,
               }}
             />
-          </TouchableOpacity>
+            </TouchableOpacity>
+            <View style={{flex:3}}>
+            <Text
+              style={{
+                fontSize: getFontSize(3.5),
+                fontFamily: "Ubuntu-Bold",
+                color: colors.white,
+              }}
+            >
+              {program?.title}
+            </Text>
+            </View>
+          </View>
           <TabBarComponent
             activeTab={1}
             setActiveTab={(index) => {
               if (index == 0) navigation.navigate("Workouts");
-              else if (index == 1) navigation.navigate("AdditionalWorkout");
+              else if (index == 1) navigation.navigate("AddWorkouts");
             }}
           />
           <ReactNativeCalendarStrip
@@ -376,15 +429,18 @@ const AddWorkouts = () => {
         ListEmptyComponent={() => (
           <View
             style={{
-              justifyContent: "center",
-              alignItems: "center",
-              height: getFontSize(5),
+              padding:10
+              // justifyContent: "center",
+              // alignItems: "center",
+              // height: getFontSize(5),
             }}
           >
+        <VideoComponent videoUrl={offDayVideos[0]?.video} thumbnail={offDayVideos[0]?.video_thumbnail} />
             <Text
               style={{
                 fontSize: getFontSize(3),
                 color: colors.black,
+                textAlign:'center',
                 marginTop: getHeight(1),
               }}
             >

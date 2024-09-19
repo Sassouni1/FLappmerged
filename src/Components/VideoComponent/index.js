@@ -30,36 +30,39 @@ const VideoComponent = ({ videoUrl, thumbnail }) => {
   const isVimeo = isVimeoUrl(videoUrl);
   const vimeoVideoId = extractVimeoVideoID(videoUrl);
 
+
   useEffect(() => {
-    // Fetch private video details from Vimeo API
-    fetch(`https://api.vimeo.com/videos/${vimeoVideoId}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${'785d828a6752d18b46d481e34d185c8b'}`,
-        'Content-Type': 'application/json',
-      },
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to fetch video data');
-      }
-      return response.json();
-    })
-    .then(data => {
-      const videoUrl = data.embed.html.match(/src="([^"]*)"/)[1];  // Extract the iframe URL from the response
-      setVimeoPrivateUrl(videoUrl);
-      console.log(videoUrl);
-    })
-    .catch(error => {
-      console.log('Error:', error);
-    });
+    if (vimeoVideoId) {
+      // Fetch private video details from Vimeo API
+      fetch(`https://api.vimeo.com/videos/${vimeoVideoId}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${'0ffaede4b92457da6e58870aace9493d'}`,
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch video data');
+          }
+          return response.json();
+        })
+        .then(data => {
+          const videoUrl = data.embed.html.match(/src="([^"]*)"/)[1];  // Extract the iframe URL from the response
+          setVimeoPrivateUrl(videoUrl);
+          console.log(videoUrl);
+        })
+        .catch(error => {
+          console.log('Error:', error);
+        });
+    }
   }, []);
   return (
     <View style={styles.container}>
       {isYouTube ? (
         <View style={styles.youtubeContainer}>
           <YoutubePlayer
-            height={190}
+            height={200}
             width={'100%'}
             play={false}
             videoId={isYouTube}

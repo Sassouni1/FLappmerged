@@ -1,24 +1,26 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
-  TouchableOpacity,
   Text,
-  ImageBackground,
-  Alert,
   Image,
   StyleSheet,
-  ScrollView,
+  Animated,
   SafeAreaView,
+  TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../Redux/actions/GernalActions";
 import { ApiCall } from "../../Services/Apis";
-import { getHeight, getFontSize, getWidth } from "../../../utils/ResponsiveFun";
-import { fonts } from "../../constants/fonts";
-import { colors } from "../../constants/colors";
+import { getHeight, getWidth } from "../../../utils/ResponsiveFun";
 import TabBarComponent from "../../Components/TabBarComponent";
+import { colors, fonts } from "../../constants";
+
+const HEADER_MAX_HEIGHT = 90;
+const HEADER_MIN_HEIGHT = 0; // To hide completely
+const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 const WorkoutDetails = () => {
   const navigation = useNavigation();
@@ -27,111 +29,120 @@ const WorkoutDetails = () => {
   const token = useSelector((state) => state.auth.userToken);
   const user = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     getAllProgram();
     getContinuousProgram();
   }, []);
 
-
   const getContinuousProgram = async () => {
     dispatch(setLoader(true));
     setData([]);
-
     try {
       const res = await ApiCall({
         route: "cont_program/all_cont_programs",
         verb: "get",
         token: token,
       });
-
       if (res?.status == "200") {
-        console.log(res?.response?.detail?.length);
         setData(res?.response?.detail?.filter((el) => !el?.isDeleted));
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        Alert.alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        Alert.alert(res?.response?.message);
       }
     } catch (e) {
-      console.log("api get skill error -- ", e.toString());
+      console.log("api error -- ", e.toString());
     }
   };
 
   const getAllProgram = async () => {
     dispatch(setLoader(true));
     setProgram([]);
-
     try {
       const res = await ApiCall({
         route: "program/all_active_programs",
         verb: "get",
         token: token,
       });
-
       if (res?.status == "200") {
-        console.log(res?.response?.detail?.length);
         setProgram(res?.response?.detail);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        Alert.alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        Alert.alert(res?.response?.message);
       }
     } catch (e) {
-      console.log("api get skill error -- ", e.toString());
+      console.log("api error -- ", e.toString());
     }
   };
 
+  const headerHeight = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+    extrapolate: "clamp",
+  });
+
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  });
+
+  const tabBarOpacity = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE], // Corrected input range length
+    outputRange: [1, 0], // Corrected output range length
+    extrapolate: "clamp",
+  });
+
   return (
-    <SafeAreaView>
-      <ScrollView>
-      {/* Fix Header */}
-      <View style={[styles.header]}>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Animated.View
+        style={[
+          styles.header,
+          {
+            height: headerHeight,
+            opacity: headerOpacity,
+          },
+        ]}
+      >
         <View style={styles.headerLeft}>
           <Image
             source={{ uri: user?.profile_image }}
             style={styles.profileImage}
           />
-          <View style={styles.headerWords}>
-            <Text style={styles.headerSubtext}>Fight Life 👊 </Text>
-            <Text style={styles.headerText}>Start Training</Text>
-          </View>
+          <Animated.View style={{ opacity: headerOpacity }}>
+            <View style={styles.headerWords}>
+              <Text style={styles.headerSubtext}>Fight Life 👊</Text>
+              <Text style={styles.headerText}>Start Training</Text>
+            </View>
+          </Animated.View>
         </View>
-      </View>
-      <TabBarComponent
-        activeTab={0}
-        setActiveTab={(index) => {
-          if (index == 1) navigation.navigate("AddWorkouts");
-          else if (index == 2) navigation.navigate("AddWorkouts");
+      </Animated.View>
+      {/* <Animated.View
+        style={{
+          opacity: tabBarOpacity,
         }}
-      />
-      
-        <View
-          style={{
-            padding: 6,
-            gap: 14,
+      > */}
+        <TabBarComponent
+          activeTab={0}
+          setActiveTab={(index) => {
+            if (index === 1) navigation.navigate("AddWorkouts");
+            else if (index === 2) navigation.navigate("AddWorkouts");
           }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "700",
-              }}
-            >
-              All programs
-            </Text>
-          </View>
+        />
+      {/* </Animated.View> */}
+      <Animated.ScrollView
+        style={{ flex: 1 }}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
+      >
+        <View style={styles.contentContainer}>
+          <Text style={styles.sectionTitle}>All programs</Text>
           {program.length > 0 &&
             program.map((item, index) => (
               <TouchableOpacity
@@ -143,337 +154,35 @@ const WorkoutDetails = () => {
                   })
                 }
               >
-                <View
-                  style={{
-                    borderRadius: 30,
-                    marginBottom: 10,
-                  }}
-                >
+                <View style={styles.programContainer}>
                   <Image
                     source={{ uri: item?.program_Image }}
-                    style={{
-                      width: "100%",
-                      objectFit: "cover",
-                      borderRadius: 30,
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      bottom: 0,
-                      right: 0,
-                    }}
+                    style={styles.programImage}
                   />
-                  <View
-                    style={{
-                      padding: 20,
-                      justifyContent: "space-between",
-                      height: 220,
-                    }}
-                  >
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 10,
-                      }}
-                    >
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          gap: 6,
-                        }}
-                      >
-                        <Image
-                          source={require("../../assets/images/homeclockicon.png")}
-                        />
-                        <Text
-                          style={{
-                            color: "white",
-                          }}
-                        >
-                          {item?.equipments_needed}
-                        </Text>
-                      </View>
-                      <View
-                        style={{
-                          height: 5,
-                          width: 5,
-                          backgroundColor: "gray",
-                          borderRadius: 10,
-                        }}
-                      />
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          gap: 6,
-                        }}
-                      >
-                        <Image
-                          source={require("../../assets/images/homefireicon.png")}
-                        />
-                        <Text
-                          style={{
-                            color: "white",
-                          }}
-                        >
-                          {item?.program_for}
-                        </Text>
-                      </View>
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: "column",
-                        gap: 6,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 22,
-                          color: "white",
-                          fontWeight: "700",
-                        }}
-                      >
-                        {item?.title}
-                      </Text>
-
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                        }}
-                      >
-                        <View style={{ flex: 1 }}>
-                          <Text style={{ color: "white" }} numberOfLines={1}>
-                            {item?.description}
-                          </Text>
-                        </View>
-                        <View
-                          style={{
-                            backgroundColor: "rgba(170, 170, 170, 0.42)",
-                            paddingVertical: 6,
-                            paddingHorizontal: 10,
-                            borderRadius: 12,
-                          }}
-                        >
-                          <Text
-                            style={{
-                              color: "white",
-                              fontWeight: "600",
-                              fontSize: 12,
-                            }}
-                          >
-                            START
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
+                  <View style={styles.programContent}>
+                    <Text style={styles.programTitle}>{item?.title}</Text>
+                    <Text style={styles.programDesc}>
+                      {item?.description}
+                    </Text>
                   </View>
                 </View>
               </TouchableOpacity>
             ))}
         </View>
-        {/* <View
-        style={{
-          padding: 6,
-          gap: 14,
-          marginTop: 26,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-              gap: 4,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "700",
-              }}
-            >
-              Recent Workouts
-            </Text>
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "700",
-                color: "gray",
-              }}
-            >
-              {`(${data.length})`}
-            </Text>
-          </View>
-
-          <Text
-            style={{
-              color: "darkorange",
-            }}
-          >
-            See all
-          </Text>
-        </View>
-        {data.length > 0 &&
-          data.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              style={{
-                borderRadius: 30,
-                backgroundColor: "#e8ebed",
-              }}
-              onPress={() =>
-                navigation.navigate("ViewProgram", {
-                  passData: item,
-                  url: "cont_program/detail_cont_program/",
-                })
-              }
-            >
-              <View
-                style={{
-                  padding: 14,
-                  flexDirection: "row",
-                  gap: 10,
-                }}
-              >
-                <Image
-                  source={require("../../assets/images/workoutsyoga.png")}
-                  style={{
-                    width: 60,
-                    height: 60,
-                  }}
-                />
-                <View
-                  style={{
-                    flexDirection: "column",
-                    gap: 6,
-                    width: "75%",
-                  }}
-                >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      gap: 8,
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 18,
-                        color: "black",
-                        fontWeight: "700",
-                      }}
-                    >
-                      {item?.title}
-                    </Text>
-                    <View
-                      style={{
-                        padding: 6,
-                        borderWidth: 1,
-                        borderRadius: 10,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 10,
-                          color: "black",
-                          fontWeight: "600",
-                        }}
-                      >
-                        YOGA
-                      </Text>
-                    </View>
-                  </View>
-                  <View
-                    style={{
-                      width: "100%",
-                      backgroundColor: "lightgray",
-                      height: 6,
-                    }}
-                  />
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      gap: 10,
-                      alignItems: "center",
-                      marginTop: 4,
-                    }}
-                  >
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        gap: 4,
-                        alignItems: "center",
-                        marginTop: 4,
-                      }}
-                    >
-                      <Image
-                        source={require("../../assets/images/workoutdocicon.png")}
-                        style={{
-                          width: 16,
-                          height: 16,
-                        }}
-                      />
-                      <Text
-                        style={{
-                          color: "black",
-                        }}
-                      >
-                        Movement 4
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        gap: 4,
-                        alignItems: "center",
-                        marginTop: 4,
-                      }}
-                    >
-                      <Image
-                        source={require("../../assets/images/workoutstopwatchicon.png")}
-                        style={{
-                          width: 16,
-                          height: 16,
-                        }}
-                      />
-                      <Text
-                        style={{
-                          color: "black",
-                        }}
-                      >
-                        87%
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-      </View> */}
-        <View style={{ height: 200 }} />
-      </ScrollView>
+      </Animated.ScrollView>
     </SafeAreaView>
   );
 };
+
 
 export default WorkoutDetails;
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-
-    paddingVertical: getHeight(2),
+    backgroundColor: "white",
+    justifyContent: "flex-end",
+    paddingHorizontal: 10,
+    paddingBottom: 10,
   },
   profileImage: {
     width: 55,
@@ -481,9 +190,6 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     borderRadius: 20,
     resizeMode: "cover",
-  },
-  header1: {
-    marginTop: 1,
   },
   headerLeft: {
     flexDirection: "row",
@@ -495,29 +201,40 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   headerSubtext: {
-    fontFamily: "Ubuntu",
-
-    fontWeight: "500",
-    fontStyle: "normal",
-
-    textAlign: "center",
     color: "gray",
   },
   headerText: {
-    fontFamily: "Ubuntu",
     fontSize: 26,
     fontWeight: "700",
-    fontStyle: "normal",
-
     color: "black",
   },
-  title: {
-    flex: 1,
-    fontSize: getFontSize(3.2),
-    fontFamily: fonts.Re,
-    color: colors.white,
-    marginLeft: getWidth(2),
-    marginRight: getWidth(8),
-    textAlign: "center",
+  contentContainer: {
+    padding: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 10,
+  },
+  programContainer: {
+    borderRadius: 10,
+    backgroundColor: "#e8ebed",
+    padding: 10,
+    marginBottom: 10,
+  },
+  programImage: {
+    width: "100%",
+    height: 200,
+    borderRadius: 10,
+  },
+  programContent: {
+    marginTop: 10,
+  },
+  programTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  programDesc: {
+    color: "#555",
   },
 });

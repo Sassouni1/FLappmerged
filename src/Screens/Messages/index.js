@@ -154,12 +154,13 @@ const BotAllChatScreen = ({ navigation, route }) => {
             {
               title: "Chats",
               data: [
-                ...community.map((item) => ({
+                ...admin.map((item) => ({
                   _id: item._id,
                   title: "Fight Life Team",
                   subText: "Chat with our community", // Custom subtext
                   iconUrl: require("../../assets/images/fistemoji.png"),
                   colors: colors.greenlight,
+                  admin: item?.admin,
                 })),
                 {
                   _id: "team",
@@ -168,7 +169,7 @@ const BotAllChatScreen = ({ navigation, route }) => {
                   iconUrl: require("../../assets/images/Robot.png"), // Use iconUrl again
                   colors: colors.lightBlue,
                 },
-                ...admin.map((item) => ({
+                ...community.map((item) => ({
                   _id: item._id,
                   title: "Upcoming Updates & Announcements",
                   subText: "Upcoming updates", // Custom subtext

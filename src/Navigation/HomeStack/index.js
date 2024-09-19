@@ -54,9 +54,9 @@ import Weightgoals from "../../Screens/Fitnesssurvey/Weightgoals";
 
 import WorkoutExercise from "../../Screens/Workouts/WorkoutExercise";
 import AdditionalWorkoutSelected from "../../Screens/Workouts/AdditionalWorkoutSelected";
-
 import AddWorkouts from "../../Screens/Workouts/AddWorkouts";
 import AdditionalWorkout from "../../Screens/Workouts/AdditionalWorkout";
+import WorkoutDetails from "../../Screens/WorkoutDetails";
 
 import HTUA from "../../Screens/HTUA";
 import {SplashScreen} from "../../Screens/SplashScreen";
@@ -460,6 +460,13 @@ const HomeStack = () => {
         }}
         name="AdditionalWorkout"
         component={AdditionalWorkout}
+      />
+        <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="WorkoutDetails"
+        component={WorkoutDetails}
       />
     </stack.Navigator>
   );
