@@ -62,6 +62,7 @@
 		26892FE9F0925AA2F1799B3D /* Pods-FightLife.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FightLife.release.xcconfig"; path = "Target Support Files/Pods-FightLife/Pods-FightLife.release.xcconfig"; sourceTree = "<group>"; };
 		4031E5B800AA4AE4A8B06081 /* WorkSans-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "WorkSans-Regular.ttf"; path = "../src/assets/fonts/WorkSans-Regular.ttf"; sourceTree = "<group>"; };
 		613DFBDD2C7C5A0800C079A9 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		61E32C9B2C9C4F2A006B94FF /* FightLifeRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = FightLifeRelease.entitlements; path = FightLife/FightLifeRelease.entitlements; sourceTree = "<group>"; };
 		6DE17E66089A63B4A874A7DD /* Pods-FightLife-FightLifeTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FightLife-FightLifeTests.release.xcconfig"; path = "Target Support Files/Pods-FightLife-FightLifeTests/Pods-FightLife-FightLifeTests.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = FightLife/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		93D7F4A16F884797B0081987 /* Ubuntu-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Ubuntu-Italic.ttf"; path = "../src/assets/fonts/Ubuntu-Italic.ttf"; sourceTree = "<group>"; };
@@ -119,6 +120,7 @@
 		13B07FAE1A68108700A75B9A /* FightLife */ = {
 			isa = PBXGroup;
 			children = (
+				61E32C9B2C9C4F2A006B94FF /* FightLifeRelease.entitlements */,
 				1861CF8B2B0B7AA2004AF19E /* FightLife.entitlements */,
 				18601C372B0B400800E3801C /* GoogleService-Info.plist */,
 				18FEB5362AF22ED80052A901 /* Fonts */,
@@ -612,7 +614,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = FightLife/FightLife.entitlements;
+				CODE_SIGN_ENTITLEMENTS = FightLife/FightLifeRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;

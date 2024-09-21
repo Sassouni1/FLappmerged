@@ -7,6 +7,7 @@ import {
   SectionList,
   StyleSheet,
   Text,
+  Button,
   TouchableOpacity,
   View,
   ScrollView,
@@ -32,6 +33,7 @@ import { ApiCall } from "../../Services/Apis";
 import SelectDropdown from "react-native-select-dropdown";
 // import session from "redux-persist/lib/storage/session";
 import PopupModal from "../../Components/ErrorPopup";
+import AppleHealthKit from 'react-native-health';
 
 const defaultDropDownValue = "Last 7 Days";
 
@@ -42,6 +44,131 @@ export default function TrainingStats({ navigation }) {
   const [date, setDate] = useState(new Date());
   const { height, width } = Dimensions.get("window");
   const [isModalVisible, setModalVisible] = useState(false);
+  const [healthData, setHealthData] = useState({
+    vo2Max: null,
+    heartRate: null,
+    heartRateVariability: null,
+    restingHeartRate: null,
+    distanceWalkingRunning: null,
+    dailyStepCount: null,
+    activeEnergyBurned: null,
+    basalEnergyBurned: null,
+    stepCount: null,
+  });
+
+  let options = {
+    permissions: {
+        read: [
+          "StepCount",
+          "DistanceWalkingRunning",
+          "ActiveEnergyBurned",
+          "HeartRate",
+          "SleepAnalysis",
+          "BodyFatPercentage",
+          "BodyMassIndex",
+          "BasalEnergyBurned",
+          "BodyMassIndex",
+          "LeanBodyMass"
+        ],
+        write: []
+    }
+};
+
+useEffect(() => {
+  requestPermissionsAndFetchData();
+}, []);
+
+  // Function to request permissions and fetch health data
+  const requestPermissionsAndFetchData = () => {
+    AppleHealthKit.initHealthKit(options, (err, results) => {
+      if (err) {
+        console.log("results",err)
+        return;
+      }
+
+      // Fetch VO2 Max
+      AppleHealthKit.getVo2MaxSamples({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
+        if (err) {
+          console.log('Error fetching VO2 Max:', err);
+          return;
+        }
+        setHealthData((prevData) => ({ ...prevData, vo2Max: results?.[0]?.value || 'N/A' }));
+      });
+
+      // Fetch Heart Rate
+      AppleHealthKit.getHeartRateSamples({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
+        if (err) {
+          console.log('Error fetching heart rate:', err);
+          return;
+        }
+        setHealthData((prevData) => ({ ...prevData, heartRate: results?.[0]?.value || 'N/A' }));
+      });
+
+      // Fetch Heart Rate Variability
+      AppleHealthKit.getHeartRateVariabilitySamples({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
+        if (err) {
+          console.log('Error fetching heart rate variability:', err);
+          return;
+        }
+        setHealthData((prevData) => ({ ...prevData, heartRateVariability: results?.[0]?.value || 'N/A' }));
+      });
+
+      // Fetch Resting Heart Rate
+      AppleHealthKit.getRestingHeartRateSamples({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
+        if (err) {
+          console.log('Error fetching resting heart rate:', err);
+          return;
+        }
+        setHealthData((prevData) => ({ ...prevData, restingHeartRate: results?.[0]?.value || 'N/A' }));
+      });
+
+      // Fetch Distance Walking Running
+      AppleHealthKit.getDistanceWalkingRunning({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
+        if (err) {
+          console.log('Error fetching distance walking/running:', err);
+          return;
+        }
+        setHealthData((prevData) => ({ ...prevData, distanceWalkingRunning: results?.value || 'N/A' }));
+      });
+
+      // Fetch Daily Step Count
+      AppleHealthKit.getDailyStepCountSamples({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
+        if (err) {
+          console.log('Error fetching daily step count:', err);
+          return;
+        }
+        const totalSteps = results?.reduce((total, sample) => total + sample.value, 0) || 'N/A';
+        setHealthData((prevData) => ({ ...prevData, dailyStepCount: totalSteps }));
+      });
+
+      // Fetch Active Energy Burned
+      AppleHealthKit.getActiveEnergyBurned({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
+        if (err) {
+          console.log('Error fetching active energy burned:', err);
+          return;
+        }
+        setHealthData((prevData) => ({ ...prevData, activeEnergyBurned: results?.[0]?.value || 'N/A' }));
+      });
+
+      // Fetch Basal Energy Burned
+      AppleHealthKit.getBasalEnergyBurned({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
+        if (err) {
+          console.log('Error fetching basal energy burned:', err);
+          return;
+        }
+        setHealthData((prevData) => ({ ...prevData, basalEnergyBurned: results?.[0]?.value || 'N/A' }));
+      });
+
+      // Fetch Step Count
+      AppleHealthKit.getStepCount({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
+        if (err) {
+          console.log('Error fetching step count:', err);
+          return;
+        }
+        setHealthData((prevData) => ({ ...prevData, stepCount: results?.value || 'N/A' }));
+      });
+    });
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -1707,6 +1834,16 @@ export default function TrainingStats({ navigation }) {
         }`,
       })}
 
+<Text>VO2 Max: {healthData.vo2Max}</Text>
+      <Text>Heart Rate: {healthData.heartRate}</Text>
+      <Text>Heart Rate Variability: {healthData.heartRateVariability}</Text>
+      <Text>Resting Heart Rate: {healthData.restingHeartRate}</Text>
+      <Text>Distance Walking/Running: {healthData.distanceWalkingRunning}</Text>
+      <Text>Daily Step Count: {healthData.dailyStepCount}</Text>
+      <Text>Active Energy Burned: {healthData.activeEnergyBurned}</Text>
+      <Text>Basal Energy Burned: {healthData.basalEnergyBurned}</Text>
+      <Text>Total Step Count: {healthData.stepCount}</Text>
+      <Button title="Refresh Health Data" onPress={requestPermissionsAndFetchData} />
       <View style={{ height: 100 }} />
     </ScrollView>
   );
