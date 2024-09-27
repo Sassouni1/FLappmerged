@@ -76,7 +76,7 @@ const Workouts = ({ route }) => {
               />
               <View style={styles.headerWords}>
                 <Text style={styles.headerSubtext}>Fight Life 👊 </Text>
-                <Text style={styles.headerText}> Start Training</Text>
+                <Text style={styles.headerText}> Start Trainings</Text>
               </View>
             </View>
             <TouchableOpacity>

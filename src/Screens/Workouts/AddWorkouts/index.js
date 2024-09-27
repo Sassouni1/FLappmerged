@@ -39,7 +39,7 @@ const AddWorkouts = () => {
   const dispatch = useDispatch();
   const [date, setDate] = useState(new Date());
 
-  const [program,setProgram] = useState();
+  const [program, setProgram] = useState();
   const [workout, setWorkout] = useState({});
   const [assigWorkout, setAssigWorkout] = useState({});
   const user = useSelector((state) => state.auth.userData);
@@ -96,7 +96,7 @@ const AddWorkouts = () => {
       if (res?.status == "200") {
         setProgram(res?.response?.detail);
       } else {
-        console.log(res?.response?.message)
+        console.log(res?.response?.message);
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
@@ -111,7 +111,9 @@ const AddWorkouts = () => {
         token: token,
       });
       if (res?.status == 200) {
-        setOffDayVideos(res?.response?.data?.filter(x=>x.type == "Off Day"));
+        setOffDayVideos(
+          res?.response?.data?.filter((x) => x.type == "Off Day")
+        );
       } else {
         console.log(res?.response);
       }
@@ -154,8 +156,8 @@ const AddWorkouts = () => {
       dispatch(setLoader(true));
       exerciseProgress(date);
       getSingleExcercise(date);
-      getInstructions()
-      getViewProgram()
+      getInstructions();
+      getViewProgram();
     }, [])
   );
 
@@ -163,7 +165,9 @@ const AddWorkouts = () => {
     try {
       const sets = exercise?.sets;
       if (sets) {
-        const maxReps = Math.max(...sets?.map((set) => Number(set.reps)));
+        const maxReps = Math.max(
+          ...sets?.map((set) => Number(set[set.parameter]))
+        );
         return maxReps;
       } else return 0;
     } catch {
@@ -223,7 +227,13 @@ const AddWorkouts = () => {
       <View style={{ flex: 1, flexDirection: "row", zIndex: 1 }}>
         <View style={{ flex: 1 }}>
           <Image
-            source={{ uri: item?.video_thumbnail }}
+            source={
+              item.video
+                ? item.video_thumbnail
+                  ? { uri: item?.video_thumbnail }
+                  : require("../../../assets/images/no-thumbnail.jpg")
+                : require("../../../assets/images/no-video.jpg")
+            }
             style={{
               width: "100%",
               height: 90,
@@ -303,7 +313,7 @@ const AddWorkouts = () => {
   const renderMergedItem = (parentitem, parentIndex) => (
     <View>
       {parentitem?.task?.map((item, index) => (
-        <View key={index} style={{  }}>
+        <View key={index} style={{}}>
           <TouchableOpacity
             style={{
               backgroundColor: "#F3F3F4",
@@ -325,7 +335,7 @@ const AddWorkouts = () => {
           >
             <RenderExercise item={item} />
           </TouchableOpacity>
-          {index < parentitem?.task?.length-1 ? (
+          {index < parentitem?.task?.length - 1 ? (
             <View
               style={{
                 left: 30,
@@ -334,10 +344,9 @@ const AddWorkouts = () => {
                 backgroundColor: colors.black,
               }}
             />
-          )
-          :
-          <View style={{marginBottom:10}} />
-        }
+          ) : (
+            <View style={{ marginBottom: 10 }} />
+          )}
         </View>
       ))}
     </View>
@@ -359,37 +368,48 @@ const AddWorkouts = () => {
             overflow: "hidden",
           }}
         >
+          {/* Overlay with 80% black opacity */}
           <View
             style={{
-              borderColor:'white',
-              flexDirection:'row',
-              marginBottom:10
+              position: "absolute", // Make sure it overlays the entire background
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.)", // Black with 80% opacity
+            }}
+          />
+          <View
+            style={{
+              alignItems: "center", // Center the content horizontally
+              justifyContent: "center", // Center the content vertically
+              marginBottom: 10,
+              paddingHorizontal: 10, // Add padding if necessary
             }}
           >
             <TouchableOpacity
-            onPress={() => navigation.goBack()}
-             style={{flex:1}}>
-            <Image
-              source={require("../../../assets/images/Monotone3chevron3left.png")}
-              style={{
-                tintColor: colors.white,
-                height: 30,
-                width: 30,
-                marginLeft: 31,
-              }}
-            />
+              onPress={() => navigation.goBack()}
+              style={{ position: "absolute", left: 20 }} // Position the back button to the left
+            >
+              <Image
+                source={require("../../../assets/images/Monotone3chevron3left.png")}
+                style={{
+                  tintColor: colors.white,
+                  height: 30,
+                  width: 30,
+                }}
+              />
             </TouchableOpacity>
-            <View style={{flex:3}}>
             <Text
               style={{
                 fontSize: getFontSize(3.5),
                 fontFamily: "Ubuntu-Bold",
                 color: colors.white,
+                marginLeft: 10, // Shift title 10 pixels to the right
               }}
             >
               {program?.title}
             </Text>
-            </View>
           </View>
           <TabBarComponent
             activeTab={1}
@@ -421,31 +441,49 @@ const AddWorkouts = () => {
         </ImageBackground>
       </View>
       <FlatList
-        style={{ paddingTop: 20 }}
+        style={{ marginTop: 20, flex: 1 }}
         data={exercises}
         initialNumToRender={5}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
         ListEmptyComponent={() => (
           <View
             style={{
-              padding:10
-              // justifyContent: "center",
-              // alignItems: "center",
-              // height: getFontSize(5),
+              flex: 1,
+              padding: 20,
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-        <VideoComponent videoUrl={offDayVideos[0]?.video} thumbnail={offDayVideos[0]?.video_thumbnail} />
             <Text
               style={{
-                fontSize: getFontSize(3),
-                color: colors.black,
-                textAlign:'center',
-                marginTop: getHeight(1),
+                fontSize: getFontSize(4),
+                color: colors.darkGray1,
+                textAlign: "center",
+                fontFamily: "Ubuntu-Bold",
+                marginBottom: getHeight(3),
               }}
             >
-              Rest Day & Recovery! {"\n"} Enjoy your!
+              Rest & Recovery!{"\n"}Enjoy Your Rest Day!
             </Text>
+            <View
+              style={{
+                width: "100%",
+                aspectRatio: 16 / 9,
+                marginBottom: getHeight(3),
+              }}
+            >
+              <VideoComponent
+                videoUrl={offDayVideos[0]?.video}
+                thumbnail={offDayVideos[0]?.video_thumbnail}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: 10,
+                }}
+              />
+            </View>
           </View>
         )}
         refreshing={false}
@@ -487,119 +525,7 @@ const AddWorkouts = () => {
                   paddingHorizontal: 30,
                   justifyContent: "center",
                 }}
-              >
-                <Image
-                  source={require("../../../assets/images/workoutsclockicon.png")}
-                  style={{
-                    height: 20,
-                    width: 20,
-                  }}
-                />
-                <Text
-                  style={{
-                    fontWeight: "700",
-                    fontSize: 16,
-                    textAlign: "center",
-                  }}
-                >
-                  {`${assigWorkout?.workoutLength || 0} Min`}
-                </Text>
-                <Text
-                  style={{
-                    fontWeight: "400",
-                    fontSize: 14,
-                    textAlign: "center",
-                  }}
-                >
-                  Time
-                </Text>
-              </View>
-              <View
-                style={{
-                  height: 110,
-                  width: 1.5,
-                  backgroundColor: "lightgray",
-                }}
-              />
-              <View
-                style={{
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 10,
-                  paddingHorizontal: 30,
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  source={require("../../../assets/images/workoutsfireicon.png")}
-                  style={{
-                    height: 18,
-                    width: 18,
-                    objectFit: "contain",
-                  }}
-                />
-                <Text
-                  style={{
-                    fontWeight: "700",
-                    fontSize: 16,
-                    textAlign: "center",
-                  }}
-                >
-                  {`${assigWorkout?.calories || 0} Cal`}
-                </Text>
-                <Text
-                  style={{
-                    fontWeight: "400",
-                    fontSize: 14,
-                    textAlign: "center",
-                  }}
-                >
-                  Calorie
-                </Text>
-              </View>
-              <View
-                style={{
-                  height: 110,
-                  width: 1.5,
-                  backgroundColor: "lightgray",
-                }}
-              />
-              <View
-                style={{
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 10,
-                  paddingHorizontal: 30,
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  source={require("../../../assets/images/workoutsweightsicon.png")}
-                  style={{
-                    height: 20,
-                    width: 20,
-                    objectFit: "contain",
-                  }}
-                />
-                <Text
-                  style={{
-                    fontWeight: "700",
-                    fontSize: 16,
-                    textAlign: "center",
-                  }}
-                >
-                  {assigWorkout?.focus}
-                </Text>
-                <Text
-                  style={{
-                    fontWeight: "400",
-                    fontSize: 14,
-                    textAlign: "center",
-                  }}
-                >
-                  Focus
-                </Text>
-              </View>
+              ></View>
             </View>
           </View>
         )}
@@ -621,18 +547,6 @@ const AddWorkouts = () => {
                   borderRadius: 15,
                   height: 60,
                   backgroundColor: colors.orange,
-                }}
-                btnTextStyle={GernalStyle.btnText}
-              />
-              <Button
-                onPress={() => navigation.goBack()}
-                text="Add Additional Workout"
-                btnStyle={{
-                  ...GernalStyle.btn,
-                  borderRadius: 15,
-                  height: 45,
-                  backgroundColor: colors.greentick,
-                  marginTop: 20,
                 }}
                 btnTextStyle={GernalStyle.btnText}
               />

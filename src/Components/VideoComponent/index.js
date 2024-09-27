@@ -1,13 +1,14 @@
-import React,{useEffect,useState} from 'react';
-import { View, StyleSheet } from 'react-native';
-import VideoPlayer from 'react-native-video-player';
-import YoutubePlayer from 'react-native-youtube-iframe';
-import { Vimeo } from 'react-native-vimeo-iframe';
-import { WebView } from 'react-native-webview';
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet } from "react-native";
+import VideoPlayer from "react-native-video-player";
+import YoutubePlayer from "react-native-youtube-iframe";
+import { Vimeo } from "react-native-vimeo-iframe";
+import { WebView } from "react-native-webview";
 
 // Function to extract YouTube video ID from URL
 const extractYouTubeVideoID = (url) => {
-  const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.+\?v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+  const regex =
+    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.+\?v=)|youtu\.be\/)([^"&?\/\s]{11})/;
   const match = url?.match(regex);
   return match ? match[1] : null;
 };
@@ -25,35 +26,34 @@ const extractVimeoVideoID = (url) => {
 };
 
 const VideoComponent = ({ videoUrl, thumbnail }) => {
-  const [vimeoPrivateUrl,setVimeoPrivateUrl] = useState();
+  const [vimeoPrivateUrl, setVimeoPrivateUrl] = useState();
   const isYouTube = extractYouTubeVideoID(videoUrl);
   const isVimeo = isVimeoUrl(videoUrl);
   const vimeoVideoId = extractVimeoVideoID(videoUrl);
-
 
   useEffect(() => {
     if (vimeoVideoId) {
       // Fetch private video details from Vimeo API
       fetch(`https://api.vimeo.com/videos/${vimeoVideoId}`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          Authorization: `Bearer ${'0ffaede4b92457da6e58870aace9493d'}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${"0ffaede4b92457da6e58870aace9493d"}`,
+          "Content-Type": "application/json",
         },
       })
-        .then(response => {
+        .then((response) => {
           if (!response.ok) {
-            throw new Error('Failed to fetch video data');
+            throw new Error("Failed to fetch video data");
           }
           return response.json();
         })
-        .then(data => {
-          const videoUrl = data.embed.html.match(/src="([^"]*)"/)[1];  // Extract the iframe URL from the response
+        .then((data) => {
+          const videoUrl = data.embed.html.match(/src="([^"]*)"/)[1]; // Extract the iframe URL from the response
           setVimeoPrivateUrl(videoUrl);
           console.log(videoUrl);
         })
-        .catch(error => {
-          console.log('Error:', error);
+        .catch((error) => {
+          console.log("Error:", error);
         });
     }
   }, []);
@@ -63,18 +63,18 @@ const VideoComponent = ({ videoUrl, thumbnail }) => {
         <View style={styles.youtubeContainer}>
           <YoutubePlayer
             height={200}
-            width={'100%'}
+            width={"100%"}
             play={false}
             videoId={isYouTube}
           />
         </View>
       ) : isVimeo ? (
         <View style={styles.vimeoContainer}>
-            <WebView
-              source={{ uri: vimeoPrivateUrl }}
-              style={{ height:200,width:'100%' }}
-              allowsInlineMediaPlayback={true}
-            />
+          <WebView
+            source={{ uri: vimeoPrivateUrl }}
+            style={{ height: 200, width: "100%" }}
+            allowsInlineMediaPlayback={true}
+          />
           {/* <Vimeo
             videoId={vimeoVideoId}
             width={'100%'}
@@ -99,15 +99,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   youtubeContainer: {
-    width: '100%',
+    width: "100%",
+    height: 300,
     borderRadius: 15,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   vimeoContainer: {
-    width: '100%',
+    width: "100%",
     borderRadius: 15,
-    height:200,
-    overflow: 'hidden',
+    height: 200,
+    overflow: "hidden",
   },
 });
 

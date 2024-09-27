@@ -19,6 +19,7 @@ import SimpleToast from "react-native-simple-toast";
 import ImageModal from "react-native-image-modal";
 import moment from "moment";
 import fs from "react-native-fs";
+import messages from "../../Screens/Messages";
 
 import { GernalStyle } from "../../../constants/GernalStyle";
 import { colors } from "../../constants/colors";
@@ -49,6 +50,10 @@ import { useFocusEffect } from "@react-navigation/native";
 
 const STATUSBAR_HEIGHT =
   Platform.OS === "ios" ? getStatusBarHeight(true) : StatusBar.currentHeight;
+
+const backHandler = () => {
+  navigation.goBack(); // Navigates to the previous screen in the stack
+};
 
 const BotAllChatScreen = ({ navigation, route }) => {
   const user = useSelector((state) => state.auth.userData);
@@ -95,10 +100,6 @@ const BotAllChatScreen = ({ navigation, route }) => {
     } catch (e) {
       console.log("api get chatrooms error -- ", e.toString());
     }
-  };
-
-  const backHandler = () => {
-    navigation.goBack();
   };
 
   const renderItem = ({ item, index }) => {

@@ -446,7 +446,7 @@ export default function Squat({ navigation, route }) {
           {selectedSetKey == uniqueKey ?
             !timerActive ?
               <TouchableOpacity
-                style={{ width: 27 }}
+                style={{ width: 27,marginLeft:12 }}
                 onPress={() => {
                   setRestTime(restTime);
                   setSelectedSetKey(uniqueKey);
@@ -466,7 +466,7 @@ export default function Squat({ navigation, route }) {
               </TouchableOpacity>
             :
             <TouchableOpacity
-              style={{ width: 27 }}
+              style={{ width: 27,marginLeft:12 }}
               onPress={() => {
                 setRestTime(restTime);
                 setSelectedSetKey(uniqueKey);

@@ -1,3 +1,4 @@
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,7 +8,6 @@ import {
   Image,
   StyleSheet,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -20,7 +20,7 @@ import { PlayerSvg, SearchSvg } from "../../assets/images";
 import { colors } from "../../constants/colors";
 import { fonts } from "../../constants/fonts";
 
-const Excercises = () => {
+const Exercises = () => {
   const navigation = useNavigation();
   const token = useSelector((state) => state.auth.userToken);
   const dispatch = useDispatch();
@@ -30,51 +30,39 @@ const Excercises = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [invalidEntry, setInvalidEntry] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [selectedTypes, setSelectedTypes] = useState([]);
+  const [selectedType, setSelectedType] = useState("All Exercises");
+  const [allTypes, setAllTypes] = useState(["All Exercises"]);
 
-  const [allTypes, setAllTypes] = useState([]);
+  const filterNoVideo = useCallback((items) => {
+    return items.filter(
+      (item) =>
+        item &&
+        item.exercise_name &&
+        item.exercise_name.toLowerCase() !== "no video" &&
+        item.video_thumbnail
+    );
+  }, []);
 
-  const toggleTypeSelection = (selectedType) => {
-    setSelectedTypes([selectedType]);
-  };
+  const applyFilters = useCallback(() => {
+    let filtered = filterNoVideo(data);
 
-  const filterVideosBySelectedTypes = () => {
-    if (selectedTypes.length === 0) {
-      setFilteredData(data);
-    } else {
-      if (selectedTypes.includes("All Exercises")) {
-        setFilteredData(data);
-      } else {
-        const filtered = data?.filter((item) =>
-          selectedTypes.includes(item.category)
-        );
-        setFilteredData(filtered);
-      }
+    if (selectedType && selectedType !== "All Exercises") {
+      filtered = filtered.filter((item) => item.category === selectedType);
     }
-  };
 
-  useEffect(() => {
-    filterVideosBySelectedTypes();
-  }, [selectedTypes]);
+    if (searchQuery.trim() !== "") {
+      filtered = filtered.filter((item) => {
+        const title = item.exercise_name || "";
+        return title.toUpperCase().includes(searchQuery.toUpperCase());
+      });
+    }
 
-  useEffect(() => {
-    const filtered = data?.filter((item) => {
-      const title = item?.exercise_name || "";
-      return (
-        title.toUpperCase().includes(searchQuery.toUpperCase()) ||
-        title.trim() === ""
-      );
-    });
     setFilteredData(filtered);
-    setIsRefreshing(true);
-    if (filtered?.length === 0 && searchQuery) {
-      setInvalidEntry(true);
-    } else {
-      setInvalidEntry(false);
-    }
-  }, [searchQuery, data]);
+    setIsRefreshing(false);
+    setInvalidEntry(filtered.length === 0 && searchQuery.trim() !== "");
+  }, [data, selectedType, searchQuery, filterNoVideo]);
 
-  const getSkills = async () => {
+  const getSkills = useCallback(async () => {
     try {
       const res = await ApiCall({
         params: { category_name: "skill" },
@@ -82,10 +70,9 @@ const Excercises = () => {
         verb: "get",
         token: token,
       });
-      console.log("resssss", res?.response?.newData);
       if (res?.status == "200") {
-        setData(res?.response?.newData);
-        setFilteredData(res?.response?.newData);
+        const filteredSkills = filterNoVideo(res?.response?.newData);
+        setData(filteredSkills);
         dispatch(setLoader(false));
       } else {
         console.log("error", res?.response);
@@ -96,9 +83,11 @@ const Excercises = () => {
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
+      dispatch(setLoader(false));
     }
-  };
-  const getAllCategories = async () => {
+  }, [token, dispatch, filterNoVideo]);
+
+  const getAllCategories = useCallback(async () => {
     try {
       const res = await ApiCall({
         params: "",
@@ -108,10 +97,11 @@ const Excercises = () => {
       });
 
       if (res?.status == "200") {
-        console.log("categories", res?.response?.detail);
         const categoryNames = [
           "All Exercises",
-          ...res?.response?.detail.map((item) => item.category_name),
+          ...res?.response?.detail
+            .map((item) => item.category_name)
+            .filter((name) => name && name.toLowerCase() !== "no video"),
         ];
         setAllTypes(categoryNames);
       } else {
@@ -120,24 +110,55 @@ const Excercises = () => {
     } catch (e) {
       console.log("Error getting Categories -- ", e.toString());
     }
-  };
+  }, [token]);
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     dispatch(setLoader(true));
     getSkills();
     getAllCategories();
     setIsRefreshing(true);
-  };
+  }, [dispatch, getSkills, getAllCategories]);
 
   useEffect(() => {
     handleRefresh();
-  }, []);
+  }, [handleRefresh]);
 
-  const handleSelection = () => {
-    if (isRefreshing) {
-      setIsRefreshing(false);
-    }
-  };
+  useEffect(() => {
+    applyFilters();
+  }, [applyFilters]);
+
+  const renderExerciseItem = useCallback(
+    ({ item }) => (
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate("ExerciseDetail", {
+            exercise: item,
+            exercises: data,
+          })
+        }
+        style={styles.exerciseCard}
+      >
+        <View style={styles.thumbnailContainer}>
+          {item.video_thumbnail ? (
+            <Image
+              source={{ uri: item.video_thumbnail }}
+              style={styles.thumbnail}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.placeholderThumbnail}>
+              <PlayerSvg height={20} width={20} />
+            </View>
+          )}
+        </View>
+        <View style={styles.exerciseDetails}>
+          <Text style={styles.exerciseType}>{item.category}</Text>
+          <Text style={styles.exerciseTitle}>{item.exercise_name}</Text>
+        </View>
+      </TouchableOpacity>
+    ),
+    [navigation, data]
+  );
 
   return (
     <View style={styles.container}>
@@ -166,14 +187,14 @@ const Excercises = () => {
             placeholder="Search an exercise"
             placeholderTextColor="white"
             style={styles.searchInput}
-            onChangeText={(text) => setSearchQuery(text)}
+            onChangeText={setSearchQuery}
             value={searchQuery}
           />
           <SearchSvg height={20} width={20} style={styles.searchIcon} />
         </View>
         <Text style={styles.searchResultText}>
           {searchQuery
-            ? filteredData?.length + " results found for '" + searchQuery + "'"
+            ? `${filteredData.length} results found for '${searchQuery}'`
             : ""}
         </Text>
       </View>
@@ -181,10 +202,7 @@ const Excercises = () => {
         <Text style={styles.dropdownLabel}>Exercise Type</Text>
         <SelectDropdown
           data={allTypes}
-          onSelect={(selectedType) => {
-            toggleTypeSelection(selectedType);
-            handleSelection();
-          }}
+          onSelect={setSelectedType}
           defaultButtonText="All Exercises"
           buttonStyle={styles.dropdownButton}
           buttonTextStyle={styles.dropdownButtonText}
@@ -196,13 +214,13 @@ const Excercises = () => {
             />
           )}
           dropdownIconPosition="right"
-          dropdownStyle={styles.dropdownWithBackground} // Update the style here
+          dropdownStyle={styles.dropdownWithBackground}
           rowStyle={styles.dropdownRow}
           rowTextStyle={styles.dropdownRowText}
         />
       </View>
       <View style={styles.listContainer}>
-        {invalidEntry || filteredData?.length === 0 ? (
+        {invalidEntry || filteredData.length === 0 ? (
           <View style={styles.noResultsContainer}>
             <AntDesign name="exclamationcircleo" size={24} color="#676C75" />
             <Text style={styles.noResultsText}>No Exercise found.</Text>
@@ -210,40 +228,13 @@ const Excercises = () => {
         ) : (
           <FlatList
             data={filteredData}
-            refreshing={false}
+            keyExtractor={(item) =>
+              item.id ? item.id.toString() : Math.random().toString()
+            }
+            refreshing={isRefreshing}
             onRefresh={handleRefresh}
             showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("ExerciseDetail", {
-                    exercise: item,
-                    exercises: data,
-                  })
-                }
-                style={styles.exerciseCard}
-              >
-                <View style={styles.thumbnailContainer}>
-                  {item?.video_thumbnail ? (
-                    <Image
-                      source={{ uri: item?.video_thumbnail }}
-                      style={styles.thumbnail}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <View style={styles.placeholderThumbnail}>
-                      <PlayerSvg height={20} width={20} />
-                    </View>
-                  )}
-                </View>
-                <View style={styles.exerciseDetails}>
-                  <Text style={styles.exerciseType}>{item?.category}</Text>
-                  <Text style={styles.exerciseTitle}>
-                    {item?.exercise_name}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            )}
+            renderItem={renderExerciseItem}
           />
         )}
       </View>
@@ -258,29 +249,29 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "column",
-    padding: 16,
+    padding: 8,
     backgroundColor: "black",
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
+    paddingBottom: 12,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#FFFFFF",
     marginBottom: 8,
     textAlign: "left",
-    marginTop: 20,
+    marginTop: 10,
   },
   searchBox: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "111214",
+    backgroundColor: "#111214",
     borderRadius: 18,
     paddingHorizontal: 12,
     borderWidth: 1,
     borderColor: "#FF8036",
-    width: "100%",
-    height: 50,
+    height: 40,
     marginTop: 8,
   },
   searchIcon: {
@@ -300,29 +291,28 @@ const styles = StyleSheet.create({
   dropdownWithBackground: {
     backgroundColor: "#F3F3F4",
     borderRadius: 10,
-    borderWidth: 0, // remove any border if needed
-    backgroundImage: 'url("../../assets/images/Frameaa.png")',
-    backgroundSize: "cover", // cover the entire dropdown
-    backgroundRepeat: "no-repeat", // prevent the image from repeating
+    borderWidth: 0,
   },
   dropdownContainer: {
-    padding: 16,
-    paddingBottom: 0,
-    // marginBottom: -10,
-  },
-  dropdownLabel: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#000000",
-    marginBottom: 8,
-    marginTop: 16,
+    padding: 8,
   },
   dropdownButton: {
     width: "100%",
-    height: 56,
+    height: 45,
     backgroundColor: "#F3F3F4",
     borderRadius: 19,
     justifyContent: "center",
+  },
+  dropdownLabel: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#000000",
+    marginBottom: 4,
+    marginTop: 8,
+  },
+  listContainer: {
+    flex: 1,
+    padding: 12,
   },
   dropdownButtonText: {
     color: "#000000",
@@ -343,11 +333,6 @@ const styles = StyleSheet.create({
     textAlign: "left",
     fontWeight: "500",
   },
-  listContainer: {
-    flex: 1,
-    padding: 16,
-    // top: 10,
-  },
   noResultsContainer: {
     justifyContent: "center",
     alignItems: "center",
@@ -366,7 +351,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3F3F4",
     borderRadius: 32,
     marginBottom: 16,
-    // marginTop: 5,
   },
   thumbnailContainer: {
     width: 80,
@@ -404,4 +388,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Excercises;
+export default Exercises;
