@@ -20,6 +20,7 @@ import MultiSLider from "@ptomasroos/react-native-multi-slider";
 import { Dropdown } from "react-native-element-dropdown";
 import UpdateProfiles from "../../Screens/UpdateProfile";
 import MetricsComponent from "../../Components/MetricsComponent";
+const moment = require('moment');
 
 //Local Imports
 import { colors } from "../../constants/colors";
@@ -33,13 +34,15 @@ import { ApiCall } from "../../Services/Apis";
 import SelectDropdown from "react-native-select-dropdown";
 // import session from "redux-persist/lib/storage/session";
 import PopupModal from "../../Components/ErrorPopup";
-import AppleHealthKit from 'react-native-health';
+import AppleHealthKit from "react-native-health";
 
 const defaultDropDownValue = "Last 7 Days";
-
 export default function TrainingStats({ navigation }) {
-  const [value, setValue] = React.useState("");
-
+  const [appleStatGraphData, setAppleStatGraphData] = useState([]);
+  const [selectedAppleStat, setSelectedAppleStat] = useState("steps");
+  const [appleStatsDataList,setAppleStatsDataList] = useState([]);
+  const [appleStats_dropdown, set_appleStats_dropdown] =
+    useState("Last 7 Days");
   const dispatch = useDispatch();
   const [date, setDate] = useState(new Date());
   const { height, width } = Dimensions.get("window");
@@ -58,115 +61,179 @@ export default function TrainingStats({ navigation }) {
 
   let options = {
     permissions: {
-        read: [
-          "StepCount",
-          "DistanceWalkingRunning",
-          "ActiveEnergyBurned",
-          "HeartRate",
-          "SleepAnalysis",
-          "BodyFatPercentage",
-          "BodyMassIndex",
-          "BasalEnergyBurned",
-          "BodyMassIndex",
-          "LeanBodyMass"
-        ],
-        write: []
-    }
-};
+      read: [
+        "StepCount",
+        "DistanceWalkingRunning",
+        "ActiveEnergyBurned",
+        "HeartRate",
+        "RestingHeartRate",
+        "HeartRateVariability",
+        "SleepAnalysis",
+        "BodyFatPercentage",
+        "BodyMassIndex",
+        "BasalEnergyBurned",
+        "BodyMassIndex",
+        "LeanBodyMass",
+      ],
+      write: [],
+    },
+  };
 
-useEffect(() => {
-  requestPermissionsAndFetchData();
-}, []);
+  useEffect(() => {
+    requestPermissionsAndFetchData();
+  }, []);
 
   // Function to request permissions and fetch health data
   const requestPermissionsAndFetchData = () => {
     AppleHealthKit.initHealthKit(options, (err, results) => {
       if (err) {
-        console.log("results",err)
+        console.log("results", err);
         return;
       }
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 6);
 
       // Fetch VO2 Max
-      AppleHealthKit.getVo2MaxSamples({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
-        if (err) {
-          console.log('Error fetching VO2 Max:', err);
-          return;
+      AppleHealthKit.getVo2MaxSamples(
+        { startDate: new Date(2023, 0, 1).toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching VO2 Max:", err);
+            return;
+          }
+          setHealthData((prevData) => ({
+            ...prevData,
+            vo2Max: results,
+          }));
         }
-        setHealthData((prevData) => ({ ...prevData, vo2Max: results?.[0]?.value || 'N/A' }));
-      });
+      );
 
       // Fetch Heart Rate
-      AppleHealthKit.getHeartRateSamples({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
-        if (err) {
-          console.log('Error fetching heart rate:', err);
-          return;
+      AppleHealthKit.getHeartRateSamples(
+        { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching heart rate:", err);
+            return;
+          }
+          
+          setHealthData((prevData) => ({
+            ...prevData,
+            heartRate: results,
+          }));
         }
-        setHealthData((prevData) => ({ ...prevData, heartRate: results?.[0]?.value || 'N/A' }));
-      });
+      );
 
       // Fetch Heart Rate Variability
-      AppleHealthKit.getHeartRateVariabilitySamples({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
-        if (err) {
-          console.log('Error fetching heart rate variability:', err);
-          return;
+      AppleHealthKit.getHeartRateVariabilitySamples(
+        { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching heart rate variability.:", err);
+            return;
+          }
+          setHealthData((prevData) => ({
+            ...prevData,
+            heartRateVariability: results,
+          }));
         }
-        setHealthData((prevData) => ({ ...prevData, heartRateVariability: results?.[0]?.value || 'N/A' }));
-      });
+      );
 
       // Fetch Resting Heart Rate
-      AppleHealthKit.getRestingHeartRateSamples({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
-        if (err) {
-          console.log('Error fetching resting heart rate:', err);
-          return;
+      AppleHealthKit.getRestingHeartRateSamples(
+        { startDate: new Date(2023, 0, 1).toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching resting heart rate:", err);
+            return;
+          }
+          console.log("resting",results)
+          setHealthData((prevData) => ({
+            ...prevData,
+            restingHeartRate: results,
+          }));
         }
-        setHealthData((prevData) => ({ ...prevData, restingHeartRate: results?.[0]?.value || 'N/A' }));
-      });
+      );
 
       // Fetch Distance Walking Running
-      AppleHealthKit.getDistanceWalkingRunning({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
-        if (err) {
-          console.log('Error fetching distance walking/running:', err);
-          return;
+      AppleHealthKit.getDailyDistanceWalkingRunningSamples(
+        { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching distance walking/running:", err);
+            return;
+          }
+          console.log("walking dis",results)
+          setHealthData((prevData) => ({
+            ...prevData,
+            distanceWalkingRunning: results,
+          }));
         }
-        setHealthData((prevData) => ({ ...prevData, distanceWalkingRunning: results?.value || 'N/A' }));
-      });
+      );
 
       // Fetch Daily Step Count
-      AppleHealthKit.getDailyStepCountSamples({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
-        if (err) {
-          console.log('Error fetching daily step count:', err);
-          return;
+      AppleHealthKit.getDailyStepCountSamples(
+        { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching daily step count:", err);
+            return;
+          }
+          const totalSteps =
+            results?.reduce((total, sample) => total + sample.value, 0) ||
+            "N/A";
+          setHealthData((prevData) => ({
+            ...prevData,
+            dailyStepCount: results,
+          }));
         }
-        const totalSteps = results?.reduce((total, sample) => total + sample.value, 0) || 'N/A';
-        setHealthData((prevData) => ({ ...prevData, dailyStepCount: totalSteps }));
-      });
+      );
 
       // Fetch Active Energy Burned
-      AppleHealthKit.getActiveEnergyBurned({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
-        if (err) {
-          console.log('Error fetching active energy burned:', err);
-          return;
+      AppleHealthKit.getActiveEnergyBurned(
+        { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching active energy burned:", err);
+            return;
+          }
+          setHealthData((prevData) => ({
+            ...prevData,
+            activeEnergyBurned: results,
+          }));
         }
-        setHealthData((prevData) => ({ ...prevData, activeEnergyBurned: results?.[0]?.value || 'N/A' }));
-      });
+      );
 
       // Fetch Basal Energy Burned
-      AppleHealthKit.getBasalEnergyBurned({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
-        if (err) {
-          console.log('Error fetching basal energy burned:', err);
-          return;
+      AppleHealthKit.getBasalEnergyBurned(
+        { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching basal energy burned:", err);
+            return;
+          }
+          setHealthData((prevData) => ({
+            ...prevData,
+            basalEnergyBurned: results?.[0]?.value || "N/A",
+          }));
         }
-        setHealthData((prevData) => ({ ...prevData, basalEnergyBurned: results?.[0]?.value || 'N/A' }));
-      });
+      );
 
       // Fetch Step Count
-      AppleHealthKit.getStepCount({ startDate: new Date(2023, 0, 1).toISOString() }, (err, results) => {
-        if (err) {
-          console.log('Error fetching step count:', err);
-          return;
+      AppleHealthKit.getStepCount(
+        { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching step count:", err);
+            return;
+          }
+          setHealthData((prevData) => ({
+            ...prevData,
+            stepCount: results?.value || "N/A",
+          }));
         }
-        setHealthData((prevData) => ({ ...prevData, stepCount: results?.value || 'N/A' }));
-      });
+      );
     });
   };
 
@@ -186,15 +253,16 @@ useEffect(() => {
 
     // Ensure the value is within the expected range
     if (value < minValue) {
-        return 0;
+      return 0;
     } else if (value > maxValue) {
-        return maxPercentage;
+      return maxPercentage;
     }
 
     // Calculate the percentage
-    const percentage = ((value - minValue) / (maxValue - minValue)) * maxPercentage;
+    const percentage =
+      ((value - minValue) / (maxValue - minValue)) * maxPercentage;
     return percentage;
-}
+  }
 
   useFocusEffect(
     React.useCallback(() => {
@@ -459,14 +527,18 @@ useEffect(() => {
   const token = useSelector((state) => state.auth.userToken);
 
   const onChangeDropDown = (selectedType, section) => {
-    console.log("selectedType", selectedType);
-    toggleTypeSelection(selectedType, section);
+    if (section != "appleStats")
+      toggleTypeSelection(selectedType, section);
 
     if (section == "tc") set_tc_dropdown(selectedType);
     else if (section == "cb") set_cb_dropdown(selectedType);
     else if (section == "sp") set_sp_dropdown(selectedType);
+    else if (section == "appleStats") set_appleStats_dropdown(selectedType);
   };
 
+  const handleAppleStatSelection = (stat) => {
+    setSelectedAppleStat(stat);
+  };
   const getExerciseProgress = async (
     timePeriod,
     setProgressFunction,
@@ -552,120 +624,6 @@ useEffect(() => {
       sixMonth: `assignProgram/last_six_months_calories/${user?.user_id}`,
       allMonths: `assignProgram/all_months_calories/${user?.user_id}`,
     };
-
-    const defaultHeartRateValue = "Last 7 Days";
-
-    // Adding new states for heart metrics
-    const [averageHeartRate, setAverageHeartRate] = useState({});
-    const [HRV, setHRV] = useState({});
-    const [maximumHR, setMaximumHR] = useState({});
-    const [VO2Max, setVO2Max] = useState({});
-    const [caloriesBurned, setCaloriesBurned] = useState(0);
-
-    // Additional dropdowns for heart metrics
-    const [heartRateDropdown, setHeartRateDropdown] = useState(
-      defaultHeartRateValue
-    );
-    const [HRVDropdown, setHRVDropdown] = useState(defaultHeartRateValue);
-    const [maxHRDropdown, setMaxHRDropdown] = useState(defaultHeartRateValue);
-    const [VO2MaxDropdown, setVO2MaxDropdown] = useState(defaultHeartRateValue);
-
-    // Function to handle the dropdown selection for heart metrics
-    const onChangeHeartMetricsDropdown = (selectedType, metricType) => {
-      console.log(`Selected ${metricType}:`, selectedType);
-
-      switch (metricType) {
-        case "averageHeartRate":
-          setHeartRateDropdown(selectedType);
-          fetchHeartRateData(selectedType); // This function should fetch and set average heart rate data
-          break;
-        case "HRV":
-          setHRVDropdown(selectedType);
-          fetchHRVData(selectedType); // Function to fetch HRV data
-          break;
-        case "maxHR":
-          setMaxHRDropdown(selectedType);
-          fetchMaxHRData(selectedType); // Function to fetch maximum HR data
-          break;
-        case "VO2Max":
-          setVO2MaxDropdown(selectedType);
-          fetchVO2MaxData(selectedType); // Function to fetch VO2 Max data
-          break;
-        default:
-          console.log("No metric selected");
-      }
-    };
-
-    // Render each heart metric component
-    const _HeartRateComponent = React.memo(() => {
-      return (
-        <View>
-          <View style={styles.trainingContainerStyle}>
-            <Text style={styles.trainingFontStyle}>Average Heart Rate</Text>
-            <RenderDropdown
-              value={heartRateDropdown}
-              section={"averageHeartRate"}
-            />
-          </View>
-          <Text style={styles.metricValueText}>{averageHeartRate} bpm</Text>
-        </View>
-      );
-    });
-
-    const _HRVComponent = React.memo(() => {
-      return (
-        <View>
-          <View style={styles.trainingContainerStyle}>
-            <Text style={styles.trainingFontStyle}>
-              Heart Rate Variability (HRV)
-            </Text>
-            <RenderDropdown value={HRVDropdown} section={"HRV"} />
-          </View>
-          <Text style={styles.metricValueText}>{HRV} ms</Text>
-        </View>
-      );
-    });
-
-    const _MaxHRComponent = React.memo(() => {
-      return (
-        <View>
-          <View style={styles.trainingContainerStyle}>
-            <Text style={styles.trainingFontStyle}>Maximum Heart Rate</Text>
-            <RenderDropdown value={maxHRDropdown} section={"maxHR"} />
-          </View>
-          <Text style={styles.metricValueText}>{maximumHR} bpm</Text>
-        </View>
-      );
-    });
-
-    const _VO2MaxComponent = React.memo(() => {
-      return (
-        <View>
-          <View style={styles.trainingContainerStyle}>
-            <Text style={styles.trainingFontStyle}>VO2 Max</Text>
-            <RenderDropdown value={VO2MaxDropdown} section={"VO2Max"} />
-          </View>
-          <Text style={styles.metricValueText}>{VO2Max} ml/kg/min</Text>
-        </View>
-      );
-    });
-
-    // Memoized Components
-    const HeartRateComponent = useMemo(() => {
-      return <_HeartRateComponent />;
-    }, [averageHeartRate, heartRateDropdown]);
-
-    const HRVComponent = useMemo(() => {
-      return <_HRVComponent />;
-    }, [HRV, HRVDropdown]);
-
-    const MaxHRComponent = useMemo(() => {
-      return <_MaxHRComponent />;
-    }, [maximumHR, maxHRDropdown]);
-
-    const VO2MaxComponent = useMemo(() => {
-      return <_VO2MaxComponent />;
-    }, [VO2Max, VO2MaxDropdown]);
 
     try {
       const res = await ApiCall({
@@ -1348,6 +1306,144 @@ useEffect(() => {
     }
   };
 
+  useEffect(() => {
+    if (selectedAppleStat == "steps")
+      setAppleStatGraphData(healthData?.dailyStepCount)
+    else if (selectedAppleStat == "hrv")
+      setAppleStatGraphData(healthData?.heartRateVariability)
+    else if (selectedAppleStat == "hr")
+      setAppleStatGraphData(healthData?.heartRate)
+    else if (selectedAppleStat == "rhr")
+      setAppleStatGraphData(healthData?.restingHeartRate)
+    else if (selectedAppleStat == "aeb")
+      setAppleStatGraphData(healthData?.activeEnergyBurned)
+    else if (selectedAppleStat == "wd")
+      setAppleStatGraphData(healthData?.distanceWalkingRunning)
+
+  }, [healthData, selectedAppleStat])
+
+  const appleStatsDataByRange = (data, range) => {
+
+    const now = moment(); // Current time
+    let startDate;
+    let totalValueCount = 0; // Initialize total value
+
+    switch (range) {
+       case 'Last 7 Days': {
+      // Get the previous Sunday
+      const lastSunday = now.clone().day(0); // .day(0) gets the last Sunday (Sunday is day 0 in moment.js)
+      
+      // Get the last 7 days starting from Sunday
+      const result = [...Array(7)].map((_, i) => {
+        const day = lastSunday.clone().add(i, 'days'); // Add i days from Sunday
+        const dayData = data.find(item => moment(item.startDate).isSame(day, 'day'));
+
+        const value = dayData ? dayData.value : 0; // Use 0 if no data
+        totalValueCount += value;
+        return {
+          label: day.format('ddd'),  // Short weekday name (e.g., 'Sun', 'Mon')
+          value: value
+        };
+      });
+      return { data: result, total: totalValueCount };
+    }
+  
+      case 'This Month':{
+        startDate = now.clone().startOf('month');
+        
+        // Group by weeks in the current month
+        const weeksOfMonth = [...Array(4)].map((_, index) => {
+          const weekStart = startDate.clone().add(index * 7, 'days');
+          const weekEnd = weekStart.clone().add(7, 'days');
+          
+          const weekData = data.filter(item =>
+            moment(item.startDate).isBetween(weekStart, weekEnd)
+          );
+          
+          const totalValue = weekData.reduce((acc, curr) => acc + curr.value, 0);
+          totalValueCount += totalValue;
+          return {
+            label: `Week${index + 1}`,
+            value: totalValue || 0,  // 0 if no data for the week
+          };
+        });
+        if (typeof totalValueCount === 'number' && !Number.isInteger(totalValueCount)) {
+          totalValueCount = totalValueCount.toFixed(2);
+        }
+        return { data: weeksOfMonth, total: totalValueCount };
+      }
+  
+      case 'Last 3 Months':{
+        startDate = now.clone().subtract(3, 'months');
+        const last3Months = [...Array(3)].map((_, i) => now.clone().subtract(i, 'months')).reverse();
+        
+        const result = last3Months.map(month => {
+          const monthData = data.filter(item =>
+            moment(item.startDate).isSame(month, 'month')
+          );
+          
+          const totalValue = monthData.reduce((acc, curr) => acc + curr.value, 0);
+          totalValueCount += totalValue;
+          return {
+            label: month.format('MMM'),
+            value: totalValue || 0,  // 0 if no data for the month
+          };
+        });
+        if (typeof totalValueCount === 'number' && !Number.isInteger(totalValueCount)) {
+          totalValueCount = totalValueCount.toFixed(2);
+        }
+        return { data: result, total: totalValueCount };
+      }
+  
+      case 'Last 6 Months':{
+        startDate = now.clone().subtract(6, 'months');
+        const last6Months = [...Array(6)].map((_, i) => now.clone().subtract(i, 'months')).reverse();
+        
+        const result = last6Months.map(month => {
+          const monthData = data.filter(item =>
+            moment(item.startDate).isSame(month, 'month')
+          );
+          
+          const totalValue = monthData.reduce((acc, curr) => acc + curr.value, 0);
+          totalValueCount += totalValue;
+          return {
+            label: month.format('MMM'),
+            value: totalValue || 0,  // 0 if no data for the month
+          };
+        });
+        if (typeof totalValueCount === 'number' && !Number.isInteger(totalValueCount)) {
+          totalValueCount = totalValueCount.toFixed(2);
+        }
+        return { data: result, total: totalValueCount };
+      }
+  
+      case 'All Time':{
+        const allMonths = [...Array(12)].map((_, index) => moment().month(index).startOf('month'));
+        
+        const result = allMonths.map(month => {
+          const monthData = data.filter(item =>
+            moment(item.startDate).isSame(month, 'month')
+          );
+          
+          const totalValue = monthData.reduce((acc, curr) => acc + curr.value, 0);
+          totalValueCount += totalValue;
+          return {
+            label: month.format('MMM'),
+            value: totalValue || 0,  // 0 if no data for the month
+          };
+        });
+        if (typeof totalValueCount === 'number' && !Number.isInteger(totalValueCount)) {
+          totalValueCount = totalValueCount.toFixed(2);
+        }
+        return { data: result, total: totalValueCount };
+      }
+  
+      default:
+        return [];
+    }
+  };
+  
+
   const strengthProgressData = () => {
     switch (sp_dropdown) {
       case "Last 7 Days":
@@ -1498,16 +1594,16 @@ useEffect(() => {
     );
   };
 
-  const CustomMarkerLeft = ({ currentValue,customStyles }) => {
+  const CustomMarkerLeft = ({ currentValue, customStyles }) => {
     return (
-      <View style={[styles.customMarkerStyle,customStyles]}>
+      <View style={[styles.customMarkerStyle, customStyles]}>
         <Text style={[styles.sliderTextStyle]}>{currentValue}</Text>
       </View>
     );
   };
-  const CustomMarkerRight = ({ currentValue,customStyles }) => {
+  const CustomMarkerRight = ({ currentValue, customStyles }) => {
     return (
-      <View style={[styles.targetMarkerContainer,customStyles]}>
+      <View style={[styles.targetMarkerContainer, customStyles]}>
         <Text style={styles.targetMarkerTextStyle}>
           {"Weight Goal: " + currentValue}
         </Text>
@@ -1760,6 +1856,84 @@ useEffect(() => {
         {CaloriesBurnedComponent}
         {StrengthProgressComponent}
 
+        <View>
+          <View style={styles.trainingContainerStyle}>
+            <Text style={styles.trainingFontStyle}>Apple Stats</Text>
+          </View>
+          <Text style={styles.completionStyle}>
+                  {selectedAppleStat === "steps"
+                    ? "Total Steps"
+                    : "Latest HRV (ms)"}
+                </Text>
+          <View style={styles.chartOuterContainer}>
+            <View style={styles.headerTopContainer}>
+              <View style={styles.headerTextStyle}>
+                <Text style={[styles.percentageStyle,{fontSize:26}]}>
+                  {appleStatsDataByRange(appleStatGraphData || [],appleStats_dropdown)?.total || "N/A"}
+                </Text>
+                
+              </View>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Dropdown
+                  style={[
+                    styles.dropdown,
+                    { marginRight: 10, width: getWidth(25) },
+                  ]} // Adjust width as needed
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={{
+                    fontSize: getFontSize(1.8), // Smaller text for selected item
+                    color: colors.black,
+                    fontFamily: fonts.WMe,
+                  }}
+                  itemTextStyle={{
+                    fontSize: getFontSize(1.8), // Smaller text for all items in the dropdown
+                    color: colors.black,
+                    fontFamily: fonts.WMe,
+                  }}
+                  data={[
+                    { label: "Steps", value: "steps" },
+                    { label: "Heart Rate", value: "hr" },
+                    { label: "Heart Rate Variability", value: "hrv" },
+                    { label: "Resting Heart Rate", value: "rhr" },
+                    { label: "Active energy burned", value: "aeb" },
+                    { label: "Walking distance", value: "wd" },
+                  ]}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select stat"
+                  value={selectedAppleStat}
+                  onChange={(item) => handleAppleStatSelection(item.value)}
+                />
+                <RenderDropdown
+                  value={appleStats_dropdown}
+                  section={"appleStats"}
+                />
+              </View>
+            </View>
+            <LineChart
+              areaChart
+              curved
+              data={appleStatsDataByRange(appleStatGraphData || [],appleStats_dropdown)?.data}
+              width={width - getFontSize(20)}
+              spacing={getFontSize(15)}
+              initialSpacing={5}
+              color={colors.orange}
+              hideDataPoints
+              startFillColor1={colors.orange}
+              startOpacity={0.8}
+              endOpacity={0.3}
+              dashGap={0}
+              thickness={2}
+              rulesColor={colors.rulesColor}
+              yAxisThickness={0}
+              xAxisColor={colors.rulesColor}
+              xAxisLabelTextStyle={{ color: colors.axisColor }}
+              yAxisTextStyle={{ color: colors.axisColor }}
+            />
+          </View>
+        </View>
+
         {/* New metrics */}
         {MetricsComponent}
 
@@ -1767,45 +1941,31 @@ useEffect(() => {
           <Text style={styles.bodyTextStyle}>Bodyweight Goal</Text>
           <Text style={styles.lbsTextStyle}>Lbs</Text>
         </View>
-        <View style={{
-          height: 13,
-          borderRadius: 10,
-          marginVertical: 15,
-          backgroundColor: colors.orange
-        }}>
-          <CustomMarkerLeft customStyles={{
-            position: 'absolute',
-            top: -6,
-            left: calculatePercentage(user?.weight)+"%",
-          }} currentValue={user?.weight} />
-          <CustomMarkerRight customStyles={{
-            position: 'absolue',
-            top: -33,
-            left:calculatePercentage(user?.target_weight)+"%",
-          }} currentValue={user?.target_weight} />
+        <View
+          style={{
+            height: 13,
+            borderRadius: 10,
+            marginVertical: 15,
+            backgroundColor: colors.orange,
+          }}
+        >
+          <CustomMarkerLeft
+            customStyles={{
+              position: "absolute",
+              top: -6,
+              left: calculatePercentage(user?.weight) + "%",
+            }}
+            currentValue={user?.weight}
+          />
+          <CustomMarkerRight
+            customStyles={{
+              position: "absolue",
+              top: -33,
+              left: calculatePercentage(user?.target_weight) + "%",
+            }}
+            currentValue={user?.target_weight}
+          />
         </View>
-
-        {/* <MultiSLider
-          values={sliderValue} // Bind slider value from state
-          trackStyle={styles.sliderStyle}
-          customMarkerLeft={(e) => (
-            <CustomMarkerLeft currentValue={e.currentValue} />
-          )}
-          customMarkerRight={(e) => (
-            <CustomMarkerRight currentValue={e.currentValue} />
-          )}
-          isMarkersSeparated={true}
-          min={80}
-          max={450}
-          sliderLength={getWidth(90)}
-          markerOffsetY={0}
-          step={1}
-          allowOverlap={true}
-          selectedStyle={{ backgroundColor: colors.orange }}
-          enabled={false} // Completely disables interaction with the slider
-          touchableTrack={false} // Disable track interaction
-          onValuesChange={() => {}} // Disable any value change functionality
-        /> */}
 
         <TouchableOpacity
           onPress={() => {
@@ -1834,16 +1994,6 @@ useEffect(() => {
         }`,
       })}
 
-<Text>VO2 Max: {healthData.vo2Max}</Text>
-      <Text>Heart Rate: {healthData.heartRate}</Text>
-      <Text>Heart Rate Variability: {healthData.heartRateVariability}</Text>
-      <Text>Resting Heart Rate: {healthData.restingHeartRate}</Text>
-      <Text>Distance Walking/Running: {healthData.distanceWalkingRunning}</Text>
-      <Text>Daily Step Count: {healthData.dailyStepCount}</Text>
-      <Text>Active Energy Burned: {healthData.activeEnergyBurned}</Text>
-      <Text>Basal Energy Burned: {healthData.basalEnergyBurned}</Text>
-      <Text>Total Step Count: {healthData.stepCount}</Text>
-      <Button title="Refresh Health Data" onPress={requestPermissionsAndFetchData} />
       <View style={{ height: 100 }} />
     </ScrollView>
   );

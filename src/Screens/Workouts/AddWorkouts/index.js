@@ -94,6 +94,7 @@ const AddWorkouts = () => {
         token: token,
       });
       if (res?.status == "200") {
+        console.log("program...",res?.response?.detail?.workouts[0]?.innerWorkout)
         setProgram(res?.response?.detail);
       } else {
         console.log(res?.response?.message)
@@ -159,11 +160,12 @@ const AddWorkouts = () => {
     }, [])
   );
 
+
   const findMaxReps = (exercise) => {
     try {
       const sets = exercise?.sets;
       if (sets) {
-        const maxReps = Math.max(...sets?.map((set) => Number(set.reps)));
+        const maxReps = Math.max(...sets?.map((set) => Number(set[set.parameter])));
         return maxReps;
       } else return 0;
     } catch {
@@ -223,7 +225,10 @@ const AddWorkouts = () => {
       <View style={{ flex: 1, flexDirection: "row", zIndex: 1 }}>
         <View style={{ flex: 1 }}>
           <Image
-            source={{ uri: item?.video_thumbnail }}
+            source={item.video ?
+              (item.video_thumbnail ? { uri: item?.video_thumbnail } :
+                require("../../../assets/images/no-thumbnail.jpg"))
+              : require("../../../assets/images/no-video.jpg")}
             style={{
               width: "100%",
               height: 90,
@@ -256,7 +261,7 @@ const AddWorkouts = () => {
               alignItems: "flex-end",
             }}
           >
-            <Text>{`Reps: ${item?.sets?.length}x${findMaxReps(item)}`}</Text>
+            <Text>{`Reps: ${item?.sets?.length}x${findMaxReps(item)} (${item?.sets[0]?.parameter})`}</Text>
           </View>
         </View>
         <View
