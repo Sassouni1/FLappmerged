@@ -20,7 +20,7 @@ import MultiSLider from "@ptomasroos/react-native-multi-slider";
 import { Dropdown } from "react-native-element-dropdown";
 import UpdateProfiles from "../../Screens/UpdateProfile";
 import MetricsComponent from "../../Components/MetricsComponent";
-const moment = require("moment");
+const moment = require('moment');
 
 //Local Imports
 import { colors } from "../../constants/colors";
@@ -40,7 +40,7 @@ const defaultDropDownValue = "Last 7 Days";
 export default function TrainingStats({ navigation }) {
   const [appleStatGraphData, setAppleStatGraphData] = useState([]);
   const [selectedAppleStat, setSelectedAppleStat] = useState("steps");
-  const [appleStatsDataList, setAppleStatsDataList] = useState([]);
+  const [appleStatsDataList,setAppleStatsDataList] = useState([]);
   const [appleStats_dropdown, set_appleStats_dropdown] =
     useState("Last 7 Days");
   const dispatch = useDispatch();
@@ -117,7 +117,6 @@ export default function TrainingStats({ navigation }) {
             console.log("Error fetching heart rate:", err);
             return;
           }
-
           setHealthData((prevData) => ({
             ...prevData,
             heartRate: results,
@@ -148,7 +147,6 @@ export default function TrainingStats({ navigation }) {
             console.log("Error fetching resting heart rate:", err);
             return;
           }
-          console.log("resting", results);
           setHealthData((prevData) => ({
             ...prevData,
             restingHeartRate: results,
@@ -157,14 +155,13 @@ export default function TrainingStats({ navigation }) {
       );
 
       // Fetch Distance Walking Running
-      AppleHealthKit.getDistanceWalkingRunning(
+      AppleHealthKit.getDailyDistanceWalkingRunningSamples(
         { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
         (err, results) => {
           if (err) {
             console.log("Error fetching distance walking/running:", err);
             return;
           }
-          console.log("walking dis", results);
           setHealthData((prevData) => ({
             ...prevData,
             distanceWalkingRunning: results,
@@ -527,8 +524,8 @@ export default function TrainingStats({ navigation }) {
   const token = useSelector((state) => state.auth.userToken);
 
   const onChangeDropDown = (selectedType, section) => {
-    if (section != "appleStats") toggleTypeSelection(selectedType, section);
-
+    if (section != "appleStats")
+      toggleTypeSelection(selectedType, section);
     if (section == "tc") set_tc_dropdown(selectedType);
     else if (section == "cb") set_cb_dropdown(selectedType);
     else if (section == "sp") set_sp_dropdown(selectedType);
@@ -1307,166 +1304,135 @@ export default function TrainingStats({ navigation }) {
 
   useEffect(() => {
     if (selectedAppleStat == "steps")
-      setAppleStatGraphData(healthData?.dailyStepCount);
+      setAppleStatGraphData(healthData?.dailyStepCount)
     else if (selectedAppleStat == "hrv")
-      setAppleStatGraphData(healthData?.heartRateVariability);
+      setAppleStatGraphData(healthData?.heartRateVariability)
     else if (selectedAppleStat == "hr")
-      setAppleStatGraphData(healthData?.heartRate);
+      setAppleStatGraphData(healthData?.heartRate)
     else if (selectedAppleStat == "rhr")
-      setAppleStatGraphData(healthData?.restingHeartRate);
+      setAppleStatGraphData(healthData?.restingHeartRate)
     else if (selectedAppleStat == "aeb")
-      setAppleStatGraphData(healthData?.activeEnergyBurned);
+      setAppleStatGraphData(healthData?.activeEnergyBurned)
     else if (selectedAppleStat == "wd")
-      setAppleStatGraphData(healthData?.distanceWalkingRunning);
-  }, [healthData, selectedAppleStat]);
+      setAppleStatGraphData(healthData?.distanceWalkingRunning)
+
+  }, [healthData, selectedAppleStat])
 
   const appleStatsDataByRange = (data, range) => {
+
     const now = moment(); // Current time
     let startDate;
     let totalValueCount = 0; // Initialize total value
 
     switch (range) {
-      case "Last 7 Days": {
-        // Get the previous Sunday
-        const lastSunday = now.clone().day(0); // .day(0) gets the last Sunday (Sunday is day 0 in moment.js)
+       case 'Last 7 Days': {
+      // Get the previous Sunday
+      const lastSunday = now.clone().day(0); // .day(0) gets the last Sunday (Sunday is day 0 in moment.js)
+      
+      // Get the last 7 days starting from Sunday
+      const result = [...Array(7)].map((_, i) => {
+        const day = lastSunday.clone().add(i, 'days'); // Add i days from Sunday
+        const dayData = data.find(item => moment(item.startDate).isSame(day, 'day'));
 
-        // Get the last 7 days starting from Sunday
-        const result = [...Array(7)].map((_, i) => {
-          const day = lastSunday.clone().add(i, "days"); // Add i days from Sunday
-          const dayData = data.find((item) =>
-            moment(item.startDate).isSame(day, "day")
-          );
-
-          const value = dayData ? dayData.value : 0; // Use 0 if no data
-          totalValueCount += value;
-          return {
-            label: day.format("ddd"), // Short weekday name (e.g., 'Sun', 'Mon')
-            value: value,
-          };
-        });
-        return { data: result, total: totalValueCount };
-      }
-
-      case "This Month": {
-        startDate = now.clone().startOf("month");
-
+        const value = dayData ? dayData.value : 0; // Use 0 if no data
+        totalValueCount += value;
+        return {
+          label: day.format('ddd'),  // Short weekday name (e.g., 'Sun', 'Mon')
+          value: value
+        };
+      });
+      return { data: result, total: totalValueCount };
+    }
+  
+      case 'This Month':{
+        startDate = now.clone().startOf('month');
+        
         // Group by weeks in the current month
         const weeksOfMonth = [...Array(4)].map((_, index) => {
-          const weekStart = startDate.clone().add(index * 7, "days");
-          const weekEnd = weekStart.clone().add(7, "days");
-
-          const weekData = data.filter((item) =>
+          const weekStart = startDate.clone().add(index * 7, 'days');
+          const weekEnd = weekStart.clone().add(7, 'days');
+          
+          const weekData = data.filter(item =>
             moment(item.startDate).isBetween(weekStart, weekEnd)
           );
-
-          const totalValue = weekData.reduce(
-            (acc, curr) => acc + curr.value,
-            0
-          );
+          
+          const totalValue = weekData.reduce((acc, curr) => acc + curr.value, 0);
           totalValueCount += totalValue;
           return {
             label: `Week${index + 1}`,
-            value: totalValue || 0, // 0 if no data for the week
+            value: totalValue || 0,  // 0 if no data for the week
           };
         });
-        if (
-          typeof totalValueCount === "number" &&
-          !Number.isInteger(totalValueCount)
-        ) {
+        if (typeof totalValueCount === 'number' && !Number.isInteger(totalValueCount)) {
           totalValueCount = totalValueCount.toFixed(2);
         }
         return { data: weeksOfMonth, total: totalValueCount };
       }
-
-      case "Last 3 Months": {
-        startDate = now.clone().subtract(3, "months");
-        const last3Months = [...Array(3)]
-          .map((_, i) => now.clone().subtract(i, "months"))
-          .reverse();
-
-        const result = last3Months.map((month) => {
-          const monthData = data.filter((item) =>
-            moment(item.startDate).isSame(month, "month")
+  
+      case 'Last 3 Months':{
+        startDate = now.clone().subtract(3, 'months');
+        const last3Months = [...Array(3)].map((_, i) => now.clone().subtract(i, 'months')).reverse();
+        
+        const result = last3Months.map(month => {
+          const monthData = data.filter(item =>
+            moment(item.startDate).isSame(month, 'month')
           );
-
-          const totalValue = monthData.reduce(
-            (acc, curr) => acc + curr.value,
-            0
-          );
+          
+          const totalValue = monthData.reduce((acc, curr) => acc + curr.value, 0);
           totalValueCount += totalValue;
           return {
-            label: month.format("MMM"),
-            value: totalValue || 0, // 0 if no data for the month
+            label: month.format('MMM'),
+            value: totalValue || 0,  // 0 if no data for the month
           };
         });
-        if (
-          typeof totalValueCount === "number" &&
-          !Number.isInteger(totalValueCount)
-        ) {
+        if (typeof totalValueCount === 'number' && !Number.isInteger(totalValueCount)) {
           totalValueCount = totalValueCount.toFixed(2);
         }
         return { data: result, total: totalValueCount };
       }
-
-      case "Last 6 Months": {
-        startDate = now.clone().subtract(6, "months");
-        const last6Months = [...Array(6)]
-          .map((_, i) => now.clone().subtract(i, "months"))
-          .reverse();
-
-        const result = last6Months.map((month) => {
-          const monthData = data.filter((item) =>
-            moment(item.startDate).isSame(month, "month")
+  
+      case 'Last 6 Months':{
+        startDate = now.clone().subtract(6, 'months');
+        const last6Months = [...Array(6)].map((_, i) => now.clone().subtract(i, 'months')).reverse();
+        
+        const result = last6Months.map(month => {
+          const monthData = data.filter(item =>
+            moment(item.startDate).isSame(month, 'month')
           );
-
-          const totalValue = monthData.reduce(
-            (acc, curr) => acc + curr.value,
-            0
-          );
+          
+          const totalValue = monthData.reduce((acc, curr) => acc + curr.value, 0);
           totalValueCount += totalValue;
           return {
-            label: month.format("MMM"),
-            value: totalValue || 0, // 0 if no data for the month
+            label: month.format('MMM'),
+            value: totalValue || 0,  // 0 if no data for the month
           };
         });
-        if (
-          typeof totalValueCount === "number" &&
-          !Number.isInteger(totalValueCount)
-        ) {
+        if (typeof totalValueCount === 'number' && !Number.isInteger(totalValueCount)) {
           totalValueCount = totalValueCount.toFixed(2);
         }
         return { data: result, total: totalValueCount };
       }
-
-      case "All Time": {
-        const allMonths = [...Array(12)].map((_, index) =>
-          moment().month(index).startOf("month")
-        );
-
-        const result = allMonths.map((month) => {
-          const monthData = data.filter((item) =>
-            moment(item.startDate).isSame(month, "month")
+  
+      case 'All Time':{
+        const allMonths = [...Array(12)].map((_, index) => moment().month(index).startOf('month'));
+        
+        const result = allMonths.map(month => {
+          const monthData = data.filter(item =>
+            moment(item.startDate).isSame(month, 'month')
           );
-
-          const totalValue = monthData.reduce(
-            (acc, curr) => acc + curr.value,
-            0
-          );
+          
+          const totalValue = monthData.reduce((acc, curr) => acc + curr.value, 0);
           totalValueCount += totalValue;
           return {
-            label: month.format("MMM"),
-            value: totalValue || 0, // 0 if no data for the month
+            label: month.format('MMM'),
+            value: totalValue || 0,  // 0 if no data for the month
           };
         });
-        if (
-          typeof totalValueCount === "number" &&
-          !Number.isInteger(totalValueCount)
-        ) {
+        if (typeof totalValueCount === 'number' && !Number.isInteger(totalValueCount)) {
           totalValueCount = totalValueCount.toFixed(2);
         }
         return { data: result, total: totalValueCount };
       }
-
       default:
         return [];
     }
@@ -1889,17 +1855,18 @@ export default function TrainingStats({ navigation }) {
             <Text style={styles.trainingFontStyle}>Apple Stats</Text>
           </View>
           <Text style={styles.completionStyle}>
-            {selectedAppleStat === "steps" ? "Total Steps" : "Latest HRV (ms)"}
-          </Text>
+
+                  {selectedAppleStat === "steps"
+                    ? "Total Steps"
+                    : "Latest HRV (ms)"}
+                </Text>
           <View style={styles.chartOuterContainer}>
             <View style={styles.headerTopContainer}>
               <View style={styles.headerTextStyle}>
-                <Text style={[styles.percentageStyle, { fontSize: 26 }]}>
-                  {appleStatsDataByRange(
-                    appleStatGraphData || [],
-                    appleStats_dropdown
-                  )?.total || "N/A"}
+                <Text style={[styles.percentageStyle,{fontSize:26}]}>
+                  {appleStatsDataByRange(appleStatGraphData || [],appleStats_dropdown)?.total || "N/A"}
                 </Text>
+                
               </View>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Dropdown
@@ -1924,6 +1891,7 @@ export default function TrainingStats({ navigation }) {
                     { label: "Heart Rate Variability", value: "hrv" },
                     { label: "Resting Heart Rate", value: "rhr" },
                     { label: "Active energy burned", value: "aeb" },
+                    { label: "Walking distance", value: "wd" },
                   ]}
                   maxHeight={300}
                   labelField="label"
@@ -1941,12 +1909,7 @@ export default function TrainingStats({ navigation }) {
             <LineChart
               areaChart
               curved
-              data={
-                appleStatsDataByRange(
-                  appleStatGraphData || [],
-                  appleStats_dropdown
-                )?.data
-              }
+              data={appleStatsDataByRange(appleStatGraphData || [],appleStats_dropdown)?.data}
               width={width - getFontSize(20)}
               spacing={getFontSize(15)}
               initialSpacing={5}

@@ -331,7 +331,7 @@ export default function Squat({ navigation, route }) {
     try {
       const sets = exercise?.sets;
       if (sets) {
-        const maxReps = Math.max(...sets?.map((set) => Number(set.reps)));
+        const maxReps = Math.max(...sets?.map((set) => Number(set[set.parameter])));
         return maxReps;
       } else return 0;
     } catch {
@@ -345,7 +345,7 @@ export default function Squat({ navigation, route }) {
         set_id:set._id,
         parameter: set?.parameter,
         remaining_time: 0,
-        [set?.parameter]: isBodyweightExercise ? weight :  set?.reps,//is case of BodyWeight( weigth use as reps)
+        [set?.parameter]: isBodyweightExercise ? weight :  set[set?.parameter],//is case of BodyWeight( weigth use as reps)
         weight:isBodyweightExercise ? user?.weight : (!isDynamicWarmUp ?  weight : 0)
       };
 
@@ -667,7 +667,7 @@ export default function Squat({ navigation, route }) {
             key={index + 1}
             set={item}
             no={index + 1}
-            reps={item?.reps || 0}
+            reps={item[item.parameter] || 0}
             isSuccess={true}
             isAdditional={false}
             addon={addon}
@@ -740,7 +740,7 @@ export default function Squat({ navigation, route }) {
                   key={index + 1}
                   set={item}
                   no={index + 1}
-                  reps={item?.reps || 0}
+                  reps={item[item.parameter] || 0}
                   isSuccess={true}
                   isAdditional={true}
                 />
