@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import VideoComponent from "../../../Components/VideoComponent";
 
@@ -20,11 +20,66 @@ import { colors } from "../../../constants/colors";
 import { fonts } from "../../../constants/fonts";
 import CKeyBoardAvoidWrapper from "../../../Components/Common/CKeyBoardAvoidWrapper";
 
-export default function WorkoutDetail({ navigation,route }) {
-  const {selectedVideo} = route?.params;
+export default function WorkoutDetail({ navigation, route }) {
+  // Destructure both the selectedVideo and videos list from the params
+  const { selectedVideo, videos } = route?.params;
+
+  // Use state to manage the current video
+  const [currentVideo, setCurrentVideo] = useState(selectedVideo);
 
   const onPressBack = () => navigation.goBack();
   const { height, width } = Dimensions.get("window");
+
+  // Debugging: Confirm initial props
+  useEffect(() => {
+    console.log("WorkoutDetail Mounted");
+    console.log("Selected Video:", selectedVideo);
+    console.log("Videos List:", videos);
+  }, []);
+
+  // Monitor state changes
+  useEffect(() => {
+    if (currentVideo) {
+      console.log("Current Video Updated:", currentVideo.title);
+    }
+  }, [currentVideo]);
+
+  // Function to navigate to the next video using state instead of navigation.push
+  const onPressNextVideo = () => {
+    console.log("Next Video button clicked");
+
+    // Check if videos array exists and is not empty
+    if (!Array.isArray(videos) || videos.length === 0) {
+      console.log("No videos available");
+      return;
+    }
+
+    // Find the index of the current video in the list
+    const currentIndex = videos.findIndex(
+      (video) => video._id === currentVideo._id
+    );
+    console.log("Current Index:", currentIndex);
+
+    // Check if currentIndex is valid
+    if (currentIndex === -1) {
+      console.log("Current video not found in the list");
+      return;
+    }
+
+    // Get the next video if it exists
+    const nextVideo = videos[currentIndex + 1];
+    console.log("Next Video:", nextVideo);
+
+    // If there's a next video, update the state to show it
+    if (nextVideo) {
+      setCurrentVideo(nextVideo);
+      console.log("Updated to next video:", nextVideo.title);
+    } else {
+      // Handle if there are no more videos
+      console.log("No more videos available");
+      navigation.goBack();
+    }
+  };
 
   return (
     <View style={styles.root}>
@@ -36,7 +91,7 @@ export default function WorkoutDetail({ navigation,route }) {
           translucent={true}
         />
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={onPressBack}
           style={{ paddingHorizontal: getWidth(4) }}
         >
           <Ionicons
@@ -45,35 +100,35 @@ export default function WorkoutDetail({ navigation,route }) {
             color={colors.white}
           />
         </TouchableOpacity>
-        <Text style={styles.headerTextStyles}>{selectedVideo?.title}</Text>
       </View>
+
       <CKeyBoardAvoidWrapper contentContainerStyle={styles.topSTyle}>
-        <Text style={styles.subHeaderTestStyle}>Description</Text>
-        <Text style={styles.descTextStyle}>
-        {selectedVideo?.description}
-        </Text>
-        <Text style={styles.subHeaderTestStyle}>Video</Text>
+        {/* Display the current video title */}
+        <Text style={styles.headerTextStyles}>{currentVideo?.title}</Text>
+
+        {/* Video Player */}
         <View style={styles.videoStyle}>
-        <VideoComponent videoUrl={selectedVideo?.video} thumbnail={selectedVideo?.video_thumbnail} />
+          <VideoComponent
+            videoUrl={currentVideo?.video}
+            thumbnail={currentVideo?.video_thumbnail}
+          />
         </View>
-        {/* <Text style={styles.subHeaderTestStyle}>Notes:</Text>
-        <Text style={styles.descTextStyle}>
-          Embrace the morning sun and revitalize your body and mind with our
-          'Morning Boost' routine. This energizing workout is designed to
-          kickstart your metabolism, increase your energy levels, and set a
-          positive tone for the day ahead.
-        </Text> */}
-        <TouchableOpacity onPress={onPressBack} style={styles.nextBtnStyle}>
-          <Text style={styles.backBtnTextStyle}>Next Lesson</Text>
+
+        {/* Next Video Button */}
+        <TouchableOpacity
+          onPress={onPressNextVideo}
+          style={styles.nextBtnStyle}
+        >
+          <Text style={styles.backBtnTextStyle}>Next Video</Text>
           <Ionicons
             name="arrow-forward"
             size={getFontSize(2.7)}
-            style={{
-              marginLeft: getWidth(2),
-            }}
+            style={{ marginLeft: getWidth(2) }}
             color={colors.white}
           />
         </TouchableOpacity>
+
+        {/* Back Button */}
         <TouchableOpacity onPress={onPressBack} style={styles.goBackBtnStyle}>
           <Text style={styles.backBtnTextStyle}>No, Go Back</Text>
         </TouchableOpacity>
@@ -95,26 +150,12 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: getWidth(10),
   },
   headerTextStyles: {
-    color: colors.white,
-    fontSize: getFontSize(3.5),
-    fontFamily: fonts.UBo,
-    paddingLeft: getWidth(5),
-    marginVertical: getHeight(2.5),
-  },
-  subHeaderTestStyle: {
     color: colors.black,
-    fontSize: getFontSize(2),
+    fontSize: getFontSize(3),
     fontFamily: fonts.UBo,
-    marginHorizontal: getWidth(5),
-    marginVertical: getWidth(2),
-    marginTop: getWidth(3),
-  },
-  descTextStyle: {
-    color: colors.slateGray,
-    fontSize: getFontSize(1.8),
-    fontFamily: fonts.URe,
-    marginHorizontal: getWidth(5),
-    marginBottom: getWidth(2),
+    marginTop: getHeight(3),
+    marginBottom: getHeight(2),
+    textAlign: "center",
   },
   goBackBtnStyle: {
     backgroundColor: colors.black,
@@ -136,6 +177,8 @@ const styles = StyleSheet.create({
     height: getHeight(6),
     width: "90%",
     marginTop: getWidth(5),
+    // Optional: Adjust zIndex if needed
+    zIndex: 1,
   },
   backBtnTextStyle: {
     color: colors.white,

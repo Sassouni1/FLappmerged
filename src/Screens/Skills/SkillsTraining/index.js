@@ -151,17 +151,7 @@ export default function SkillsTraining({ navigation }) {
                   {getLessonsCount(item?.child_folder) + " lessons"}
                 </Text>
               </View>
-              <Text style={styles.lessonTextStyle}>•</Text>
-              <View style={styles.rowContainer}>
-                <Ionicons
-                  name="person"
-                  size={getFontSize(2)}
-                  color={colors.darkBlue}
-                />
-                <Text numberOfLines={1} style={styles.lessonTextStyle}>
-                  {item?.child_folder?.length + " Coaches"}
-                </Text>
-              </View>
+              <View style={styles.rowContainer}></View>
             </View>
           </View>
         </View>
@@ -254,7 +244,9 @@ export default function SkillsTraining({ navigation }) {
         data={skills}
         renderItem={renderItem}
         keyExtractor={(item) => item._id}
-        contentContainerStyle={{ paddingBottom: getHeight(4) }}
+        contentContainerStyle={{ paddingBottom: getHeight(4) }} // this already adds padding to the overall list
+        ListFooterComponent={<View style={{ height: getHeight(8) }} />} // this
+        ListHeaderComponent={<View style={{ height: getHeight(2) }} />} // padding above the first item
       />
     </View>
   );

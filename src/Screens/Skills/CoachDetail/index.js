@@ -1,43 +1,63 @@
-import { FlatList, Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  StatusBar,
+} from "react-native";
 import React from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 // Local Imports
 import GeneralStatusBar from "../../../Components/GeneralStatusBar";
-import { getFontSize, getHeight, getWidth } from "../../../../utils/ResponsiveFun";
+import {
+  getFontSize,
+  getHeight,
+  getWidth,
+} from "../../../../utils/ResponsiveFun";
 import { colors } from "../../../constants/colors";
 import { fonts } from "../../../constants/fonts";
 import CKeyBoardAvoidWrapper from "../../../Components/Common/CKeyBoardAvoidWrapper";
 
-export default function CoachDetail({ navigation,route }) {
-  const {selectedSkill,selectedCoach} = route?.params;
+export default function CoachDetail({ navigation, route }) {
+  const { selectedSkill, selectedCoach } = route?.params;
 
-  const onPressDetail = (selectedVideo) => navigation.navigate("WorkoutDetail",{selectedVideo:selectedVideo});
+  const onPressDetail = (selectedVideo) =>
+    navigation.navigate("WorkoutDetail", { selectedVideo: selectedVideo });
   const onPressPlay = () => navigation.navigate("LessonComplete");
   const onPressStart = () => {};
   const onPressBack = () => navigation.goBack();
 
   const RenderItem = ({ item }) => {
-    console.log("item",item);
     return (
-      <TouchableOpacity onPress={()=>{onPressDetail(item)}} style={styles.container1Style}>
+      <TouchableOpacity
+        onPress={() => {
+          onPressDetail(item);
+        }}
+        style={styles.container1Style}
+      >
         <View style={[styles.rowContainer, { flex: 1 }]}>
-          <Image source={{uri:item?.video_thumbnail}} style={styles.imageSTyle} />
+          <Image
+            source={{ uri: item?.video_thumbnail }}
+            style={styles.imageSTyle}
+          />
           <View
             style={{
               gap: getHeight(1.5),
               flex: 1,
             }}
           >
-            <Text numberOfLines={1} style={styles.lessonTextStyle}>
-              Foundations
-            </Text>
-            <Text style={styles.titleSTyle} numberOfLines={1}>
-              {item?.title}
-            </Text>
+            <Text style={styles.titleSTyle}>{item?.title}</Text>
             <View style={styles.rowContainer}>
-              <MaterialIcons name="watch-later" size={getFontSize(2)} color={colors.graytext4} />
+              <MaterialIcons
+                name="watch-later"
+                size={getFontSize(2)}
+                color={colors.graytext4}
+              />
               <Text numberOfLines={1} style={styles.timeTextStyle}>
                 05:30
               </Text>
@@ -52,64 +72,78 @@ export default function CoachDetail({ navigation,route }) {
   };
 
   return (
-    <CKeyBoardAvoidWrapper containerStyle={{ flexGrow: 1 }}>
-      <View style={styles.root}>
-        <ImageBackground source={{uri:selectedCoach?.folder_Image}} style={styles.topContainer}>
-          <GeneralStatusBar
-            barStyle="light-content"
-            hidden={false}
-            backgroundColor={colors.darkGray}
-            translucent={true}
-          />
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              paddingHorizontal: getWidth(4),
-              marginTop: getHeight(2),
-            }}
+    <View style={{ flex: 1 }}>
+      <StatusBar
+        barStyle="light-content"
+        translucent
+        backgroundColor="transparent"
+      />
+      <CKeyBoardAvoidWrapper containerStyle={{ flexGrow: 1 }}>
+        <View style={styles.root}>
+          <ImageBackground
+            source={{ uri: selectedCoach?.folder_Image }}
+            style={styles.topContainer}
+            resizeMode="cover"
           >
-            <TouchableOpacity onPress={onPressBack} style={styles.headerBtnStyle}>
-              <Ionicons name="chevron-back" size={getFontSize(2.5)} color={colors.white} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.headerBtnStyle}>
-              <Ionicons name="settings-outline" size={getFontSize(2.5)} color={colors.white} />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.categoryTitleContainer}>
-            <Text style={styles.cTextStyle}>{selectedSkill?.parent_title}</Text>
-          </View>
-          <Text style={styles.headerTextStyles}>{selectedCoach?.folder_title}</Text>
-          <Text style={styles.beginSTyle}>Let’s Begin</Text>
-        </ImageBackground>
-        <View style={styles.bottomContainer}>
-          <Text style={styles.descTextStyle}>
-           {selectedCoach?.folder_description}
-          </Text>
-          <View style={styles.subHeaderStyle}>
-            <Text style={styles.subHeaderTestStyle}>The Foundations</Text>
-          </View>
-          <FlatList
-            data={selectedCoach?.videos}
-            renderItem={RenderItem}
-            keyExtractor={(item) => item._id.toString()}
-            scrollEnabled={false}
-          />
-          <TouchableOpacity onPress={onPressStart} style={styles.nextBtnStyle}>
-            <Text style={styles.backBtnTextStyle}>Start Lesson</Text>
-            <Ionicons
-              name="alarm"
-              size={getFontSize(2.7)}
+            <View
               style={{
-                marginLeft: getWidth(2),
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                paddingHorizontal: getWidth(4),
+                marginTop: getHeight(1),
               }}
-              color={colors.white}
+            >
+              <TouchableOpacity
+                onPress={onPressBack}
+                style={styles.headerBtnStyle}
+              >
+                <Ionicons
+                  name="chevron-back"
+                  size={getFontSize(2.5)}
+                  color={colors.white}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.categoryTitleContainer}>
+              <Text style={styles.cTextStyle}>
+                {selectedSkill?.parent_title}
+              </Text>
+            </View>
+            <Text style={styles.headerTextStyles}>
+              {selectedCoach?.folder_title}
+            </Text>
+            <Text style={styles.beginSTyle}>Let’s Begin</Text>
+          </ImageBackground>
+          <View style={styles.bottomContainer}>
+            <Text style={styles.descTextStyle}></Text>
+            <View style={styles.subHeaderStyle}>
+              <Text style={styles.subHeaderTestStyle}>Lessons</Text>
+            </View>
+            <FlatList
+              data={selectedCoach?.videos}
+              renderItem={RenderItem}
+              keyExtractor={(item) => item._id.toString()}
+              scrollEnabled={false}
             />
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={onPressStart}
+              style={styles.nextBtnStyle}
+            >
+              <Text style={styles.backBtnTextStyle}>Start Lesson</Text>
+              <Ionicons
+                name="alarm"
+                size={getFontSize(2.7)}
+                style={{
+                  marginLeft: getWidth(2),
+                }}
+                color={colors.white}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </CKeyBoardAvoidWrapper>
+      </CKeyBoardAvoidWrapper>
+    </View>
   );
 }
 
@@ -119,13 +153,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   topContainer: {
+    height: getHeight(45), // Adjust this value as needed to control the size of the image background
     backgroundColor: colors.darkGray,
-    paddingBottom: getWidth(16),
     borderBottomLeftRadius: getWidth(10),
     borderBottomRightRadius: getWidth(10),
+    marginBottom: getWidth(3),
+    paddingTop: getHeight(8), // Ensure padding to account for status bar overlap
   },
   headerBtnStyle: {
-    padding: getWidth(2.5),
+    padding: getWidth(2),
     backgroundColor: colors.slateGray,
     borderRadius: 12,
   },
@@ -212,7 +248,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 14,
     padding: getWidth(2),
-    marginTop: getWidth(22),
+    marginTop: getWidth(20),
     alignSelf: "center",
   },
   cTextStyle: {
@@ -226,7 +262,7 @@ const styles = StyleSheet.create({
     fontSize: getFontSize(1.8),
     fontFamily: fonts.WMe,
     marginHorizontal: getWidth(5),
-    marginBottom: getWidth(2),
+    marginBottom: getWidth(-4),
     textAlign: "center",
   },
   nextBtnStyle: {

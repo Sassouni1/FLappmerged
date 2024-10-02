@@ -13,21 +13,13 @@ import {
 import { Bubble, GiftedChat } from "react-native-gifted-chat";
 import { getStatusBarHeight } from "react-native-safearea-height";
 import { useSelector } from "react-redux";
-import { SvgUri } from "react-native-svg";
 import SimpleToast from "react-native-simple-toast";
-import ImageModal from "react-native-image-modal";
 import moment from "moment";
 import fs from "react-native-fs";
 import { GernalStyle } from "../../../constants/GernalStyle";
 import { colors } from "../../../constants/colors";
 import * as Animatable from "react-native-animatable";
-import {
-  CameraPicker,
-  SendMsg,
-  SpeakIcon,
-  UserChat,
-  BotChat,
-} from "../../../assets/images";
+import { SendMsg, BotChat } from "../../../assets/images";
 import {
   getFontSize,
   getHeight,
@@ -40,6 +32,7 @@ import {
   chooseImageGallery,
 } from "../../../../utils/ImageAndCamera";
 import HeaderChatBot from "../../../Components/HeaderChatBot";
+import Messages from "../../../Screens/Messages";
 
 const STATUSBAR_HEIGHT =
   Platform.OS === "ios" ? getStatusBarHeight(true) : StatusBar.currentHeight;
@@ -49,6 +42,7 @@ const BotChatScreen = ({ navigation, route }) => {
   const [pickerModalVisibile, setPickerModalVisibile] = useState(false);
   const [sms, setSms] = useState("");
   const [messages, setMessages] = useState([]);
+  const [inputHeight, setInputHeight] = useState(getHeight(5)); // Moved outside renderInputToolbar
 
   useEffect(() => {
     setMessages([
@@ -64,64 +58,62 @@ const BotChatScreen = ({ navigation, route }) => {
     ]);
   }, []);
 
-  const handleSend = useCallback((newMessages = []) => {
-    setSms("");
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, newMessages)
-    );
+  const handleSend = useCallback(
+    (newMessages = []) => {
+      setSms("");
+      setMessages((previousMessages) =>
+        GiftedChat.append(previousMessages, newMessages)
+      );
 
-    const message = newMessages[0].text;
+      const message = newMessages[0].text;
 
-    // Add a waiting indicator message
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, [
-        {
-          _id: Math.random().toString(36).substring(7),
-          text: "waiting...",
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: "ChatGPT",
+      // Add a waiting indicator message
+      setMessages((previousMessages) =>
+        GiftedChat.append(previousMessages, [
+          {
+            _id: Math.random().toString(36).substring(7),
+            text: "waiting...",
+            createdAt: new Date(),
+            user: {
+              _id: 2,
+              name: "ChatGPT",
+            },
           },
+        ])
+      );
+
+      fetch("http://54.147.3.191/assistant", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      ])
-    );
-
-    fetch("http://54.147.3.191/assistant", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ text: message }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(user);
-        const responseMessage = {
-          _id: Math.random().toString(36).substring(7),
-          text: data?.message,
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: "ChatGPT",
-          },
-        };
-        setMessages((previousMessages) => {
-          const filteredMessages = previousMessages.filter(
-            (msg) => msg.text !== "waiting..."
-          );
-          return GiftedChat.append(filteredMessages, responseMessage);
-        });
+        body: JSON.stringify({ text: message }),
       })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
-
-  const sendChat = async (sms) => {
-    // setSms("");
-    // navigation.navigate("TestChatSceen");
-  };
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(user);
+          const responseMessage = {
+            _id: Math.random().toString(36).substring(7),
+            text: data?.message,
+            createdAt: new Date(),
+            user: {
+              _id: 2,
+              name: "ChatGPT",
+            },
+          };
+          setMessages((previousMessages) => {
+            const filteredMessages = previousMessages.filter(
+              (msg) => msg.text !== "waiting..."
+            );
+            return GiftedChat.append(filteredMessages, responseMessage);
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    [user]
+  );
 
   const uploadFromCamera = async () => {
     const res = await captureImage();
@@ -144,7 +136,8 @@ const BotChatScreen = ({ navigation, route }) => {
     setPickerModalVisibile(false);
   };
 
-  const uploadFromGallry = async () => {
+  const uploadFromGallery = async () => {
+    // Corrected function name
     const res = await chooseImageGallery();
     if (res.status == false) {
       SimpleToast.show(res.error);
@@ -216,28 +209,179 @@ const BotChatScreen = ({ navigation, route }) => {
     );
   };
 
-  const backHandler = () => navigation.navigate("HomeSc");
+  const backHandler = () => navigation.navigate("Messages");
 
   const RenderProfilePic = ({ props }) => {
+    if (props.currentMessage.user._id === 2) {
+      // Assistant's messages
+      return (
+        <View
+          style={[
+            styles.customView,
+            {
+              borderColor: colors.greyMedium, // Ensure this color exists in your colors object
+            },
+          ]}
+        >
+          <BotChat height={25} width={25} />
+        </View>
+      );
+    } else if (props.currentMessage.user._id === user?._id) {
+      // User's messages
+      return (
+        <View
+          style={[
+            styles.customView,
+            {
+              borderWidth: 0.6,
+              borderColor: colors.white,
+            },
+          ]}
+        >
+          <Image
+            source={{ uri: user?.profile_image }}
+            style={{ height: "88%", width: "99%", borderRadius: getWidth(3) }}
+          />
+        </View>
+      );
+    }
+    return null;
+  };
+
+  const renderMessageText = (props) => {
+    const isUserMessage = props.currentMessage.user._id === user?._id;
+    return (
+      <View>
+        {props.currentMessage?.text !== "" &&
+        props.currentMessage?.text != null ? (
+          <View
+            style={{
+              flexDirection: isUserMessage ? "row-reverse" : "row",
+              paddingLeft: getWidth(2),
+              paddingRight: getWidth(6), // Add padding on the right
+              paddingVertical: getHeight(1),
+            }}
+          >
+            <RenderProfilePic props={props} />
+            <View
+              style={{
+                backgroundColor: isUserMessage ? colors.black : colors.greyBg,
+                borderRadius: getWidth(6),
+                maxWidth: "90%", // Reduce maxWidth to create more space
+                paddingVertical: getHeight(1),
+                paddingHorizontal: getWidth(3),
+                marginLeft: isUserMessage ? 0 : getWidth(2),
+                marginRight: isUserMessage ? getWidth(2) : 0,
+              }}
+            >
+              <Text
+                style={{
+                  color: isUserMessage ? colors.white : colors.textDark,
+                  fontFamily: fonts.WM,
+                  fontSize: getFontSize(2),
+                }}
+              >{`${props.currentMessage?.text}`}</Text>
+            </View>
+          </View>
+        ) : null}
+      </View>
+    );
+  };
+
+  const renderInputToolbar = () => {
+    return (
+      <View style={styles.inputCon}>
+        <View style={styles.textinputCon}>
+          <TextInput
+            style={{
+              ...GernalStyle.textInputMessage,
+              width: getWidth(75), // Default width for starting, adjust to make it wider
+              paddingLeft: getWidth(3),
+              color: colors.black,
+              marginTop: getHeight(1),
+              backgroundColor: colors.greyLight,
+              height: inputHeight, // Dynamically set the height
+              minHeight: getHeight(5), // Set a minimum height for the input
+              maxHeight: getHeight(15), // Optional: Set a maximum height to prevent over-expansion
+            }}
+            multiline={true} // Enable multiline input
+            value={sms}
+            onChangeText={(e) => setSms(e)}
+            onContentSizeChange={(e) => {
+              setInputHeight(
+                Math.min(e.nativeEvent.contentSize.height, getHeight(15))
+              ); // Adjust height dynamically with a max limit
+            }}
+            placeholder="Type to start chatting..."
+          />
+        </View>
+        <TouchableOpacity
+          onPress={() => {
+            if (sms.trim() === "") {
+              SimpleToast.show("Cannot send empty message");
+              return;
+            }
+            let newMessages = [
+              {
+                _id: Math.random().toString(36).substring(7),
+                text: sms,
+                createdAt: new Date(),
+                user: {
+                  _id: user?._id,
+                  name: "User",
+                },
+              },
+            ];
+            handleSend(newMessages);
+          }}
+          style={styles.sendBtn}
+        >
+          <SendMsg height={25} width={25} />
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const renderDay = (props) => {
     return (
       <View
-        style={[
-          styles.customView,
-          {
-            borderWidth: 1,
-            borderColor: props.currentMessage.user._id
-              ? colors.orange
-              : colors.greyMedium,
-          },
-        ]}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          width: getWidth(91.2),
+          alignSelf: "center",
+          marginVertical: getHeight(1.5),
+        }}
       >
-        <Image
-          source={{ uri: user?.profile_image }}
-          style={{ height: "88%", width: "99%", borderRadius: getWidth(3) }}
+        <View
+          style={{
+            backgroundColor: colors.greyLight, // Lighter gray color
+            height: getWidth(0.2), // Thinner line
+            flex: 1,
+          }}
+        />
+        <Text
+          style={{
+            color: colors.greyLightText, // Lighter text color
+            paddingHorizontal: getWidth(2),
+            fontFamily: fonts.WR, // Changed to a regular weight font
+            fontSize: 10, // Smaller font size
+            fontWeight: "400", // Lighter font weight
+          }}
+        >
+          {moment(props.currentMessage.createdAt).format("hh:mm A")}
+        </Text>
+        <View
+          style={{
+            backgroundColor: colors.greyUltraLight, // Lighter gray color
+            height: getWidth(0.2), // Thinner line
+            flex: 1,
+          }}
         />
       </View>
     );
   };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" style={{ backgroundColor: "white" }} />
@@ -261,204 +405,15 @@ const BotChatScreen = ({ navigation, route }) => {
       />
       <View style={styles.chatContainer}>
         <GiftedChat
-          renderAvatar={(props) => null}
+          renderAvatar={() => null}
           renderBubble={renderBubble}
-          renderMessageText={(props) => {
-            return (
-              <View>
-                {props.currentMessage?.text != "" ||
-                props.currentMessage?.text != null ? (
-                  <View
-                    style={{
-                      flexDirection: props.currentMessage.user._id
-                        ? "row-reverse"
-                        : "row",
-                      paddingLeft: getWidth(2),
-                      paddingVertical: getHeight(1),
-                    }}
-                  >
-                    {props.currentMessage.user._id == user?._id ? (
-                      <RenderProfilePic props={props} />
-                    ) : (
-                      <View
-                        style={{
-                          width: getWidth(10),
-                          height: getWidth(10),
-                          backgroundColor: props.currentMessage.user._id
-                            ? colors.orange
-                            : colors.greyMedium,
-                          justifyContent: "center",
-                          alignItems: "center",
-                          borderRadius: getWidth(3),
-                        }}
-                      >
-                        {props.currentMessage.user._id ? (
-                          <UserChat height={25} width={25} />
-                        ) : (
-                          <BotChat height={25} width={25} />
-                        )}
-                      </View>
-                    )}
-                    <Text
-                      style={{
-                        paddingHorizontal: getWidth(2),
-                        color:
-                          props.currentMessage.user._id == user?._id
-                            ? colors.white
-                            : colors.black,
-                        fontFamily: fonts.WM,
-                        fontSize: getFontSize(2),
-                        maxWidth: "90%",
-                      }}
-                    >{`${props.currentMessage?.text}`}</Text>
-                  </View>
-                ) : null}
-              </View>
-            );
-          }}
-          renderCustomView={(props) => {
-            return (
-              <View>
-                {props.currentMessage?.fileType == "image/jpeg" ||
-                props.currentMessage?.fileType == "image/png" ||
-                props.currentMessage?.fileType == "image/jpg" ? (
-                  <View
-                    style={{
-                      flexDirection: props.currentMessage.user._id
-                        ? "row-reverse"
-                        : "row",
-                    }}
-                  >
-                    <View
-                      style={[
-                        styles.customView,
-                        {
-                          backgroundColor: props.currentMessage.user._id
-                            ? colors.orange
-                            : colors.greyMedium,
-                        },
-                      ]}
-                    >
-                      {props.currentMessage.user._id ? (
-                        <UserChat height={25} width={25} />
-                      ) : (
-                        <BotChat height={25} width={25} />
-                      )}
-                    </View>
-                    <ImageModal
-                      style={[styles.image, props.imageStyle]}
-                      resizeMode={"cover"}
-                      modalImageResizeMode="contain"
-                      source={{ uri: props.currentMessage?.PdfFile }}
-                    />
-                  </View>
-                ) : null}
-                {props.currentMessage?.fileType == "image/svg+xml" ? (
-                  <SvgUri
-                    height={100}
-                    width={100}
-                    color={"red"}
-                    style={[styles.image, props.imageStyle]}
-                    uri={props.currentMessage?.PdfFile}
-                  />
-                ) : null}
-              </View>
-            );
-          }}
-          renderInputToolbar={() => {
-            return (
-              <View style={{ ...styles.inputCon }}>
-                <View style={styles.textinputCon}>
-                  <TouchableOpacity onPress={() => null}>
-                    <SpeakIcon
-                      height={25}
-                      width={25}
-                      style={{ marginLeft: getWidth(2.5) }}
-                    />
-                  </TouchableOpacity>
-                  <TextInput
-                    style={{
-                      ...GernalStyle.textInputMessage,
-                      width: getWidth(60),
-                      marginTop: 0,
-                      paddingLeft: getWidth(3),
-                      color: colors.black,
-                      backgroundColor: colors.greyLight,
-                    }}
-                    value={sms}
-                    onChangeText={(e) => setSms(e)}
-                    // onSubmitEditing={() => sendChat(sms)}
-                    placeholder="Type to start chatting..."
-                    // placeholderTextColor={colors.textDark}
-                  />
-                  <TouchableOpacity
-                    onPress={() => setPickerModalVisibile(false)}
-                  ></TouchableOpacity>
-                </View>
-                <TouchableOpacity
-                  onPress={() => {
-                    let newMessages = [
-                      {
-                        _id: Math.random().toString(36).substring(7),
-                        text: sms,
-                        createdAt: new Date(),
-                        user: {
-                          _id: user?._id,
-                          name: "User",
-                        },
-                      },
-                    ];
-                    handleSend(newMessages);
-                  }}
-                  style={styles.sendBtn}
-                >
-                  <SendMsg height={25} width={25} />
-                </TouchableOpacity>
-              </View>
-            );
-          }}
-          renderDay={(props) => {
-            return (
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  width: getWidth(91.2),
-                  alignSelf: "center",
-                  marginVertical: getHeight(1.5),
-                }}
-              >
-                <View
-                  style={{
-                    backgroundColor: colors.greyMedium,
-                    height: getWidth(0.4),
-                    flex: 1,
-                  }}
-                />
-                <Text
-                  style={{
-                    color: colors.greyText,
-                    paddingHorizontal: getWidth(2),
-                    fontFamily: fonts.WSB,
-                    fontSize: 12,
-                    fontWeight: "600",
-                  }}
-                >
-                  {moment(props.currentMessage.createdAt).format("hh:mm A")}
-                </Text>
-                <View
-                  style={{
-                    backgroundColor: colors.greyMedium,
-                    height: getWidth(0.4),
-                    flex: 1,
-                  }}
-                />
-              </View>
-            );
-          }}
+          renderMessageText={renderMessageText}
+          renderInputToolbar={renderInputToolbar}
+          renderDay={renderDay}
           keyboardShouldPersistTaps={"handled"}
           messagesContainerStyle={{
-            paddingBottom: getHeight(6),
+            flexGrow: 1,
+            paddingBottom: getHeight(10), // Adjust this as necessary to ensure enough space for the input
           }}
           showUserAvatar={false}
           isKeyboardInternallyHandled
@@ -477,7 +432,7 @@ const BotChatScreen = ({ navigation, route }) => {
       <ImagePickerModal
         visible={pickerModalVisibile}
         hideVisible={() => setPickerModalVisibile(false)}
-        galleryImage={() => uploadFromGallry()}
+        galleryImage={() => uploadFromGallery()}
         cameraImage={() => uploadFromCamera("image")}
       />
     </View>
@@ -491,14 +446,15 @@ const styles = StyleSheet.create({
   headerContainer: {
     paddingTop: STATUSBAR_HEIGHT,
     borderBottomRightRadius: getWidth(10),
+    borderBottomLeftRadius: getWidth(10),
     alignItems: "center",
     paddingBottom: getHeight(2),
     backgroundColor: "#FFFFFF",
     width: getWidth(100),
-    shadowColor: "#000",
+    shadowColor: "#000", // Add drop shadow for iOS
     shadowOffset: {
       width: 0,
-      height: 1,
+      height: 4, // Adjust to create a stronger shadow
     },
     shadowOpacity: 0,
     shadowRadius: 2.65,
@@ -534,6 +490,7 @@ const styles = StyleSheet.create({
   chatContainer: {
     flex: 1,
     backgroundColor: colors.greyLight,
+    paddingBottom: 0, // Set this to zero to avoid extra space below the chat
   },
   rightBuble: {
     backgroundColor: colors.black,
@@ -563,7 +520,6 @@ const styles = StyleSheet.create({
   customView: {
     width: getWidth(10),
     height: getWidth(10),
-
     margin: getWidth(1),
     justifyContent: "center",
     alignItems: "center",
@@ -575,36 +531,40 @@ const styles = StyleSheet.create({
     borderRadius: 13,
     margin: 3,
   },
-  sendBtn: {
-    width: getWidth(15),
-    backgroundColor: colors.blueColor,
-    height: getWidth(15),
-    justifyContent: "center",
-    alignItems: "center",
-    marginLeft: getWidth(2),
-    borderRadius: getWidth(5),
-    marginTop: getHeight(2),
-  },
   textinputCon: {
-    width: getWidth(77),
+    flex: 1,
     backgroundColor: colors.greyLight,
     borderRadius: getWidth(5),
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: getHeight(2),
-    marginLeft: getWidth(1),
+    marginRight: getWidth(2),
+    justifyContent: "center",
+    minHeight: getHeight(8), // Set a minimum height for the input
+    maxHeight: getHeight(15), // Optional: Set a maximum height to prevent over-expansion
   },
   inputCon: {
-    backgroundColor: colors.white,
-    paddingHorizontal: getWidth(2),
-    alignSelf: "center",
-    width: getWidth(100),
     flexDirection: "row",
-    alignItems: "center",
-    paddingBottom: getHeight(4),
-    bottom: getHeight(7),
+    alignItems: "flex-end", // Align to the bottom
+    backgroundColor: colors.white,
+    paddingHorizontal: getWidth(4),
+    paddingVertical: getHeight(1),
     borderTopLeftRadius: getWidth(10),
     borderTopRightRadius: getWidth(10),
+    position: "absolute",
+    bottom: 0, // Ensures it's at the bottom
+    width: "100%", // Full width for proper alignment
+    shadowColor: "#000", // Optional for shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2, // Elevation for Android shadow
+    paddingBottom: getHeight(4), // Add padding to prevent content from touching the edges
+  },
+  sendBtn: {
+    width: getWidth(15),
+    height: getWidth(15),
+    backgroundColor: colors.blueColor,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: getWidth(5),
   },
   dotsContainer: {
     flexDirection: "row",

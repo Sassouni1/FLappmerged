@@ -125,13 +125,13 @@ const WorkoutDetails = () => {
           opacity: tabBarOpacity,
         }}
       > */}
-        <TabBarComponent
-          activeTab={0}
-          setActiveTab={(index) => {
-            if (index === 1) navigation.navigate("AddWorkouts");
-            else if (index === 2) navigation.navigate("AddWorkouts");
-          }}
-        />
+      <TabBarComponent
+        activeTab={0}
+        setActiveTab={(index) => {
+          if (index === 1) navigation.navigate("AddWorkouts");
+          else if (index === 2) navigation.navigate("AddWorkouts");
+        }}
+      />
       {/* </Animated.View> */}
       <Animated.ScrollView
         style={{ flex: 1 }}
@@ -161,20 +161,17 @@ const WorkoutDetails = () => {
                   />
                   <View style={styles.programContent}>
                     <Text style={styles.programTitle}>{item?.title}</Text>
-                    <Text style={styles.programDesc}>
-                      {item?.description}
-                    </Text>
+                    <Text style={styles.programDesc}>{item?.description}</Text>
                   </View>
                 </View>
               </TouchableOpacity>
             ))}
         </View>
-        <View style={{height:100}} />
+        <View style={{ height: 100 }} />
       </Animated.ScrollView>
     </SafeAreaView>
   );
 };
-
 
 export default WorkoutDetails;
 

@@ -117,7 +117,6 @@ export default function TrainingStats({ navigation }) {
             console.log("Error fetching heart rate:", err);
             return;
           }
-          
           setHealthData((prevData) => ({
             ...prevData,
             heartRate: results,
@@ -148,7 +147,6 @@ export default function TrainingStats({ navigation }) {
             console.log("Error fetching resting heart rate:", err);
             return;
           }
-          console.log("resting",results)
           setHealthData((prevData) => ({
             ...prevData,
             restingHeartRate: results,
@@ -164,7 +162,6 @@ export default function TrainingStats({ navigation }) {
             console.log("Error fetching distance walking/running:", err);
             return;
           }
-          console.log("walking dis",results)
           setHealthData((prevData) => ({
             ...prevData,
             distanceWalkingRunning: results,
@@ -529,7 +526,6 @@ export default function TrainingStats({ navigation }) {
   const onChangeDropDown = (selectedType, section) => {
     if (section != "appleStats")
       toggleTypeSelection(selectedType, section);
-
     if (section == "tc") set_tc_dropdown(selectedType);
     else if (section == "cb") set_cb_dropdown(selectedType);
     else if (section == "sp") set_sp_dropdown(selectedType);
@@ -1437,12 +1433,10 @@ export default function TrainingStats({ navigation }) {
         }
         return { data: result, total: totalValueCount };
       }
-  
       default:
         return [];
     }
   };
-  
 
   const strengthProgressData = () => {
     switch (sp_dropdown) {
@@ -1861,6 +1855,7 @@ export default function TrainingStats({ navigation }) {
             <Text style={styles.trainingFontStyle}>Apple Stats</Text>
           </View>
           <Text style={styles.completionStyle}>
+
                   {selectedAppleStat === "steps"
                     ? "Total Steps"
                     : "Latest HRV (ms)"}
