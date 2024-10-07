@@ -20,6 +20,7 @@ import ImageModal from "react-native-image-modal";
 import moment from "moment";
 import fs from "react-native-fs";
 import messages from "../../Screens/Messages";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { GernalStyle } from "../../../constants/GernalStyle";
 import { colors } from "../../constants/colors";
@@ -102,12 +103,40 @@ const BotAllChatScreen = ({ navigation, route }) => {
     }
   };
 
+  const checkLastVisit = async () => {
+    try {
+      const lastVisit = await AsyncStorage.getItem('lastVisit');
+
+      if (lastVisit) {
+        // Parse stored date and compare only the date part (YYYY-MM-DD)
+        const today = moment().format('YYYY-MM-DD');
+        const lastVisitDate = moment(lastVisit, moment.ISO_8601).format('YYYY-MM-DD');
+
+        // Check if the stored date is the same as today
+        if (today === lastVisitDate) {
+          // If the last visit was today, navigate to ChatScreen
+          navigation.navigate('ChatScreen');
+        } else {
+          // If the last visit was not today, update the storage and navigate to CreateChatScreen
+          await AsyncStorage.setItem('lastVisit', moment().toISOString()); // Store in ISO format
+          navigation.navigate('CreateChatScreen');
+        }
+      } else {
+        // If there is no last visit stored, navigate to CreateChatScreen and store the date
+        await AsyncStorage.setItem('lastVisit', moment().toISOString()); // Store in ISO format
+        navigation.navigate('CreateChatScreen');
+      }
+    } catch (error) {
+      console.error('Error checking last visit:', error);
+    }
+  };
+
   const renderItem = ({ item, index }) => {
     return (
       <TouchableOpacity
         onPress={() =>
           item.title === "Coach Jarvis.AI"
-            ? navigation.navigate("CreateChatScreen")
+            ? checkLastVisit()
             : navigation.navigate("ConversationScreen", {
                 channelId: item._id,
                 channelName: item.title,

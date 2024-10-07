@@ -298,6 +298,7 @@ const BotChatScreen = ({ navigation, route }) => {
               width: getWidth(75), // Default width for starting, adjust to make it wider
               paddingLeft: getWidth(3),
               color: colors.black,
+              borderRadius: getWidth(5),
               marginTop: getHeight(1),
               backgroundColor: colors.greyLight,
               height: inputHeight, // Dynamically set the height
@@ -413,7 +414,7 @@ const BotChatScreen = ({ navigation, route }) => {
           keyboardShouldPersistTaps={"handled"}
           messagesContainerStyle={{
             flexGrow: 1,
-            paddingBottom: getHeight(10), // Adjust this as necessary to ensure enough space for the input
+            //paddingBottom: getHeight(10), // Adjust this as necessary to ensure enough space for the input
           }}
           showUserAvatar={false}
           isKeyboardInternallyHandled
@@ -490,7 +491,7 @@ const styles = StyleSheet.create({
   chatContainer: {
     flex: 1,
     backgroundColor: colors.greyLight,
-    paddingBottom: 0, // Set this to zero to avoid extra space below the chat
+    paddingBottom: getHeight(6), // Set this to zero to avoid extra space below the chat
   },
   rightBuble: {
     backgroundColor: colors.black,
@@ -548,8 +549,8 @@ const styles = StyleSheet.create({
     paddingVertical: getHeight(1),
     borderTopLeftRadius: getWidth(10),
     borderTopRightRadius: getWidth(10),
-    position: "absolute",
-    bottom: 0, // Ensures it's at the bottom
+    // position: "absolute",
+    // bottom: 0, // Ensures it's at the bottom
     width: "100%", // Full width for proper alignment
     shadowColor: "#000", // Optional for shadow
     shadowOffset: { width: 0, height: 2 },

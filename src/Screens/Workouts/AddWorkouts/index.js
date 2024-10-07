@@ -30,6 +30,7 @@ import ReactNativeCalendarStrip from "react-native-calendar-strip";
 import moment from "moment";
 import TabBarComponent from "../../../Components/TabBarComponent";
 import VideoComponent from "../../../Components/VideoComponent";
+import { Proportions } from "lucide-react-native";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -50,6 +51,11 @@ const AddWorkouts = () => {
   const currentDate = new Date();
   const [customDatesStyles, setCustomDatesStyles] = useState([]);
   const [offDayVideos, setOffDayVideos] = useState([]);
+  const [selectedDay,setSelectedDay] = useState();
+  const [dynamicExercises,setDynamicExercises] = useState();
+  const [isDynamic,setIsDynamic] = useState(true);
+  const [programExercises,setProgramExercises] = useState([]);
+
 
   const handleDateChange = (selectedDate) => {
     setDate(selectedDate);
@@ -57,6 +63,26 @@ const AddWorkouts = () => {
     getSingleExcercise(selectedDate);
   };
 
+  const calculateDayDifference = (startFromDate, selectedDate) => {
+    // Convert the input dates to Date objects
+    const startDate = new Date(startFromDate);
+    const selected = new Date(selectedDate);
+  
+    // Set the time part of both dates to midnight (00:00:00) to ignore the time
+    startDate.setHours(0, 0, 0, 0);
+    selected.setHours(0, 0, 0, 0);
+  
+    // Calculate the difference in time (milliseconds)
+    const timeDifference = selected.getTime() - startDate.getTime();
+  
+    // Convert the time difference to days (1 day = 86400000 milliseconds)
+    const dayDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24)) + 1;
+  
+    // Return the result as "Day X"
+    let res = `day ${dayDifference}`;
+    console.log("selectedDay", res)
+    setSelectedDay(res);
+  };
   const getSingleExcercise = async (selectedDate) => {
     try {
       setAssigWorkout({});
@@ -68,7 +94,9 @@ const AddWorkouts = () => {
         token: token,
       });
       if (res?.status == "200") {
-        console.log("exercise..", res?.response?.Workout[0].innerWorkout[0]);
+        console.log("workouts..", res?.response?.startDate);
+        calculateDayDifference(res?.response?.startDate,selectedDate)
+
         setWorkout(res?.response?.Workout[0]);
         setAssigWorkout(res?.response?.Workout[0]?.innerWorkout[0]);
         setExercises(res?.response?.exercises);
@@ -83,7 +111,7 @@ const AddWorkouts = () => {
       console.log("api get skill errorrrr -- ", e.toString());
     }
   };
-
+  
   const getViewProgram = async () => {
     dispatch(setLoader(true));
     try {
@@ -94,7 +122,7 @@ const AddWorkouts = () => {
         token: token,
       });
       if (res?.status == "200") {
-        console.log("program...",res?.response?.detail?.workouts[0]?.innerWorkout)
+        // console.log("program.../",res?.response?.detail.workouts)
         setProgram(res?.response?.detail);
       } else {
         console.log(res?.response?.message);
@@ -103,6 +131,60 @@ const AddWorkouts = () => {
       console.log("api get skill error -- ", e.toString());
     }
   };
+  
+ // Function to filter exercises and tasks based on combined task names
+ const filterExercises = (workout, dynamic_exercises,isDynamic) => {
+  let filteredExercises = [];
+
+  workout.forEach(item => {
+    if(isDynamic)
+    {
+      if (item.exercise_name && dynamic_exercises?.includes(item.exercise_name)) {
+        filteredExercises.push(item);
+      }
+    }
+    else{
+    // Check if the item is a regular exercise and not in dynamic_exercises
+    if (item.exercise_name && !dynamic_exercises?.includes(item.exercise_name)) {
+      filteredExercises.push(item);
+    }
+  }
+
+    // Check inside task arrays if they exist
+    if (item.task.length > 0) {
+      
+      // Combine task exercise names using the specific join pattern "\n------\n"
+      let mergedExercise = item.task.reduce((merged, ex) => {
+        return merged ? `${merged}\n------\n${ex.exercise_name}` : ex.exercise_name;
+      }, "");
+
+      if (isDynamic) {
+        // If the merged task names are not in dynamic_exercises, include all the task exercises
+        if (dynamic_exercises?.some(dynamic => mergedExercise?.includes(dynamic))) {
+          filteredExercises.push(item);
+        }
+      }
+      else {
+        // If the merged task names are not in dynamic_exercises, include all the task exercises
+        if (!dynamic_exercises?.some(dynamic => mergedExercise?.includes(dynamic))) {
+          filteredExercises.push(item);
+        }
+    }
+    }
+  });
+
+  return filteredExercises;
+};
+  useEffect(() => {
+    if (program) {
+      let findWorkout = program?.workouts?.find(x => x.workoutDay == selectedDay);
+      if (findWorkout) {
+        let dExercises = findWorkout?.innerWorkout[0]?.dynamic_exercises;
+        setProgramExercises(findWorkout?.innerWorkout[0]?.exercise)
+        setDynamicExercises(dExercises);
+      }
+    }
+  }, [program, selectedDay])
 
   const getInstructions = async () => {
     try {
@@ -176,7 +258,6 @@ const AddWorkouts = () => {
   };
 
   useEffect(() => {
-    console.log("call for check", userWorkoutProgress);
     // Generate styles for each date in the current month
     const startOfMonth = moment(currentDate).startOf("month");
     const endOfMonth = moment(currentDate).endOf("year");
@@ -222,6 +303,31 @@ const AddWorkouts = () => {
     setCustomDatesStyles(dates);
   }, [userWorkoutProgress]);
 
+  const ExerciseTabBar = ({ }) => {
+    return (
+      <View style={{ borderWidth: 1, flexDirection: 'row', width: '95%', height: 35, borderRadius: 10 }}>
+        <TouchableOpacity
+          onPress={() => { setIsDynamic(true) }}
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center', borderRadius: 10,
+            backgroundColor: isDynamic ? 'lightgray' : 'white'
+          }}>
+          <Text style={{ fontWeight: 'bold' }} >Dynamic Warm Up</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => { setIsDynamic(false) }}
+          style={{
+            flex: 1, justifyContent: 'center', alignItems: 'center',
+            borderRadius: 10,
+            backgroundColor: isDynamic ? 'white' : 'lightgray'
+          }}>
+          <Text style={{ fontWeight: 'bold' }}>Workout</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
   const RenderExercise = ({ item }) => {
     return (
       <View style={{ flex: 1, flexDirection: "row", zIndex: 1 }}>
@@ -298,6 +404,7 @@ const AddWorkouts = () => {
           exercise: item,
           workout: workout,
           task: null,
+          programExercises:programExercises,
           exercises: exercises,
         });
       }}
@@ -324,6 +431,7 @@ const AddWorkouts = () => {
                 exercise: item,
                 workout: workout,
                 task: parentitem?.task,
+                programExercises:programExercises,
                 exercises: exercises,
                 calories: assigWorkout?.calories || 0,
               });
@@ -439,12 +547,15 @@ const AddWorkouts = () => {
       </View>
       <FlatList
         style={{ marginTop: 20, flex: 1 }}
-        data={exercises}
+        data={filterExercises(exercises,dynamicExercises,isDynamic)}
         initialNumToRender={5}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
         ListEmptyComponent={() => (
+          exercises.length > 0 ?
+          <View/>
+          :
           <View
             style={{
               flex: 1,
@@ -467,19 +578,22 @@ const AddWorkouts = () => {
             <View
               style={{
                 width: "100%",
-                aspectRatio: 16 / 9,
                 marginBottom: getHeight(3),
               }}
             >
+              {offDayVideos?.map((item, index) => (
+                <View key={index} style={{height:200}}>
               <VideoComponent
-                videoUrl={offDayVideos[0]?.video}
-                thumbnail={offDayVideos[0]?.video_thumbnail}
+                videoUrl={item?.video}
+                thumbnail={item?.video_thumbnail}
                 style={{
                   width: "100%",
                   height: "100%",
                   borderRadius: 10,
                 }}
               />
+              </View>
+              ))}
             </View>
           </View>
         )}
@@ -524,6 +638,7 @@ const AddWorkouts = () => {
                 }}
               ></View>
             </View>
+            <ExerciseTabBar  />
           </View>
         )}
         ListFooterComponent={() => (

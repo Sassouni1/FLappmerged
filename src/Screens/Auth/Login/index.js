@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     width: "100%",
-    height: "49%",
+    height: "55%",
     resizeMode: "cover",
   },
   content: {

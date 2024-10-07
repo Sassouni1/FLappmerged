@@ -151,6 +151,7 @@ const styles = StyleSheet.create({
   },
   headerTextStyles: {
     color: colors.black,
+    height:80,
     fontSize: getFontSize(3),
     fontFamily: fonts.UBo,
     marginTop: getHeight(3),

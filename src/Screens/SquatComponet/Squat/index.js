@@ -90,7 +90,7 @@ export default function Squat({ navigation, route }) {
   const onPressBack = () => {
     navigation.goBack();
   };
-  const { exercise, workout, task, exercises, calories } = route?.params;
+  const { exercise, workout, task, exercises, calories,programExercises } = route?.params;
   const user = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
 
@@ -134,6 +134,7 @@ export default function Squat({ navigation, route }) {
 
   useFocusEffect(
     React.useCallback(() => {
+      console.log("selectedExer",exercise)
       if (exercise?.additional_sets)
         setAdditionalSets(exercise?.additional_sets);
     }, [exercise])
@@ -164,20 +165,6 @@ export default function Squat({ navigation, route }) {
       return totalSeconds;
     } else return 0;
   }
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setSeconds((prevSeconds) => {
-  //       if (prevSeconds > 0) {
-  //         return prevSeconds - 1;
-  //       } else {
-  //         clearInterval(interval);
-  //         return 0;
-  //       }
-  //     });
-  //   }, 1000);
-  //   return () => clearInterval(interval);
-  // }, [restTime]);
 
   useEffect(() => {
     let interval;
@@ -502,10 +489,14 @@ export default function Squat({ navigation, route }) {
     addon = "",
   }) => {
     const uniqueKey = isAdditional ? "additionalSet" + no : addon + "set" + no;
-  
+    const findProgramExercise = programExercises?.find(x => x._id == exercise._id);
+    
+    // Use override_category if it exists, otherwise fall back to exercise?.category
+    const category = findProgramExercise?.override_category || exercise?.category;
+    
     // Check if it's a bodyweight exercise
-    const isBodyweightExercise = exercise?.category === "Bodyweight";
-    const isDynamicWarmUp = exercise?.category === "Dynamic Warm Up";
+    const isBodyweightExercise = category === "Bodyweight";
+    const isDynamicWarmUp = category === "Dynamic Warm Up";
   
     return (
       <View key={no} style={styles.mainContainer}>
@@ -678,7 +669,7 @@ export default function Squat({ navigation, route }) {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.white }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
       {isVisible ? (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
           <View
@@ -783,7 +774,7 @@ export default function Squat({ navigation, route }) {
           </View>
         </ScrollView>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 

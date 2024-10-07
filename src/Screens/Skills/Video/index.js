@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Text,
   Pressable,
+  Dimensions
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import WebView from "react-native-webview";
@@ -16,6 +17,7 @@ import {
 } from "../../../../utils/ResponsiveFun";
 import YoutubePlayer from "react-native-youtube-iframe";
 import Antdesign from "react-native-vector-icons/AntDesign";
+const {height,width} = Dimensions.get("window");
 
 const VideoSkills = ({ data }) => {
   const video = data?.video;
@@ -42,11 +44,11 @@ const VideoSkills = ({ data }) => {
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.mainCon}>
-        <View style={{ width: getWidth(100), height: getHeight(31) }}>
+        <View style={{ width: getWidth(100), minHeight: height/3.3 }}>
           <YoutubePlayer
             ref={youtubePlayerRef}
             height={'100%'}
-            // webViewStyle={{borderBottomLeftRadius:30,borderBottomRightRadius:30}}
+            // webViewStyle={{height:200}}
             play={isPlaying}
             videoId={Video_id}
             initialPlayerParams={{ controls: 0 }}
@@ -93,7 +95,7 @@ const VideoSkills = ({ data }) => {
                       fontWeight: 700,
                       color: "white",
                       width: getWidth(40),
-                      marginBottom: getHeight(2),
+                      marginBottom: getHeight(5),
                     }}
                   >
                     {name}

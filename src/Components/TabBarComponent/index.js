@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { getWidth } from "../../../utils/ResponsiveFun";
 import { fonts } from "../../constants/fonts";
 
-const TabBarComponent = ({ activeTab, setActiveTab }) => {
+const TabBarComponent = ({ activeTab, setActiveTab,firtTabText }) => {
   const tabs = [
     { key: "tab1", title: "Programs" },
     { key: "tab2", title: "Calendar" },

@@ -6,7 +6,7 @@ import {
   Image,
   ScrollView,
   Dimensions,
-  Alert
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { GernalStyle } from "../../../constants/GernalStyle";
@@ -28,11 +28,11 @@ import VideoComponent from "../../../Components/VideoComponent";
 
 const ViewProgram = ({ route }) => {
   const navigation = useNavigation();
-  const { _id } = route?.params?.passData
+  const { _id } = route?.params?.passData;
   const url = route?.params?.url;
   const [program, setProgram] = useState(null);
   const [data, setData] = useState(null);
-  const token = useSelector((state) => state.auth.userToken)
+  const token = useSelector((state) => state.auth.userToken);
   const user = useSelector((state) => state.auth.userData);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -94,7 +94,7 @@ const ViewProgram = ({ route }) => {
       } else {
         dispatch(setLoader(false));
 
-        Alert.alert(res?.response?.message || 'Error', [
+        Alert.alert(res?.response?.message || "Error", [
           { text: "OK", onPress: () => console.log("OK Pressed") },
         ]);
       }
@@ -125,7 +125,7 @@ const ViewProgram = ({ route }) => {
       } else {
         dispatch(setLoader(false));
 
-        Alert.alert(res?.response?.message || 'Error', [
+        Alert.alert(res?.response?.message || "Error", [
           { text: "OK", onPress: () => console.log("OK Pressed") },
         ]);
       }
@@ -142,10 +142,11 @@ const ViewProgram = ({ route }) => {
           onPress: () => console.log("Cancel Pressed"),
           style: "destructive",
         },
-        { 
+        {
           text: "Continue",
-           onPress: () => setModalVisible(true),
-          style: "default" },
+          onPress: () => setModalVisible(true),
+          style: "default",
+        },
       ]);
     } else {
       setModalVisible(true);
@@ -162,7 +163,6 @@ const ViewProgram = ({ route }) => {
         position: "relative",
       }}
     >
-
       <Modal
         isVisible={isModalVisible}
         onBackdropPress={() => setModalVisible(false)}
@@ -212,14 +212,29 @@ const ViewProgram = ({ route }) => {
       </Modal>
 
       <Image
-        source={{uri:data?.program_Image}}
+        source={{ uri: data?.program_Image }}
         style={{
           objectFit: "fill",
           position: "absolute",
-          top: 0,
-          height: 320,
+          marginTop: -20,
+          height: 290,
           width: Dimensions.get("screen").width,
-          borderRadius: 30,
+          borderBottomRightRadius: 30,
+          borderBottomLeftRadius: 30,
+        }}
+      />
+
+      {/* Black overlay */}
+      <View
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 776,
+          backgroundColor: "rgba(0, 0, 0, .2)", // Semi-transparent black overlay
+          borderBottomRightRadius: 30,
+          borderBottomLeftRadius: 30,
         }}
       />
       <TouchableOpacity
@@ -243,9 +258,9 @@ const ViewProgram = ({ route }) => {
       <View
         style={{
           justifyContent: "center",
-          alignSelf:'center',
+          alignSelf: "center",
           alignItems: "center",
-          marginTop: 160,
+          marginTop: 130,
           gap: 10,
         }}
       >
@@ -254,7 +269,7 @@ const ViewProgram = ({ route }) => {
             borderWidth: 1,
             borderRadius: 8,
             borderColor: "white",
-            backgroundColor:'black',
+            backgroundColor: "black",
             padding: 8,
             flexDirection: "row",
             alignItems: "center",
@@ -266,6 +281,7 @@ const ViewProgram = ({ route }) => {
             style={{
               height: 20,
               width: 20,
+              marginTop: 2,
             }}
           />
           <Text
@@ -282,7 +298,7 @@ const ViewProgram = ({ route }) => {
             fontSize: 26,
             color: "white",
             fontWeight: "700",
-            marginTop: 4,
+            marginTop: 0,
           }}
         >
           About
@@ -292,7 +308,7 @@ const ViewProgram = ({ route }) => {
             flexDirection: "row",
             alignItems: "center",
             gap: 6,
-            marginTop: 6,
+            marginTop: 0,
           }}
         >
           <Image
@@ -307,7 +323,7 @@ const ViewProgram = ({ route }) => {
               color: "white",
             }}
           >
-             {data?.no_of_days} days Program
+            {data?.no_of_days} days Program
           </Text>
         </View>
       </View>
@@ -367,10 +383,13 @@ const ViewProgram = ({ route }) => {
             style={{
               width: Dimensions.get("screen").width - 38,
               objectFit: "contain",
-              height:400,
+              height: 400,
             }}
           >
-            <VideoComponent videoUrl={data?.video} thumbnail={data?.video_thumbnail} />
+            <VideoComponent
+              videoUrl={data?.video}
+              thumbnail={data?.video_thumbnail}
+            />
           </View>
           {/* <Image
             source={require("../../../assets/images/workoutsvideo.png")}
@@ -408,34 +427,33 @@ const ViewProgram = ({ route }) => {
             most important:
           </Text>
         </View>
-        <View style={{ height: 200}}>
-        <Button
+        <View style={{ height: 200 }}>
+          <Button
             onPress={() => {
-              handleAddToCalendar()
+              handleAddToCalendar();
               //navigation.navigate("ProgramWorkout", { workoutData: route?.params?.passData, programId: _id })
-            }
-            }
+            }}
             text={`Start ${data?.title}`}
             btnStyle={{
               ...GernalStyle.btn,
-              borderRadius:20,
-              height:60,
+              borderRadius: 20,
+              height: 60,
               backgroundColor: colors.orange,
             }}
             btnTextStyle={GernalStyle.btnText}
-          /> 
-           <Button
+          />
+          <Button
             onPress={() => navigation.goBack()}
             text="No, Go Back"
             btnStyle={{
               ...GernalStyle.btn,
-              borderRadius:20,
-              height:60,
+              borderRadius: 20,
+              height: 60,
               backgroundColor: colors.black,
-              marginTop:20
+              marginTop: 20,
             }}
             btnTextStyle={GernalStyle.btnText}
-          /> 
+          />
         </View>
       </View>
     </ScrollView>
@@ -443,21 +461,21 @@ const ViewProgram = ({ route }) => {
 };
 const styles = StyleSheet.create({
   modalContainer: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 5,
     padding: 20,
   },
   closeButton: {
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
   },
   donebtn: {
     height: getHeight(6),
     borderRadius: 5,
     width: getWidth(25),
     backgroundColor: colors.bluebtn,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
+    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: getHeight(1),
   },
 });

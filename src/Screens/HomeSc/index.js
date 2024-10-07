@@ -483,7 +483,7 @@ const HomeSc = ({ navigation, route }) => {
             borderRadius: 20,
             backgroundColor: "#f2f2f2", // Matching the gray background of the calendar
             margin: 18,
-            height: 300,
+            // height: 300,
           }}
           theme={{
             calendarBackground: "#f2f2f2",
@@ -1379,6 +1379,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f2f2f2", // Gray background
     borderRadius: 20,
     padding: 10,
+    // height:400,
     marginTop: 20,
   },
   upcomingCallInGray: {

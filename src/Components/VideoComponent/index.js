@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet,ActivityIndicator } from "react-native";
 import VideoPlayer from "react-native-video-player";
 import YoutubePlayer from "react-native-youtube-iframe";
 import { Vimeo } from "react-native-vimeo-iframe";
@@ -30,9 +30,11 @@ const VideoComponent = ({ videoUrl, thumbnail }) => {
   const isYouTube = extractYouTubeVideoID(videoUrl);
   const isVimeo = isVimeoUrl(videoUrl);
   const vimeoVideoId = extractVimeoVideoID(videoUrl);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (vimeoVideoId) {
+    setIsLoading(true)
       // Fetch private video details from Vimeo API
       fetch(`https://api.vimeo.com/videos/${vimeoVideoId}`, {
         method: "GET",
@@ -43,6 +45,7 @@ const VideoComponent = ({ videoUrl, thumbnail }) => {
       })
         .then((response) => {
           if (!response.ok) {
+            setIsLoading(false)
             throw new Error("Failed to fetch video data");
           }
           return response.json();
@@ -50,15 +53,21 @@ const VideoComponent = ({ videoUrl, thumbnail }) => {
         .then((data) => {
           const videoUrl = data.embed.html.match(/src="([^"]*)"/)[1]; // Extract the iframe URL from the response
           setVimeoPrivateUrl(videoUrl);
+          setIsLoading(false)
+
           console.log(videoUrl);
         })
         .catch((error) => {
+          setIsLoading(false)
           console.log("Error:", error);
         });
     }
-  }, []);
+  }, [vimeoVideoId]);
+
   return (
     <View style={styles.container}>
+      {isLoading ? <ActivityIndicator size={'large'} /> :
+      <>
       {isYouTube ? (
         <View style={styles.youtubeContainer}>
           <YoutubePlayer
@@ -90,6 +99,8 @@ const VideoComponent = ({ videoUrl, thumbnail }) => {
           thumbnail={{ uri: thumbnail }}
         />
       )}
+      </>
+}
     </View>
   );
 };
@@ -100,7 +111,7 @@ const styles = StyleSheet.create({
   },
   youtubeContainer: {
     width: "100%",
-    height: 300,
+    height: 189,
     borderRadius: 15,
     overflow: "hidden",
   },
