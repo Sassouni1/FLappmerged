@@ -69,14 +69,14 @@ const VideoComponent = ({ videoUrl, thumbnail }) => {
       {isLoading ? <ActivityIndicator size={'large'} /> :
       <>
       {isYouTube ? (
-        <View style={styles.youtubeContainer}>
+        // <View style={styles.youtubeContainer}>
           <YoutubePlayer
-            height={200}
+            height={230}
             width={"100%"}
             play={false}
             videoId={isYouTube}
           />
-        </View>
+        // </View>
       ) : isVimeo ? (
         <View style={styles.vimeoContainer}>
           <WebView

@@ -90,7 +90,7 @@ export default function Squat({ navigation, route }) {
   const onPressBack = () => {
     navigation.goBack();
   };
-  const { exercise, workout, task, exercises, calories,programExercises } = route?.params;
+  const { exercise, workout, task, exercises, calories,programExercises,dynamicExercises } = route?.params;
   const user = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
 
@@ -236,6 +236,7 @@ export default function Squat({ navigation, route }) {
 
   const handleCheckmarkPress = async (index, set,isBodyweightExercise=false,isDynamicWarmUp=false) => {
     let find_lbs_value = findInputValueWithKey(index);
+    dispatch(setLoader(true));
     await singleSetComplete(set, find_lbs_value,isBodyweightExercise,isDynamicWarmUp);
     let newIsChecked = [...isChecked];
     let valueIncludes = newIsChecked.includes(index);
@@ -345,7 +346,6 @@ export default function Squat({ navigation, route }) {
         calories: calories || 0,
       };
 
-      dispatch(setLoader(false));
       if (exercise?.task?.length > 0) {
         requestParams.task_objId = exercise?.task?.[nextIncompleteIndex]?._id;
       }
@@ -433,7 +433,7 @@ export default function Squat({ navigation, route }) {
           {selectedSetKey == uniqueKey ?
             !timerActive ?
               <TouchableOpacity
-                style={{ width: 27,marginLeft:12 }}
+                style={{ width: 27,marginLeft:19 }}
                 onPress={() => {
                   setRestTime(restTime);
                   setSelectedSetKey(uniqueKey);
@@ -444,7 +444,7 @@ export default function Squat({ navigation, route }) {
               </TouchableOpacity>
               :
               <TouchableOpacity
-                style={{ width: 27 }}
+                style={{ width: 27,marginLeft:19 }}
                 onPress={() => {
                   setTimerActive(false)
                 }}
@@ -453,7 +453,7 @@ export default function Squat({ navigation, route }) {
               </TouchableOpacity>
             :
             <TouchableOpacity
-              style={{ width: 27,marginLeft:12 }}
+              style={{ width: 27,marginLeft:19 }}
               onPress={() => {
                 setRestTime(restTime);
                 setSelectedSetKey(uniqueKey);
@@ -495,9 +495,15 @@ export default function Squat({ navigation, route }) {
     const category = findProgramExercise?.override_category || exercise?.category;
     
     // Check if it's a bodyweight exercise
-    const isBodyweightExercise = category === "Bodyweight";
-    const isDynamicWarmUp = category === "Dynamic Warm Up";
-  
+    let isBodyweightExercise = category === "Bodyweight";
+    let isDynamicWarmUp = category === "Dynamic Warm Up";
+
+    const found = dynamicExercises?.some(str => str.includes(exercise.exercise_name));
+    if(found){
+      isDynamicWarmUp= true
+      isBodyweightExercise=false
+    }
+
     return (
       <View key={no} style={styles.mainContainer}>
         <View style={styles.outerContainer}>

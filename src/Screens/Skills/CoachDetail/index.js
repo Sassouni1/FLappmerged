@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -26,15 +27,15 @@ import CKeyBoardAvoidWrapper from "../../../Components/Common/CKeyBoardAvoidWrap
 export default function CoachDetail({ navigation, route }) {
   const { selectedSkill, selectedCoach } = route?.params;
   const [videosWithThumbnails, setVideosWithThumbnails] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Loading state
 
   // Extract Vimeo video ID from URL (supports both public and managed URLs)
-const extractVimeoVideoID = (url) => {
-  const match = url?.match(/vimeo\.com\/(?:manage\/videos\/)?(\d+)/);
-  return match ? match[1] : null;
-};
+  const extractVimeoVideoID = (url) => {
+    const match = url?.match(/vimeo\.com\/(?:manage\/videos\/)?(\d+)/);
+    return match ? match[1] : null;
+  };
 
   useEffect(() => {
-    // Fetch thumbnails when the component mounts
     if (selectedCoach?.videos?.length) {
       fetchThumbnails(selectedCoach.videos);
     }
@@ -42,16 +43,17 @@ const extractVimeoVideoID = (url) => {
 
   const fetchThumbnails = (videos) => {
     const fetchPromises = videos.map((video) => {
-  
-      // Check if the video is from Vimeo, and fetch the thumbnail if it doesn't have one
       if (isVimeoVideo(video.video)) {
-        return fetch(`https://api.vimeo.com/videos/${extractVimeoVideoID(video.video)}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${"0ffaede4b92457da6e58870aace9493d"}`,
-            "Content-Type": "application/json",
-          },
-        })
+        return fetch(
+          `https://api.vimeo.com/videos/${extractVimeoVideoID(video.video)}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${"0ffaede4b92457da6e58870aace9493d"}`,
+              "Content-Type": "application/json",
+            },
+          }
+        )
           .then((response) => response.json())
           .then((data) => {
             let thumbnailUrl = data.pictures.sizes[3]?.link || null; // Get highest resolution thumbnail
@@ -62,28 +64,35 @@ const extractVimeoVideoID = (url) => {
             return { ...video, video_thumbnail: null };
           });
       } else {
-        // If the video is not from Vimeo, or the thumbnail fetch is not required, return the video as is
         return Promise.resolve(video);
       }
     });
-  
+
     Promise.all(fetchPromises).then((updatedVideos) => {
       setVideosWithThumbnails(updatedVideos);
+      setIsLoading(false); // Set loading to false when data is fetched
     });
   };
-  
-  // Helper function to check if the video is a Vimeo video
+
   const isVimeoVideo = (videoUrl) => {
     return videoUrl.includes("vimeo.com");
   };
-  
 
   const onPressDetail = (selectedVideo) =>
-    navigation.navigate("WorkoutDetail", { selectedVideo: selectedVideo,videos:videosWithThumbnails });
+    navigation.navigate("WorkoutDetail", {
+      selectedVideo: selectedVideo,
+      videos: videosWithThumbnails,
+    });
+
   const onPressPlay = () => navigation.navigate("LessonComplete");
+
   const onPressStart = () => {
-    navigation.navigate("WorkoutDetail", { selectedVideo: videosWithThumbnails[0],videos:videosWithThumbnails })
+    navigation.navigate("WorkoutDetail", {
+      selectedVideo: videosWithThumbnails[0],
+      videos: videosWithThumbnails,
+    });
   };
+
   const onPressBack = () => navigation.goBack();
 
   const RenderItem = ({ item }) => {
@@ -169,31 +178,39 @@ const extractVimeoVideoID = (url) => {
             </Text>
             <Text style={styles.beginSTyle}>Let’s Begin</Text>
           </ImageBackground>
+
           <View style={styles.bottomContainer}>
-            <Text style={styles.descTextStyle}></Text>
-            <View style={styles.subHeaderStyle}>
-              <Text style={styles.subHeaderTestStyle}>Lessons</Text>
-            </View>
-            <FlatList
-              data={videosWithThumbnails}
-              renderItem={RenderItem}
-              keyExtractor={(item) => item._id.toString()}
-              scrollEnabled={false}
-            />
-            <TouchableOpacity
-              onPress={onPressStart}
-              style={styles.nextBtnStyle}
-            >
-              <Text style={styles.backBtnTextStyle}>Start Lesson</Text>
-              <Ionicons
-                name="alarm"
-                size={getFontSize(2.7)}
-                style={{
-                  marginLeft: getWidth(2),
-                }}
-                color={colors.white}
-              />
-            </TouchableOpacity>
+            {isLoading ? (
+              // Show loading indicator while fetching thumbnails
+              <ActivityIndicator size="large" color={colors.orange} />
+            ) : (
+              <>
+                <Text style={styles.descTextStyle}></Text>
+                <View style={styles.subHeaderStyle}>
+                  <Text style={styles.subHeaderTestStyle}>Lessons</Text>
+                </View>
+                <FlatList
+                  data={videosWithThumbnails}
+                  renderItem={RenderItem}
+                  keyExtractor={(item) => item._id.toString()}
+                  scrollEnabled={false}
+                />
+                <TouchableOpacity
+                  onPress={onPressStart}
+                  style={styles.nextBtnStyle}
+                >
+                  <Text style={styles.backBtnTextStyle}>Start Lesson</Text>
+                  <Ionicons
+                    name="alarm"
+                    size={getFontSize(2.7)}
+                    style={{
+                      marginLeft: getWidth(2),
+                    }}
+                    color={colors.white}
+                  />
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         </View>
       </CKeyBoardAvoidWrapper>
@@ -287,6 +304,7 @@ const styles = StyleSheet.create({
     paddingTop: getWidth(10),
     borderTopLeftRadius: getWidth(10),
     borderTopRightRadius: getWidth(10),
+    justifyContent: "center", // Center loading indicator
   },
   subHeaderTestStyle: {
     color: colors.black,

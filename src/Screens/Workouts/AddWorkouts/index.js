@@ -6,6 +6,7 @@ import {
   Image,
   Dimensions,
   ImageBackground,
+  StyleSheet
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { colors } from "../../../constants/colors";
@@ -38,7 +39,7 @@ const AddWorkouts = () => {
   const navigation = useNavigation();
   const [isTime, setIsTime] = useState(false);
   const dispatch = useDispatch();
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(new Date().toISOString());
 
   const [program, setProgram] = useState();
   const [workout, setWorkout] = useState({});
@@ -48,14 +49,12 @@ const AddWorkouts = () => {
   const loader = useSelector((state) => state.gernal.loader);
   const [userWorkoutProgress, setUserWorkoutProgress] = useState([]);
   const [exercises, setExercises] = useState([]);
-  const currentDate = new Date();
+  const currentDate = new Date().toISOString();
   const [customDatesStyles, setCustomDatesStyles] = useState([]);
   const [offDayVideos, setOffDayVideos] = useState([]);
   const [selectedDay,setSelectedDay] = useState();
   const [dynamicExercises,setDynamicExercises] = useState();
-  const [isDynamic,setIsDynamic] = useState(true);
   const [programExercises,setProgramExercises] = useState([]);
-
 
   const handleDateChange = (selectedDate) => {
     setDate(selectedDate);
@@ -64,37 +63,30 @@ const AddWorkouts = () => {
   };
 
   const calculateDayDifference = (startFromDate, selectedDate) => {
-    // Convert the input dates to Date objects
-    const startDate = new Date(startFromDate);
-    const selected = new Date(selectedDate);
+    // Convert the input dates to Moment objects and format them to ignore time
+    const startDate = moment.utc(startFromDate).startOf('day');
+    const selected = moment.utc(selectedDate).startOf('day');
   
-    // Set the time part of both dates to midnight (00:00:00) to ignore the time
-    startDate.setHours(0, 0, 0, 0);
-    selected.setHours(0, 0, 0, 0);
-  
-    // Calculate the difference in time (milliseconds)
-    const timeDifference = selected.getTime() - startDate.getTime();
-  
-    // Convert the time difference to days (1 day = 86400000 milliseconds)
-    const dayDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24)) + 1;
+
+    // Calculate the difference in days
+    const dayDifference = selected.diff(startDate, 'days') + 1;
   
     // Return the result as "Day X"
-    let res = `day ${dayDifference}`;
-    console.log("selectedDay", res)
+    const res = `day ${dayDifference}`;
+    console.log("Selected day:", res);
     setSelectedDay(res);
-  };
+};
   const getSingleExcercise = async (selectedDate) => {
     try {
       setAssigWorkout({});
       const res = await ApiCall({
         route: `assignProgram/given-date-workouts/${
           user?.plan_id
-        }&${selectedDate.toISOString()}`,
+        }&${selectedDate}`,
         verb: "get",
         token: token,
       });
       if (res?.status == "200") {
-        console.log("workouts..", res?.response?.startDate);
         calculateDayDifference(res?.response?.startDate,selectedDate)
 
         setWorkout(res?.response?.Workout[0]);
@@ -121,11 +113,11 @@ const AddWorkouts = () => {
         verb: "get",
         token: token,
       });
+
       if (res?.status == "200") {
-        // console.log("program.../",res?.response?.detail.workouts)
         setProgram(res?.response?.detail);
       } else {
-        console.log(res?.response?.message);
+        console.log("error",res?.response?.message);
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
@@ -174,7 +166,7 @@ const AddWorkouts = () => {
   });
 
   return filteredExercises;
-};
+}
   useEffect(() => {
     if (program) {
       let findWorkout = program?.workouts?.find(x => x.workoutDay == selectedDay);
@@ -212,16 +204,11 @@ const AddWorkouts = () => {
         verb: "post",
         token: token,
         params: {
-          givenDate: new Date(),
+          givenDate: selectedDate,
         },
       });
-
+      console.log("prograss..",res?.response?.workoutProgress)
       if (res?.status == "200") {
-        // console.log(
-        //   "workouts progress response",
-        //   res?.response?.workoutProgress,
-        //   selectedDate
-        // );
         setUserWorkoutProgress(res?.response?.workoutProgress);
         dispatch(setLoader(false));
       } else {
@@ -235,13 +222,13 @@ const AddWorkouts = () => {
 
   useFocusEffect(
     React.useCallback(() => {
+      getViewProgram();
       setDate(date);
       dispatch(setLoader(true));
       exerciseProgress(date);
       getSingleExcercise(date);
       getInstructions();
-      getViewProgram();
-    }, [])
+    }, [user])
   );
 
 
@@ -273,9 +260,10 @@ const AddWorkouts = () => {
     ) {
       let find = userWorkoutProgress?.find(
         (x) =>
-          new Date(x.workoutDate).toLocaleDateString() ==
-          new Date(m.clone()).toLocaleDateString()
+        moment.utc(x.workoutDate).format("YYYY-MM-DD") ===
+        m.clone().format("YYYY-MM-DD")
       );
+
       if (find && find.status == "assigned")
         textColor = colors.calendarAssigned;
       else if (find && find.status == "not assigned") textColor = colors.gray1;
@@ -303,31 +291,16 @@ const AddWorkouts = () => {
     setCustomDatesStyles(dates);
   }, [userWorkoutProgress]);
 
-  const ExerciseTabBar = ({ }) => {
+  const DividerWithText = ({label}) => {
     return (
-      <View style={{ borderWidth: 1, flexDirection: 'row', width: '95%', height: 35, borderRadius: 10 }}>
-        <TouchableOpacity
-          onPress={() => { setIsDynamic(true) }}
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center', borderRadius: 10,
-            backgroundColor: isDynamic ? 'lightgray' : 'white'
-          }}>
-          <Text style={{ fontWeight: 'bold' }} >Dynamic Warm Up</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => { setIsDynamic(false) }}
-          style={{
-            flex: 1, justifyContent: 'center', alignItems: 'center',
-            borderRadius: 10,
-            backgroundColor: isDynamic ? 'white' : 'lightgray'
-          }}>
-          <Text style={{ fontWeight: 'bold' }}>Workout</Text>
-        </TouchableOpacity>
+      <View style={innerStyles.container}>
+        <View style={innerStyles.line} />
+        <Text style={innerStyles.text}>{label}</Text>
+        <View style={innerStyles.line} />
       </View>
-    )
-  }
+    );
+  };
+
   const RenderExercise = ({ item }) => {
     return (
       <View style={{ flex: 1, flexDirection: "row", zIndex: 1 }}>
@@ -369,7 +342,7 @@ const AddWorkouts = () => {
               alignItems: "flex-end",
             }}
           >
-            <Text>{`Reps: ${item?.sets?.length}x${findMaxReps(item)} (${item?.sets[0]?.parameter})`}</Text>
+            <Text>{`Reps:: ${item?.sets?.length}x${findMaxReps(item)} (${item?.sets[0]?.parameter})`}</Text>
           </View>
         </View>
         <View
@@ -406,6 +379,7 @@ const AddWorkouts = () => {
           task: null,
           programExercises:programExercises,
           exercises: exercises,
+          dynamicExercises:dynamicExercises
         });
       }}
       activeOpacity={0.8}
@@ -434,6 +408,7 @@ const AddWorkouts = () => {
                 programExercises:programExercises,
                 exercises: exercises,
                 calories: assigWorkout?.calories || 0,
+                dynamicExercises:dynamicExercises
               });
             }}
             activeOpacity={0.8}
@@ -547,14 +522,22 @@ const AddWorkouts = () => {
       </View>
       <FlatList
         style={{ marginTop: 20, flex: 1 }}
-        data={filterExercises(exercises,dynamicExercises,isDynamic)}
+        data={filterExercises(exercises,dynamicExercises,true)}
         initialNumToRender={5}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
         ListEmptyComponent={() => (
           exercises.length > 0 ?
-          <View/>
+            <View style={{ alignItems: 'center' }}>
+              <Text
+                style={{
+                  fontSize: getFontSize(2.5),
+                }}
+              >
+                {'No Dynamic Warm Up Found'}
+              </Text>
+            </View>
           :
           <View
             style={{
@@ -582,7 +565,7 @@ const AddWorkouts = () => {
               }}
             >
               {offDayVideos?.map((item, index) => (
-                <View key={index} style={{height:200}}>
+                <View key={index} style={{marginBottom:10}}>
               <VideoComponent
                 videoUrl={item?.video}
                 thumbnail={item?.video_thumbnail}
@@ -622,48 +605,72 @@ const AddWorkouts = () => {
             >
               {assigWorkout?.description}
             </Text>
-            <View
-              style={{
-                flexDirection: "row",
-                marginTop: 10,
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 10,
-                  paddingHorizontal: 30,
-                  justifyContent: "center",
-                }}
-              ></View>
-            </View>
-            <ExerciseTabBar  />
+            {exercises.length > 0 &&
+              <DividerWithText label={"DYNAMIC WARM UP"} />
+            }
           </View>
         )}
         ListFooterComponent={() => (
-          <View style={{}}>
-            <View style={{ height: 200, marginTop: 20 }}>
-              <Button
-                onPress={() => {
-                  navigation.navigate("Squat", {
-                    exercise: exercises[0],
-                    workout: workout,
-                    task: null,
-                    exercises: exercises,
-                  });
+          exercises.length > 0 ?
+            <View>
+              <FlatList
+                style={{ marginTop: 20, flex: 1 }}
+                data={filterExercises(exercises, dynamicExercises, false)}
+                initialNumToRender={5}
+                showsHorizontalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+                ListEmptyComponent={() => (
+                  <View style={{ alignItems: 'center' }}>
+                    <Text
+                      style={{
+                        fontSize: getFontSize(2.5),
+                      }}
+                    >
+                      {'No Workouts Found'}
+                    </Text>
+                  </View>
+                )}
+                refreshing={false}
+                ListHeaderComponent={() => (
+                  <View
+                    style={{
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <DividerWithText label={"WORKOUTS"} />
+                  </View>
+                )}
+                renderItem={({ item, index }) => {
+                  return item?.exercise_name
+                    ? renderItem(item, index)
+                    : renderMergedItem(item, index);
                 }}
-                text={`Start Workout`}
-                btnStyle={{
-                  ...GernalStyle.btn,
-                  borderRadius: 15,
-                  height: 60,
-                  backgroundColor: colors.orange,
-                }}
-                btnTextStyle={GernalStyle.btnText}
               />
+              <View style={{ height: 200, marginTop: 20 }}>
+                <Button
+                  onPress={() => {
+                    navigation.navigate("Squat", {
+                      exercise: exercises[0],
+                      workout: workout,
+                      task: null,
+                      exercises: exercises,
+                    });
+                  }}
+                  text={`Start Workout`}
+                  btnStyle={{
+                    ...GernalStyle.btn,
+                    borderRadius: 15,
+                    height: 60,
+                    backgroundColor: colors.orange,
+                  }}
+                  btnTextStyle={GernalStyle.btnText}
+                />
+              </View>
             </View>
-          </View>
+            :
+            <View />
         )}
         renderItem={({ item, index }) => {
           return item?.exercise_name
@@ -676,3 +683,23 @@ const AddWorkouts = () => {
 };
 
 export default AddWorkouts;
+
+const innerStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#C1C1C1', // light gray color
+  },
+  text: {
+    marginHorizontal: 10,
+    color: '#C1C1C1', // light gray color
+    fontSize: 16,
+    letterSpacing: 2, // spacing between letters
+  },
+});

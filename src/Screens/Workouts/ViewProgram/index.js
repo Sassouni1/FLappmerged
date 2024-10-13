@@ -25,6 +25,7 @@ import Button from "../../../Components/Button";
 import Modal from "react-native-modal";
 import { Calendar } from "react-native-calendars";
 import VideoComponent from "../../../Components/VideoComponent";
+import { getSingleUser } from "../../../Redux/actions/AuthActions";
 
 const ViewProgram = ({ route }) => {
   const navigation = useNavigation();
@@ -90,6 +91,7 @@ const ViewProgram = ({ route }) => {
       });
       if (res?.status == "200") {
         dispatch(setLoader(false));
+        dispatch(getSingleUser(token));
         navigation.navigate("WorkoutSucessfully", { selectDate: selectedDate });
       } else {
         dispatch(setLoader(false));
@@ -121,6 +123,7 @@ const ViewProgram = ({ route }) => {
       });
       if (res?.status == "200") {
         dispatch(setLoader(false));
+        dispatch(getSingleUser(token));
         navigation.navigate("WorkoutSucessfully", { selectDate: selectedDate });
       } else {
         dispatch(setLoader(false));

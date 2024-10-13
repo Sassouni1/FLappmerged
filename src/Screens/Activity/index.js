@@ -1341,6 +1341,9 @@ export default function TrainingStats({ navigation }) {
           value: value
         };
       });
+      if (typeof totalValueCount === 'number' && !Number.isInteger(totalValueCount)) {
+        return totalValueCount.toFixed(2);
+    }
       return { data: result, total: totalValueCount };
     }
   
@@ -2178,8 +2181,8 @@ const styles = StyleSheet.create({
   },
   customMarkerStyle: {
     paddingHorizontal: getWidth(2.5),
-    height: getHeight(4),
-    width: getWidth(11),
+    height: 27,
+    width: getWidth(12),
     backgroundColor: colors.green,
     borderRadius: 3,
     // marginTop: getHeight(2),
