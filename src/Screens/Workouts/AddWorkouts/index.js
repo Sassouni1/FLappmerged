@@ -10,36 +10,34 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { colors } from "../../../constants/colors";
-import GeneralStatusBar from "../../../Components/GeneralStatusBar";
 import { GernalStyle } from "../../../constants/GernalStyle";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import AntDesign from "react-native-vector-icons/AntDesign";
 import {
   getFontSize,
   getWidth,
   getHeight,
 } from "../../../../utils/ResponsiveFun";
-import { PlayerSvg } from "../../../assets/images";
-import Seprator from "../../../Components/Seprator";
-import { styles } from "./styles";
 import Button from "../../../Components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../../Redux/actions/GernalActions";
+import { setSelectedCalendarDate } from "../../../Redux/actions/WorkoutActions";
 import { ApiCall } from "../../../Services/Apis";
-import { fonts } from "../../../constants/fonts";
 import ReactNativeCalendarStrip from "react-native-calendar-strip";
 import moment from "moment";
 import TabBarComponent from "../../../Components/TabBarComponent";
 import VideoComponent from "../../../Components/VideoComponent";
-import { Proportions } from "lucide-react-native";
 
 const { height, width } = Dimensions.get("screen");
 
 const AddWorkouts = () => {
   const navigation = useNavigation();
-  const [isTime, setIsTime] = useState(false);
   const dispatch = useDispatch();
-  const [date, setDate] = useState(new Date().toISOString());
+  const selectedCalendarDate = useSelector((state) => state.workout.selectedCalendarDate);
+  const [date, setDate] = useState(() => {
+    const currentDate = new Date();
+    const formattedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+    return formattedDate;
+  });
 
   const [program, setProgram] = useState();
   const [workout, setWorkout] = useState({});
@@ -57,9 +55,10 @@ const AddWorkouts = () => {
   const [programExercises,setProgramExercises] = useState([]);
 
   const handleDateChange = (selectedDate) => {
+    dispatch(setSelectedCalendarDate(selectedDate));
     setDate(selectedDate);
     dispatch(setLoader(true));
-    getSingleExcercise(selectedDate);
+    // getSingleExcercise(selectedDate);
   };
 
   const calculateDayDifference = (startFromDate, selectedDate) => {
@@ -77,6 +76,7 @@ const AddWorkouts = () => {
     setSelectedDay(res);
 };
   const getSingleExcercise = async (selectedDate) => {
+    console.log("getSingleExcercise",selectedDate)
     try {
       setAssigWorkout({});
       const res = await ApiCall({
@@ -88,7 +88,6 @@ const AddWorkouts = () => {
       });
       if (res?.status == "200") {
         calculateDayDifference(res?.response?.startDate,selectedDate)
-
         setWorkout(res?.response?.Workout[0]);
         setAssigWorkout(res?.response?.Workout[0]?.innerWorkout[0]);
         setExercises(res?.response?.exercises);
@@ -207,7 +206,6 @@ const AddWorkouts = () => {
           givenDate: selectedDate,
         },
       });
-      console.log("prograss..",res?.response?.workoutProgress)
       if (res?.status == "200") {
         setUserWorkoutProgress(res?.response?.workoutProgress);
         dispatch(setLoader(false));
@@ -222,13 +220,20 @@ const AddWorkouts = () => {
 
   useFocusEffect(
     React.useCallback(() => {
+      let dateSelected = selectedCalendarDate || date;
       getViewProgram();
-      setDate(date);
-      dispatch(setLoader(true));
-      exerciseProgress(date);
-      getSingleExcercise(date);
+      exerciseProgress(dateSelected);
       getInstructions();
     }, [user])
+  );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      let dateSelected = selectedCalendarDate || date;
+      setDate(dateSelected);
+      dispatch(setLoader(true));
+      getSingleExcercise(dateSelected);
+    }, [user,selectedCalendarDate])
   );
 
 
@@ -342,7 +347,7 @@ const AddWorkouts = () => {
               alignItems: "flex-end",
             }}
           >
-            <Text>{`Reps:: ${item?.sets?.length}x${findMaxReps(item)} (${item?.sets[0]?.parameter})`}</Text>
+            <Text>{`Reps: ${item?.sets?.length}x${findMaxReps(item)} (${item?.sets[0]?.parameter})`}</Text>
           </View>
         </View>
         <View
@@ -379,7 +384,7 @@ const AddWorkouts = () => {
           task: null,
           programExercises:programExercises,
           exercises: exercises,
-          dynamicExercises:dynamicExercises
+          dynamicExercises:dynamicExercises,
         });
       }}
       activeOpacity={0.8}
@@ -408,7 +413,7 @@ const AddWorkouts = () => {
                 programExercises:programExercises,
                 exercises: exercises,
                 calories: assigWorkout?.calories || 0,
-                dynamicExercises:dynamicExercises
+                dynamicExercises:dynamicExercises,
               });
             }}
             activeOpacity={0.8}

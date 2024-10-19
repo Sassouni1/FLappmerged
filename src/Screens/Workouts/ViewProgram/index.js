@@ -31,6 +31,8 @@ const ViewProgram = ({ route }) => {
   const navigation = useNavigation();
   const { _id } = route?.params?.passData;
   const url = route?.params?.url;
+  const programVideos = route?.params?.programVideos;
+
   const [program, setProgram] = useState(null);
   const [data, setData] = useState(null);
   const token = useSelector((state) => state.auth.userToken);
@@ -228,18 +230,7 @@ const ViewProgram = ({ route }) => {
       />
 
       {/* Black overlay */}
-      <View
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 776,
-          backgroundColor: "rgba(0, 0, 0, .2)", // Semi-transparent black overlay
-          borderBottomRightRadius: 30,
-          borderBottomLeftRadius: 30,
-        }}
-      />
+     
       <TouchableOpacity
         style={{
           position: "absolute",
@@ -354,7 +345,7 @@ const ViewProgram = ({ route }) => {
               fontSize: 22,
             }}
           >
-            Description
+            Program Description
           </Text>
           <Text
             style={{
@@ -365,6 +356,7 @@ const ViewProgram = ({ route }) => {
             {data?.description}
           </Text>
         </View>
+        {programVideos?.length > 0 &&
         <View
           style={{
             flexDirection: "column",
@@ -382,34 +374,43 @@ const ViewProgram = ({ route }) => {
           >
             Video
           </Text>
-          <View
-            style={{
-              width: Dimensions.get("screen").width - 38,
-              objectFit: "contain",
-              height: 400,
-            }}
-          >
-            <VideoComponent
-              videoUrl={data?.video}
-              thumbnail={data?.video_thumbnail}
-            />
+
+          {programVideos.map((item,index) => (
+            <View key={index}>
+            <View  style={{ gap: 10 }}>
+            <Text style={{ fontWeight: 700, fontSize: 18 }}>
+              {item.title}
+            </Text>
+            <Text
+              style={{ lineHeight: 22,textAlign:'left', color: '#676C75', letterSpacing: 0.8 }}
+            >
+              {item.description}
+            </Text>
           </View>
-          {/* <Image
-            source={require("../../../assets/images/workoutsvideo.png")}
-            style={{
-              width: Dimensions.get("screen").width - 38,
-              objectFit: "contain",
-              marginTop: -200,
-            }}
-          /> */}
+            <View
+              style={{
+                width: Dimensions.get("screen").width - 38,
+                objectFit: "contain",
+                // height: 400,
+              }}
+            >
+              <VideoComponent
+                videoUrl={item?.video}
+                thumbnail={item?.video_thumbnail}
+              />
+            </View>
+            </View>
+          ))}
+          
         </View>
+}
         <View
           style={{
             flexDirection: "column",
             justifyContent: "flex-start",
             alignItems: "flex-start",
             gap: 6,
-            marginTop: -180,
+            // marginTop: -180,
           }}
         >
           <Text

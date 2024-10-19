@@ -10,10 +10,9 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-import moment from "moment"; // Import moment for date manipulation
+import moment from "moment";
 import Entypo from "react-native-vector-icons/Entypo";
 import PopupModal from "../../Components/ErrorPopup";
-
 import { useDispatch, useSelector } from "react-redux";
 import { appListner, requestUserPermission } from "../Notifications";
 import { getSingleUser } from "../../Redux/actions/AuthActions";
@@ -25,6 +24,71 @@ import { colors } from "../../constants/colors";
 import { useFocusEffect } from "@react-navigation/native";
 import TodoList from "../../Components/TodoList";
 
+function LiveCallComponent({ upComingEvent }) {
+  const [time, setTime] = useState(timeRemaining(upComingEvent?.start));
+
+  useEffect(() => {
+      const interval = setInterval(() => {
+          setTime(timeRemaining(upComingEvent?.start));
+      }, 1000); // Update every second
+
+      return () => clearInterval(interval); // Clean up on unmount
+  }, [upComingEvent?.start]);
+
+  const handlePress = () => {
+      if (time === "Live call is now!") {
+          openURL(upComingEvent?.link);
+      } else {
+          Alert.alert("No live calls scheduled for today.");
+      }
+  };
+
+  return (
+      <TouchableOpacity style={styles.liveCallsBtn} onPress={handlePress}>
+          <Image
+              source={require("../../assets/images/WhiteCalendar.png")}
+              style={styles.whiteCalendar}
+          />
+          <Text style={styles.liveCallsBtnText}>
+              {time === "Live call is now!"
+                  ? "Live call is now! Click here to Join"
+                  : `Live Call Is In ${time} with ${upComingEvent?.speakers[0]?.name}`}
+          </Text>
+      </TouchableOpacity>
+  );
+}
+
+function timeRemaining(targetDate) {
+  if (!targetDate) return null;
+
+  const now = new Date();
+  const endDate = new Date(targetDate);
+  const timeDiff = endDate - now;
+
+  if (timeDiff <= 0) {
+      return "Live call is now!";
+  }
+
+  const seconds = Math.floor((timeDiff / 1000) % 60);
+  const minutes = Math.floor((timeDiff / (1000 * 60)) % 60);
+  const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
+  const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
+  if (days > 0) {
+    return `${days} day${days > 1 ? "s" : ""} ${hours} hr`;
+  } else {
+    return `${hours} hr ${minutes} min ${seconds} sec`;
+  }
+}
+const openURL = async (url) => {
+  const supported = await Linking.canOpenURL(url);
+  if (supported) {
+    await Linking.openURL(url);
+  } else {
+    Alert.alert(`Don't know how to open this URL: ${url}`);
+  }
+};
+
 const HomeSc = ({ navigation, route }) => {
   const navigate = useNavigation();
   const token = useSelector((state) => state.auth.userToken);
@@ -33,34 +97,52 @@ const HomeSc = ({ navigation, route }) => {
   const [adminAlert, setAdminAlert] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [calendarMarkedDates, setCalendarMarkedDates] = useState({});
-  const [events, setEvents] = useState();
-  const [eventDescription, setEventDescription] = useState("asdasd");
+  const [events, setEvents] = useState([]);
+  const [eventDescription, setEventDescription] = useState("");
   const [upComingEvent, setUpcomingEvent] = useState();
   const [todayWorkout, setTodayWorkout] = useState();
   const [isModalVisible, setModalVisible] = useState(false);
+  const [upcomingCallDescription, setUpcomingCallDescription] = useState("");
+  const [dataList, setDataList] = useState([]);
+
 
   useFocusEffect(
     React.useCallback(() => {
       if (user.isAssigned != true) setModalVisible(true);
     }, [])
   );
+
+  const getInstructions = async () => {
+    try {
+      const res = await ApiCall({
+        route: `appInstruction/all_instructions`,
+        verb: "get",
+        token: token,
+      });
+      console.log("res..",res?.response?.data)
+      if (res?.status == 200) {
+        setDataList(res?.response?.data?.filter(x=>x.type == "HomeStore"));
+      } else {
+        console.log(res?.response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
 
   const openMyFitnessPal = async () => {
-    const myFitnessPalURL = "myfitnesspal://"; // MyFitnessPal URL scheme
+    const myFitnessPalURL = "myfitnesspal://";
     const appStoreURL =
-      "https://apps.apple.com/us/app/myfitnesspal/id341232718"; // MyFitnessPal App Store URL
+      "https://apps.apple.com/us/app/myfitnesspal/id341232718";
 
     try {
-      // Check if MyFitnessPal is installed
       const isAppInstalled = await Linking.canOpenURL(myFitnessPalURL);
       if (isAppInstalled) {
-        // Open MyFitnessPal if installed
         await Linking.openURL(myFitnessPalURL);
       } else {
-        // If the app is not installed, open the App Store link
         await Linking.openURL(appStoreURL);
       }
     } catch (error) {
@@ -68,58 +150,101 @@ const HomeSc = ({ navigation, route }) => {
     }
   };
 
-  function timeRemaining(targetDate) {
-    if (!targetDate) return null; // If there's no date, return null (no upcoming event)
 
-    const now = new Date();
-    const endDate = new Date(targetDate);
-    const timeDiff = endDate - now;
-
-    if (timeDiff <= 0) {
-      return "Live call is now!"; // If the event has started or is live
-    }
-
-    // Event is in the future, calculate time remaining
-    const seconds = Math.floor((timeDiff / 1000) % 60);
-    const minutes = Math.floor((timeDiff / (1000 * 60)) % 60);
-    const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
-    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-
-    if (days > 0) {
-      return `${days} day${days > 1 ? "s" : ""}`;
-    } else if (hours > 0) {
-      return `${hours} hour${hours > 1 ? "s" : ""}`;
-    } else if (minutes > 0) {
-      return `${minutes} minute${minutes > 1 ? "s" : ""}`;
-    } else {
-      return `${seconds} second${seconds > 1 ? "s" : ""}`;
-    }
-  }
-
-  // Additional helper function to check if an event is in the past
   function isEventInPast(targetDate) {
     const now = new Date();
     const endDate = new Date(targetDate);
-    return endDate < now; // Returns true if the event is in the past
+    return endDate < now;
   }
 
+  // Utility function to format dates
+  const getFormattedDate = (_date) => {
+    const date = new Date(_date);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  // Function to handle day press in the calendar
   const handleDayPress = (day) => {
-    let find = events?.find((x) => getFormattedDate(x.start) == day.dateString);
-    if (find) setEventDescription(find?.title);
-    else setEventDescription("");
-    setSelectedDate(day.dateString);
+    const selectedDate = day.dateString;
+    setSelectedDate(selectedDate); // Set selected date state
+    updateMarkedDates(selectedDate); // Call the function to update the calendar markings
+
+    const eventsOnSelectedDate = events.filter(
+      (event) => getFormattedDate(event.start) === selectedDate
+    );
+
+    if (eventsOnSelectedDate.length > 0) {
+      const eventDescriptions = eventsOnSelectedDate
+        .map((event) => {
+          const eventTime = moment(event.start).format("MMMM Do YYYY, h:mm a");
+          const eventName = event.speakers[0]?.name;
+
+          // Check if the event is in the past
+          if (isEventInPast(event.start)) {
+            return `Call with ${eventName} is in the past.`;
+          } else {
+            return `Call with ${eventName} on ${eventTime}`;
+          }
+        })
+        .join("\n");
+      setEventDescription(eventDescriptions);
+    } else {
+      setEventDescription("No events on this day.");
+    }
+  };
+
+  // Function to update marked dates when a day is clicked
+  const updateMarkedDates = (selectedDate) => {
+    let markedDates = {};
+
+    // Mark the selected date
+    markedDates[selectedDate] = {
+      selected: true,
+      selectedColor: colors.blueColor, // Highlight color
+    };
+
+    // Mark the events' dates
+    events.forEach((event) => {
+      const eventDate = getFormattedDate(event.start);
+      if (!markedDates[eventDate]) {
+        markedDates[eventDate] = {
+          marked: true,
+          dotColor: colors.blueColor,
+        };
+      }
+    });
+
+    // Ensure today's date is always marked
+    const todayDate = getFormattedDate(new Date());
+    if (!markedDates[todayDate]) {
+      markedDates[todayDate] = {
+        customStyles: {
+          container: {
+            borderColor: colors.blueColor,
+            borderWidth: 2,
+          },
+          text: {
+            color: colors.blueColor,
+          },
+        },
+      };
+    }
+
+    setCalendarMarkedDates(markedDates); // Update the marked dates in the calendar
   };
 
   const getAdminAlert = async () => {
     try {
       const res = await ApiCall({
-        route: `auth/get-recent-alert`,
+        route: auth/get-recent-alert,
         verb: "get",
         token: token,
       });
 
       if (res?.status == "200") {
-        console.log("admin response", res?.response);
         setAdminAlert(res?.response?.event);
         dispatch(setLoader(false));
       } else {
@@ -134,30 +259,33 @@ const HomeSc = ({ navigation, route }) => {
   useEffect(() => {
     requestUserPermission(token);
   }, []);
+
   useEffect(() => {
     if (token) {
       if (user.isAssigned) dispatch(getSingleUser(token));
       appListner(navigation);
     }
   }, []);
+
   useEffect(() => {
     getAdminAlert();
     getEvents();
     getTodayWorkout();
+    getInstructions();
   }, []);
 
   const getTodayWorkout = async () => {
     let currentDate = new Date();
+    const formattedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
     try {
       const res = await ApiCall({
         route: `assignProgram/given-date-workouts/${
           user?.plan_id
-        }&${currentDate.toISOString()}`,
+        }&${formattedDate}`,
         verb: "get",
         token: token,
       });
       if (res?.status == "200") {
-        console.log("innerWorkout", res?.response?.Workout[0]?.innerWorkout[0]);
         setTodayWorkout(res?.response?.Workout[0]?.innerWorkout[0]);
         dispatch(setLoader(false));
       } else {
@@ -172,25 +300,47 @@ const HomeSc = ({ navigation, route }) => {
     dispatch(setLoader(true));
 
     try {
-      let res = null;
-
-      res = await ApiCall({
+      const res = await ApiCall({
         route: "admin/get_alert",
         verb: "get",
         token: token,
       });
+
       if (res?.status == "200") {
         console.log("events", res?.response?.admin);
-        setEvents(res?.response?.admin);
-        setMarkedDates(res?.response?.admin);
+        const eventsData = res?.response?.admin;
+        setEvents(eventsData);
 
-        let _events = res?.response?.admin;
-        let latestEvent = _events?.reduce((latest, current) => {
-          return new Date(current.start) > new Date(latest.start)
-            ? current
-            : latest;
-        }, _events[0]);
-        setUpcomingEvent(latestEvent);
+        const todayDate = getFormattedDate(new Date());
+
+        // Check if there's a call today
+        const eventToday = eventsData.some(
+          (event) => getFormattedDate(event.start) === todayDate
+        );
+
+        if (eventToday) {
+          setSelectedDate(todayDate); // Automatically select today's date if there’s an event
+          updateMarkedDates(todayDate); // Highlight today's date with a blue circle
+        } else {
+          updateMarkedDates(); // Just update without auto-selecting today
+        }
+
+        const now = new Date();
+        const upcomingEvent = eventsData
+          .filter((event) => new Date(event.start) > now)
+          .sort((a, b) => new Date(a.start) - new Date(b.start))[0];
+
+        if (upcomingEvent) {
+          setUpcomingEvent(upcomingEvent);
+          console.log("upcomingEvent",upcomingEvent)
+          setUpcomingCallDescription(
+            `Upcoming call with ${upcomingEvent.speakers[0]?.name} on ${moment(
+              upcomingEvent.start
+            ).format("MMMM Do YYYY, h:mm a")}`
+          );
+        } else {
+          setUpcomingCallDescription("No upcoming calls scheduled");
+        }
 
         dispatch(setLoader(false));
       } else {
@@ -201,138 +351,15 @@ const HomeSc = ({ navigation, route }) => {
       }
     } catch (e) {
       console.log("api get skill error -- ", e.toString());
+      dispatch(setLoader(false));
     }
   };
 
-  const setMarkedDates = (records) => {
-    let allDates = {};
-    let currentDate = getFormattedDate(new Date());
-    records.forEach((item) => {
-      let formatedDate = getFormattedDate(item.start);
-      if (formatedDate >= currentDate) {
-        let obj = {
-          [formatedDate]: {
-            selected: true,
-            // marked: true,
-            selectedColor: colors.blueColor,
-          },
-        };
-        allDates = { ...allDates, ...obj };
-      }
-    });
-    console.log(allDates);
-    setCalendarMarkedDates(allDates);
-  };
 
-  const getFormattedDate = (_date) => {
-    const date = new Date(_date);
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-  };
-
-  function timeRemaining(targetDate) {
-    const now = new Date();
-    const endDate = new Date(targetDate);
-    const timeDiff = endDate - now;
-
-    if (timeDiff <= 0) {
-      return "The date has already passed.";
-    }
-
-    const seconds = Math.floor((timeDiff / 1000) % 60);
-    const minutes = Math.floor((timeDiff / (1000 * 60)) % 60);
-    const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
-    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-
-    if (days > 0) {
-      return `${days} day${days > 1 ? "s" : ""}`;
-    } else if (hours > 0) {
-      return `${hours} hour${hours > 1 ? "s" : ""}`;
-    } else if (minutes > 0) {
-      return `${minutes} minute${minutes > 1 ? "s" : ""}`;
-    } else {
-      return `${seconds} second${seconds > 1 ? "s" : ""}`;
-    }
-  }
-
-  const formatCalendarEventDate = (dateStr) => {
-    try {
-      if (dateStr) {
-        // Create a new Date object
-        const currentDate = new Date();
-        const date = new Date(dateStr);
-
-        // Compare only the date part (ignoring the time)
-        const currentDateOnly = new Date(currentDate.toDateString());
-        const eventDateOnly = new Date(date.toDateString());
-
-        if (eventDateOnly >= currentDateOnly) {
-          // Options for formatting the date and time
-          const options = {
-            month: "long",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true,
-            timeZone: "America/New_York",
-            timeZoneName: "short",
-          };
-
-          // Format the date
-          const formattedDate = date.toLocaleString("en-US", options);
-
-          // Adjust the output to match the desired format
-          const [monthDay, timeAndTimezone] = formattedDate.split(",");
-
-          // Check if time and timezone are defined
-          if (timeAndTimezone) {
-            const [time, timezone] = timeAndTimezone.trim().split(" ");
-
-            // Check if the event is on the same day
-            if (eventDateOnly.getTime() === currentDateOnly.getTime()) {
-              const finalFormattedDate = `Upcoming call: Today at ${time?.toLowerCase()} ${timezone?.toLowerCase()}`;
-              return finalFormattedDate;
-            } else {
-              const finalFormattedDate = `Upcoming call: ${monthDay?.trim()} at ${time?.toLowerCase()} ${timezone?.toLowerCase()} with ${
-                upComingEvent?.speakers[0]?.name
-              }`;
-
-              return finalFormattedDate;
-            }
-          } else {
-            // Fallback if split fails
-            return `Upcoming call: ${formattedDate} with ${upComingEvent?.speakers[0]?.name}`;
-          }
-        } else {
-          return "";
-        }
-      } else {
-        return "";
-      }
-    } catch (e) {
-      return "";
-    }
-  };
-
-  const openURL = async (url) => {
-    const supported = await Linking.canOpenURL(url);
-
-    if (supported) {
-      await Linking.openURL(url);
-    } else {
-      Alert.alert(`Don't know how to open this URL: ${url}`);
-    }
-  };
-
-  const currentDate = moment().format("MMM DD, YYYY"); // Get current date in the format MMM DD, YYYY
+  const currentDate = moment().format("MMM DD, YYYY");
 
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps={"handled"}>
-      {/* <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} /> */}
       <View style={styles.header}>
         <Image
           source={require("../../assets/images/HomeTopBack.png")}
@@ -397,24 +424,37 @@ const HomeSc = ({ navigation, route }) => {
             source={
               todayWorkout
                 ? require("../../assets/images/homevidthumb.png")
-                : require("../../assets/images/homevidthumb.png")
+                : require("../../assets/images/Rest1.png")
             }
-            style={styles.vidThumb}
+            style={[
+              styles.vidThumb,
+              !todayWorkout && styles.noWorkoutThumb, // Apply additional style when no workout
+            ]}
           />
+          {!todayWorkout && (
+            <View style={styles.overlayContainer} /> // Apply black overlay only when there is no workout
+          )}
           <Image
             source={require("../../assets/images/blackshadow.png")}
             style={styles.overlay}
           />
-          <View style={styles.frameContent}>
-            <View style={styles.frameContentUpper}>
-              <View style={styles.workoutMessageContainer}>
-                <Image
-                  source={require("../../assets/images/firefire2.png")}
-                  style={styles.fireIcon}
-                />
-                <Text style={styles.workoutMessage}>Enjoy your workout</Text>
+          <View
+            style={[
+              styles.frameContent,
+              { justifyContent: "flex-end", paddingBottom: 20 },
+            ]}
+          >
+            {todayWorkout && ( // Conditionally render this section only when there is a workout
+              <View style={styles.frameContentUpper}>
+                <View style={styles.workoutMessageContainer}>
+                  <Image
+                    source={require("../../assets/images/firefire2.png")}
+                    style={styles.fireIcon}
+                  />
+                  <Text style={styles.workoutMessage}>Enjoy your workout</Text>
+                </View>
               </View>
-            </View>
+            )}
             <View style={styles.frameContentLower}>
               <View style={styles.frameText}>
                 <Text style={styles.frameTitle}>
@@ -439,51 +479,43 @@ const HomeSc = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
       {upComingEvent ? (
-        <TouchableOpacity
-          style={styles.liveCallsBtn}
-          onPress={() => {
-            if (timeRemaining(upComingEvent?.start) === "Live call is now!") {
-              // Join the live call action
-            }
-          }}
-        >
-          <Image
-            source={require("../../assets/images/WhiteCalendar.png")}
-            style={styles.whiteCalendar}
-          />
-          <Text style={styles.liveCallsBtnText}>
-            {isEventInPast(upComingEvent?.start)
-              ? "No Current Upcoming Calls" // If the event is in the past, show no calls
-              : timeRemaining(upComingEvent?.start) === "Live call is now!"
-              ? "Live call is now! Click here to Join"
-              : `Next Live Call Is In ${timeRemaining(upComingEvent?.start)}`}
-          </Text>
-          {/* Upcoming call details */}
-          {!isEventInPast(upComingEvent?.start) && (
-            <Text style={styles.callDetailsText}>
-              Upcoming Call with {upComingEvent?.speakers[0]?.name} on{" "}
-              {moment(upComingEvent?.start).format(
-                "MMMM Do YYYY, h:mm a (EST)"
-              )}
-            </Text>
-          )}
-        </TouchableOpacity>
+        <LiveCallComponent upComingEvent={upComingEvent}/>
+        // <TouchableOpacity
+        //   style={styles.liveCallsBtn}
+        //   onPress={() => {
+        //     if (timeRemaining(upComingEvent?.start) === "Live call is now!") {
+        //       openURL(upComingEvent?.link)
+        //     } else {
+        //       Alert.alert("No live calls scheduled for today.");
+        //     }
+        //   }}
+        // >
+        //   <Image
+        //     source={require("../../assets/images/WhiteCalendar.png")}
+        //     style={styles.whiteCalendar}
+        //   />
+        //   <Text style={styles.liveCallsBtnText}>
+        //     {timeRemaining(upComingEvent?.start) === "Live call is now!"
+        //       ? "Live call is now! Click here to Join"
+        //       : `Live Call Is In ${timeRemaining(upComingEvent?.start)} with ${
+        //           upComingEvent?.speakers[0]?.name
+        //         }`}
+        //   </Text>
+        // </TouchableOpacity>
       ) : (
-        <View style={styles.noCallsContainer}>
-          <Text style={styles.noCallsText}>No Current Upcoming Calls</Text>
+        <View style={styles.liveCallsBtn}>
+          <Text style={styles.liveCallsBtnText}>No Current Upcoming Calls</Text>
         </View>
       )}
 
-      {/* Calendar Start */}
       <View style={styles.calendarContainer}>
         <Calendar
-          onDayPress={handleDayPress}
-          markedDates={calendarMarkedDates}
+          onDayPress={handleDayPress} // Use the updated handleDayPress
+          markedDates={calendarMarkedDates} // Make sure this is referencing calendarMarkedDates state
           style={{
             borderRadius: 20,
-            backgroundColor: "#f2f2f2", // Matching the gray background of the calendar
+            backgroundColor: "#f2f2f2",
             margin: 18,
-            // height: 300,
           }}
           theme={{
             calendarBackground: "#f2f2f2",
@@ -505,99 +537,54 @@ const HomeSc = ({ navigation, route }) => {
             textDayHeaderFontSize: 16,
           }}
         />
-        {/* Upcoming call information */}
-        {upComingEvent && !isEventInPast(upComingEvent?.start) && (
-          <View style={styles.upcomingCallInGray}>
-            <Text style={styles.upcomingCallTextInGray}>
-              Upcoming call with {upComingEvent?.speakers[0]?.name} on{" "}
-              {moment(upComingEvent?.start).format("MMMM Do YYYY, h:mm a")}
-            </Text>
-          </View>
-        )}
+        <View style={styles.upcomingCallInGray}>
+          <Text style={styles.upcomingCallTextInGray} numberOfLines={undefined}>
+            {eventDescription || upcomingCallDescription}
+          </Text>
+        </View>
       </View>
 
-      {/* Calendar End */}
+      <View style={styles.coachBooking}>
+        {dataList.length > 0 &&
+          <View style={styles.coachBookingHeader}>
+            <Text style={styles.coachBookingTitleshop}>Shop & Upgrades</Text>
+          </View>
+        }
+        {dataList.map((item,index) => (
+          <TouchableOpacity
+          onPress={()=>{openURL(item.video)}}
+           key={index} style={styles.coachBookingItem}>
+            <View style={styles.coachBookingContent}>
+              <View style={styles.coachBookingImage}>
+                {item?.store_image &&
+                  <Image 
+                  style={{height:'100%',width:'100%',borderRadius:10}}
+                  source={{ uri: item?.store_image }} >
+                  </Image>
+                }
+              </View>
+              <View style={styles.coachBookingText}>
+                <View style={styles.coachBookingTextUpper}>
+                  <Text style={styles.coachBookingTitle}>
+                    {item?.title }
+                  </Text>
+                  <Text style={styles.coachBookingSubtitle}>{item?.sub_title}</Text>
+                  <Text style={styles.coachBookingDesc}>
+                    {item?.description}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.coachBookingChevronRight}>
+                <Image source={require("../../assets/images/Graychevronright.png")} />
+              </View>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </View>
 
-      <View style={{ padding: 20 }}>
+      <View style={{ padding: 20, marginTop: -30 }}>
         <TodoList />
       </View>
-
-      {/* <View style={styles.coachBooking}>
-        <View style={styles.coachBookingHeader}>
-          <Text style={styles.coachBookingTitle}>Shop & Upgrades</Text>
-          <Text style={styles.coachBookingSeeAll}>See All</Text>
-        </View>
-        <View style={styles.coachBookingItem}>
-          <View style={styles.coachBookingContent}>
-            <View style={styles.coachBookingImage}>
-              <Image source={require("../../assets/images/CoachThumb.png")} />
-            </View>
-            <View style={styles.coachBookingText}>
-              <View style={styles.coachBookingTextUpper}>
-                <Text style={styles.coachBookingTitle}>
-                  1 on 1 Online Coaching
-                </Text>
-                <Text style={styles.coachBookingSubtitle}>Custom Coaching</Text>
-                <Text style={styles.coachBookingDesc}>
-                  Bring your training to the next level with one on one custom
-                  coaching
-                </Text>
-              </View>
-            </View>
-            <View style={styles.coachBookingChevronRight}></View>
-          </View>
-        </View>
-        <View style={styles.coachBookingItem}>
-          <View style={styles.coachBookingContent}>
-            <View style={styles.coachBookingImage}>
-              <Image source={require("../../assets/images/Homefood.png")} />
-            </View>
-            <View style={styles.coachBookingText}>
-              <View style={styles.coachBookingTextUpper}>
-                <Text style={styles.coachBookingTitle}>
-                  Ultimate Nutrition Plan
-                </Text>
-                <Text style={styles.coachBookingSubtitle}>
-                  Get the top nutrition to fuel your training
-                </Text>
-                <Text style={styles.coachBookingDesc}>
-                  Created by the nutritionist for Ronda Rousey, Rampage Jackson
-                  & Vitor Belfort
-                </Text>
-              </View>
-            </View>
-            <View style={styles.coachBookingChevronRight}>
-              <Image
-                source={require("../../assets/images/Graychevronright.png")}
-              />
-            </View>
-          </View>
-        </View>
-        <View style={styles.coachBookingItem}>
-          <View style={styles.coachBookingContent}>
-            <View style={styles.coachBookingImage}>
-              <Image source={require("../../assets/images/Homepills.png")} />
-            </View>
-            <View style={styles.coachBookingText}>
-              <View style={styles.coachBookingTextUpper}>
-                <Text style={styles.coachBookingTitle}>Battle Tested</Text>
-                <Text style={styles.coachBookingSubtitle}>
-                  Post Workout Recovery Drink
-                </Text>
-                <Text style={styles.coachBookingDesc}>
-                  Bring your training to the next level with one on one custom
-                  coaching
-                </Text>
-              </View>
-            </View>
-            <View style={styles.coachBookingChevronRight}>
-              <Image
-                source={require("../../assets/images/Graychevronright.png")}
-              />
-            </View>
-          </View>
-        </View>
-      </View> */}
 
       <View style={styles.mealPlan}>
         <View style={styles.mealPlanHeader}>
@@ -693,7 +680,7 @@ const styles = StyleSheet.create({
     opacity: 0.2,
   },
   header: {
-    flexDirection: "column", // Changed to column
+    flexDirection: "column",
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 24,
@@ -717,15 +704,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     position: "absolute",
-    top: 80, // Adjusted to fit correctly
-    left: 16, // Adjusted to fit correctly
+    top: 80,
+    left: 16,
   },
   calendarIcon: {
     width: 20,
     height: 20,
     marginRight: 8,
     resizeMode: "contain",
-    tintColor: "#FFFFFF", // Ensure the icon matches the text color
+    tintColor: "#FFFFFF",
     opacity: 0.8,
   },
   dateText: {
@@ -734,6 +721,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#c8c8c9",
     opacity: 0.8,
+  },
+  noWorkoutThumb: {
+    resizeMode: "cover", // Makes the rest image fit better
+    width: "100%",
+    height: 240, // Adjust as per your layout needs
   },
   workoutMessageContainer: {
     flexDirection: "row",
@@ -785,6 +777,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  overlayContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.1)", // 30% black opacity
+  },
   chevronImage: {
     width: "100%",
     height: "100%",
@@ -812,6 +812,15 @@ const styles = StyleSheet.create({
     color: "#FFF",
     textAlign: "center",
     marginTop: 5,
+  },
+  noCallsBtn: {
+    backgroundColor: "#E0E0E0", // Light gray color for "No Calls" state
+  },
+  noCallsText: {
+    fontSize: 12,
+    fontWeight: "500",
+    color: "#333", // Dark text for visibility
+    letterSpacing: -0.8,
   },
 
   calendarIconInner: {
@@ -878,6 +887,13 @@ const styles = StyleSheet.create({
   buttonContent: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  coachBookingTitleshop: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#111214",
+    marginleft: 200,
+    textAlign: "right",
   },
   buttonText: {
     fontSize: 16,
@@ -1088,6 +1104,7 @@ const styles = StyleSheet.create({
   coachBooking: {
     paddingHorizontal: 16,
     marginBottom: 24,
+    marginTop: 25,
   },
   coachBookingHeader: {
     flexDirection: "row",
@@ -1374,24 +1391,23 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   calendarContainer: {
-    alignSelf: "center", // Ensures the calendar is centered within its parent
-    width: Dimensions.get("window").width * 0.89, // Set the width to 95% of the screen width
-    backgroundColor: "#f2f2f2", // Gray background
+    alignSelf: "center",
+    width: Dimensions.get("window").width * 0.89,
+    backgroundColor: "#f2f2f2",
     borderRadius: 20,
     padding: 10,
-    // height:400,
     marginTop: 20,
   },
   upcomingCallInGray: {
-    backgroundColor: "#f2f2f2", // Keeps the call info inside the gray area
+    backgroundColor: "#f2f2f2",
     padding: 10,
     alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: "#d1d1d1", // Optional border for visual separation
+    borderTopColor: "#d1d1d1",
   },
   upcomingCallTextInGray: {
     fontSize: 10,
-    color: "#000", // Dark text color for visibility
+    color: "#000",
     fontWeight: "400",
     textAlign: "center",
   },
@@ -1407,7 +1423,7 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
   playButton: {
-    width: 52, // or whatever size you want
+    width: 52,
     height: 52,
     resizeMode: "contain",
   },

@@ -27,38 +27,6 @@ import toast from "react-native-simple-toast";
 import VideoSkills from "../../Skills/Video";
 import { fonts } from "../../../constants/fonts";
 
-const Timer = ({ isVisible, onTimerEnd }) => {
-  const [remainingTime, setRemainingTime] = useState(60); // 1 minute in seconds
-
-  useEffect(() => {
-    let interval;
-    if (isVisible) {
-      interval = setInterval(() => {
-        setRemainingTime((prevTime) => {
-          if (prevTime === 0) {
-            onTimerEnd();
-            return prevTime; // Return the same time to stop the timer
-          }
-          return prevTime - 1; // Decrement the remaining time
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isVisible, onTimerEnd]);
-
-  const minutes = Math.floor(remainingTime / 60);
-  const seconds = remainingTime % 60;
-
-  return remainingTime > 0 ? (
-    <View style={styles.timerContainer}>
-      <Text style={styles.timerText}>
-        {`${minutes.toString().padStart(2, "0")}:${seconds
-          .toString()
-          .padStart(2, "0")}`}
-      </Text>
-    </View>
-  ) : null;
-};
 const TopVideo = React.memo(({ videoUrl, title, onPressBack }) => {
   // Component logic
   return (
@@ -95,11 +63,7 @@ export default function Squat({ navigation, route }) {
   const dispatch = useDispatch();
 
   const token = useSelector((state) => state.auth.userToken);
-  const defaultTimer = { hours: 0, minutes: 0, seconds: 0 };
   const [isChecked, setIsChecked] = useState([]);
-  const [disableRest, setDisableRest] = useState([]);
-  const [isResting, setIsResting] = useState(Array(3).fill(false)); // State to track if checkmark is checked or not
-  const [showTimer, setShowTimer] = useState(false);
   const [additionalSets, setAdditionalSets] = useState([]);
   const [seconds, setSeconds] = useState(0);
   const [restTime, setRestTime] = useState("");
@@ -109,7 +73,9 @@ export default function Squat({ navigation, route }) {
   const [selectedTask, setSelectedTask] = useState(task);
   const [timerActive, setTimerActive] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+
   useEffect(() => {
+    console.log("selectedExercise",exercise)
     const timeoutId = setTimeout(() => {
       setIsVisible(false);
     }, 3000);
@@ -134,7 +100,6 @@ export default function Squat({ navigation, route }) {
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log("selectedExer",exercise)
       if (exercise?.additional_sets)
         setAdditionalSets(exercise?.additional_sets);
     }, [exercise])
@@ -234,44 +199,18 @@ export default function Squat({ navigation, route }) {
     );
   };
 
-  const handleCheckmarkPress = async (index, set,isBodyweightExercise=false,isDynamicWarmUp=false) => {
+  const handleCheckmarkPress = async (index, set,isBodyweightExercise=false,isDynamicWarmUp=false,isRevert=false) => {
     let find_lbs_value = findInputValueWithKey(index);
     dispatch(setLoader(true));
-    await singleSetComplete(set, find_lbs_value,isBodyweightExercise,isDynamicWarmUp);
+    await singleSetComplete(set, find_lbs_value,isBodyweightExercise,isDynamicWarmUp,isRevert);
     let newIsChecked = [...isChecked];
     let valueIncludes = newIsChecked.includes(index);
     if (valueIncludes) newIsChecked = newIsChecked.filter((x) => x != index);
     else newIsChecked.push(index);
 
     setIsChecked(newIsChecked);
+    dispatch(setLoader(false));
 
-    let isDisableRest = disableRest?.includes(index);
-    // if (
-    //   !isDisableRest &&
-    //   !valueIncludes &&
-    //   set?.rest_time &&
-    //   set?.rest_time != ""
-    // ) {
-    //   setSelectedSetKey(index);
-    //   setRestTime(set?.rest_time);
-    //   // onPressReset(set?.rest_time);
-    // } else {
-    //   setSelectedSetKey("");
-    //   setRestTime("");
-    // }
-  };
-
-  const handleRestButton = async (index) => {
-    let newState = [...disableRest];
-    let valueIncludes = newState.includes(index);
-    if (valueIncludes) newState = newState.filter((x) => x != index);
-    else {
-      newState.push(index);
-      setRestTime(0);
-      setSelectedSetKey("");
-    }
-
-    setDisableRest(newState);
   };
 
   const handleSubmitEditing = (event, key) => {
@@ -326,7 +265,7 @@ export default function Squat({ navigation, route }) {
       return 0;
     }
   };
-  const singleSetComplete = async (set, weight,isBodyweightExercise=false,isDynamicWarmUp=false) => {
+  const singleSetComplete = async (set, weight,isBodyweightExercise=false,isDynamicWarmUp=false,isRevert=false) => {
     try {
       dispatch(setLoader(true));
       const submittedData = {
@@ -350,7 +289,7 @@ export default function Squat({ navigation, route }) {
         requestParams.task_objId = exercise?.task?.[nextIncompleteIndex]?._id;
       }
       const res = await ApiCall({
-        route: `assignProgram/update_set/${user?.plan_id}`,
+        route: isRevert ? `assignProgram/revert_update_set/${user?.plan_id}` : `assignProgram/update_set/${user?.plan_id}`,
         verb: "post",
         token: token,
         params: requestParams,
@@ -488,7 +427,7 @@ export default function Squat({ navigation, route }) {
     isAdditional,
     addon = "",
   }) => {
-    const uniqueKey = isAdditional ? "additionalSet" + no : addon + "set" + no;
+    const uniqueKey = isAdditional ? "additionalSet" + no+selectedExercise?._id : addon + "set" + no+selectedExercise?._id;
     const findProgramExercise = programExercises?.find(x => x._id == exercise._id);
     
     // Use override_category if it exists, otherwise fall back to exercise?.category
@@ -519,14 +458,19 @@ export default function Squat({ navigation, route }) {
           <View style={styles.semiDividerSTyle} />
   
           <View style={styles.rowSTyle}>
-            {/* Input field for reps */}
+            {!isDynamicWarmUp &&
             <TextInput
               style={{
-                width: getWidth(15),
+                width: getWidth(20),
                 textAlign: "center",
                 letterSpacing: 2,
-                paddingTop: 0,
+                // paddingTop: 0,
                 paddingBottom: getWidth(1.5),
+                height:50,
+                padding:10,
+                borderColor:colors.orange,
+                borderRadius:10,
+                borderWidth:1
               }}
               placeholder={"_______"}
               keyboardType="numeric"
@@ -535,6 +479,7 @@ export default function Squat({ navigation, route }) {
               onSubmitEditing={(event) => handleSubmitEditing(event, uniqueKey)}
               returnKeyType="done"
             />
+          }
             
             {/* Show user's weight only for bodyweight exercises */}
             {isBodyweightExercise ? (
@@ -558,7 +503,10 @@ export default function Squat({ navigation, route }) {
             style={{ marginRight: getWidth(5) }}
             onPress={() => {
               if (!isChecked.includes(uniqueKey) && set?.complete != "true")
-                handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp); // Pass isBodyweightExercise, and isDynamicWarmUp
+                handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp,false); // Pass isBodyweightExercise, and isDynamicWarmUp
+              else{
+                handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp,true); 
+              }
             }}
           >
             <Ionicons
@@ -566,8 +514,8 @@ export default function Squat({ navigation, route }) {
               size={getFontSize(5)}
               color={
                 !isChecked.includes(uniqueKey) && set?.complete != "true"
-                  ? colors.axisColor
-                  : colors.orange
+                ? colors.axisColor
+                  : colors.orange 
               }
               style={{ marginRight: getWidth(5) }}
             />

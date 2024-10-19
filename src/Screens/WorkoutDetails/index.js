@@ -30,10 +30,12 @@ const WorkoutDetails = () => {
   const user = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
   const scrollY = useRef(new Animated.Value(0)).current;
+  const [dataList, setDataList] = useState([]);
 
   useEffect(() => {
     getAllProgram();
     getContinuousProgram();
+    getInstructions()
   }, []);
 
   const getContinuousProgram = async () => {
@@ -54,6 +56,27 @@ const WorkoutDetails = () => {
       }
     } catch (e) {
       console.log("api error -- ", e.toString());
+    }
+  };
+
+  const getInstructions = async () => {
+    dispatch(setLoader(true));
+    try {
+      const res = await ApiCall({
+        route: `appInstruction/all_instructions`,
+        verb: "get",
+        token: token,
+      });
+      if (res?.status == 200) {
+        setDataList(res?.response?.data?.filter(x => x.type == "WorkoutProgram"));
+      } else {
+        console.log(res?.response);
+      }
+      dispatch(setLoader(false));
+
+    } catch (error) {
+      console.log(error);
+      dispatch(setLoader(false));
     }
   };
 
@@ -167,6 +190,7 @@ const WorkoutDetails = () => {
                 onPress={() =>
                   navigation.navigate("ViewProgram", {
                     passData: item,
+                    programVideos:dataList?.filter(x=>x.program == item?._id),
                     url: "program/detail_program/",
                   })
                 }

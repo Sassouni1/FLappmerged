@@ -1,6 +1,6 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Text, View, StyleSheet, ImageBackground } from "react-native";
+import { Text, View, Image, StyleSheet, ImageBackground } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -48,7 +48,7 @@ const WorkoutStack = ({ route }) => {
         name="AddWorkouts"
         component={AddWorkouts}
       />
-       <stack.Screen
+      <stack.Screen
         options={{
           headerShown: false,
         }}
@@ -56,8 +56,8 @@ const WorkoutStack = ({ route }) => {
         component={WorkoutDetails}
       />
     </stack.Navigator>
-  )
-}
+  );
+};
 
 const TabBarText = (title, focused) =>
   !focused ? (
@@ -150,7 +150,7 @@ export default function BottomTab() {
               icon={
                 <Entypo
                   name="man"
-                  size={getFontSize(2.5)}
+                  size={getFontSize(2.7)}
                   style={{ marginTop: getFontSize(1) }}
                   color={focused ? tabBarActiveIconColor : tabBarInActiveColor}
                 />
@@ -187,16 +187,20 @@ export default function BottomTab() {
         component={SkillsTraining}
         options={{
           headerShown: false,
-          title: "New Skills",
-          tabBarLabel: ({ focused }) => TabBarText("New Skills", focused),
+          title: "Skills",
+          tabBarLabel: ({ focused }) => TabBarText("Skills", focused),
           tabBarIcon: ({ focused, color, size }) => (
             <TabBarIcon
               icon={
-                <FontAwesome5
-                  name="speakap"
-                  size={getFontSize(2.5)}
-                  // style={{ marginTop: getFontSize(1) }}
-                  color={focused ? tabBarActiveIconColor : tabBarInActiveColor}
+                <Image
+                  source={require("../../assets/images/Punch3.png")}
+                  style={{
+                    width: getFontSize(2.3), // Adjust the size as needed
+                    height: getFontSize(2.3), // Adjust the size as needed
+                    tintColor: focused
+                      ? tabBarActiveIconColor
+                      : tabBarInActiveColor,
+                  }}
                 />
               }
               focused={focused}
@@ -204,6 +208,7 @@ export default function BottomTab() {
           ),
         }}
       />
+
       <Tab.Screen
         name="Exercises"
         component={Excercises}
