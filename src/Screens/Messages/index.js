@@ -67,7 +67,7 @@ const BotAllChatScreen = ({ navigation, route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user.isAssigned != true) setModalVisible(true);
+      if (user?.showGuestUserPopup == true && user.isGuestUser == true) setModalVisible(true);
     }, [])
   );
   const toggleModal = () => {
@@ -153,7 +153,7 @@ const BotAllChatScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      {/* <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} /> */}
+      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
       <StatusBar
         barStyle="light-content"
         style={{ backgroundColor: colors.white }}

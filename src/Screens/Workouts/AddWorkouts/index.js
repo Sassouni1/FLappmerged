@@ -26,6 +26,7 @@ import ReactNativeCalendarStrip from "react-native-calendar-strip";
 import moment from "moment";
 import TabBarComponent from "../../../Components/TabBarComponent";
 import VideoComponent from "../../../Components/VideoComponent";
+import PopupModal from "../../../Components/ErrorPopup";
 
 const { height, width } = Dimensions.get("screen");
 
@@ -53,6 +54,17 @@ const AddWorkouts = () => {
   const [selectedDay,setSelectedDay] = useState();
   const [dynamicExercises,setDynamicExercises] = useState();
   const [programExercises,setProgramExercises] = useState([]);
+
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user?.showGuestUserPopup == true && user.isGuestUser == true) setModalVisible(true);
+    }, [])
+  );
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
 
   const handleDateChange = (selectedDate) => {
     dispatch(setSelectedCalendarDate(selectedDate));
@@ -439,6 +451,7 @@ const AddWorkouts = () => {
 
   return (
     <View style={{ flex: 1 }}>
+      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
       <View>
         <ImageBackground
           source={require("../../../assets/images/guyback.png")}

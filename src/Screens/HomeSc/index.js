@@ -105,12 +105,14 @@ const HomeSc = ({ navigation, route }) => {
   const [upcomingCallDescription, setUpcomingCallDescription] = useState("");
   const [dataList, setDataList] = useState([]);
 
-
   useFocusEffect(
     React.useCallback(() => {
-      if (user.isAssigned != true) setModalVisible(true);
+      if (user?.showGuestUserPopup == true && user.isGuestUser == true) setModalVisible(true);
     }, [])
   );
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
 
   const getInstructions = async () => {
     try {
@@ -128,9 +130,6 @@ const HomeSc = ({ navigation, route }) => {
     } catch (error) {
       console.log(error);
     }
-  };
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
   };
 
   const openMyFitnessPal = async () => {
@@ -360,6 +359,8 @@ const HomeSc = ({ navigation, route }) => {
 
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps={"handled"}>
+      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
+
       <View style={styles.header}>
         <Image
           source={require("../../assets/images/HomeTopBack.png")}
@@ -381,7 +382,7 @@ const HomeSc = ({ navigation, route }) => {
           </View>
           <View style={styles.headerContent}>
             <Text style={styles.greeting}>
-              {"Hello " + user?.full_name?.split(" ")[0]}
+              {"Hello " + (user?.isGuestUser ? "Guest" :  user?.full_name?.split(" ")[0])}
             </Text>
           </View>
           <Entypo

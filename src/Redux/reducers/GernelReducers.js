@@ -5,6 +5,7 @@ const initialState = {
   chats: [],
   allSms: [],
   counts: { consultations: 0, paid: 0 },
+  showPopup:true
   // timer: { hours: 0, minutes: 0, seconds: 0 },
 };
 
@@ -31,6 +32,12 @@ const GernelReducers = (state = initialState, action) => {
         ...state,
         counts: action.data,
       };
+    case ACTIONS.SHOW_POPUP:
+        return {
+          ...state,
+          showPopup: action.data,
+        };
+      
     // case ACTIONS.UPDATE_TIMER:
     //   return {
     //     ...state,

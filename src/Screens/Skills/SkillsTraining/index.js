@@ -36,7 +36,7 @@ export default function SkillsTraining({ navigation }) {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user.isAssigned != true) setModalVisible(true);
+      if (user?.showGuestUserPopup == true && user.isGuestUser == true) setModalVisible(true);
     }, [])
   );
   const toggleModal = () => {
@@ -238,7 +238,7 @@ export default function SkillsTraining({ navigation }) {
 
   return (
     <View style={styles.root}>
-      {/* <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} /> */}
+      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
       {RenderHeader()}
       <FlatList
         data={skills}

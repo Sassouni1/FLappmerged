@@ -24,6 +24,10 @@ export const setAllSms = data => ({
   type: ACTIONS.SET_ALLSMS,
   data,
 });
+export const setPopup = data => ({
+  type: ACTIONS.SHOW_POPUP,
+  data,
+});
 // export const updateTimer = (hours, minutes, seconds) => ({
 //   type: ACTIONS.UPDATE_TIMER,
 //   payload: { hours, minutes, seconds },

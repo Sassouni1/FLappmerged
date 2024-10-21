@@ -47,6 +47,8 @@ export default function TrainingStats({ navigation }) {
   const [date, setDate] = useState(new Date());
   const { height, width } = Dimensions.get("window");
   const [isModalVisible, setModalVisible] = useState(false);
+  const user = useSelector((state) => state.auth.userData);
+
   const [healthData, setHealthData] = useState({
     vo2Max: null,
     heartRate: null,
@@ -236,7 +238,7 @@ export default function TrainingStats({ navigation }) {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user.isAssigned != true) setModalVisible(true);
+      if (user?.showGuestUserPopup == true && user.isGuestUser == true) setModalVisible(true);
     }, [])
   );
   const toggleModal = () => {
@@ -516,7 +518,6 @@ export default function TrainingStats({ navigation }) {
   ]);
 
   const [assigWorkout, setAssigWorkout] = useState([]);
-  const user = useSelector((state) => state.auth.userData);
   const [sliderValue, setSliderValue] = React.useState([
     user?.weight,
     user?.target_weight,
@@ -1846,7 +1847,7 @@ export default function TrainingStats({ navigation }) {
 
   return (
     <ScrollView>
-      {/* <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} /> */}
+      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
       {TopImageComponent}
       <View style={styles.innerContainerStyle}>
         {TrainingCompletionComponent}

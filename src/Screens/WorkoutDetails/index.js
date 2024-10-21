@@ -17,6 +17,8 @@ import { ApiCall } from "../../Services/Apis";
 import { getHeight, getWidth, getFontSize } from "../../../utils/ResponsiveFun";
 import TabBarComponent from "../../Components/TabBarComponent";
 import { colors, fonts } from "../../constants";
+import PopupModal from "../../Components/ErrorPopup";
+import { useFocusEffect } from "@react-navigation/native";
 
 const HEADER_MAX_HEIGHT = 90;
 const HEADER_MIN_HEIGHT = 0;
@@ -28,6 +30,8 @@ const WorkoutDetails = () => {
   const [program, setProgram] = useState([]);
   const token = useSelector((state) => state.auth.userToken);
   const user = useSelector((state) => state.auth.userData);
+  const [isModalVisible, setModalVisible] = useState(false);
+
   const dispatch = useDispatch();
   const scrollY = useRef(new Animated.Value(0)).current;
   const [dataList, setDataList] = useState([]);
@@ -37,6 +41,15 @@ const WorkoutDetails = () => {
     getContinuousProgram();
     getInstructions()
   }, []);
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user?.showGuestUserPopup == true && user.isGuestUser == true) setModalVisible(true);
+    }, [])
+  );
 
   const getContinuousProgram = async () => {
     dispatch(setLoader(true));
@@ -146,6 +159,7 @@ const WorkoutDetails = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
       <Animated.View
         style={[
           styles.header,
