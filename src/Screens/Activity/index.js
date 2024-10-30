@@ -1974,11 +1974,8 @@ export default function TrainingStats({ navigation }) {
           <Text style={styles.updateTextStyle}>Update Weight</Text>
         </TouchableOpacity>
       </View>
-      {RenderSectionHeader("Apple Watch Stats")}
-      {renderItem({ title: "Sleep", des: "Time in Bed: 7 Hrs 20 mins " })}
-      {renderItem({ title: "Steps", des: "40,000 steps" })}
 
-      {RenderSectionHeader("Personal Records")}
+      {/* {RenderSectionHeader("Personal Records")}
 
       {renderItem({
         title: "Deadlift Variations",
@@ -1991,7 +1988,7 @@ export default function TrainingStats({ navigation }) {
         des: `${maxLBS} ${parameter} max: ${exerciseName} - ${
           exerciseDate ? formatDate(exerciseDate) : ""
         }`,
-      })}
+      })} */}
 
       <View style={{ height: 100 }} />
     </ScrollView>

@@ -5,10 +5,10 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  FlatList,
   Alert,
   TouchableWithoutFeedback,
   Keyboard,
+  ScrollView,
 } from "react-native";
 import { CheckCircle, GripVertical, X } from "lucide-react-native";
 
@@ -129,8 +129,8 @@ const TodoList = () => {
     }
   };
 
-  const renderTask = ({ item }) => (
-    <View style={styles.taskContainer}>
+  const renderTask = (item) => (
+    <View key={item.id} style={styles.taskContainer}>
       <GripVertical size={20} color="gray" />
       <TouchableOpacity onPress={() => toggleTaskCompletion(item.id)}>
         <CheckCircle size={20} color={item.completed ? "green" : "gray"} />
@@ -164,23 +164,16 @@ const TodoList = () => {
         <Text style={styles.subtitle}>
           Enter any goals or tasks you would like to complete.
         </Text>
-        <FlatList
-          data={tasks.filter((task) => !task.completed)}
-          renderItem={renderTask}
-          keyExtractor={(item) => item.id}
-          style={styles.taskList}
-        />
+        <ScrollView style={styles.taskList}>
+          {tasks.filter((task) => !task.completed).map(renderTask)}
+        </ScrollView>
 
         {tasks.some((task) => task.completed) && (
           <View style={styles.completedSection}>
             <Text style={styles.subtitle}>Completed</Text>
-            <FlatList
-              data={tasks.filter((task) => task.completed)}
-              renderItem={renderTask}
-              scrollEnabled={false}
-              keyExtractor={(item) => item.id}
-              style={styles.taskList}
-            />
+            <ScrollView style={styles.taskList}>
+              {tasks.filter((task) => task.completed).map(renderTask)}
+            </ScrollView>
           </View>
         )}
 

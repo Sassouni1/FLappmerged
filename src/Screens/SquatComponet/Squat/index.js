@@ -11,7 +11,7 @@ import {
   Dimensions,
   Alert,
 } from "react-native";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo,useRef } from "react";
 import { colors } from "../../../constants/colors";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {
@@ -26,6 +26,97 @@ import { ApiCall } from "../../../Services/Apis";
 import toast from "react-native-simple-toast";
 import VideoSkills from "../../Skills/Video";
 import { fonts } from "../../../constants/fonts";
+
+const RenderRest = React.memo(({ uniqueKey, restTime }) => {
+  const [timerActive, setTimerActive] = useState(false);
+  const [selectedSetKey, setSelectedSetKey] = useState(null);
+  const [seconds, setSeconds] = useState(0);
+
+  const convertToSeconds = (time) => {
+    if (time) {
+      let [minutes, seconds] = time.split(":");
+      if (seconds === undefined) seconds = "00";
+      minutes = Number(minutes);
+      seconds = Number(seconds);
+      return minutes * 60 + seconds;
+    } else return 0;
+  };
+
+  // Convert restTime to seconds whenever restTime changes
+  useMemo(() => {
+    const _resttime = convertToSeconds(restTime);
+    setSeconds(_resttime);
+  }, [restTime]);
+
+  const convertTimeToMinutes = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+  };
+
+  // Handle the timer countdown
+  useEffect(() => {
+    let interval;
+    if (timerActive && selectedSetKey === uniqueKey) {
+      interval = setInterval(() => {
+        setSeconds((prevSeconds) => {
+          if (prevSeconds > 0) {
+            return prevSeconds - 1;
+          } else {
+            setTimerActive(false);
+            return 0;
+          }
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timerActive, selectedSetKey, uniqueKey]);
+
+  return (
+    <View style={{ flexDirection: "row" }}>
+      <View style={styles.bottomStyle}>
+        <View style={styles.bottomDividerSTyle}></View>
+        <View style={styles.itemContainer}>
+          <View style={styles.dotContainer} />
+          <Text style={styles.itemTextStyle}>
+            {selectedSetKey === uniqueKey 
+              ? convertTimeToMinutes(seconds)
+              : `${restTime} min rest`}
+          </Text>
+        </View>
+      </View>
+      <View style={{ flex: 1, justifyContent: 'center' }}>
+        {selectedSetKey === uniqueKey && timerActive ? (
+          <TouchableOpacity
+            style={{ width: 27, marginLeft: 19 }}
+            onPress={() => {
+              setTimerActive(false);
+            }}
+          >
+            <Image
+              source={require("../../../assets/images/pause.png")}
+              style={styles.iconStyle}
+            />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={{ width: 27, marginLeft: 19 }}
+            onPress={() => {
+              setSelectedSetKey(uniqueKey);
+              setTimerActive(true);
+              // setSeconds(convertToSeconds(restTime));
+            }}
+          >
+            <Image
+              source={require("../../../assets/images/homeplaybtn.png")}
+              style={styles.iconStyle}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
+  );
+});
 
 const TopVideo = React.memo(({ videoUrl, title, onPressBack }) => {
   // Component logic
@@ -53,15 +144,17 @@ const TopVideo = React.memo(({ videoUrl, title, onPressBack }) => {
          prevProps.onPressBack === nextProps.onPressBack;
 });
 
-
 export default function Squat({ navigation, route }) {
+  const inputsRef = useRef({});
   const onPressBack = () => {
     navigation.goBack();
   };
   const { exercise, workout, task, exercises, calories,programExercises,dynamicExercises } = route?.params;
   const user = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
-
+  const scrollViewRef = useRef(null);
+  const sectionRefs = useRef([]);
+ 
   const token = useSelector((state) => state.auth.userToken);
   const [isChecked, setIsChecked] = useState([]);
   const [additionalSets, setAdditionalSets] = useState([]);
@@ -74,8 +167,15 @@ export default function Squat({ navigation, route }) {
   const [timerActive, setTimerActive] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
+  const handleTextChange = (key, text) => {
+    // Update the specific input's value
+    inputsRef.current[key] = text;
+  };
+
   useEffect(() => {
     console.log("selectedExercise",exercise)
+    console.log("selectedTask",task)
+
     const timeoutId = setTimeout(() => {
       setIsVisible(false);
     }, 3000);
@@ -104,59 +204,6 @@ export default function Squat({ navigation, route }) {
         setAdditionalSets(exercise?.additional_sets);
     }, [exercise])
   );
-
-  useMemo(() => {
-    let _resttime = convertToSeconds(restTime);
-    setSeconds(_resttime);
-  }, [restTime, selectedSetKey]);
-
-  function convertToSeconds(time) {
-    if (time) {
-      // Split the time string into minutes and seconds
-      let [minutes, seconds] = time.split(":");
-
-      // If seconds are missing, set them to "00"
-      if (seconds === undefined) {
-        seconds = "00";
-      }
-
-      // Convert minutes and seconds to numbers
-      minutes = Number(minutes);
-      seconds = Number(seconds);
-
-      // Convert minutes to seconds and add the remaining seconds
-      const totalSeconds = minutes * 60 + seconds;
-
-      return totalSeconds;
-    } else return 0;
-  }
-
-  useEffect(() => {
-    let interval;
-    if (timerActive) {
-      interval = setInterval(() => {
-        setSeconds((prevSeconds) => {
-          if (prevSeconds > 0) {
-            return prevSeconds - 1;
-          } else {
-            setTimerActive(false)
-            clearInterval(interval);
-            return 0;
-          }
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [timerActive]);
-
-  const convertTimeToMinutes = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
-  };
-
-  const onPressReset = (restTime) =>
-    navigation.navigate("ResetTimer", { restTime: restTime });
 
   const onPressNextExercise = () => {
     const currentIndex = exercises?.findIndex(
@@ -199,10 +246,10 @@ export default function Squat({ navigation, route }) {
     );
   };
 
-  const handleCheckmarkPress = async (index, set,isBodyweightExercise=false,isDynamicWarmUp=false,isRevert=false) => {
+  const handleCheckmarkPress = async (index, set,isBodyweightExercise=false,isDynamicWarmUp=false,isRevert=false,currentExercise) => {
     let find_lbs_value = findInputValueWithKey(index);
     dispatch(setLoader(true));
-    await singleSetComplete(set, find_lbs_value,isBodyweightExercise,isDynamicWarmUp,isRevert);
+    await singleSetComplete(set, find_lbs_value,isBodyweightExercise,isDynamicWarmUp,isRevert,currentExercise);
     let newIsChecked = [...isChecked];
     let valueIncludes = newIsChecked.includes(index);
     if (valueIncludes) newIsChecked = newIsChecked.filter((x) => x != index);
@@ -210,7 +257,6 @@ export default function Squat({ navigation, route }) {
 
     setIsChecked(newIsChecked);
     dispatch(setLoader(false));
-
   };
 
   const handleSubmitEditing = (event, key) => {
@@ -235,37 +281,84 @@ export default function Squat({ navigation, route }) {
     setWeights(updatedArray);
   };
 
-  const findInputValueWithKey = (keyToFind) => {
-    const foundObject = weights.find((obj) => keyToFind in obj);
-    const value = foundObject ? foundObject[keyToFind] : 0;
-    return value;
+  const findInputValueWithKey = (keyToFind,currentExercise,setId) => {
+    let value = inputsRef.current[keyToFind];
+    if (!value && setId)
+      value = currentExercise?.submitted_sets?.find(x => x.set_id == setId)?.weight;
+
+    return value || 0;
   };
 
   const addAdditionalSet = () => {
-    let newItem = {
-      _id: (Math.random() * 1000).toString(),
-      lbs: "",
-      parameter: "lbs",
-      reps: findMaxReps(selectedExercise),
-      rest_time: "0",
-      task: [],
-      video: "",
-      video_thumbnail: "",
-    };
-    setAdditionalSets((prevItems) => [...prevItems, newItem]);
+    let findSet = findSetWithMaxReps(selectedExercise);
+    if (findSet)
+    {
+      const updatedSet = { ...findSet, _id: Math.floor(Math.random() * 1000)+'abs' };
+      setAdditionalSets((prevItems) => [...prevItems, updatedSet]);
+    }
+    else
+      toast.show("Record not found");
   };
+
   const findMaxReps = (exercise) => {
     try {
       const sets = exercise?.sets;
       if (sets) {
-        const maxReps = Math.max(...sets?.map((set) => Number(set[set.parameter])));
-        return maxReps;
-      } else return 0;
+        let maxReps = 0;
+        let parameterValue = null;
+  
+        sets.forEach((set) => {
+          const reps = Number(set[set.parameter]);
+          if (reps > maxReps) {
+            maxReps = reps;
+            parameterValue = set.parameter;
+          }
+        });
+        maxReps = maxReps || sets[0][sets[0].parameter];
+        return { maxReps,  parameterValue };
+      } else {
+        return { maxReps: 0, parameterValue: null };
+      }
     } catch {
-      return 0;
+      return { maxReps: 0, parameterValue: null };
     }
   };
-  const singleSetComplete = async (set, weight,isBodyweightExercise=false,isDynamicWarmUp=false,isRevert=false) => {
+  const findSetWithMaxReps = (exercise) => {
+    try {
+      const sets = exercise?.sets;
+      if (sets) {
+        let maxReps = 0;
+        let maxSet = null;
+  
+        sets.forEach((set) => {
+          const reps = Number(set[set.parameter]);
+          if (reps > maxReps) {
+            maxReps = reps;
+            maxSet = set;
+          }
+        });
+  
+        return maxSet;
+      } else {
+        return null;
+      }
+    } catch {
+      return null; 
+    }
+  };
+
+  function capitalizeFirstLetter(str) {
+    try {
+      if (typeof str !== 'string' || str.length === 0) {
+        return str;
+      }
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    } catch (error) {
+      return str;
+    }
+  }
+
+  const singleSetComplete = async (set, weight,isBodyweightExercise=false,isDynamicWarmUp=false,isRevert=false,currentExercise) => {
     try {
       dispatch(setLoader(true));
       const submittedData = {
@@ -285,8 +378,8 @@ export default function Squat({ navigation, route }) {
         calories: calories || 0,
       };
 
-      if (exercise?.task?.length > 0) {
-        requestParams.task_objId = exercise?.task?.[nextIncompleteIndex]?._id;
+      if(task) {
+        requestParams.task_objId = currentExercise?._id;
       }
       const res = await ApiCall({
         route: isRevert ? `assignProgram/revert_update_set/${user?.plan_id}` : `assignProgram/update_set/${user?.plan_id}`,
@@ -294,8 +387,6 @@ export default function Squat({ navigation, route }) {
         token: token,
         params: requestParams,
       });
-      console.log(requestParams);
-      console.log("updateresponse", res);
       if (res?.status == "200") {
         toast.show("Successfully completed");
         dispatch(setLoader(false));
@@ -354,93 +445,51 @@ export default function Squat({ navigation, route }) {
     }
   };
 
-  const RenderRest = ({ uniqueKey, restTime }) => {
-    return (
-      <View style={{ flexDirection: "row" }}>
-        <View style={styles.bottomStyle}>
-          <View style={styles.bottomDividerSTyle}></View>
-          <View style={styles.itemContainer}>
-            <View style={styles.dotContainer} />
-            <Text style={styles.itemTextStyle}>
-              {selectedSetKey == uniqueKey
-                ? convertTimeToMinutes(seconds)
-                : `${restTime} min rest`}
-            </Text>
-          </View>
-        </View>
-        <View style={{ flex: 1,justifyContent:'center' }}>
-          {selectedSetKey == uniqueKey ?
-            !timerActive ?
-              <TouchableOpacity
-                style={{ width: 27,marginLeft:19 }}
-                onPress={() => {
-                  setRestTime(restTime);
-                  setSelectedSetKey(uniqueKey);
-                  setTimerActive(true)
-                }}
-              >
-                <Image source={require("../../../assets/images/homeplaybtn.png")} style={styles.iconStyle} />
-              </TouchableOpacity>
-              :
-              <TouchableOpacity
-                style={{ width: 27,marginLeft:19 }}
-                onPress={() => {
-                  setTimerActive(false)
-                }}
-              >
-                <Image source={require("../../../assets/images/pause.png")} style={styles.iconStyle} />
-              </TouchableOpacity>
-            :
-            <TouchableOpacity
-              style={{ width: 27,marginLeft:19 }}
-              onPress={() => {
-                setRestTime(restTime);
-                setSelectedSetKey(uniqueKey);
-                setTimerActive(true)
-              }}
-            >
-              <Image source={require("../../../assets/images/homeplaybtn.png")} style={styles.iconStyle} />
-            </TouchableOpacity>
-          }
-          {/* <TouchableOpacity
-            onPress={() => {
-              setRestTime(restTime);
-              setSelectedSetKey(uniqueKey);
-              // handleRestButton(uniqueKey);
-            }}
-            style={{ alignItems: "flex-end", marginTop: 25 }}
-          >
-            <Text style={{ color: colors.darkBlue }}>
-              {disableRest.includes(uniqueKey) ? `Enable Rest` : `Disable Rest`}
-            </Text>
-          </TouchableOpacity> */}
-        </View>
-      </View>
-    );
-  };
-
   const RenderCategory = ({
     no,
     set,
     reps,
+    currentExercise,
     isBottom = true,
     isAdditional,
     addon = "",
   }) => {
-    const uniqueKey = isAdditional ? "additionalSet" + no+selectedExercise?._id : addon + "set" + no+selectedExercise?._id;
-    const findProgramExercise = programExercises?.find(x => x._id == exercise._id);
-    
-    // Use override_category if it exists, otherwise fall back to exercise?.category
-    const category = findProgramExercise?.override_category || exercise?.category;
-    
-    // Check if it's a bodyweight exercise
-    let isBodyweightExercise = category === "Bodyweight";
-    let isDynamicWarmUp = category === "Dynamic Warm Up";
+    const uniqueKey = isAdditional ? "additionalSet" + no+currentExercise?._id : addon + "set" + no+currentExercise?._id;
+    let findProgramExercise = programExercises?.find(x => x._id == currentExercise._id);
+    if (!findProgramExercise) {
+      findProgramExercise = programExercises?.find(x => x.exercise_name == currentExercise.exercise_name);
+    }
+    // Check from `task` array if not found in the main list
+    if (!findProgramExercise) {
+      for (const exc of programExercises) {
+        if (exc.task) {
+          findProgramExercise = exc.task.find(x => x._id === currentExercise._id || x.exercise_name === currentExercise.exercise_name);
+          if (findProgramExercise) break;
+        }
+      }
+    }
 
-    const found = dynamicExercises?.some(str => str.includes(exercise.exercise_name));
-    if(found){
-      isDynamicWarmUp= true
-      isBodyweightExercise=false
+    let isBodyweightExercise = false;
+    let isDynamicWarmUp = false;
+    
+
+    // Check if override_category exists
+    const category = findProgramExercise?.override_category;
+    if (category) {
+        isBodyweightExercise = category === "Bodyweight";
+        isDynamicWarmUp = category === "Dynamic Warm Up";
+    } else {
+        // Check if the exercise is in dynamicExercises
+        const found = dynamicExercises?.some(str => str.includes(currentExercise?.exercise_name));
+        if (found) {
+            isDynamicWarmUp = true;
+            isBodyweightExercise = false;
+        } else {
+            // Fallback to currentExercise?.category
+            const fallbackCategory = currentExercise?.category;
+            isBodyweightExercise = fallbackCategory === "Bodyweight";
+            isDynamicWarmUp = fallbackCategory === "Dynamic Warm Up";
+        }
     }
 
     return (
@@ -452,7 +501,7 @@ export default function Squat({ navigation, route }) {
           <View style={{ gap: getWidth(1.5) }}>
             <Text style={styles.titleStyle}>{reps}</Text>
             <Text style={styles.descStyle}>
-              {reps} Reps
+              {reps +" "+capitalizeFirstLetter(set?.parameter)}
             </Text>
           </View>
           <View style={styles.semiDividerSTyle} />
@@ -460,11 +509,11 @@ export default function Squat({ navigation, route }) {
           <View style={styles.rowSTyle}>
             {!isDynamicWarmUp &&
             <TextInput
+            key={uniqueKey}
               style={{
                 width: getWidth(20),
                 textAlign: "center",
                 letterSpacing: 2,
-                // paddingTop: 0,
                 paddingBottom: getWidth(1.5),
                 height:50,
                 padding:10,
@@ -475,8 +524,7 @@ export default function Squat({ navigation, route }) {
               placeholder={"_______"}
               keyboardType="numeric"
               editable={isDynamicWarmUp ? false : true}
-              onBlur={(event) => handleSubmitEditing(event, uniqueKey)}
-              onSubmitEditing={(event) => handleSubmitEditing(event, uniqueKey)}
+              onChangeText={(text) => handleTextChange(uniqueKey, text)}
               returnKeyType="done"
             />
           }
@@ -484,16 +532,12 @@ export default function Squat({ navigation, route }) {
             {/* Show user's weight only for bodyweight exercises */}
             {isBodyweightExercise ? (
               <>
-               <Text style={styles.descStyle}>{`${findInputValueWithKey(
-                  uniqueKey
-                )} Reps`}</Text>
+               <Text style={styles.descStyle}>{`${findInputValueWithKey(uniqueKey,currentExercise,set?._id)} Reps`}</Text>
               <Text style={styles.descStyle}>{`${user?.weight} lbs`}</Text>
               </>
             ) : (
               !isDynamicWarmUp && (
-                <Text style={styles.descStyle}>{`${findInputValueWithKey(
-                  uniqueKey
-                )} lbs`}</Text>
+                <Text style={styles.descStyle}>{`${findInputValueWithKey(uniqueKey,currentExercise,set?._id)} lbs`}</Text>
               )
             )}
           </View>
@@ -503,9 +547,9 @@ export default function Squat({ navigation, route }) {
             style={{ marginRight: getWidth(5) }}
             onPress={() => {
               if (!isChecked.includes(uniqueKey) && set?.complete != "true")
-                handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp,false); // Pass isBodyweightExercise, and isDynamicWarmUp
+                handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp,false,currentExercise); // Pass isBodyweightExercise, and isDynamicWarmUp
               else{
-                handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp,true); 
+                handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp,true,currentExercise); 
               }
             }}
           >
@@ -522,9 +566,20 @@ export default function Squat({ navigation, route }) {
           </TouchableOpacity>
         </View>
         {set?.rest_time && set?.rest_time != 0 ? (
+          ((set?.rest_time == '00:00' || set?.rest_time == '00:00:00') && task) ?
+          <View style={styles.bottomStyle}>
+          <View style={styles.bottomDividerSTyle}></View>
+          <View style={styles.itemContainer}>
+            <View style={styles.dotContainer} />
+            <Text style={styles.itemTextStyle}>
+             {'No rest, scroll to next exercise'}
+            </Text>
+          </View>
+        </View>
+          :
           <RenderRest uniqueKey={uniqueKey} restTime={set?.rest_time || 0} />
         ) : (
-          <View style={{ marginTop: 25 }} />
+          <View style={{marginTop:20}} />
         )}
       </View>
     );
@@ -538,8 +593,8 @@ export default function Squat({ navigation, route }) {
         <View style={[styles.categoryContainer, { justifyContent: "center" }]}>
           <View style={styles.dividerStyle} />
           <RenderSquare
-            title={`${exercise?.sets?.length}x${findMaxReps(exercise)}`}
-            desc="Reps"
+            title={`${exercise?.sets?.length}x${findMaxReps(exercise)?.maxReps}`}
+            desc={capitalizeFirstLetter(findMaxReps(exercise)?.parameterValue)}
             icon={require("../../../assets/images/squatsIcon3.png")}
           />
           <View style={styles.dividerStyle} />
@@ -612,6 +667,7 @@ export default function Squat({ navigation, route }) {
             key={index + 1}
             set={item}
             no={index + 1}
+            currentExercise={exercise}
             reps={item[item.parameter] || 0}
             isSuccess={true}
             isAdditional={false}
@@ -650,10 +706,12 @@ export default function Squat({ navigation, route }) {
           </View>
         </SafeAreaView>
       ) : (
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}>
           {selectedTask ? (
             selectedTask?.map((item, index) => (
-              <View key={index}>
+              <View key={index}
+              ref={(el) => (sectionRefs.current[index] = el)}
+              >
               <TopVideo videoUrl={item?.video} title={item?.exercise_name} onPressBack={onPressBack} />
                 <RenderExercise exercise={item} addon={"task" + index} />
                 {selectedTask?.length != index + 1 && (

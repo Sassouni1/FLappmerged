@@ -54,6 +54,8 @@ const AddWorkouts = () => {
   const [selectedDay,setSelectedDay] = useState();
   const [dynamicExercises,setDynamicExercises] = useState();
   const [programExercises,setProgramExercises] = useState([]);
+  const [restDays,setRestDays] = useState([]);
+  const [selectedRestDayVideo,setSelectedRestDayVideo] = useState({});
 
   const [isModalVisible, setModalVisible] = useState(false);
 
@@ -88,7 +90,6 @@ const AddWorkouts = () => {
     setSelectedDay(res);
 };
   const getSingleExcercise = async (selectedDate) => {
-    console.log("getSingleExcercise",selectedDate)
     try {
       setAssigWorkout({});
       const res = await ApiCall({
@@ -102,7 +103,7 @@ const AddWorkouts = () => {
         calculateDayDifference(res?.response?.startDate,selectedDate)
         setWorkout(res?.response?.Workout[0]);
         setAssigWorkout(res?.response?.Workout[0]?.innerWorkout[0]);
-        setExercises(res?.response?.exercises);
+        setExercises(res?.response?.exercises || []);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -134,7 +135,7 @@ const AddWorkouts = () => {
       console.log("api get skill error -- ", e.toString());
     }
   };
-  
+
  // Function to filter exercises and tasks based on combined task names
  const filterExercises = (workout, dynamic_exercises,isDynamic) => {
   let filteredExercises = [];
@@ -185,9 +186,32 @@ const AddWorkouts = () => {
         let dExercises = findWorkout?.innerWorkout[0]?.dynamic_exercises;
         setProgramExercises(findWorkout?.innerWorkout[0]?.exercise)
         setDynamicExercises(dExercises);
+
+        let _restDays = []
+        program?.workouts?.forEach(workout => {
+          if(workout?.innerWorkout[0]?.exercise?.length > 0){
+          }
+          else{
+            _restDays.push(workout?.workoutDay);
+          }
+        });
+        setRestDays(_restDays)
       }
     }
   }, [program, selectedDay])
+
+  useEffect(() => {
+    if (restDays && offDayVideos) {
+      // Find the index of the given day in restDays array
+      const dayIndex = restDays.indexOf(selectedDay);
+
+      if (dayIndex != -1) {
+        // Use modulus to get the corresponding video
+        const video = offDayVideos[dayIndex % offDayVideos.length];
+        setSelectedRestDayVideo(video);
+      }
+    }
+  }, [selectedDay])
 
   const getInstructions = async () => {
     try {
@@ -248,14 +272,22 @@ const AddWorkouts = () => {
     }, [user,selectedCalendarDate])
   );
 
-
   const findMaxReps = (exercise) => {
     try {
       const sets = exercise?.sets;
       if (sets) {
-        const maxReps = Math.max(...sets?.map((set) => Number(set[set.parameter])));
+        let maxReps = 0;
+        for (const set of sets) {
+          const value = set[set.parameter];
+          if (isNaN(Number(value))) {
+            return value; // Return the non-numeric value as it is
+          }
+          maxReps = Math.max(maxReps, Number(value));
+        }
         return maxReps;
-      } else return 0;
+      } else {
+        return 0;
+      }
     } catch {
       return 0;
     }
@@ -582,11 +614,10 @@ const AddWorkouts = () => {
                 marginBottom: getHeight(3),
               }}
             >
-              {offDayVideos?.map((item, index) => (
-                <View key={index} style={{marginBottom:10}}>
+                <View  style={{marginBottom:10}}>
               <VideoComponent
-                videoUrl={item?.video}
-                thumbnail={item?.video_thumbnail}
+                videoUrl={selectedRestDayVideo?.video}
+                thumbnail={selectedRestDayVideo?.video_thumbnail}
                 style={{
                   width: "100%",
                   height: "100%",
@@ -594,7 +625,6 @@ const AddWorkouts = () => {
                 }}
               />
               </View>
-              ))}
             </View>
           </View>
         )}

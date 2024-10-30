@@ -36,10 +36,29 @@ const WorkoutDetails = () => {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [dataList, setDataList] = useState([]);
 
+  // Add function to get hardcoded subheader based on program title
+  const getHardcodedSubheader = (title) => {
+    const subheaders = {
+      "Combat Kettlebell": "Kettlebell Only Sports Performance Training",
+      "BODY ARMOR": "Combat Sport Bodyweight Program",
+      "Muay Thai S&C": "In-Camp Muay Thai Training",
+      "Heavy Hitter Boxing": "The definitive program for boxing performance",
+      "The Grind: Grappling & Wrestling": "Grappling & Wrestling Performance",
+      "Brutal Bareknuckle": "Bareknuckle Boxing Strength & Conditioning",
+    };
+
+    // Case-insensitive matching for program titles
+    const matchingTitle = Object.keys(subheaders).find(
+      (key) => title?.toLowerCase() === key.toLowerCase()
+    );
+
+    return matchingTitle ? subheaders[matchingTitle] : "";
+  };
+
   useEffect(() => {
     getAllProgram();
     getContinuousProgram();
-    getInstructions()
+    getInstructions();
   }, []);
 
   const toggleModal = () => {
@@ -47,7 +66,8 @@ const WorkoutDetails = () => {
   };
   useFocusEffect(
     React.useCallback(() => {
-      if (user?.showGuestUserPopup == true && user.isGuestUser == true) setModalVisible(true);
+      if (user?.showGuestUserPopup == true && user.isGuestUser == true)
+        setModalVisible(true);
     }, [])
   );
 
@@ -76,17 +96,18 @@ const WorkoutDetails = () => {
     dispatch(setLoader(true));
     try {
       const res = await ApiCall({
-        route: `appInstruction/all_instructions`,
+        route: 'appInstruction/all_instructions',
         verb: "get",
         token: token,
       });
       if (res?.status == 200) {
-        setDataList(res?.response?.data?.filter(x => x.type == "WorkoutProgram"));
+        setDataList(
+          res?.response?.data?.filter((x) => x.type == "WorkoutProgram")
+        );
       } else {
         console.log(res?.response);
       }
       dispatch(setLoader(false));
-
     } catch (error) {
       console.log(error);
       dispatch(setLoader(false));
@@ -188,7 +209,7 @@ const WorkoutDetails = () => {
       />
       <Animated.ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 50 }} // Added paddingBottom here
+        contentContainerStyle={{ paddingBottom: 50 }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
           { useNativeDriver: false }
@@ -204,14 +225,16 @@ const WorkoutDetails = () => {
                 onPress={() =>
                   navigation.navigate("ViewProgram", {
                     passData: item,
-                    programVideos:dataList?.filter(x=>x.program == item?._id),
+                    programVideos: dataList?.filter(
+                      (x) => x.program == item?._id
+                    ),
                     url: "program/detail_program/",
                   })
                 }
               >
                 <View style={styles.programContainer}>
                   <Image
-                    source={{ uri: item?.program_Image }} // Ensure the correct image is tied to each program
+                    source={{ uri: item?.program_Image }}
                     style={styles.programImage}
                   />
                   <View style={styles.programContent}>
@@ -234,7 +257,9 @@ const WorkoutDetails = () => {
                       </View>
                     </View>
                     <Text style={styles.programTitle}>{item?.title}</Text>
-                    <Text style={styles.programDesc}>{item?.description}</Text>
+                    <Text style={styles.programDesc}>
+                      {getHardcodedSubheader(item?.title)}
+                    </Text>
                     <View style={styles.startButton}>
                       <Text style={styles.startButtonText}>START</Text>
                     </View>
@@ -316,20 +341,20 @@ const styles = StyleSheet.create({
   },
   programHeader: {
     flexDirection: "row",
-    justifyContent: "space-between", // Separates the two texts
-    alignItems: "center", // Vertically aligns icons and texts
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 10,
-    paddingHorizontal: 10, // Adds padding for both left and right texts
+    paddingHorizontal: 10,
   },
   programInfoLeft: {
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: 10, // Adds a little padding on the left
+    paddingLeft: 10,
   },
   programInfoRight: {
     flexDirection: "row",
     alignItems: "center",
-    paddingRight: 10, // Adds a little padding on the right
+    paddingRight: 10,
   },
   programInfoText: {
     color: "white",

@@ -5,32 +5,17 @@ import {
   View,
   TouchableOpacity,
   Image,
-  TextInput,
   StatusBar,
   Platform,
-  Pressable,
   SectionList,
 } from "react-native";
-import { Bubble, GiftedChat } from "react-native-gifted-chat";
 import { getStatusBarHeight } from "react-native-safearea-height";
 import { useSelector, useDispatch } from "react-redux";
-import { SvgUri } from "react-native-svg";
-import SimpleToast from "react-native-simple-toast";
-import ImageModal from "react-native-image-modal";
 import moment from "moment";
-import fs from "react-native-fs";
-import messages from "../../Screens/Messages";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { GernalStyle } from "../../../constants/GernalStyle";
 import { colors } from "../../constants/colors";
-import {
-  CameraPicker,
-  SendMsg,
-  SpeakIcon,
-  UserChat,
-  BotChat,
-} from "../../../assets/images";
+
 import {
   getFontSize,
   getHeight,
@@ -39,10 +24,7 @@ import {
 } from "../../../utils/ResponsiveFun";
 import { fonts } from "../../constants/fonts";
 import ChatsCard from "../../Components/Chats/ChatsCard";
-import {
-  captureImage,
-  chooseImageGallery,
-} from "../../../utils/ImageAndCamera";
+
 import HeaderChatBot from "../../Components/HeaderChatBot";
 import { ApiCall } from "../../Services/Apis";
 import { setLoader } from "../../Redux/actions/GernalActions";
@@ -199,14 +181,14 @@ const BotAllChatScreen = ({ navigation, route }) => {
                   iconUrl: require("../../assets/images/Robot.png"), // Use iconUrl again
                   colors: colors.lightBlue,
                 },
-                ...community.map((item) => ({
-                  _id: item._id,
-                  title: "Upcoming Updates & Announcements",
-                  subText: "Upcoming updates", // Custom subtext
-                  iconUrl: require("../../assets/images/Accouncements.png"),
-                  colors: colors.lightRed,
-                  admin: item?.admin,
-                })),
+                // ...community.map((item) => ({
+                //   _id: item._id,
+                //   title: "Upcoming Updates & Announcements",
+                //   subText: "Upcoming updates", // Custom subtext
+                //   iconUrl: require("../../assets/images/Accouncements.png"),
+                //   colors: colors.lightRed,
+                //   admin: item?.admin,
+                // })),
               ],
             },
           ]}

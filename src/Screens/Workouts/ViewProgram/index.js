@@ -27,6 +27,22 @@ import { Calendar } from "react-native-calendars";
 import VideoComponent from "../../../Components/VideoComponent";
 import { getSingleUser } from "../../../Redux/actions/AuthActions";
 
+const getDurationText = (days) => {
+  const weeks = days / 7;
+  const roundedWeeks = Math.floor(weeks);
+  const remainingDays = days % 7;
+
+  if (remainingDays === 0) {
+    return `${roundedWeeks} ${roundedWeeks === 1 ? "week" : "weeks"} Program`;
+  } else if (roundedWeeks === 0) {
+    return `${days} ${days === 1 ? "day" : "days"} Program`;
+  } else {
+    return `${roundedWeeks} ${
+      roundedWeeks === 1 ? "week" : "weeks"
+    } and ${remainingDays} ${remainingDays === 1 ? "day" : "days"} Program`;
+  }
+};
+
 const ViewProgram = ({ route }) => {
   const navigation = useNavigation();
   const { _id } = route?.params?.passData;
@@ -229,8 +245,6 @@ const ViewProgram = ({ route }) => {
         }}
       />
 
-      {/* Black overlay */}
-     
       <TouchableOpacity
         style={{
           position: "absolute",
@@ -301,7 +315,7 @@ const ViewProgram = ({ route }) => {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            gap: 6,
+            gap: 0,
             marginTop: 0,
           }}
         >
@@ -312,12 +326,8 @@ const ViewProgram = ({ route }) => {
               width: 20,
             }}
           />
-          <Text
-            style={{
-              color: "white",
-            }}
-          >
-            {data?.no_of_days} days Program
+          <Text style={{ color: "white" }}>
+            {getDurationText(data?.no_of_days)}
           </Text>
         </View>
       </View>
@@ -327,7 +337,7 @@ const ViewProgram = ({ route }) => {
           justifyContent: "flex-start",
           alignItems: "flex-start",
           marginTop: 70,
-          gap: 10,
+          gap: 0,
           paddingHorizontal: 16,
         }}
       >
@@ -336,7 +346,7 @@ const ViewProgram = ({ route }) => {
             flexDirection: "column",
             justifyContent: "flex-start",
             alignItems: "flex-start",
-            gap: 6,
+            gap: 0,
           }}
         >
           <Text
@@ -356,113 +366,135 @@ const ViewProgram = ({ route }) => {
             {data?.description}
           </Text>
         </View>
-        {programVideos?.length > 0 &&
-        <View
-          style={{
-            flexDirection: "column",
-            justifyContent: "flex-start",
-            alignItems: "flex-start",
-            gap: 6,
-            marginTop: 10,
-          }}
-        >
-          <Text
+        {programVideos?.length > 0 && (
+          <View
             style={{
-              fontWeight: "700",
-              fontSize: 22,
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              alignItems: "flex-start",
+              gap: 0,
+              marginTop: 10,
             }}
           >
-            Video
-          </Text>
+            <View>
+              <View style={{ gap: 10 }}>
+                <Text style={{ fontWeight: 700, fontSize: 18 }}>
+                  {programVideos[0].title}
+                </Text>
+                <Text
+                  style={{
+                    lineHeight: 22,
+                    textAlign: "left",
+                    color: "#676C75",
+                    letterSpacing: 0.8,
+                  }}
+                >
+                  {programVideos[0].description}
+                </Text>
+              </View>
+              <View
+                style={{
+                  width: Dimensions.get("screen").width - 38,
+                  objectFit: "contain",
+                }}
+              >
+                <VideoComponent
+                  videoUrl={programVideos[0]?.video}
+                  thumbnail={programVideos[0]?.video_thumbnail}
+                />
+              </View>
 
-          {programVideos.map((item,index) => (
-            <View key={index}>
-            <View  style={{ gap: 10 }}>
-            <Text style={{ fontWeight: 700, fontSize: 18 }}>
-              {item.title}
-            </Text>
-            <Text
-              style={{ lineHeight: 22,textAlign:'left', color: '#676C75', letterSpacing: 0.8 }}
-            >
-              {item.description}
-            </Text>
-          </View>
-            <View
-              style={{
-                width: Dimensions.get("screen").width - 38,
-                objectFit: "contain",
-                // height: 400,
-              }}
-            >
-              <VideoComponent
-                videoUrl={item?.video}
-                thumbnail={item?.video_thumbnail}
+              <View style={{ marginVertical: 20 }}>
+                <Button
+                  onPress={() => {
+                    handleAddToCalendar();
+                  }}
+                  text={`Start ${data?.title}`}
+                  btnStyle={{
+                    ...GernalStyle.btn,
+                    borderRadius: 20,
+                    height: 60,
+                    backgroundColor: colors.orange,
+                  }}
+                  btnTextStyle={GernalStyle.btnText}
+                />
+                <Button
+                  onPress={() => navigation.goBack()}
+                  text="No, Go Back"
+                  btnStyle={{
+                    ...GernalStyle.btn,
+                    borderRadius: 20,
+                    height: 60,
+                    backgroundColor: colors.black,
+                    marginTop: 20,
+                    marginBottom: -20,
+                  }}
+                  btnTextStyle={GernalStyle.btnText}
+                />
+              </View>
+
+              <View
+                style={{
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#E5E5E5",
+                  width: "100%",
+                  marginVertical: 20,
+                }}
               />
+
+              <Text
+                style={{ fontWeight: "700", fontSize: 22, marginBottom: 10 }}
+              >
+                Additional Details:
+              </Text>
+
+              {programVideos.slice(1).map((item, index) => (
+                <View key={index}>
+                  <View style={{ gap: 5 }}>
+                    <Text style={{ fontWeight: 700, fontSize: 15 }}>
+                      {item.title}
+                    </Text>
+                    <Text
+                      style={{
+                        lineHeight: 22,
+                        textAlign: "left",
+                        color: "#676C75",
+                        letterSpacing: 0.8,
+                      }}
+                    >
+                      {item.description}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      width: Dimensions.get("screen").width - 38,
+                      objectFit: "contain",
+                    }}
+                  >
+                    <VideoComponent
+                      videoUrl={item?.video}
+                      thumbnail={item?.video_thumbnail}
+                    />
+                  </View>
+                </View>
+              ))}
             </View>
-            </View>
-          ))}
-          
-        </View>
-}
+          </View>
+        )}
+
         <View
           style={{
             flexDirection: "column",
             justifyContent: "flex-start",
             alignItems: "flex-start",
-            gap: 6,
-            // marginTop: -180,
+            gap: 0,
           }}
-        >
-          <Text
-            style={{
-              fontWeight: "700",
-              fontSize: 22,
-            }}
-          >
-            Benefits
-          </Text>
-          <Text
-            style={{
-              color: "#7d7d7d",
-              lineHeight: 20,
-            }}
-          >
-            There are many benefits of doing morning activities, here are the
-            most important:
-          </Text>
-        </View>
-        <View style={{ height: 200 }}>
-          <Button
-            onPress={() => {
-              handleAddToCalendar();
-              //navigation.navigate("ProgramWorkout", { workoutData: route?.params?.passData, programId: _id })
-            }}
-            text={`Start ${data?.title}`}
-            btnStyle={{
-              ...GernalStyle.btn,
-              borderRadius: 20,
-              height: 60,
-              backgroundColor: colors.orange,
-            }}
-            btnTextStyle={GernalStyle.btnText}
-          />
-          <Button
-            onPress={() => navigation.goBack()}
-            text="No, Go Back"
-            btnStyle={{
-              ...GernalStyle.btn,
-              borderRadius: 20,
-              height: 60,
-              backgroundColor: colors.black,
-              marginTop: 20,
-            }}
-            btnTextStyle={GernalStyle.btnText}
-          />
-        </View>
+        ></View>
       </View>
     </ScrollView>
   );
 };
+
 const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: "white",
@@ -483,4 +515,5 @@ const styles = StyleSheet.create({
     marginTop: getHeight(1),
   },
 });
+
 export default ViewProgram;

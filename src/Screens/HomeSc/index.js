@@ -419,7 +419,7 @@ const HomeSc = ({ navigation, route }) => {
         </View>
         <TouchableOpacity
           style={styles.frameContainer}
-          onPress={() => navigation.navigate("AddWorkouts")}
+          onPress={() => navigation.navigate("Workouts")}
         >
           <Image
             source={
@@ -442,20 +442,22 @@ const HomeSc = ({ navigation, route }) => {
           <View
             style={[
               styles.frameContent,
-              { justifyContent: "flex-end", paddingBottom: 20 },
+              { paddingBottom: 20 },
             ]}
           >
-            {todayWorkout && ( // Conditionally render this section only when there is a workout
               <View style={styles.frameContentUpper}>
                 <View style={styles.workoutMessageContainer}>
-                  <Image
-                    source={require("../../assets/images/firefire2.png")}
-                    style={styles.fireIcon}
-                  />
-                  <Text style={styles.workoutMessage}>Enjoy your workout</Text>
+                  {todayWorkout &&
+                    <>
+                      <Image
+                        source={require("../../assets/images/firefire2.png")}
+                        style={styles.fireIcon}
+                      />
+                      <Text style={styles.workoutMessage}>Enjoy your workout</Text>
+                    </>
+                  }
                 </View>
               </View>
-            )}
             <View style={styles.frameContentLower}>
               <View style={styles.frameText}>
                 <Text style={styles.frameTitle}>
@@ -691,7 +693,7 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   menuIcon: {
-    marginleft: 25,
+    marginLeft: 25,
   },
   headerImage: {
     position: "absolute",
@@ -893,7 +895,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#111214",
-    marginleft: 200,
+    marginLeft: 200,
     textAlign: "right",
   },
   buttonText: {

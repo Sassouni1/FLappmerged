@@ -8,58 +8,84 @@ import {
   getFontSize,
   getWidth,
 } from "../../../../utils/ResponsiveFun";
-// import {fonts} from '../../../../constants/fonts';
 import { useNavigation } from "@react-navigation/native";
-import { styles } from "./styles";
-import Button from "../../../Components/Button";
-import { Image } from "react-native";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
-const WorkoutSucessfully = ({route}) => {
+const WorkoutSucessfully = ({ route }) => {
   const navigation = useNavigation();
-  const selectDate = route?.params
+  const selectDate = route?.params;
+
+  const styles = StyleSheet.create({
+    container: {
+      ...GernalStyle.continer,
+      backgroundColor: "#FFFFFF",
+    },
+    contentContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: getFontSize(10),
+    },
+    iconContainer: {
+      marginBottom: getFontSize(2),
+    },
+    addSuccess: {
+      fontSize: getFontSize(3),
+      fontWeight: "bold",
+      color: "#FF7133", // Matching the orange from the reference
+      marginTop: getFontSize(2),
+      marginBottom: getFontSize(1),
+    },
+    subtitle: {
+      fontSize: getFontSize(1.8),
+      color: "#666666",
+      textAlign: "center",
+      paddingHorizontal: getFontSize(2),
+    },
+    button: {
+      position: "absolute",
+      bottom: getHeight(3),
+      backgroundColor: "#FF7133", // Matching the orange from the reference
+      height: getHeight(6),
+      width: getWidth(90),
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: getFontSize(2.5), // Increased border radius to match reference
+      margin: getFontSize(2),
+    },
+    buttonText: {
+      color: "#FFFFFF",
+      fontSize: getFontSize(2),
+      fontWeight: "600",
+    },
+  });
+
   return (
-    <View
-      style={{ ...GernalStyle.continer, backgroundColor: colors.homeColor }}
-    >
+    <View style={styles.container}>
       <GeneralStatusBar
-        barStyle="light-content"
+        barStyle="dark-content"
         hidden={false}
-        backgroundColor={colors.primary}
+        backgroundColor="#FFFFFF"
         translucent={true}
       />
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center",marginBottom:getFontSize(10) }}>
-        <Image
-          style={{ height: getHeight(15), width: getWidth(35) }}
-          resizeMode="contain"
-          source={require("../../../assets/images/workoutAdded.png")}
-        />
-        <Text style={styles.addsucess}>Added Successfully!</Text>
+      <View style={styles.contentContainer}>
+        <View style={styles.iconContainer}>
+          <MaterialIcons
+            name="event-available"
+            size={getWidth(25)}
+            color="#FF7133"
+          />
+        </View>
+        <Text style={styles.addSuccess}>Added Successfully!</Text>
         <Text style={styles.subtitle}>
           Workout has been added to your calendar
         </Text>
       </View>
-      
       <TouchableOpacity
         onPress={() => navigation.navigate("AddWorkouts")}
-        style={{
-          position: "absolute",
-          bottom: getHeight(3),
-          backgroundColor: colors.primary,
-          borderWidth: 1,
-          borderColor: colors.buttonColor,
-          height: getHeight(6),
-          width: getWidth(90),
-          justifyContent: "center",
-          alignItems: "center",
-          borderRadius: getFontSize(1),
-          margin: getFontSize(2),
-        }}
+        style={styles.button}
       >
-        
-          <Text style={{ color: colors.buttonColor, fontSize: getFontSize(2) }}>
-            Okay
-          </Text>
-      
+        <Text style={styles.buttonText}>Okay</Text>
       </TouchableOpacity>
     </View>
   );

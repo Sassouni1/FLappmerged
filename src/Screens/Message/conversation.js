@@ -462,7 +462,7 @@ const BotChatScreen = ({ navigation, route }) => {
         title={
           <Text>
             Fight Life Teams
-            <Text style={styles.headerSubText}>{`\n251 Chats Left`}</Text>
+            <Text style={styles.headerSubText}>{`\n`}</Text>
           </Text>
         }
         titelStyle={styles.headerTitle}
@@ -476,15 +476,16 @@ const BotChatScreen = ({ navigation, route }) => {
           </Pressable>
         }
         RightIcon={
-          <Pressable
-            style={styles.headerIconWraaper}
-            onPress={() => navigation.navigate("BotAllChatScreen")}
-          >
-            <Image
-              source={require("../../assets/images/settings.png")}
-              style={styles.headerIcons}
-            />
-          </Pressable>
+          <View />
+          // <Pressable
+          //   style={styles.headerIconWraaper}
+          //   onPress={() => navigation.navigate("BotAllChatScreen")}
+          // >
+          //   <Image
+          //     source={require("../../assets/images/settings.png")}
+          //     style={styles.headerIcons}
+          //   />
+          // </Pressable>
         }
       />
 
