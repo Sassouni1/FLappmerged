@@ -174,8 +174,7 @@ export default function Squat({ navigation, route }) {
 
   useEffect(() => {
     console.log("selectedExercise",exercise)
-    console.log("selectedTask",task)
-
+    
     const timeoutId = setTimeout(() => {
       setIsVisible(false);
     }, 3000);
@@ -205,31 +204,83 @@ export default function Squat({ navigation, route }) {
     }, [exercise])
   );
 
-  const onPressNextExercise = () => {
+  const handleCompleteWorkout = () =>{
+    Alert.alert(
+      "Are you sure?",
+      "You want to mark this exercise as complete.",
+      [
+        { text: "Cancel", onPress: () => console.log("Cancel Pressed"), style: "cancel" },
+        {
+          text: "OK", onPress:  () => {
+            completeWorkout();
+          }
+        }
+      ]
+    );
+  };
+  
+  const completeWorkout = async ()=>{
+  dispatch(setLoader(true));
+    let requestParams = {
+      workout_objId: workout?._id
+    }
+    try{
+    const res = await ApiCall({
+      route: `assignProgram/complete_workout/${user?.plan_id}`,
+      verb: "post",
+      token: token,
+      params: requestParams,
+    });
+    if (res?.status == "200") {
+       navigation.navigate("WorkoutComplete");
+      dispatch(setLoader(false));
+    } else {
+      dispatch(setLoader(false));
+      toast.show("Error Updating Exercise");
+    }
+  } catch (e) {
+    console.log("api get skill error -- ", e.toString());
+  }
+  }
+
+  const findCurrentIndex = ()=>{
     const currentIndex = exercises?.findIndex(
       (ex) =>
         ex._id === selectedExercise._id ||
         ex?.task?.some((taskEX) => taskEX._id === selectedExercise._id)
     );
-    let nextExercise = exercises[currentIndex + 1];
-    if (nextExercise) {
-      if (nextExercise?.exercise_name) setSelectedExercise(nextExercise);
-      else {
-        setSelectedTask(nextExercise?.task);
-        setSelectedExercise(nextExercise?.task[0]);
+    return currentIndex;
+  }
+
+  const onPressNextExercise = () => {
+    const currentIndex = findCurrentIndex();
+    if (currentIndex == exercises?.length - 1) {
+      navigation.navigate("WorkoutComplete");
+      // handleCompleteWorkout()
+    }
+    else {
+      let nextExercise = exercises[currentIndex + 1];
+      if (nextExercise) {
+        if (nextExercise?.exercise_name) {
+          setSelectedExercise(nextExercise);
+          setSelectedTask(null)
+        }
+        else {
+          setSelectedTask(nextExercise?.task);
+          setSelectedExercise(nextExercise?.task[0]);
+        }
       }
     }
   };
   const onPressPreviousExercise = () => {
-    const currentIndex = exercises?.findIndex(
-      (ex) =>
-        ex._id === selectedExercise._id ||
-        ex?.task?.some((taskEX) => taskEX._id === selectedExercise._id)
-    );
+    const currentIndex = findCurrentIndex();
+
     let previousExercise = exercises[currentIndex - 1];
     if (previousExercise) {
-      if (previousExercise?.exercise_name)
+      if (previousExercise?.exercise_name){
+        setSelectedTask(null)
         setSelectedExercise(previousExercise);
+      }
       else {
         setSelectedTask(previousExercise?.task);
         setSelectedExercise(previousExercise?.task[0]);
@@ -406,7 +457,7 @@ export default function Squat({ navigation, route }) {
         workout_objId: workout?._id,
         exercise_objId: exercise?._id,
         inner_objId: workout?.innerWorkout[0]?._id,
-        calories: calories,
+        calories: calories || 0,
         given_sets:
           exercise?.task?.length > 0
             ? JSON.stringify(exercise?.task?.[nextIncompleteIndex]?.sets)
@@ -776,7 +827,7 @@ export default function Squat({ navigation, route }) {
               }}
               style={styles.leftContainer}
             >
-              <Text style={styles.nextExerciseStyle}>Next Exercise</Text>
+              <Text style={styles.nextExerciseStyle}>{findCurrentIndex() == exercises?.length -1 ? "Complete Exercise" : "Next Exercise"}</Text>
               <Ionicons
                 name="arrow-forward-outline"
                 size={getFontSize(3)}

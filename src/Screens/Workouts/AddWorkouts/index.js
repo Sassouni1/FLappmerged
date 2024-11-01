@@ -6,7 +6,8 @@ import {
   Image,
   Dimensions,
   ImageBackground,
-  StyleSheet
+  StyleSheet,
+  Alert
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { colors } from "../../../constants/colors";
@@ -74,6 +75,46 @@ const AddWorkouts = () => {
     dispatch(setLoader(true));
     // getSingleExcercise(selectedDate);
   };
+const handleCompleteWorkout = () =>{
+  Alert.alert(
+    "Are you sure?",
+    "You want to mark this exercise as complete.",
+    [
+      { text: "Cancel", onPress: () => console.log("Cancel Pressed"), style: "cancel" },
+      {
+        text: "OK", onPress:  () => {
+          completeWorkout();
+        }
+      }
+    ]
+  );
+};
+
+const completeWorkout = async ()=>{
+  dispatch(setLoader(true));
+
+  let requestParams = {
+    workout_objId: workout?._id
+  }
+  try{
+  const res = await ApiCall({
+    route: `assignProgram/complete_workout/${user?.plan_id}`,
+    verb: "post",
+    token: token,
+    params: requestParams,
+  });
+  if (res?.status == "200") {
+    navigation.navigate("WorkoutComplete");
+    dispatch(setLoader(false));
+  } else {
+    dispatch(setLoader(false));
+    toast.show("Error Updating Exercise");
+  }
+} catch (e) {
+  console.log("api get skill error -- ", e.toString());
+}
+}
+
 
   const calculateDayDifference = (startFromDate, selectedDate) => {
     // Convert the input dates to Moment objects and format them to ignore time
@@ -295,7 +336,8 @@ const AddWorkouts = () => {
 
   useEffect(() => {
     // Generate styles for each date in the current month
-    const startOfMonth = moment(currentDate).startOf("month");
+    let startOfMonth = moment(currentDate).startOf("month");
+    startOfMonth = startOfMonth.subtract(15, "days");
     const endOfMonth = moment(currentDate).endOf("year");
     const dates = [];
 
@@ -696,7 +738,7 @@ const AddWorkouts = () => {
                     : renderMergedItem(item, index);
                 }}
               />
-              <View style={{ height: 200, marginTop: 20 }}>
+              <View style={{marginTop: 20 }}>
                 <Button
                   onPress={() => {
                     navigation.navigate("Squat", {
@@ -711,11 +753,24 @@ const AddWorkouts = () => {
                     ...GernalStyle.btn,
                     borderRadius: 15,
                     height: 60,
+                    marginBottom:10,
                     backgroundColor: colors.orange,
                   }}
                   btnTextStyle={GernalStyle.btnText}
                 />
+                 <Button
+                  onPress={handleCompleteWorkout}
+                  text={`Complete Workout`}
+                  btnStyle={{
+                    ...GernalStyle.btn,
+                    borderRadius: 15,
+                    height: 60,
+                    backgroundColor: colors.gray3,
+                  }}
+                  btnTextStyle={GernalStyle.btnText}
+                />
               </View>
+              <View style={{height:100}} />
             </View>
             :
             <View />
