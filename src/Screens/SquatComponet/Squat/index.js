@@ -27,6 +27,27 @@ import toast from "react-native-simple-toast";
 import VideoSkills from "../../Skills/Video";
 import { fonts } from "../../../constants/fonts";
 
+function formatDuration(seconds) {
+  if (seconds < 60) {
+      return `${seconds} seconds`;
+  } else if (seconds < 3600) {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+  } else {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const remainingSeconds = seconds % 60;
+      
+      let result = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+      if (remainingSeconds > 0) {
+          result += `:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+      }
+      
+      return result;
+  }
+}
+
 const RenderRest = React.memo(({ uniqueKey, restTime }) => {
   const [timerActive, setTimerActive] = useState(false);
   const [selectedSetKey, setSelectedSetKey] = useState(null);
@@ -297,10 +318,10 @@ export default function Squat({ navigation, route }) {
     );
   };
 
-  const handleCheckmarkPress = async (index, set,isBodyweightExercise=false,isDynamicWarmUp=false,isRevert=false,currentExercise) => {
+  const handleCheckmarkPress = async (index, set,isBodyweightExercise=false,isDynamicWarmUp=false,isRevert=false,currentExercise,userWeight) => {
     let find_lbs_value = findInputValueWithKey(index);
     dispatch(setLoader(true));
-    await singleSetComplete(set, find_lbs_value,isBodyweightExercise,isDynamicWarmUp,isRevert,currentExercise);
+    await singleSetComplete(set, find_lbs_value,isBodyweightExercise,isDynamicWarmUp,isRevert,currentExercise,userWeight);
     let newIsChecked = [...isChecked];
     let valueIncludes = newIsChecked.includes(index);
     if (valueIncludes) newIsChecked = newIsChecked.filter((x) => x != index);
@@ -409,7 +430,7 @@ export default function Squat({ navigation, route }) {
     }
   }
 
-  const singleSetComplete = async (set, weight,isBodyweightExercise=false,isDynamicWarmUp=false,isRevert=false,currentExercise) => {
+  const singleSetComplete = async (set, weight,isBodyweightExercise=false,isDynamicWarmUp=false,isRevert=false,currentExercise,userWeight) => {
     try {
       dispatch(setLoader(true));
       const submittedData = {
@@ -417,7 +438,7 @@ export default function Squat({ navigation, route }) {
         parameter: set?.parameter,
         remaining_time: 0,
         [set?.parameter]: isBodyweightExercise ? weight :  set[set?.parameter],//is case of BodyWeight( weigth use as reps)
-        weight:isBodyweightExercise ? user?.weight : (!isDynamicWarmUp ?  weight : 0)
+        weight:isBodyweightExercise ? userWeight : (!isDynamicWarmUp ?  weight : 0)
       };
 
       let requestParams = {
@@ -425,10 +446,12 @@ export default function Squat({ navigation, route }) {
         workout_objId: workout?._id,
         exercise_objId: exercise?._id,
         inner_objId: workout?.innerWorkout[0]?._id,
+        dynamicExercises:dynamicExercises,
         submittedData: submittedData,
         calories: calories || 0,
       };
 
+      console.log("submittedData",submittedData)
       if(task) {
         requestParams.task_objId = currentExercise?._id;
       }
@@ -523,11 +546,25 @@ export default function Squat({ navigation, route }) {
     let isBodyweightExercise = false;
     let isDynamicWarmUp = false;
     
-
+    let selectedCategory = '';
+    let userWeight = user?.weight;
     // Check if override_category exists
     const category = findProgramExercise?.override_category;
     if (category) {
-        isBodyweightExercise = category === "Bodyweight";
+        selectedCategory = category;
+        isBodyweightExercise = category?.includes('Bodyweight');
+        if(isBodyweightExercise){
+          if(category == 'Bodyweight (30%)'){
+            userWeight=(user?.weight/100)*30;
+          }
+          else if(category == 'Bodyweight (15%)'){
+            userWeight=(user?.weight/100)*15;
+          }
+          else if(category == 'Bodyweight with reps but not calculated to the Body weight')
+          {
+            userWeight= 0;
+          }
+        }
         isDynamicWarmUp = category === "Dynamic Warm Up";
     } else {
         // Check if the exercise is in dynamicExercises
@@ -538,11 +575,23 @@ export default function Squat({ navigation, route }) {
         } else {
             // Fallback to currentExercise?.category
             const fallbackCategory = currentExercise?.category;
-            isBodyweightExercise = fallbackCategory === "Bodyweight";
+            selectedCategory = fallbackCategory;
+            isBodyweightExercise =  fallbackCategory?.includes('Bodyweight');
+            if(isBodyweightExercise){
+              if(fallbackCategory == 'Bodyweight (30%)'){
+                userWeight=(user?.weight/100)*30;
+              }
+              else if(fallbackCategory == 'Bodyweight (15%)'){
+                userWeight=(user?.weight/100)*15;
+              }
+              else if(fallbackCategory == 'Bodyweight with reps but not calculated to the Body weight')
+              {
+                userWeight= 0;
+              }
+            }
             isDynamicWarmUp = fallbackCategory === "Dynamic Warm Up";
         }
     }
-
     return (
       <View key={no} style={styles.mainContainer}>
         <View style={styles.outerContainer}>
@@ -550,9 +599,9 @@ export default function Squat({ navigation, route }) {
             <Text style={styles.numberTextSTyle}>{no}</Text>
           </View>
           <View style={{ gap: getWidth(1.5) }}>
-            <Text style={styles.titleStyle}>{reps}</Text>
+            <Text style={styles.titleStyle}>{formatDuration(reps)}</Text>
             <Text style={styles.descStyle}>
-              {reps +" "+capitalizeFirstLetter(set?.parameter)}
+              {set?.parameter == 'seconds' ? formatDuration(reps) : reps +" "+capitalizeFirstLetter(set?.parameter)}
             </Text>
           </View>
           <View style={styles.semiDividerSTyle} />
@@ -582,10 +631,17 @@ export default function Squat({ navigation, route }) {
             
             {/* Show user's weight only for bodyweight exercises */}
             {isBodyweightExercise ? (
-              <>
-               <Text style={styles.descStyle}>{`${findInputValueWithKey(uniqueKey,currentExercise,set?._id)} Reps`}</Text>
-              <Text style={styles.descStyle}>{`${user?.weight} lbs`}</Text>
+             <>
+             {selectedCategory == 'Bodyweight' ?
+             <>
+              <Text style={styles.descStyle}>{`${findInputValueWithKey(uniqueKey,currentExercise,set?._id)} Reps`}</Text>
+              <Text style={styles.descStyle}>{`${userWeight} lbs`}</Text>
               </>
+              :
+              <Text style={styles.descStyle}>{`${findInputValueWithKey(uniqueKey,currentExercise,set?._id)} Reps`}</Text>
+            }
+              </>
+            
             ) : (
               !isDynamicWarmUp && (
                 <Text style={styles.descStyle}>{`${findInputValueWithKey(uniqueKey,currentExercise,set?._id)} lbs`}</Text>
@@ -598,9 +654,9 @@ export default function Squat({ navigation, route }) {
             style={{ marginRight: getWidth(5) }}
             onPress={() => {
               if (!isChecked.includes(uniqueKey) && set?.complete != "true")
-                handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp,false,currentExercise); // Pass isBodyweightExercise, and isDynamicWarmUp
+                handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp,false,currentExercise,userWeight); // Pass isBodyweightExercise, and isDynamicWarmUp
               else{
-                handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp,true,currentExercise); 
+                handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp,true,currentExercise,userWeight); 
               }
             }}
           >
