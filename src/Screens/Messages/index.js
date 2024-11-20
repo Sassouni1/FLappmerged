@@ -73,6 +73,7 @@ const BotAllChatScreen = ({ navigation, route }) => {
       if (res?.status == "200") {
         setAdmin(res?.response?.chatrooms?.admin);
         setCommunity(res?.response?.chatrooms?.community);
+        console.log("community...",res?.response?.chatrooms?.community)
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -122,9 +123,10 @@ const BotAllChatScreen = ({ navigation, route }) => {
             : navigation.navigate("ConversationScreen", {
                 channelId: item._id,
                 channelName: item.title,
-                receiver: item.subText === "GPT-4" ? {} : item.admin,
+                receiver: item.subText === "Chat with our community" ? {} : item.admin,
                 sender: user,
-                chatRoomType: item.subText === "GPT-4" ? "groupChat" : "chat",
+                chatRoomType: item.subText === "Chat with our community" ? "groupChat" : "chat",
+                communityId: community.find(x=>x.community_name == "App Community")?._id
               })
         }
       >
@@ -172,7 +174,7 @@ const BotAllChatScreen = ({ navigation, route }) => {
                   subText: "Chat with our community", // Custom subtext
                   iconUrl: require("../../assets/images/fistemoji.png"),
                   colors: colors.greenlight,
-                  admin: item?.admin,
+                  admin: item?.admin
                 })),
                 {
                   _id: "team",

@@ -12,6 +12,8 @@ import {
 import React, { useEffect, useState } from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { ApiCall } from "../../../Services/Apis";
+import { useSelector } from "react-redux";
 
 // Local Imports
 import GeneralStatusBar from "../../../Components/GeneralStatusBar";
@@ -28,6 +30,8 @@ export default function CoachDetail({ navigation, route }) {
   const { selectedSkill, selectedCoach } = route?.params;
   const [videosWithThumbnails, setVideosWithThumbnails] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Loading state
+  const token = useSelector((state) => state.auth.userToken);
+  const user = useSelector((state) => state.auth.userData);
 
   // Extract Vimeo video ID from URL (supports both public and managed URLs)
   const extractVimeoVideoID = (url) => {
@@ -78,11 +82,36 @@ export default function CoachDetail({ navigation, route }) {
     return videoUrl.includes("vimeo.com");
   };
 
-  const onPressDetail = (selectedVideo) =>
+  const onPressDetail = (selectedVideo) =>{
+    updateSkills(selectedVideo);
     navigation.navigate("WorkoutDetail", {
       selectedVideo: selectedVideo,
+      selectedSkill:selectedSkill,
+      selectedCoach:selectedCoach,
       videos: videosWithThumbnails,
     });
+  }
+
+  const updateSkills = async (selectedVideo) => {
+    try {
+      const res = await ApiCall({
+        route: `skillVideo/add_watched_user`,
+        verb: "post",
+        token: token,
+        params: {
+          skillVideoId:selectedSkill?._id,
+          childFolderIndex:selectedCoach?._id,
+          videoIndex:selectedVideo?._id,
+          userId:user?._id
+        },
+      });
+      if (res?.status == "200") {
+        console.log("res", res)
+      }
+    } catch (e) {
+      console.log("api error -- ", e.toString());
+    }
+  };
 
   const onPressPlay = () => navigation.navigate("LessonComplete");
 

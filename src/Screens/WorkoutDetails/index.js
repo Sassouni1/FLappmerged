@@ -28,6 +28,7 @@ const WorkoutDetails = () => {
   const navigation = useNavigation();
   const [data, setData] = useState([]);
   const [program, setProgram] = useState([]);
+  const [userPlan, setUserPlan] = useState();
   const token = useSelector((state) => state.auth.userToken);
   const user = useSelector((state) => state.auth.userData);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -57,8 +58,9 @@ const WorkoutDetails = () => {
 
   useEffect(() => {
     getAllProgram();
-    getContinuousProgram();
+    // getContinuousProgram();
     getInstructions();
+    getUserPlan();
   }, []);
 
   const toggleModal = () => {
@@ -85,6 +87,25 @@ const WorkoutDetails = () => {
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
+        Alert.alert(res?.response?.message);
+      }
+    } catch (e) {
+      console.log("api error -- ", e.toString());
+    }
+  };
+
+
+  const getUserPlan = async () => {
+    try {
+      const res = await ApiCall({
+        route: `assignProgram/view_assignProgram_user/${user?.plan_id}`,
+        verb: "get",
+        token: token,
+      });
+      if (res?.status == "200") {
+        setUserPlan(res?.response?.Assigned_Program)
+        console.log("userPlan", res);
+      } else {
         Alert.alert(res?.response?.message);
       }
     } catch (e) {
@@ -218,6 +239,7 @@ const WorkoutDetails = () => {
       >
         <View style={styles.contentContainer}>
           <Text style={styles.sectionTitle}>Choose Your Program</Text>
+         
           {program.length > 0 &&
             program.map((item, index) => (
               <TouchableOpacity
@@ -225,6 +247,7 @@ const WorkoutDetails = () => {
                 onPress={() =>
                   navigation.navigate("ViewProgram", {
                     passData: item,
+                    userPlan:userPlan,
                     programVideos: dataList?.filter(
                       (x) => x.program == item?._id
                     ),

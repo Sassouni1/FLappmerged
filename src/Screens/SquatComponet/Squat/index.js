@@ -26,6 +26,7 @@ import { ApiCall } from "../../../Services/Apis";
 import toast from "react-native-simple-toast";
 import VideoSkills from "../../Skills/Video";
 import { fonts } from "../../../constants/fonts";
+import VideoComponent from "../../../Components/VideoComponent";
 
 function formatDuration(seconds) {
   if (seconds < 60) {
@@ -143,7 +144,8 @@ const TopVideo = React.memo(({ videoUrl, title, onPressBack }) => {
   // Component logic
   return (
     <View>
-      <VideoSkills data={{ video: videoUrl, Name: title }} />
+      {/* <VideoSkills data={{ video: videoUrl, Name: title }} /> */}
+      <VideoComponent videoUrl={videoUrl} thumbnail={''} Name={title} />
       <TouchableOpacity
         onPress={onPressBack}
         style={[
@@ -157,6 +159,16 @@ const TopVideo = React.memo(({ videoUrl, title, onPressBack }) => {
           color={colors.black}
         />
       </TouchableOpacity>
+      <Text
+            style={{
+              textAlign: "left",
+              fontSize: getFontSize(3),
+              fontWeight: 700,
+              marginLeft:10,
+            }}
+          >
+            {title}
+          </Text>
     </View>
   );
 }, (prevProps, nextProps) => {
@@ -819,7 +831,7 @@ export default function Squat({ navigation, route }) {
               <View key={index}
               ref={(el) => (sectionRefs.current[index] = el)}
               >
-              <TopVideo videoUrl={item?.video} title={item?.exercise_name} onPressBack={onPressBack} />
+              <TopVideo videoUrl={item?.exerciseVideo} title={item?.exercise_name} onPressBack={onPressBack} />
                 <RenderExercise exercise={item} addon={"task" + index} />
                 {selectedTask?.length != index + 1 && (
                   <View style={styles.divider} />
@@ -828,7 +840,7 @@ export default function Squat({ navigation, route }) {
             ))
           ) : (
             <>
-           <TopVideo videoUrl={selectedExercise?.video} title={selectedExercise?.exercise_name} onPressBack={onPressBack} />
+           <TopVideo videoUrl={selectedExercise?.exerciseVideo} title={selectedExercise?.exercise_name} onPressBack={onPressBack} />
             <RenderExercise exercise={selectedExercise} />
             </>
 

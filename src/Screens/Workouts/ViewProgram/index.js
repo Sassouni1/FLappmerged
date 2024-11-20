@@ -48,6 +48,7 @@ const ViewProgram = ({ route }) => {
   const { _id } = route?.params?.passData;
   const url = route?.params?.url;
   const programVideos = route?.params?.programVideos;
+  const userPlan = route?.params?.userPlan;
 
   const [program, setProgram] = useState(null);
   const [data, setData] = useState(null);
@@ -155,20 +156,48 @@ const ViewProgram = ({ route }) => {
     }
   };
 
+  function hasCompletedWorkouts(plan, requiredProgress = 75, requiredCount = 5) {
+    // Filter workouts with progress greater than or equal to the required progress
+    const completedWorkouts = plan?.workout?.filter(workout => workout.progress >= requiredProgress);
+
+    // Check if the count of completed workouts is at least the required count
+    const isGoalMet = completedWorkouts.length >= requiredCount;
+
+    // Return both the goal met status and the count of completed workouts
+    return {
+      isGoalMet,
+      completedCount: completedWorkouts.length
+    };
+  }
+
   const handleAddToCalendar = () => {
     if (user?.isAssigned === true) {
-      Alert.alert("Switch Program", " Do you want to switch to new program?", [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "destructive",
-        },
-        {
-          text: "Continue",
-          onPress: () => setModalVisible(true),
-          style: "default",
-        },
-      ]);
+      const workoutsCompleted = hasCompletedWorkouts(userPlan);
+      if (workoutsCompleted.isGoalMet) {
+        Alert.alert("Switch Program", " Do you want to switch to new program?", [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "destructive",
+          },
+          {
+            text: "Continue",
+            onPress: () => setModalVisible(true),
+            style: "default",
+          },
+        ]);
+      }
+      else{
+        const remainingCount = Math.max(0, 5 - workoutsCompleted.completedCount);
+        Alert.alert("Program Locked", 
+        `Complete ${remainingCount} more workout${remainingCount !== 1 ? "s" : ""} in your current program to unlock this program.`, [
+          {
+            text: "Ok",
+            onPress: () => console.log("Ok Pressed"),
+            style: "destructive",
+          }
+        ]);
+      }
     } else {
       setModalVisible(true);
     }
@@ -366,7 +395,6 @@ const ViewProgram = ({ route }) => {
             {data?.description}
           </Text>
         </View>
-        {programVideos?.length > 0 && (
           <View
             style={{
               flexDirection: "column",
@@ -377,6 +405,8 @@ const ViewProgram = ({ route }) => {
             }}
           >
             <View>
+            {programVideos?.length > 0 && (
+              <>
               <View style={{ gap: 10 }}>
                 <Text style={{ fontWeight: 700, fontSize: 18 }}>
                   {programVideos[0].title}
@@ -403,7 +433,8 @@ const ViewProgram = ({ route }) => {
                   thumbnail={programVideos[0]?.video_thumbnail}
                 />
               </View>
-
+              </>
+            )}
               <View style={{ marginVertical: 20 }}>
                 <Button
                   onPress={() => {
@@ -432,55 +463,57 @@ const ViewProgram = ({ route }) => {
                   btnTextStyle={GernalStyle.btnText}
                 />
               </View>
-
-              <View
-                style={{
-                  borderBottomWidth: 1,
-                  borderBottomColor: "#E5E5E5",
-                  width: "100%",
-                  marginVertical: 20,
-                }}
-              />
-
-              <Text
-                style={{ fontWeight: "700", fontSize: 22, marginBottom: 10 }}
-              >
-                Additional Details:
-              </Text>
-
-              {programVideos.slice(1).map((item, index) => (
-                <View key={index}>
-                  <View style={{ gap: 5 }}>
-                    <Text style={{ fontWeight: 700, fontSize: 15 }}>
-                      {item.title}
-                    </Text>
-                    <Text
-                      style={{
-                        lineHeight: 22,
-                        textAlign: "left",
-                        color: "#676C75",
-                        letterSpacing: 0.8,
-                      }}
-                    >
-                      {item.description}
-                    </Text>
-                  </View>
+              {programVideos?.length > 0 && (
+                <>
                   <View
                     style={{
-                      width: Dimensions.get("screen").width - 38,
-                      objectFit: "contain",
+                      borderBottomWidth: 1,
+                      borderBottomColor: "#E5E5E5",
+                      width: "100%",
+                      marginVertical: 20,
                     }}
+                  />
+
+                  <Text
+                    style={{ fontWeight: "700", fontSize: 22, marginBottom: 10 }}
                   >
-                    <VideoComponent
-                      videoUrl={item?.video}
-                      thumbnail={item?.video_thumbnail}
-                    />
-                  </View>
-                </View>
-              ))}
+                    Additional Details:
+                  </Text>
+
+                  {programVideos.slice(1).map((item, index) => (
+                    <View key={index}>
+                      <View style={{ gap: 5 }}>
+                        <Text style={{ fontWeight: 700, fontSize: 15 }}>
+                          {item.title}
+                        </Text>
+                        <Text
+                          style={{
+                            lineHeight: 22,
+                            textAlign: "left",
+                            color: "#676C75",
+                            letterSpacing: 0.8,
+                          }}
+                        >
+                          {item.description}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          width: Dimensions.get("screen").width - 38,
+                          objectFit: "contain",
+                        }}
+                      >
+                        <VideoComponent
+                          videoUrl={item?.video}
+                          thumbnail={item?.video_thumbnail}
+                        />
+                      </View>
+                    </View>
+                  ))}
+                </>
+              )}
             </View>
           </View>
-        )}
 
         <View
           style={{

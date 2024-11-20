@@ -8,6 +8,8 @@ import {
 import React, { useState, useEffect } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import VideoComponent from "../../../Components/VideoComponent";
+import { useSelector } from "react-redux";
+import { ApiCall } from "../../../Services/Apis";
 
 // Local Imports
 import GeneralStatusBar from "../../../Components/GeneralStatusBar";
@@ -22,8 +24,9 @@ import CKeyBoardAvoidWrapper from "../../../Components/Common/CKeyBoardAvoidWrap
 
 export default function WorkoutDetail({ navigation, route }) {
   // Destructure both the selectedVideo and videos list from the params
-  const { selectedVideo, videos } = route?.params;
-
+  const { selectedVideo, videos,selectedSkill,selectedCoach } = route?.params;
+  const token = useSelector((state) => state.auth.userToken);
+  const user = useSelector((state) => state.auth.userData);
   // Use state to manage the current video
   const [currentVideo, setCurrentVideo] = useState(selectedVideo);
 
@@ -43,6 +46,27 @@ export default function WorkoutDetail({ navigation, route }) {
       console.log("Current Video Updated:", currentVideo.title);
     }
   }, [currentVideo]);
+
+  const updateSkills = async (currentVideo) => {
+    try {
+      const res = await ApiCall({
+        route: `skillVideo/add_watched_user`,
+        verb: "post",
+        token: token,
+        params: {
+          skillVideoId:selectedSkill?._id,
+          childFolderIndex:selectedCoach?._id,
+          videoIndex:currentVideo?._id,
+          userId:user?._id
+        },
+      });
+      if (res?.status == "200") {
+        console.log("res", res)
+      }
+    } catch (e) {
+      console.log("api error -- ", e.toString());
+    }
+  };
 
   // Function to navigate to the next video using state instead of navigation.push
   const onPressNextVideo = () => {
@@ -73,6 +97,7 @@ export default function WorkoutDetail({ navigation, route }) {
     // If there's a next video, update the state to show it
     if (nextVideo) {
       setCurrentVideo(nextVideo);
+      updateSkills(nextVideo);
       console.log("Updated to next video:", nextVideo.title);
     } else {
       // Handle if there are no more videos

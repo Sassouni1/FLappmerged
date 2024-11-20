@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Alert,
   SafeAreaView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
@@ -61,7 +62,7 @@ export default function SkillsTraining({ navigation }) {
         verb: "get",
         token: token,
       });
-      console.log("list", res);
+      console.log("list", res?.response?.video_list);
       if (res?.response) {
         setSkills(res?.response?.video_list);
         dispatch(setLoader(false));
@@ -86,6 +87,62 @@ export default function SkillsTraining({ navigation }) {
 
   const onPressSearch = () => navigation.navigate("SearchWorkout");
 
+  const getWatchedStatus = (data, userId=user._id) => {
+    try{
+    let totalVideos = 0;
+    let watchedCount = 0;
+  
+    // Iterate through all folders and videos
+    data.child_folder.forEach(folder => {
+      folder.videos.forEach(video => {
+        totalVideos++; // Count total videos
+        if (video.watchedUsers.includes(userId)) {
+          watchedCount++; // Count watched videos
+        }
+      });
+    });
+  
+    // Determine the status based on watchedCount
+      if (watchedCount === totalVideos && totalVideos > 0) {
+        return <Text style={{color:'green'}}>Completed</Text>;
+      } else if (watchedCount > 0) {
+        return <Text style={{color:'blue'}}>In Complete</Text>;
+      } else {
+        return <Text style={{color:'red'}}>Not Started</Text>;
+      }
+  }
+  catch(e){
+    return <Text></Text>;
+  }
+  };
+  const getWatchedStatusText = (data, userId=user._id) => {
+    try{
+    let totalVideos = 0;
+    let watchedCount = 0;
+  
+    // Iterate through all folders and videos
+    data.child_folder.forEach(folder => {
+      folder.videos.forEach(video => {
+        totalVideos++; // Count total videos
+        if (video.watchedUsers.includes(userId)) {
+          watchedCount++; // Count watched videos
+        }
+      });
+    });
+  
+    // Determine the status based on watchedCount
+      if (watchedCount === totalVideos && totalVideos > 0) {
+        return "Completed";
+      } else if (watchedCount > 0) {
+        return "In Complete";
+      } else {
+        return "Not Started";
+      }
+  }
+  catch(e){
+    return <Text></Text>;
+  }
+  };
   const onPressDetail = (selectedSkill, selectedCoach) => {
     navigation.navigate("CoachDetail", {
       selectedSkill: selectedSkill,
@@ -119,15 +176,33 @@ export default function SkillsTraining({ navigation }) {
     </View>
   );
 
-  const RenderSkillItem = ({ item }) =>
+  const RenderSkillItem = ({ item,skillIndex }) =>{
+    const isUnlocked = skillIndex === 0 || getWatchedStatusText(skills[skillIndex - 1]) === "Completed";
+    return(
     item?.child_folder?.map((childItem, index) => (
       <TouchableOpacity
         key={index}
         onPress={() => {
+          if (isUnlocked) {
           onPressDetail(item, childItem);
+          }
+          else{
+            Alert.alert("Training Locked", 
+            `Complete the previous training to unlock this.`, [
+              {
+                text: "Ok",
+                onPress: () => console.log("Ok Pressed"),
+                style: "destructive",
+              }
+            ]);
+          }
         }}
         style={styles.container1Style}
       >
+          <Text style={{ textAlign: 'right'}}>
+            {getWatchedStatus(item)}
+            </Text>
+        <View style={{flexDirection:'row',alignItems:'center',justifyContent: "space-between",}}>
         <View style={styles.rowContainer}>
           <Image
             source={{ uri: childItem?.folder_Image }}
@@ -162,8 +237,10 @@ export default function SkillsTraining({ navigation }) {
             color={colors.slateGray}
           />
         </TouchableOpacity>
+        </View>
       </TouchableOpacity>
-    ));
+    ))
+    )};
 
   const RenderPopularSkillItem = ({ item }) => (
     <TouchableOpacity onPress={onPressCategory} style={styles.container1Style}>
@@ -205,8 +282,8 @@ export default function SkillsTraining({ navigation }) {
     </TouchableOpacity>
   );
 
-  const renderItem = ({ item }) => {
-    return <RenderSkillItem item={item} />;
+  const renderItem = ({ item,index }) => {
+    return <RenderSkillItem item={item} skillIndex={index} />;
 
     if (item.type === "skill") {
       return <RenderSkillItem item={item} />;
@@ -242,6 +319,8 @@ export default function SkillsTraining({ navigation }) {
       {RenderHeader()}
       <FlatList
         data={skills}
+        refreshing={false}
+        onRefresh={() => getSkills()}
         renderItem={renderItem}
         keyExtractor={(item) => item._id}
         contentContainerStyle={{ paddingBottom: getHeight(4) }} // this already adds padding to the overall list
@@ -319,8 +398,8 @@ const styles = StyleSheet.create({
     marginHorizontal: getWidth(5),
     borderRadius: 32,
     padding: getWidth(4),
-    flexDirection: "row",
-    alignItems: "center",
+    // flexDirection: "row",
+    // alignItems: "center",
     justifyContent: "space-between",
   },
   rowContainer: {

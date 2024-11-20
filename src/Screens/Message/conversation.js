@@ -54,7 +54,7 @@ const STATUSBAR_HEIGHT =
   Platform.OS === "ios" ? getStatusBarHeight(true) : StatusBar.currentHeight;
 
 const BotChatScreen = ({ navigation, route }) => {
-  const { channelId, channelName, reciver, sender, chatRoomType } =
+  const { channelId,communityId, channelName, reciver, sender, chatRoomType } =
     route.params;
 
   const dispatch = useDispatch();
@@ -66,12 +66,11 @@ const BotChatScreen = ({ navigation, route }) => {
   const [sms, setSms] = useState("");
 
   const sendChat = async (sms) => {
-    console.log("socket emit sms", sms);
     const date = new Date();
     if (chatRoomType == "groupChat") {
       socket.emit("group-chat", {
         text: sms,
-        groupChatId: channelId,
+        groupChatId: communityId,
         senderId: sender?._id,
         date: date,
         _id: date.valueOf(),
@@ -237,7 +236,7 @@ const BotChatScreen = ({ navigation, route }) => {
       let res = null;
       if (chatRoomType == "groupChat") {
         res = await ApiCall({
-          route: `groupChat/group_chat_detail/${channelId}`,
+          route: `groupChat/group_chat_detail/${communityId}`,
           verb: "get",
           token: token,
         });
@@ -259,6 +258,7 @@ const BotChatScreen = ({ navigation, route }) => {
           })
         );
         dispatch(setAllSms(newArrayOfObj));
+        console.log("newArrayOfObj.",newArrayOfObj)
       } else {
         console.log("error", res);
         dispatch(setLoader(false));
@@ -275,11 +275,10 @@ const BotChatScreen = ({ navigation, route }) => {
   useEffect(() => {
     socket.emit("join", {
       senderId: sender?._id,
-      chatroomId: channelId,
+      chatroomId: communityId,
     });
     if (chatRoomType == "groupChat") {
       socket.on("group-chat", (payload) => {
-        // console.log("payload there", payload);
 
         const newArray = [payload].map((item) =>
           item?.sender == sender?._id
@@ -308,7 +307,6 @@ const BotChatScreen = ({ navigation, route }) => {
       });
     } else if (chatRoomType == "chat") {
       socket.on("chat", (payload) => {
-        // console.log("payload there", payload);
 
         const newArray = [payload].map((item) =>
           item?.sender == sender?._id
@@ -375,7 +373,6 @@ const BotChatScreen = ({ navigation, route }) => {
 
   const renderAvatar = (props) => {
     const { currentMessage } = props;
-    //console.log("currentMessage", currentMessage);
     const user = currentMessage.user;
     const profileImage = user && user.profile_image;
 
@@ -447,7 +444,7 @@ const BotChatScreen = ({ navigation, route }) => {
         ]}
       >
         <Image
-          source={{ uri: props?.currentMessage?.user?.profile_image }}
+          source={{ uri: props?.currentMessage?.user?.profile_image || 'http://' }}
           style={{ height: "88%", width: "99%", borderRadius: getWidth(3) }}
         />
       </View>

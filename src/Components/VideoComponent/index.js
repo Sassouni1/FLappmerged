@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet,ActivityIndicator } from "react-native";
+import { View, StyleSheet,ActivityIndicator,Text } from "react-native";
 import VideoPlayer from "react-native-video-player";
 import YoutubePlayer from "react-native-youtube-iframe";
 import { Vimeo } from "react-native-vimeo-iframe";
@@ -7,8 +7,7 @@ import { WebView } from "react-native-webview";
 
 // Function to extract YouTube video ID from URL
 const extractYouTubeVideoID = (url) => {
-  const regex =
-    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.+\?v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+  const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
   const match = url?.match(regex);
   return match ? match[1] : null;
 };
@@ -25,7 +24,7 @@ const extractVimeoVideoID = (url) => {
   return match ? match[1] : null;
 };
 
-const VideoComponent = ({ videoUrl, thumbnail }) => {
+const VideoComponent = ({ videoUrl, thumbnail,Name }) => {
   const [vimeoPrivateUrl, setVimeoPrivateUrl] = useState();
   const isYouTube = extractYouTubeVideoID(videoUrl);
   const isVimeo = isVimeoUrl(videoUrl);
