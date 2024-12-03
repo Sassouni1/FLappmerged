@@ -64,15 +64,23 @@ const BotChatScreen = ({ navigation, route }) => {
   const [messages, setMessages] = useState([]);
   const [pickerModalVisibile, setPickerModalVisibile] = useState(false);
   const [sms, setSms] = useState("");
+  const [users, setUsers] = useState();
 
+  const usersRef = useRef(users);
+
+  useEffect(() => {
+    usersRef.current = users; // Keep the ref updated with the latest users data
+  }, [users]);
+  
   const sendChat = async (sms) => {
     const date = new Date();
+    const utcDate = date.toISOString();
     if (chatRoomType == "groupChat") {
       socket.emit("group-chat", {
         text: sms,
         groupChatId: communityId,
         senderId: sender?._id,
-        date: date,
+        date: utcDate,
         _id: date.valueOf(),
       });
     } else if (chatRoomType == "chat") {
@@ -80,7 +88,7 @@ const BotChatScreen = ({ navigation, route }) => {
         text: sms,
         chatroomId: channelId,
         senderId: sender?._id,
-        date: date,
+        date: utcDate,
         _id: date.valueOf(),
       });
     }
@@ -198,7 +206,6 @@ const BotChatScreen = ({ navigation, route }) => {
     console.log("imageObject", imageObject);
 
     setPickerModalVisibile(false);
-    console.log("started");
     if (chatRoomType == "groupChat") {
       socket.emit(
         "mob-upload-groupchat",
@@ -258,7 +265,7 @@ const BotChatScreen = ({ navigation, route }) => {
           })
         );
         dispatch(setAllSms(newArrayOfObj));
-        console.log("newArrayOfObj.",newArrayOfObj)
+        setUsers(res?.response?.users);
       } else {
         console.log("error", res);
         dispatch(setLoader(false));
@@ -269,9 +276,12 @@ const BotChatScreen = ({ navigation, route }) => {
       console.log("saga error -- ", e.toString());
     }
   };
+
   useEffect(() => {
+    console.log("getAllSms",)
     getAllSms();
   }, []);
+
   useEffect(() => {
     socket.emit("join", {
       senderId: sender?._id,
@@ -279,8 +289,13 @@ const BotChatScreen = ({ navigation, route }) => {
     });
     if (chatRoomType == "groupChat") {
       socket.on("group-chat", (payload) => {
-
         const newArray = [payload].map((item) =>
+        {
+          let findUser = {};
+          if (usersRef.current) {
+            findUser = usersRef.current?.find(x => x._id == item?.sender)
+          }
+          return(
           item?.sender == sender?._id
             ? {
                 PdfFile: IMAGE_URL + item?.file?.url,
@@ -290,6 +305,8 @@ const BotChatScreen = ({ navigation, route }) => {
                 text: item?.message,
                 createdAt: item?.date,
                 _id: item?._id,
+                profileImage:findUser?.profile_image,
+                userName:findUser?.full_name
               }
             : {
                 PdfFile: IMAGE_URL + item?.file?.url,
@@ -299,7 +316,11 @@ const BotChatScreen = ({ navigation, route }) => {
                 text: item?.message,
                 createdAt: item?.date,
                 _id: item?._id,
+                profileImage:findUser?.profile_image,
+                userName:findUser?.full_name
               }
+         ) }
+        
         );
         setMessages((previousMessages) =>
           GiftedChat.append(previousMessages, newArray)
@@ -341,12 +362,18 @@ const BotChatScreen = ({ navigation, route }) => {
       // socket.emit('end');
     };
   }, []);
+
   useEffect(() => {
     const sorted = messagesAll.sort(function (a, b) {
-      return b.date.localeCompare(a.date);
+      return b.date.localeCompare(a.date,'en');
     });
+    const newArray = sorted.map((item) =>{
+      let findUser= {};
+      if(users){
+       findUser = users?.find(x=>x._id == item?.user)
+      }
 
-    const newArray = sorted.map((item) =>
+      return(
       item?.user == sender?._id
         ? {
             PdfFile: IMAGE_URL + item?.file?.url,
@@ -356,6 +383,8 @@ const BotChatScreen = ({ navigation, route }) => {
             text: item?.text,
             createdAt: item?.date,
             _id: item?._id,
+            profileImage:findUser?.profile_image,
+            userName:findUser?.full_name
           }
         : {
             PdfFile: IMAGE_URL + item?.file?.url,
@@ -365,11 +394,15 @@ const BotChatScreen = ({ navigation, route }) => {
             text: item?.text,
             createdAt: item?.date,
             _id: item?._id,
+            profileImage:findUser?.profile_image,
+            userName:findUser?.full_name
           }
+      )
+        }
     );
 
     setMessages(newArray);
-  }, [messagesAll]);
+  }, [messagesAll,users]);
 
   const renderAvatar = (props) => {
     const { currentMessage } = props;
@@ -424,7 +457,7 @@ const BotChatScreen = ({ navigation, route }) => {
             fontWeight: "bold",
           }}
         >
-          {props?.currentMessage?.user?.full_name}
+          {props?.currentMessage?.userName}
         </Text>
       </View>
     );
@@ -444,14 +477,36 @@ const BotChatScreen = ({ navigation, route }) => {
         ]}
       >
         <Image
-          source={{ uri: props?.currentMessage?.user?.profile_image || 'http://' }}
+          source={{ uri: props?.currentMessage?.profileImage || 'http://' }}
           style={{ height: "88%", width: "99%", borderRadius: getWidth(3) }}
         />
       </View>
     );
   };
   const backHandler = () => navigation.goBack();
-
+  const CustomTime = (props) => {
+    const { currentMessage } = props;
+  
+    return (
+      <View style={styles.timeContainer}>
+        <Text style={styles.timeText}>
+          {/* Format the time as needed */}
+          {new Date(currentMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </Text>
+      </View>
+    );
+  };
+  const CustomDay = (props) => {
+    const { currentMessage } = props;
+  
+    return (
+      <View style={styles.dayContainer}>
+        <Text style={styles.dayText}>
+        {new Date(currentMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </Text>
+      </View>
+    );
+  };
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" style={{ backgroundColor: "white" }} />
@@ -615,45 +670,6 @@ const BotChatScreen = ({ navigation, route }) => {
               </View>
             );
           }}
-          renderDay={(props) => {
-            return (
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  width: getWidth(91.2),
-                  alignSelf: "center",
-                  marginVertical: getHeight(1.5),
-                }}
-              >
-                <View
-                  style={{
-                    backgroundColor: colors.greyMedium,
-                    height: getWidth(0.4),
-                    flex: 1,
-                  }}
-                />
-                <Text
-                  style={{
-                    color: colors.greyText,
-                    paddingHorizontal: getWidth(2),
-                    fontFamily: fonts.WSB,
-                    fontSize: 12,
-                    fontWeight: "600",
-                  }}
-                >
-                  {moment(props.currentMessage.createdAt).format("hh:mm A")}
-                </Text>
-                <View
-                  style={{
-                    backgroundColor: colors.greyMedium,
-                    height: getWidth(0.4),
-                    flex: 1,
-                  }}
-                />
-              </View>
-            );
-          }}
           keyboardShouldPersistTaps={"handled"}
           messagesContainerStyle={{
             paddingBottom: getHeight(6),
@@ -667,9 +683,9 @@ const BotChatScreen = ({ navigation, route }) => {
           user={{
             _id: user?._id,
           }}
-          renderTime={() => {
-            return null;
-          }}
+          renderDay={(props) => <CustomDay {...props} />}
+          renderTime={(props) => {return null}}
+         
         />
       </View>
       <ImagePickerModal
@@ -803,111 +819,26 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: getWidth(10),
     borderTopRightRadius: getWidth(10),
   },
+  dayContainer: {
+    backgroundColor: '#f0f0f0',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    alignSelf: 'center',
+    marginTop: 10,
+  },
+  dayText: {
+    fontSize: 14,
+    color: '#555',
+  },
+  timeContainer: {
+    marginTop: 5,
+    alignItems: 'flex-end',
+  },
+  timeText: {
+    fontSize: 12,
+    color: 'gray',
+  },
 });
 
 export default BotChatScreen;
-
-const oooo = [
-  {
-    PdfFile: "http://54.234.223.198/undefined",
-    _id: "664c3420945d171558b55dc6",
-    createdAt: "2024-05-21T05:41:52+00:00",
-    fileType: undefined,
-    reciver: {},
-    text: "Hello, who are you?",
-    user: {
-      _id: "661e4e621a476bee6cfd68ba",
-      allow_programs: false,
-      chatroomId: "661e4e631a476bee6cfd6b3b",
-      customerId: "cus_Pw0zA3CDcf1aNb",
-      email: "gyruhitav@yopmail.com",
-      fcmToken:
-        "dTivxpfi00mEm1BeX-Sf8U:APA91bFBN9gOUsVk2LqzmLIsE_yYt_EOB0rEgYVh93ngK9KIDhqzzSdE7T77-E1OBts35cDHEC9nGY4iXFioyao34AVI-pMomk4o5wxjST8tJWYEhxANCd-VObDXHzkjK8aHWynzPBMD",
-      full_name: "Eugenia Haley",
-      groupChatId: "652f88e0a3ed8a769d24ce05",
-      height: 5,
-      isAssigned: true,
-      plan_id: "661f8eb81a476bee6cc8cb65",
-      program_id: "660d29bb5d81fb1c1be8eaae",
-      role: "customer",
-      status: true,
-      subscription: [Array],
-      target_weight: 150,
-      userBadge: [Array],
-      user_id: "661e4e611a476bee6cfd6889",
-      verification_status: false,
-      weight: 100,
-      weight_gain: 0,
-      weight_loss: 0,
-      workout_number: 8,
-    },
-  },
-  {
-    PdfFile: "http://54.234.223.198/undefined",
-    _id: "6633ef9ca3f2d7f7aaadc1dc",
-    createdAt: "2024-05-02T19:55:08+00:00",
-    fileType: undefined,
-    reciver: {
-      _id: "661e4e621a476bee6cfd68ba",
-      allow_programs: false,
-      chatroomId: "661e4e631a476bee6cfd6b3b",
-      customerId: "cus_Pw0zA3CDcf1aNb",
-      email: "gyruhitav@yopmail.com",
-      fcmToken:
-        "dTivxpfi00mEm1BeX-Sf8U:APA91bFBN9gOUsVk2LqzmLIsE_yYt_EOB0rEgYVh93ngK9KIDhqzzSdE7T77-E1OBts35cDHEC9nGY4iXFioyao34AVI-pMomk4o5wxjST8tJWYEhxANCd-VObDXHzkjK8aHWynzPBMD",
-      full_name: "Eugenia Haley",
-      groupChatId: "652f88e0a3ed8a769d24ce05",
-      height: 5,
-      isAssigned: true,
-      plan_id: "661f8eb81a476bee6cc8cb65",
-      program_id: "660d29bb5d81fb1c1be8eaae",
-      role: "customer",
-      status: true,
-      subscription: [Array],
-      target_weight: 150,
-      userBadge: [Array],
-      user_id: "661e4e611a476bee6cfd6889",
-      verification_status: false,
-      weight: 100,
-      weight_gain: 0,
-      weight_loss: 0,
-      workout_number: 8,
-    },
-    text: `Hi there! Welcome to Sandow, your personal AI fitness coach. I'm here to guide you on your fitness journey. Whether you want to get fit, lose weight, or build strength, I'm here to help you through! 🙌`,
-    user: {},
-  },
-  {
-    PdfFile: "http://54.234.223.198/undefined",
-    _id: "664c3420945d171558b55dc600",
-    createdAt: "2024-05-21T05:41:52+00:00",
-    fileType: undefined,
-    reciver: {},
-    text: "Wow, amazing!! 💖",
-    user: {
-      _id: "661e4e621a476bee6cfd68ba",
-      allow_programs: false,
-      chatroomId: "661e4e631a476bee6cfd6b3b",
-      customerId: "cus_Pw0zA3CDcf1aNb",
-      email: "gyruhitav@yopmail.com",
-      fcmToken:
-        "dTivxpfi00mEm1BeX-Sf8U:APA91bFBN9gOUsVk2LqzmLIsE_yYt_EOB0rEgYVh93ngK9KIDhqzzSdE7T77-E1OBts35cDHEC9nGY4iXFioyao34AVI-pMomk4o5wxjST8tJWYEhxANCd-VObDXHzkjK8aHWynzPBMD",
-      full_name: "Eugenia Haley",
-      groupChatId: "652f88e0a3ed8a769d24ce05",
-      height: 5,
-      isAssigned: true,
-      plan_id: "661f8eb81a476bee6cc8cb65",
-      program_id: "660d29bb5d81fb1c1be8eaae",
-      role: "customer",
-      status: true,
-      subscription: [Array],
-      target_weight: 150,
-      userBadge: [Array],
-      user_id: "661e4e611a476bee6cfd6889",
-      verification_status: false,
-      weight: 100,
-      weight_gain: 0,
-      weight_loss: 0,
-      workout_number: 8,
-    },
-  },
-];

@@ -40,6 +40,13 @@ export default function SkillsTraining({ navigation }) {
       if (user?.showGuestUserPopup == true && user.isGuestUser == true) setModalVisible(true);
     }, [])
   );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getSkills();
+    }, [])
+  );
+
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
@@ -51,12 +58,10 @@ export default function SkillsTraining({ navigation }) {
     setSelectedTab(id);
   };
 
-  useEffect(() => {
-    getSkills();
-  }, []);
 
   const getSkills = async () => {
     try {
+      dispatch(setLoader(true));
       const res = await ApiCall({
         route: `skillVideo/active_skill_videos`,
         verb: "get",

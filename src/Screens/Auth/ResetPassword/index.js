@@ -7,14 +7,75 @@ import {
   Pressable,
   TouchableOpacity,
 } from "react-native";
+import { useDispatch,useSelector } from "react-redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { ApiCall } from "../../../Services/Apis";
+import Toast from "react-native-simple-toast";
+import validator from "../../../../utils/validation/validator";
+import { err } from "react-native-svg/lib/typescript/xml";
+import { setLoader } from "../../../Redux/actions/GernalActions";
 
 const App = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.userToken);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [error, setError] = useState("")
 
+  const handlePasswordChangePassword = async () => {
+    const cnfrPasswordError = await validator("passwordC", confirmPassword);
+    const newPasswordError = await validator("passwordN", newPassword);
+    if (
+      !cnfrPasswordError &&
+      !newPasswordError &&
+      newPassword === confirmPassword
+    ) {
+      setError("");
+      resetPassword();
+    } else {
+      if (newPasswordError && cnfrPasswordError) {
+        setError(newPasswordError+"\n"+cnfrPasswordError)
+      }
+      else if(newPasswordError){
+        setError(newPasswordError)
+      }
+      else if(cnfrPasswordError){
+        setError(cnfrPasswordError)
+      }
+       else {
+        setError('Both Passwords do not match!')
+      }
+    }
+  };
+
+  const resetPassword = async () => {
+    let param={
+      password:newPassword,
+      confirm_password:confirmPassword
+    }
+    try {
+      dispatch(setLoader(true))
+      const res = await ApiCall({
+        route: "auth/reset_password",
+        token: token,
+        params: param,
+        verb: "put",
+      });
+      if (res?.status === "200") {
+        navigation.navigate("Login");
+        Toast.show("Reset Password Successfully");
+        dispatch(setLoader(false));
+      } else {
+        alert(res?.response?.message);
+        dispatch(setLoader(false));
+      }
+    } catch (e) {
+      dispatch(setLoader(false));
+      console.log("Error changing password -- ", e.toString());
+    }
+  };
   const handleNewPasswordChange = (value) => {
     setNewPassword(value);
   };
@@ -136,6 +197,9 @@ const App = ({ navigation }) => {
         </View>
       </View>
 
+      {error &&
+        <Text style={styles.errorText}>{error}</Text>
+      }
       {/* Password Strength */}
       <Text style={styles.passwordStrength}>Password Strength</Text>
       <View style={[styles.progressBar, { backgroundColor: "#FFFFFF" }]}>
@@ -156,7 +220,7 @@ const App = ({ navigation }) => {
       </Text>
 
       {/* Button Primary Icon */}
-      <Pressable style={styles.primaryButton}>
+      <Pressable onPress={handlePasswordChangePassword} style={styles.primaryButton}>
         <View style={styles.buttonContent}>
           <Text style={styles.buttonText}>Change Password</Text>
           <MaterialCommunityIcons
@@ -186,7 +250,7 @@ const styles = StyleSheet.create({
     left: 30,
   },
   inputFieldsContainer: {
-    marginHorizontal: 16,
+    // marginHorizontal: 16,
     marginTop: 80,
     gap: 10,
     paddingBottom: 24, // Add some padding at the bottom
@@ -222,6 +286,10 @@ const styles = StyleSheet.create({
     width: 311,
     height: 24,
   },
+  errorText: {
+    color: "#ff5252",
+    marginBottom:10,
+  },
   inputText: {
     fontFamily: "Work Sans",
     fontWeight: "500",
@@ -242,9 +310,9 @@ const styles = StyleSheet.create({
     marginTop: -6, // Decrease the marginTop value
   },
   progressBar: {
-    width: 342,
+    // width: 342,
     height: 10,
-    marginHorizontal: 16,
+    // marginHorizontal: 16,
     marginTop: 8,
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: 4 },

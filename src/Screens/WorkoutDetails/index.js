@@ -239,7 +239,9 @@ const WorkoutDetails = () => {
       >
         <View style={styles.contentContainer}>
           <Text style={styles.sectionTitle}>Choose Your Program</Text>
-         
+          <Text style={styles.subTitle}>
+            After adding your program, complete 5 workouts to unlock more training!
+          </Text>
           {program.length > 0 &&
             program.map((item, index) => (
               <TouchableOpacity
@@ -342,6 +344,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
     marginBottom: 10,
+  },
+  subTitle: {
+    color: "black",
+    fontWeight: "400",
+    fontSize: 13,
+    paddingRight: 60,
+    paddingLeft: 2,
+    marginTop: -20,
   },
   programContainer: {
     borderRadius: 30,

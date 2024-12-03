@@ -171,6 +171,8 @@ const ViewProgram = ({ route }) => {
   }
 
   const handleAddToCalendar = () => {
+    setModalVisible(true);
+    return
     if (user?.isAssigned === true) {
       const workoutsCompleted = hasCompletedWorkouts(userPlan);
       if (workoutsCompleted.isGoalMet) {
@@ -238,7 +240,7 @@ const ViewProgram = ({ route }) => {
           <TouchableOpacity
             onPress={() => {
               setModalVisible(false);
-              if (user?.isAssigned === true) {
+              if (user?.program_id) {
                 setModalVisible(false);
                 SwitchProgram();
               } else {

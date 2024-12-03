@@ -73,7 +73,6 @@ const BotAllChatScreen = ({ navigation, route }) => {
       if (res?.status == "200") {
         setAdmin(res?.response?.chatrooms?.admin);
         setCommunity(res?.response?.chatrooms?.community);
-        console.log("community...",res?.response?.chatrooms?.community)
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));

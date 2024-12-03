@@ -139,7 +139,7 @@ export default function BottomTab() {
         name="Workouts"
         component={WorkoutStack}
         initialParams={
-          user?.isAssigned !== true ? { tab: "tab1" } : { tab: "tab2" }
+          user?.program_id ? { tab: "tab2" } : { tab: "tab1" }
         }
         options={{
           headerShown: false,

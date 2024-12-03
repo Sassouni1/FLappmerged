@@ -63,6 +63,17 @@ const AddWorkouts = () => {
   useFocusEffect(
     React.useCallback(() => {
       if (user?.showGuestUserPopup == true && user.isGuestUser == true) setModalVisible(true);
+      else{
+        if(!user?.program_id){
+          Alert.alert("No Program Added", "You have not added any program yet. Please add a program first.", [
+            {
+              text: "OK",
+              onPress: () =>
+                navigation.navigate("WorkoutDetails")
+            },
+          ]);
+        }
+      }
     }, [])
   );
   const toggleModal = () => {
@@ -245,10 +256,10 @@ const completeWorkout = async ()=>{
     if (restDays && offDayVideos) {
       // Find the index of the given day in restDays array
       const dayIndex = restDays.indexOf(selectedDay);
-
       if (dayIndex != -1) {
         // Use modulus to get the corresponding video
         const video = offDayVideos[dayIndex % offDayVideos.length];
+
         setSelectedRestDayVideo(video);
       }
     }
@@ -261,6 +272,8 @@ const completeWorkout = async ()=>{
         verb: "get",
         token: token,
       });
+      console.log("offdays",res?.response?.data?.filter((x) => x.type == "Off Day"));
+
       if (res?.status == 200) {
         setOffDayVideos(
           res?.response?.data?.filter((x) => x.type == "Off Day")
@@ -392,13 +405,19 @@ const completeWorkout = async ()=>{
     );
   };
 
+  // Function to check if URL is a Vimeo link
+const isVimeoUrl = (url) => {
+  const vimeoRegex = /vimeo\.com\/(?:manage\/videos\/)?(\d+)/;
+  return vimeoRegex.test(url);
+};
+ 
   const RenderExercise = ({ item }) => {
     return (
       <View style={{ flex: 1, flexDirection: "row", zIndex: 1 }}>
         <View style={{ flex: 1 }}>
           <Image
             source={item.video ?
-              (item.video_thumbnail ? { uri: item?.video_thumbnail } :
+              (item?.exerciseThumbnail ? { uri: item?.exerciseThumbnail } :
                 require("../../../assets/images/no-thumbnail.jpg"))
               : require("../../../assets/images/no-video.jpg")}
             style={{

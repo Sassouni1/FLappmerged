@@ -12,11 +12,10 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import LinearGradient from "react-native-linear-gradient";
 import BackgroundImage from "../../../assets/images/Jake.png";
 import OverlayImage from "../../../assets/images/BlackBackground.png";
-import LogoImage from "../../../assets/images/Vector-20.png";
+import LogoImage from "../../../assets/images/logo.jpeg";
 import { useDispatch } from "react-redux";
 import { setLoader } from "../../../Redux/actions/GernalActions";
 import { loginRequest } from "../../../Redux/actions/AuthActions";
-
 
 const WelcomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -27,13 +26,17 @@ const WelcomeScreen = ({ navigation }) => {
     try {
       dispatch(setLoader(true));
       dispatch(
-        loginRequest({ email: email, password: password, role: "customer", isGuestUser: true })
+        loginRequest({
+          email: email,
+          password: password,
+          role: "customer",
+          isGuestUser: true,
+        })
       );
       setTimeout(() => {
         dispatch(setLoader(false));
       }, 3000);
-    }
-    catch (e) {
+    } catch (e) {
       dispatch(setLoader(false));
     }
   };
@@ -49,14 +52,22 @@ const WelcomeScreen = ({ navigation }) => {
             <Image
               source={LogoImage}
               style={{
-                position: "absolute",
-                top: -70,
-                left: Dimensions.get("window").width / 2.2,
+                width: 80, // Set to a small size
+                height: 80, // Maintain aspect ratio or set explicitly
+                marginTop: -120,
+                shadowColor: "black",
+                shadowOffset: {
+                  width: 0,
+                  height: 4,
+                },
+                shadowOpacity: 0.9,
+                shadowRadius: 4.65,
               }}
             />
+
             <View style={styles.headingContainer}>
               <Text style={styles.heading}>Welcome to</Text>
-              <Text style={[styles.heading, styles.fightLife]}>Fight Life</Text>
+              <Text style={[styles.fightLife]}>Fight Life</Text>
             </View>
             <Text style={styles.subheading}>
               Your path to elite performance
@@ -77,7 +88,11 @@ const WelcomeScreen = ({ navigation }) => {
                 <Text style={styles.signInLink}>Sign In</Text>
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => {loginAsGuest()}}>
+            <TouchableOpacity
+              onPress={() => {
+                loginAsGuest();
+              }}
+            >
               <Text style={styles.signInText}>
                 <Text style={styles.signInLink}>Continue as Guest</Text>
               </Text>
@@ -131,9 +146,16 @@ const styles = StyleSheet.create({
     lineHeight: 36,
     letterSpacing: 0,
     color: "#FFFFFF",
-    marginBottom: 12,
+    marginBottom: 0,
     textAlign: "center",
     marginTop: 10,
+    shadowColor: "black",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.7,
+    shadowRadius: 4.65,
   },
   subheading: {
     fontFamily: "Work Sans",
@@ -171,6 +193,23 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     letterSpacing: -0.002,
     color: "#FFFFFF",
+  },
+  fightLife: {
+    fontFamily: "Work Sans",
+    fontWeight: "bold",
+    fontSize: 40,
+    lineHeight: 44, // Adjust to be equal or slightly greater than fontSize
+    letterSpacing: 0,
+    color: "white",
+    marginBottom: 12,
+    textAlign: "center",
+    shadowColor: "black",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.7,
+    shadowRadius: 4.65,
   },
 });
 
