@@ -49,6 +49,19 @@ function formatDuration(seconds) {
   }
 }
 
+function checkTimeFormate(seconds) {
+  if (seconds < 60) {
+      return `Seconds`;
+  } else if (seconds < 3600) {
+     return 'Minutes'
+  } else if(seconds > 3600) {
+      return 'Hours'
+  }
+  else{
+    return '';
+  }
+}
+
 const RenderRest = React.memo(({ uniqueKey, restTime }) => {
   const [timerActive, setTimerActive] = useState(false);
   const [selectedSetKey, setSelectedSetKey] = useState(null);
@@ -143,25 +156,44 @@ const RenderRest = React.memo(({ uniqueKey, restTime }) => {
 const TopVideo = React.memo(({ videoUrl, title, onPressBack }) => {
   // Component logic
   return (
-    <View>
-      {/* <VideoSkills data={{ video: videoUrl, Name: title }} /> */}
-      <VideoComponent videoUrl={videoUrl} thumbnail={''} Name={title} />
-      <TouchableOpacity
-        onPress={onPressBack}
-        style={[
-          styles.headerBtnStyle,
-          { position: "absolute", top: 10, left: 10 },
-        ]}
-      >
-        <Ionicons
-          name="chevron-back"
-          size={getFontSize(2.5)}
-          color={colors.black}
-        />
-      </TouchableOpacity>
+    <View style={{marginTop:videoUrl ? 0 : 30}}>
+      {videoUrl &&
+        <>
+          <VideoComponent videoUrl={videoUrl} thumbnail={''} Name={title} />
+
+          <TouchableOpacity
+            onPress={onPressBack}
+            style={[
+              styles.headerBtnStyle,
+              { position: "absolute", top: 10, left: 10 },
+            ]}
+          >
+            <Ionicons
+              name="chevron-back"
+              size={getFontSize(2.5)}
+              color={colors.black}
+            />
+          </TouchableOpacity>
+        </>
+      }
+      <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+        {!videoUrl &&
+          <TouchableOpacity
+            onPress={onPressBack}
+            style={[
+              styles.headerBtnStyle, { backgroundColor: 'black' }
+            ]}
+          >
+            <Ionicons
+              name="chevron-back"
+              size={getFontSize(2.5)}
+              color={colors.white}
+            />
+          </TouchableOpacity>
+        }
       <Text
             style={{
-              textAlign: "left",
+              textAlign: "center",
               fontSize: getFontSize(3),
               fontWeight: 700,
               marginLeft:10,
@@ -169,6 +201,7 @@ const TopVideo = React.memo(({ videoUrl, title, onPressBack }) => {
           >
             {title}
           </Text>
+          </View>
     </View>
   );
 }, (prevProps, nextProps) => {
@@ -611,7 +644,7 @@ export default function Squat({ navigation, route }) {
             <Text style={styles.numberTextSTyle}>{no}</Text>
           </View>
           <View style={{ gap: getWidth(1.5) }}>
-            <Text style={styles.titleStyle}>{formatDuration(reps)}</Text>
+            <Text style={styles.titleStyle}>{set?.parameter == 'seconds' ? formatDuration(reps) : reps}</Text>
             <Text style={styles.descStyle}>
               {set?.parameter == 'seconds' ? formatDuration(reps) : reps +" "+capitalizeFirstLetter(set?.parameter)}
             </Text>
@@ -712,8 +745,8 @@ export default function Squat({ navigation, route }) {
         <View style={[styles.categoryContainer, { justifyContent: "center" }]}>
           <View style={styles.dividerStyle} />
           <RenderSquare
-            title={`${exercise?.sets?.length}x${findMaxReps(exercise)?.maxReps}`}
-            desc={capitalizeFirstLetter(findMaxReps(exercise)?.parameterValue)}
+            title={`${exercise?.sets?.length}x${findMaxReps(exercise)?.parameterValue == 'seconds' ? formatDuration(findMaxReps(exercise)?.maxReps) : findMaxReps(exercise)?.maxReps}`}
+            desc={findMaxReps(exercise)?.parameterValue == 'seconds' ? checkTimeFormate(findMaxReps(exercise)?.maxReps) : capitalizeFirstLetter(findMaxReps(exercise)?.parameterValue)}
             icon={require("../../../assets/images/squatsIcon3.png")}
           />
           <View style={styles.dividerStyle} />
@@ -763,7 +796,7 @@ export default function Squat({ navigation, route }) {
           <Text
             style={{
               ...styles.text,
-              fontFamily: fonts.UBo,
+              fontFamily: fonts.URe,
               textAlign: "center",
             }}
           >
@@ -798,7 +831,7 @@ export default function Squat({ navigation, route }) {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
+    <View style={{ flex: 1, backgroundColor: colors.white }}>
       {isVisible ? (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
           <View
@@ -905,7 +938,7 @@ export default function Squat({ navigation, route }) {
           </View>
         </ScrollView>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 

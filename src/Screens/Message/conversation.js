@@ -46,6 +46,8 @@ import {
   chooseImageGallery,
 } from "../../../utils/ImageAndCamera";
 import HeaderChatBot from "../../Components/HeaderChatBot";
+import UserAvatar from "../UserAvatar";
+
 
 const { io } = require("socket.io-client");
 const socket = io(SOCKET_URL);
@@ -476,10 +478,17 @@ const BotChatScreen = ({ navigation, route }) => {
           },
         ]}
       >
-        <Image
-          source={{ uri: props?.currentMessage?.profileImage || 'http://' }}
-          style={{ height: "88%", width: "99%", borderRadius: getWidth(3) }}
-        />
+        {!props?.currentMessage?.profileImage ?
+        props?.currentMessage?.userName ?
+          <UserAvatar username={props?.currentMessage?.userName} height={30} width={30} />
+          :
+          <View />
+          :
+          <Image
+            source={{ uri: props?.currentMessage?.profileImage || 'http://' }}
+            style={{ height: "88%", width: "99%", borderRadius: getWidth(3) }}
+          />
+        } 
       </View>
     );
   };

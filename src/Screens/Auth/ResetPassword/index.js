@@ -14,9 +14,12 @@ import Toast from "react-native-simple-toast";
 import validator from "../../../../utils/validation/validator";
 import { err } from "react-native-svg/lib/typescript/xml";
 import { setLoader } from "../../../Redux/actions/GernalActions";
+import { useNavigation } from '@react-navigation/native';
 
-const App = ({ navigation }) => {
+const App = ({ route }) => {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
+  const { email } = route?.params;
   const token = useSelector((state) => state.auth.userToken);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -52,6 +55,7 @@ const App = ({ navigation }) => {
 
   const resetPassword = async () => {
     let param={
+      email:email,
       password:newPassword,
       confirm_password:confirmPassword
     }
@@ -63,7 +67,8 @@ const App = ({ navigation }) => {
         params: param,
         verb: "put",
       });
-      if (res?.status === "200") {
+      console.log(res);
+      if (res?.response?.code == "200") {
         navigation.navigate("Login");
         Toast.show("Reset Password Successfully");
         dispatch(setLoader(false));

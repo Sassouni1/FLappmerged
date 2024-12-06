@@ -31,6 +31,40 @@ import PopupModal from "../../../Components/ErrorPopup";
 
 const { height, width } = Dimensions.get("screen");
 
+function formatDuration(seconds) {
+  if (seconds < 60) {
+      return `${seconds}`;
+  } else if (seconds < 3600) {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+  } else {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const remainingSeconds = seconds % 60;
+      
+      let result = `${hours}:${minutes < 10 ? '0' : ''}${minutes}`;
+      if (remainingSeconds > 0) {
+          result += `:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+      }
+      
+      return result;
+  }
+}
+
+function checkTimeFormate(seconds) {
+  if (seconds < 60) {
+      return `Seconds`;
+  } else if (seconds < 3600) {
+     return 'Minutes'
+  } else if(seconds > 3600) {
+      return 'Hours'
+  }
+  else{
+    return '';
+  }
+}
+
 const AddWorkouts = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -326,24 +360,28 @@ const completeWorkout = async ()=>{
     }, [user,selectedCalendarDate])
   );
 
+
   const findMaxReps = (exercise) => {
     try {
       const sets = exercise?.sets;
       if (sets) {
         let maxReps = 0;
-        for (const set of sets) {
-          const value = set[set.parameter];
-          if (isNaN(Number(value))) {
-            return value; // Return the non-numeric value as it is
+        let parameterValue = null;
+  
+        sets.forEach((set) => {
+          const reps = Number(set[set.parameter]);
+          if (reps > maxReps) {
+            maxReps = reps;
+            parameterValue = set.parameter;
           }
-          maxReps = Math.max(maxReps, Number(value));
-        }
-        return maxReps;
+        });
+        maxReps = maxReps || sets[0][sets[0].parameter];
+        return { maxReps,  parameterValue };
       } else {
-        return 0;
+        return { maxReps: 0, parameterValue: null };
       }
     } catch {
-      return 0;
+      return { maxReps: 0, parameterValue: null };
     }
   };
 
@@ -417,7 +455,7 @@ const isVimeoUrl = (url) => {
         <View style={{ flex: 1 }}>
           <Image
             source={item.video ?
-              (item?.exerciseThumbnail ? { uri: item?.exerciseThumbnail } :
+              ((item?.exerciseThumbnail || item?.video_thumbnail) ? { uri: item?.exerciseThumbnail || item?.video_thumbnail } :
                 require("../../../assets/images/no-thumbnail.jpg"))
               : require("../../../assets/images/no-video.jpg")}
             style={{
@@ -452,7 +490,7 @@ const isVimeoUrl = (url) => {
               alignItems: "flex-end",
             }}
           >
-            <Text>{`Reps: ${item?.sets?.length}x${findMaxReps(item)} (${item?.sets[0]?.parameter})`}</Text>
+            <Text>{`Reps: ${item?.sets?.length}x${findMaxReps(item)?.parameterValue == 'seconds' ? formatDuration(findMaxReps(item)?.maxReps) : findMaxReps(item)?.maxReps}${findMaxReps(item)?.parameterValue ? ` (${findMaxReps(item)?.parameterValue == 'seconds' ? checkTimeFormate(findMaxReps(item)?.maxReps) : findMaxReps(item)?.parameterValue})` : ''}`}</Text>
           </View>
         </View>
         <View

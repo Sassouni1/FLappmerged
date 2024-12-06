@@ -200,7 +200,7 @@ const WorkoutDetails = () => {
   });
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
       <Animated.View
         style={[
@@ -239,9 +239,9 @@ const WorkoutDetails = () => {
       >
         <View style={styles.contentContainer}>
           <Text style={styles.sectionTitle}>Choose Your Program</Text>
-          <Text style={styles.subTitle}>
+          {/* <Text style={styles.subTitle}>
             After adding your program, complete 5 workouts to unlock more training!
-          </Text>
+          </Text> */}
           {program.length > 0 &&
             program.map((item, index) => (
               <TouchableOpacity
@@ -294,7 +294,7 @@ const WorkoutDetails = () => {
             ))}
         </View>
       </Animated.ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
