@@ -60,7 +60,7 @@ const WorkoutDetails = () => {
     getAllProgram();
     // getContinuousProgram();
     getInstructions();
-    getUserPlan();
+    // getUserPlan();
   }, []);
 
   const toggleModal = () => {
@@ -95,23 +95,23 @@ const WorkoutDetails = () => {
   };
 
 
-  const getUserPlan = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/view_assignProgram_user/${user?.plan_id}`,
-        verb: "get",
-        token: token,
-      });
-      if (res?.status == "200") {
-        setUserPlan(res?.response?.Assigned_Program)
-        console.log("userPlan", res);
-      } else {
-        Alert.alert(res?.response?.message);
-      }
-    } catch (e) {
-      console.log("api error -- ", e.toString());
-    }
-  };
+  // const getUserPlan = async () => {
+  //   try {
+  //     const res = await ApiCall({
+  //       route: `assignProgram/view_assignProgram_user/${user?.plan_id}`,
+  //       verb: "get",
+  //       token: token,
+  //     });
+  //     if (res?.status == "200") {
+  //       setUserPlan(res?.response?.Assigned_Program)
+  //       console.log("userPlan", res);
+  //     } else {
+  //       Alert.alert(res?.response?.message);
+  //     }
+  //   } catch (e) {
+  //     console.log("api error -- ", e.toString());
+  //   }
+  // };
 
   const getInstructions = async () => {
     dispatch(setLoader(true));
@@ -249,7 +249,7 @@ const WorkoutDetails = () => {
                 onPress={() =>
                   navigation.navigate("ViewProgram", {
                     passData: item,
-                    userPlan:userPlan,
+                    // userPlan:userPlan,
                     programVideos: dataList?.filter(
                       (x) => x.program == item?._id
                     ),

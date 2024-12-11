@@ -12,7 +12,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import LinearGradient from "react-native-linear-gradient";
 import BackgroundImage from "../../../assets/images/Jake.png";
 import OverlayImage from "../../../assets/images/BlackBackground.png";
-import LogoImage from "../../../assets/images/logo.jpeg";
+import LogoImage from "../../../assets/images/Fightlifemain.png";
 import { useDispatch } from "react-redux";
 import { setLoader } from "../../../Redux/actions/GernalActions";
 import { loginRequest } from "../../../Redux/actions/AuthActions";
@@ -52,16 +52,16 @@ const WelcomeScreen = ({ navigation }) => {
             <Image
               source={LogoImage}
               style={{
-                width: 80, // Set to a small size
-                height: 80, // Maintain aspect ratio or set explicitly
+                width: 80,
+                height: 80,
                 marginTop: -120,
                 shadowColor: "black",
                 shadowOffset: {
                   width: 0,
-                  height: 4,
+                  height: 8, // Move the shadow further down for more visibility
                 },
-                shadowOpacity: 0.9,
-                shadowRadius: 4.65,
+                shadowOpacity: 1, // Full visibility (maximum strength)
+                shadowRadius: 3, // Sharper, smaller shadow edge
               }}
             />
 

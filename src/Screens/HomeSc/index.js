@@ -383,7 +383,7 @@ const HomeSc = ({ navigation, route }) => {
               />
           </View>
           :
-          <UserAvatar username={user?.full_name} height={54} width={54} />
+          <UserAvatar username={user?.isGuestUser ? "Guest" : user?.full_name} height={54} width={54} />
         }
           <View style={styles.headerContent}>
             <Text style={styles.greeting}>

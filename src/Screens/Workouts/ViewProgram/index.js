@@ -48,7 +48,7 @@ const ViewProgram = ({ route }) => {
   const { _id } = route?.params?.passData;
   const url = route?.params?.url;
   const programVideos = route?.params?.programVideos;
-  const userPlan = route?.params?.userPlan;
+  // const userPlan = route?.params?.userPlan;
 
   const [program, setProgram] = useState(null);
   const [data, setData] = useState(null);
@@ -173,36 +173,36 @@ const ViewProgram = ({ route }) => {
   const handleAddToCalendar = () => {
     setModalVisible(true);
     return
-    if (user?.isAssigned === true) {
-      const workoutsCompleted = hasCompletedWorkouts(userPlan);
-      if (workoutsCompleted.isGoalMet) {
-        Alert.alert("Switch Program", " Do you want to switch to new program?", [
-          {
-            text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
-            style: "destructive",
-          },
-          {
-            text: "Continue",
-            onPress: () => setModalVisible(true),
-            style: "default",
-          },
-        ]);
-      }
-      else{
-        const remainingCount = Math.max(0, 5 - workoutsCompleted.completedCount);
-        Alert.alert("Program Locked", 
-        `Complete ${remainingCount} more workout${remainingCount !== 1 ? "s" : ""} in your current program to unlock this program.`, [
-          {
-            text: "Ok",
-            onPress: () => console.log("Ok Pressed"),
-            style: "destructive",
-          }
-        ]);
-      }
-    } else {
-      setModalVisible(true);
-    }
+    // if (user?.isAssigned === true) {
+    //   const workoutsCompleted = hasCompletedWorkouts(userPlan);
+    //   if (workoutsCompleted.isGoalMet) {
+    //     Alert.alert("Switch Program", " Do you want to switch to new program?", [
+    //       {
+    //         text: "Cancel",
+    //         onPress: () => console.log("Cancel Pressed"),
+    //         style: "destructive",
+    //       },
+    //       {
+    //         text: "Continue",
+    //         onPress: () => setModalVisible(true),
+    //         style: "default",
+    //       },
+    //     ]);
+    //   }
+    //   else{
+    //     const remainingCount = Math.max(0, 5 - workoutsCompleted.completedCount);
+    //     Alert.alert("Program Locked", 
+    //     `Complete ${remainingCount} more workout${remainingCount !== 1 ? "s" : ""} in your current program to unlock this program.`, [
+    //       {
+    //         text: "Ok",
+    //         onPress: () => console.log("Ok Pressed"),
+    //         style: "destructive",
+    //       }
+    //     ]);
+    //   }
+    // } else {
+    //   setModalVisible(true);
+    // }
   };
 
   const handleDayPress = (day) => {

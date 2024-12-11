@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 const generateBackgroundColor = (username) => {
+  if(username){
   // Generate a hash from the username
   let hash = 0;
   for (let i = 0; i < username.length; i++) {
@@ -11,11 +12,15 @@ const generateBackgroundColor = (username) => {
   // Convert the hash to an RGB color
   const color = `rgb(${(hash & 0xff0000) >> 16}, ${(hash & 0x00ff00) >> 8}, ${hash & 0x0000ff})`;
   return color;
+}
+else{
+  return 'red';
+}
 };
 
 const UserAvatar = ({ username, width = 100, height = 100 }) => {
   const backgroundColor = generateBackgroundColor(username);
-  const initials = username.slice(0, 2).toUpperCase();
+  const initials = username?.slice(0, 2).toUpperCase();
 
   return (
     <View

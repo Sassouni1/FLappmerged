@@ -318,6 +318,10 @@ export default function Squat({ navigation, route }) {
     return currentIndex;
   }
 
+  const scrollToTop = () => {
+    scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+  };
+
   const onPressNextExercise = () => {
     const currentIndex = findCurrentIndex();
     if (currentIndex == exercises?.length - 1) {
@@ -335,6 +339,7 @@ export default function Squat({ navigation, route }) {
           setSelectedTask(nextExercise?.task);
           setSelectedExercise(nextExercise?.task[0]);
         }
+        scrollToTop();
       }
     }
   };
@@ -351,6 +356,7 @@ export default function Squat({ navigation, route }) {
         setSelectedTask(previousExercise?.task);
         setSelectedExercise(previousExercise?.task[0]);
       }
+      scrollToTop();
     } else onPressBack();
   };
   const RenderSquare = ({ title, desc, icon }) => {
@@ -831,7 +837,7 @@ export default function Squat({ navigation, route }) {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.white }}>
+    <View style={{ flex: 1,paddingTop:50, backgroundColor: colors.white }}>
       {isVisible ? (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
           <View
