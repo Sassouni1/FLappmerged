@@ -9,6 +9,8 @@ import {
   StatusBar,
   Platform,
   Pressable,
+  Alert,
+  Linking
 } from "react-native";
 import { Bubble, GiftedChat } from "react-native-gifted-chat";
 import { getStatusBarHeight } from "react-native-safearea-height";
@@ -51,7 +53,34 @@ import UserAvatar from "../UserAvatar";
 
 const { io } = require("socket.io-client");
 const socket = io(SOCKET_URL);
-
+const prohibitedPhrases = [
+  "refund",
+  "cancel",
+  "pricing",
+  "charged me",
+  "I got charged",
+  "penis",
+  "dick",
+  "fag",
+  "Fuck You",
+  "this program sucks",
+  "this app is terrible",
+  "scam",
+  "money back",
+  "worst app ever",
+  "ripoff",
+  "not worth it",
+  "horrible experience",
+  "terrible customer service",
+  "broken app",
+  "useless app",
+  "waste of money",
+  "fraud",
+  "fake",
+  "cheated",
+  "misleading",
+  "dishonest",
+];
 const STATUSBAR_HEIGHT =
   Platform.OS === "ios" ? getStatusBarHeight(true) : StatusBar.currentHeight;
 
@@ -75,6 +104,31 @@ const BotChatScreen = ({ navigation, route }) => {
   }, [users]);
   
   const sendChat = async (sms) => {
+    // Check for prohibited phrases in the message
+    const lowerCaseMessage = sms.toLowerCase();
+    const containsProhibitedPhrase = prohibitedPhrases.some((phrase) =>
+      lowerCaseMessage.includes(phrase)
+    );
+
+    if (containsProhibitedPhrase) {
+      Alert.alert(
+        "Support Needed",
+        "Please reach out to our support team for more assistance.",
+        [
+          {
+            text: "Contact Support",
+            onPress: () => {
+              // Replace the URL with your actual support page URL
+              Linking.openURL("https://www.fightlife.io/contactus");
+            },
+          },
+          { text: "OK", style: "cancel" },
+        ]
+      );
+      return; // Prevent the message from being sent
+    }
+
+
     const date = new Date();
     const utcDate = date.toISOString();
     if (chatRoomType == "groupChat") {

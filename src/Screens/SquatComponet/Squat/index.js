@@ -21,7 +21,7 @@ import {
 } from "../../../../utils/ResponsiveFun";
 import { useFocusEffect } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoader } from "../../../Redux/actions/GernalActions";
+import { setLoader,setCalanderSetsCheckmark } from "../../../Redux/actions/GernalActions";
 import { ApiCall } from "../../../Services/Apis";
 import toast from "react-native-simple-toast";
 import VideoSkills from "../../Skills/Video";
@@ -176,32 +176,35 @@ const TopVideo = React.memo(({ videoUrl, title, onPressBack }) => {
           </TouchableOpacity>
         </>
       }
-      <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-        {!videoUrl &&
-          <TouchableOpacity
-            onPress={onPressBack}
-            style={[
-              styles.headerBtnStyle, { backgroundColor: 'black' }
-            ]}
-          >
-            <Ionicons
-              name="chevron-back"
-              size={getFontSize(2.5)}
-              color={colors.white}
-            />
-          </TouchableOpacity>
-        }
-      <Text
-            style={{
-              textAlign: "center",
-              fontSize: getFontSize(3),
-              fontWeight: 700,
-              marginLeft:10,
-            }}
-          >
-            {title}
-          </Text>
-          </View>
+     <View style={{ flexDirection: 'row', alignItems: 'center',paddingHorizontal:20 }}>
+  {!videoUrl && (
+    <TouchableOpacity
+      onPress={onPressBack}
+      style={[styles.headerBtnStyle, { backgroundColor: 'black' }]}
+    >
+      <Ionicons
+        name="chevron-back"
+        size={getFontSize(2.5)}
+        color={colors.white}
+      />
+    </TouchableOpacity>
+  )}
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <Text
+      style={{
+        textAlign: 'center',
+        fontSize: getFontSize(3),
+        fontWeight: '700',
+        marginLeft: !videoUrl ? 10 : 0,
+      }}
+      numberOfLines={2} // Restrict to 2 lines
+      ellipsizeMode="tail" // Add ellipsis (...) if text overflows
+    >
+      {title}
+    </Text>
+  </View>
+</View>
+
     </View>
   );
 }, (prevProps, nextProps) => {
@@ -215,13 +218,14 @@ export default function Squat({ navigation, route }) {
   const onPressBack = () => {
     navigation.goBack();
   };
-  const { exercise, workout, task, exercises, calories,programExercises,dynamicExercises } = route?.params;
+  const { exercise, workout,selectedDay, task, exercises, calories,programExercises,dynamicExercises } = route?.params;
   const user = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
   const scrollViewRef = useRef(null);
   const sectionRefs = useRef([]);
  
   const token = useSelector((state) => state.auth.userToken);
+  const calanderSetsCheckmark = useSelector((state) => state.gernal.calanderSetsCheckmark);
   const [isChecked, setIsChecked] = useState([]);
   const [additionalSets, setAdditionalSets] = useState([]);
   const [seconds, setSeconds] = useState(0);
@@ -237,10 +241,9 @@ export default function Squat({ navigation, route }) {
     // Update the specific input's value
     inputsRef.current[key] = text;
   };
+  // console.log("selectedExercise",selectedExercise)
 
   useEffect(() => {
-    console.log("selectedExercise",exercise)
-    
     const timeoutId = setTimeout(() => {
       setIsVisible(false);
     }, 3000);
@@ -265,6 +268,10 @@ export default function Squat({ navigation, route }) {
 
   useFocusEffect(
     React.useCallback(() => {
+      dispatch(setLoader(true))
+      setTimeout(() => {
+        dispatch(setLoader(false))
+      }, 3000);
       if (exercise?.additional_sets)
         setAdditionalSets(exercise?.additional_sets);
     }, [exercise])
@@ -371,14 +378,27 @@ export default function Squat({ navigation, route }) {
 
   const handleCheckmarkPress = async (index, set,isBodyweightExercise=false,isDynamicWarmUp=false,isRevert=false,currentExercise,userWeight) => {
     let find_lbs_value = findInputValueWithKey(index);
-    dispatch(setLoader(true));
-    await singleSetComplete(set, find_lbs_value,isBodyweightExercise,isDynamicWarmUp,isRevert,currentExercise,userWeight);
-    let newIsChecked = [...isChecked];
-    let valueIncludes = newIsChecked.includes(index);
-    if (valueIncludes) newIsChecked = newIsChecked.filter((x) => x != index);
-    else newIsChecked.push(index);
+    // dispatch(setLoader(true));
 
-    setIsChecked(newIsChecked);
+    let newIsChecked = [...calanderSetsCheckmark];
+
+    // Find the object in the array that matches the given index
+    let existingItem = newIsChecked.find((item) => item.index === index);
+
+    if (existingItem) {
+      // If the object exists, toggle the `value` field (true to false, or false to true)
+      newIsChecked = newIsChecked.map((item) =>
+        item.index === index ? { ...item, value: !item.value } : item
+      );
+    } else {
+      // If the object does not exist, add a new object with `index` and `value: true`
+      newIsChecked.push({ index: index, value: !isRevert });
+    }
+
+    dispatch(setCalanderSetsCheckmark(newIsChecked))
+    await singleSetComplete(set, find_lbs_value,isBodyweightExercise,isDynamicWarmUp,isRevert,currentExercise,userWeight);
+
+    // setIsChecked(newIsChecked);
     dispatch(setLoader(false));
   };
 
@@ -416,7 +436,7 @@ export default function Squat({ navigation, route }) {
     let findSet = findSetWithMaxReps(selectedExercise);
     if (findSet)
     {
-      const updatedSet = { ...findSet, _id: Math.floor(Math.random() * 1000)+'abs' };
+      const updatedSet = { ...findSet, _id: Math.floor(Math.random() * 1000)+'abs',complete:'false' };
       setAdditionalSets((prevItems) => [...prevItems, updatedSet]);
     }
     else
@@ -481,48 +501,49 @@ export default function Squat({ navigation, route }) {
     }
   }
 
-  const singleSetComplete = async (set, weight,isBodyweightExercise=false,isDynamicWarmUp=false,isRevert=false,currentExercise,userWeight) => {
-    try {
-      dispatch(setLoader(true));
-      const submittedData = {
-        set_id:set._id,
-        parameter: set?.parameter,
-        remaining_time: 0,
-        [set?.parameter]: isBodyweightExercise ? weight :  set[set?.parameter],//is case of BodyWeight( weigth use as reps)
-        weight:isBodyweightExercise ? userWeight : (!isDynamicWarmUp ?  weight : 0)
-      };
 
-      let requestParams = {
-        setId: set?._id,
-        workout_objId: workout?._id,
-        exercise_objId: exercise?._id,
-        inner_objId: workout?.innerWorkout[0]?._id,
-        dynamicExercises:dynamicExercises,
-        submittedData: submittedData,
-        calories: calories || 0,
-      };
+const singleSetComplete = async (set, weight,isBodyweightExercise=false,isDynamicWarmUp=false,isRevert=false,currentExercise,userWeight) => {
+  try {
+    // dispatch(setLoader(true));
+    const submittedData = {
+      set_id:set._id,
+      parameter: set?.parameter,
+      remaining_time: 0,
+      [set?.parameter]: isBodyweightExercise ? weight :  set[set?.parameter],//is case of BodyWeight( weigth use as reps)
+      weight:isBodyweightExercise ? userWeight : (!isDynamicWarmUp ?  weight : 0)
+    };
 
-      console.log("submittedData",submittedData)
-      if(task) {
-        requestParams.task_objId = currentExercise?._id;
-      }
-      const res = await ApiCall({
-        route: isRevert ? `assignProgram/revert_update_set/${user?.plan_id}` : `assignProgram/update_set/${user?.plan_id}`,
-        verb: "post",
-        token: token,
-        params: requestParams,
-      });
-      if (res?.status == "200") {
-        toast.show("Successfully completed");
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        toast.show("Enter correct sets");
-      }
-    } catch (e) {
-      console.log("api get skill error -- ", e.toString());
+    let requestParams = {
+      setId: set?._id,
+      workout_objId: workout?._id,
+      exercise_objId: currentExercise?._id,
+      inner_objId: workout?.innerWorkout[0]?._id,
+      dynamicExercises:dynamicExercises,
+      submittedData: submittedData,
+      calories: calories || 0,
+    };
+
+    console.log("submittedData",submittedData)
+    if(task) {
+      requestParams.task_objId = currentExercise?._id;
     }
-  };
+    const res = await ApiCall({
+      route: isRevert ? `assignProgram/revert_update_set/${user?.plan_id}` : `assignProgram/update_set/${user?.plan_id}`,
+      verb: "post",
+      token: token,
+      params: requestParams,
+    });
+    if (res?.status == "200") {
+      toast.show("Successfully completed");
+      dispatch(setLoader(false));
+    } else {
+      dispatch(setLoader(false));
+      toast.show("Enter correct sets");
+    }
+  } catch (e) {
+    console.log("api get skill error -- ", e.toString());
+  }
+};
 
   const singleExerciseComplete = async () => {
     try {
@@ -579,7 +600,9 @@ export default function Squat({ navigation, route }) {
     isAdditional,
     addon = "",
   }) => {
-    const uniqueKey = isAdditional ? "additionalSet" + no+currentExercise?._id : addon + "set" + no+currentExercise?._id;
+    const uniqueKey = isAdditional ? "additionalSet" + no+currentExercise?._id+selectedDay : addon + "set" + no+currentExercise?._id+selectedDay;
+    let existingItem = calanderSetsCheckmark?.find((item) => item.index === uniqueKey);
+
     let findProgramExercise = programExercises?.find(x => x._id == currentExercise._id);
     if (!findProgramExercise) {
       findProgramExercise = programExercises?.find(x => x.exercise_name == currentExercise.exercise_name);
@@ -704,20 +727,30 @@ export default function Squat({ navigation, route }) {
           <TouchableOpacity
             style={{ marginRight: getWidth(5) }}
             onPress={() => {
-              if (!isChecked.includes(uniqueKey) && set?.complete != "true")
-                handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp,false,currentExercise,userWeight); // Pass isBodyweightExercise, and isDynamicWarmUp
-              else{
-                handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp,true,currentExercise,userWeight); 
+              if(existingItem)
+              {
+                if (existingItem.value == true)
+                  handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp, true, currentExercise, userWeight);
+                else
+                  handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp, false, currentExercise, userWeight); // Pass isBodyweightExercise, and isDynamicWarmUp
               }
+              else{
+                if (set?.complete == "true")
+                  handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp, true, currentExercise, userWeight);
+                else {
+                  handleCheckmarkPress(uniqueKey, set, isBodyweightExercise, isDynamicWarmUp, false, currentExercise, userWeight); // Pass isBodyweightExercise, and isDynamicWarmUp
+                }
+            }
             }}
           >
             <Ionicons
               name="checkmark-circle"
               size={getFontSize(5)}
               color={
-                !isChecked.includes(uniqueKey) && set?.complete != "true"
-                ? colors.axisColor
-                  : colors.orange 
+                existingItem ?
+                existingItem.value == true ? colors.orange :colors.axisColor
+                :
+                set?.complete == "true" ? colors.orange : colors.axisColor
               }
               style={{ marginRight: getWidth(5) }}
             />
@@ -870,7 +903,7 @@ export default function Squat({ navigation, route }) {
               <View key={index}
               ref={(el) => (sectionRefs.current[index] = el)}
               >
-              <TopVideo videoUrl={item?.exerciseVideo} title={item?.exercise_name} onPressBack={onPressBack} />
+              <TopVideo videoUrl={item?.exerciseVideo || item?.video} title={item?.exercise_name} onPressBack={onPressBack} />
                 <RenderExercise exercise={item} addon={"task" + index} />
                 {selectedTask?.length != index + 1 && (
                   <View style={styles.divider} />
@@ -879,7 +912,7 @@ export default function Squat({ navigation, route }) {
             ))
           ) : (
             <>
-           <TopVideo videoUrl={selectedExercise?.exerciseVideo} title={selectedExercise?.exercise_name} onPressBack={onPressBack} />
+           <TopVideo videoUrl={selectedExercise?.exerciseVideo || selectedExercise?.video} title={selectedExercise?.exercise_name} onPressBack={onPressBack} />
             <RenderExercise exercise={selectedExercise} />
             </>
 
@@ -901,6 +934,7 @@ export default function Squat({ navigation, route }) {
                   key={index + 1}
                   set={item}
                   no={index + 1}
+                  currentExercise={exercise}
                   reps={item[item.parameter] || 0}
                   isSuccess={true}
                   isAdditional={true}

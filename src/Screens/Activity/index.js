@@ -85,6 +85,10 @@ export default function TrainingStats({ navigation }) {
     requestPermissionsAndFetchData();
   }, []);
 
+  function addCommasToNumber(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
   // Function to request permissions and fetch health data
   const requestPermissionsAndFetchData = () => {
     AppleHealthKit.initHealthKit(options, (err, results) => {
@@ -1795,13 +1799,13 @@ export default function TrainingStats({ navigation }) {
           />
         </View>
         <Text style={styles.totalVolumeStyle}>
-          {`Total Volume: ${Math.round(total_lbs)} lbs lifted`}
+          {`Total Volume: ${addCommasToNumber(Math.round(total_lbs) || 0)} lbs lifted`}
         </Text>
         <View style={styles.chartOuterContainer}>
           <View style={styles.headerTopContainer}>
-            <View style={styles.headerTextStyle}>
-              <Text style={styles.percentageStyle}>
-                {Math.round(total_lbs)}
+            <View style={{marginBottom:5}}>
+              <Text style={[styles.percentageStyle,{fontSize:24}]}>
+                {addCommasToNumber(Math.round(total_lbs) || 0)}
               </Text>
               <Text style={[styles.completionStyle, { fontSize: getWidth(3) }]}>
                 Total lbs lifted
@@ -1851,7 +1855,7 @@ export default function TrainingStats({ navigation }) {
       {TopImageComponent}
       <View style={styles.innerContainerStyle}>
         {TrainingCompletionComponent}
-        {CaloriesBurnedComponent}
+        {/* {CaloriesBurnedComponent} */}
         {StrengthProgressComponent}
 
         <View>
@@ -1867,7 +1871,7 @@ export default function TrainingStats({ navigation }) {
           <View style={styles.chartOuterContainer}>
             <View style={styles.headerTopContainer}>
               <View style={styles.headerTextStyle}>
-                <Text style={[styles.percentageStyle,{fontSize:26}]}>
+                <Text style={[styles.percentageStyle,{fontSize:getFontSize(4)}]}>
                   {appleStatsDataByRange(appleStatGraphData || [],appleStats_dropdown)?.total || "N/A"}
                 </Text>
                 

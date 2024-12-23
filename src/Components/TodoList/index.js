@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -10,43 +10,75 @@ import {
   Keyboard,
   ScrollView,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CheckCircle, GripVertical, X } from "lucide-react-native";
 
 const TodoList = () => {
-  const [tasks, setTasks] = useState([
-    {
-      id: "1",
-      text: "Example: Drink 1 Gallon of Water Per Day...",
-      completed: false,
-      isPlaceholder: true,
-    },
-    {
-      id: "2",
-      text: "Example: Walk 1 Mile...",
-      completed: false,
-      isPlaceholder: true,
-    },
-    {
-      id: "3",
-      text: "Example: Perform Mobility",
-      completed: false,
-      isPlaceholder: true,
-    },
-    {
-      id: "4",
-      text: "Example: Eat Clean Daily",
-      completed: false,
-      isPlaceholder: true,
-    },
-    {
-      id: "5",
-      text: "Example: Lose 20lbs",
-      completed: false,
-      isPlaceholder: true,
-    },
-  ]);
-
+  const [tasks, setTasks] = useState([]);
   const inputRefs = useRef({});
+
+  useEffect(() => {
+    // Load tasks from AsyncStorage when the app is launched
+    const loadTasks = async () => {
+      try {
+        const storedTasks = await AsyncStorage.getItem("tasks");
+        if (storedTasks) {
+          setTasks(JSON.parse(storedTasks));
+        } else {
+          // Default example tasks
+          setTasks([
+            {
+              id: "1",
+              text: "Example: Drink 1 Gallon of Water Per Day...",
+              completed: false,
+              isPlaceholder: true,
+            },
+            {
+              id: "2",
+              text: "Example: Walk 1 Mile...",
+              completed: false,
+              isPlaceholder: true,
+            },
+            {
+              id: "3",
+              text: "Example: Perform Mobility",
+              completed: false,
+              isPlaceholder: true,
+            },
+            {
+              id: "4",
+              text: "Example: Eat Clean Daily",
+              completed: false,
+              isPlaceholder: true,
+            },
+            {
+              id: "5",
+              text: "Example: Lose 20lbs",
+              completed: false,
+              isPlaceholder: true,
+            },
+          ]);
+        }
+      } catch (error) {
+        console.error("Failed to load tasks", error);
+      }
+    };
+
+    loadTasks();
+  }, []);
+
+  useEffect(() => {
+    // Save tasks to AsyncStorage whenever they change
+    const saveTasks = async () => {
+      try {
+        await AsyncStorage.setItem("tasks", JSON.stringify(tasks));
+      } catch (error) {
+        console.error("Failed to save tasks", error);
+      }
+    };
+
+    saveTasks();
+  }, [tasks]);
 
   const handleTaskChange = (id, newText) => {
     setTasks((prevTasks) =>

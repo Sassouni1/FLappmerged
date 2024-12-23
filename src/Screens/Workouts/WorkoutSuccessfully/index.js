@@ -10,10 +10,14 @@ import {
 } from "../../../../utils/ResponsiveFun";
 import { useNavigation } from "@react-navigation/native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { setCalanderRefreshKey } from "../../../Redux/actions/GernalActions";
+import { useDispatch } from "react-redux";
+
 
 const WorkoutSucessfully = ({ route }) => {
   const navigation = useNavigation();
   const selectDate = route?.params;
+  const dispatch = useDispatch();
 
   const styles = StyleSheet.create({
     container: {
@@ -82,7 +86,10 @@ const WorkoutSucessfully = ({ route }) => {
         </Text>
       </View>
       <TouchableOpacity
-        onPress={() => navigation.navigate("AddWorkouts")}
+        onPress={() => {
+         dispatch(setCalanderRefreshKey(true));
+          navigation.navigate("AddWorkouts")
+        }}
         style={styles.button}
       >
         <Text style={styles.buttonText}>Okay</Text>

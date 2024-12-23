@@ -7,7 +7,8 @@ import {
   Dimensions,
   ImageBackground,
   StyleSheet,
-  Alert
+  Alert,
+  ActivityIndicator
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { colors } from "../../../constants/colors";
@@ -20,7 +21,7 @@ import {
 } from "../../../../utils/ResponsiveFun";
 import Button from "../../../Components/Button";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoader } from "../../../Redux/actions/GernalActions";
+import { setLoader,setCalanderRefreshKey } from "../../../Redux/actions/GernalActions";
 import { setSelectedCalendarDate } from "../../../Redux/actions/WorkoutActions";
 import { ApiCall } from "../../../Services/Apis";
 import ReactNativeCalendarStrip from "react-native-calendar-strip";
@@ -76,23 +77,29 @@ const AddWorkouts = () => {
   });
 
   const [program, setProgram] = useState();
+  const [workoutForWeek, setWorkoutForWeek] = useState([]);
   const [workout, setWorkout] = useState({});
   const [assigWorkout, setAssigWorkout] = useState({});
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
   const loader = useSelector((state) => state.gernal.loader);
+  const refreshCalanderView = useSelector((state) => state.gernal.refreshCalanderView);
   const [userWorkoutProgress, setUserWorkoutProgress] = useState([]);
   const [exercises, setExercises] = useState([]);
   const currentDate = new Date().toISOString();
   const [customDatesStyles, setCustomDatesStyles] = useState([]);
   const [offDayVideos, setOffDayVideos] = useState([]);
   const [selectedDay,setSelectedDay] = useState();
+  const [programStartDate,setProgramStartDate] = useState();
   const [dynamicExercises,setDynamicExercises] = useState();
   const [programExercises,setProgramExercises] = useState([]);
   const [restDays,setRestDays] = useState([]);
   const [selectedRestDayVideo,setSelectedRestDayVideo] = useState({});
 
   const [isModalVisible, setModalVisible] = useState(false);
+  const [currentWeekStartDate, setCurrentWeekStartDate] = useState('');
+  const [currentWeekEndDate, setCurrentWeekEndDate] = useState('');
+
 
   useFocusEffect(
     React.useCallback(() => {
@@ -115,10 +122,10 @@ const AddWorkouts = () => {
   };
 
   const handleDateChange = (selectedDate) => {
+    setSelectedRestDayVideo({});
     dispatch(setSelectedCalendarDate(selectedDate));
     setDate(selectedDate);
-    dispatch(setLoader(true));
-    // getSingleExcercise(selectedDate);
+    setCurrentDateWorkout(workoutForWeek,selectedDate,programStartDate);
   };
 const handleCompleteWorkout = () =>{
   Alert.alert(
@@ -159,9 +166,7 @@ const completeWorkout = async ()=>{
   console.log("api get skill error -- ", e.toString());
 }
 }
-
-
-  const calculateDayDifference = (startFromDate, selectedDate) => {
+const calculateDayDifference = (startFromDate, selectedDate) => {
     // Convert the input dates to Moment objects and format them to ignore time
     const startDate = moment.utc(startFromDate).startOf('day');
     const selected = moment.utc(selectedDate).startOf('day');
@@ -172,30 +177,57 @@ const completeWorkout = async ()=>{
   
     // Return the result as "Day X"
     const res = `day ${dayDifference}`;
-    console.log("Selected day:", res);
+    console.log(res)
     setSelectedDay(res);
 };
-  const getSingleExcercise = async (selectedDate) => {
+
+  const setCurrentDateWorkout = (workouts, selectedDate,progStartDate) => {
+    calculateDayDifference(progStartDate,selectedDate)
+
+    let dateSelected = new Date(selectedDate);
+    dateSelected.setUTCHours(0, 0, 0, 0);
+    let findWorkout = workouts.find(x => new Date(x.workoutDate).toLocaleDateString('en-CA') == dateSelected.toLocaleDateString('en-CA'))
+    if (findWorkout) {
+      let workout = findWorkout?.workout;
+      let innerWorkout = workout?.innerWorkout[0];
+      if (innerWorkout) {
+        setWorkout(workout);
+        setAssigWorkout(innerWorkout);
+        setExercises(innerWorkout?.exercise || []);
+      }
+      else {
+        setWorkout({});
+        setAssigWorkout({});
+        setExercises([]);
+      }
+    }
+    else{
+      setWorkout({});
+      setAssigWorkout({});
+      setExercises([]);
+    }
+
+  }
+
+  const getExcerciseForWeek = async (selectedDate) => {
     try {
+      dispatch(setLoader(true));
       setAssigWorkout({});
       const res = await ApiCall({
-        route: `assignProgram/given-date-workouts/${
+        route: `assignProgram/week-workouts/${
           user?.plan_id
         }&${selectedDate}`,
         verb: "get",
         token: token,
       });
       if (res?.status == "200") {
-        calculateDayDifference(res?.response?.startDate,selectedDate)
-        setWorkout(res?.response?.Workout[0]);
-        setAssigWorkout(res?.response?.Workout[0]?.innerWorkout[0]);
-        setExercises(res?.response?.exercises || []);
+        let _programStartDate = res?.response?.startDate;
+        setProgramStartDate(_programStartDate)
+        setWorkoutForWeek(res?.response?.Workout);
+        setCurrentDateWorkout(res?.response?.Workout,selectedDate,_programStartDate)
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        setWorkout({});
-        setAssigWorkout({});
-        setExercises([]);
       }
     } catch (e) {
       console.log("api get skill errorrrr -- ", e.toString());
@@ -293,11 +325,10 @@ const completeWorkout = async ()=>{
       if (dayIndex != -1) {
         // Use modulus to get the corresponding video
         const video = offDayVideos[dayIndex % offDayVideos.length];
-
         setSelectedRestDayVideo(video);
       }
     }
-  }, [selectedDay])
+  }, [restDays,offDayVideos,selectedDay])
 
   const getInstructions = async () => {
     try {
@@ -306,7 +337,6 @@ const completeWorkout = async ()=>{
         verb: "get",
         token: token,
       });
-      console.log("offdays",res?.response?.data?.filter((x) => x.type == "Off Day"));
 
       if (res?.status == 200) {
         setOffDayVideos(
@@ -342,24 +372,15 @@ const completeWorkout = async ()=>{
     }
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      let dateSelected = selectedCalendarDate || date;
-      getViewProgram();
-      exerciseProgress(dateSelected);
-      getInstructions();
-    }, [user])
-  );
-
-  useFocusEffect(
-    React.useCallback(() => {
-      let dateSelected = selectedCalendarDate || date;
-      setDate(dateSelected);
-      dispatch(setLoader(true));
-      getSingleExcercise(dateSelected);
-    }, [user,selectedCalendarDate])
-  );
-
+  useEffect(()=>{
+    dispatch(setCalanderRefreshKey(false));
+    let dateSelected = selectedCalendarDate || date;
+    getExcerciseForWeek(dateSelected);
+    getViewProgram();
+    exerciseProgress(dateSelected);
+    getInstructions();
+  },[refreshCalanderView])
+  
 
   const findMaxReps = (exercise) => {
     try {
@@ -525,6 +546,7 @@ const isVimeoUrl = (url) => {
           exercise: item,
           workout: workout,
           task: null,
+          selectedDay:selectedDay,
           programExercises:programExercises,
           exercises: exercises,
           dynamicExercises:dynamicExercises,
@@ -553,6 +575,7 @@ const isVimeoUrl = (url) => {
                 exercise: item,
                 workout: workout,
                 task: parentitem?.task,
+                selectedDay:selectedDay,
                 programExercises:programExercises,
                 exercises: exercises,
                 calories: assigWorkout?.calories || 0,
@@ -651,6 +674,17 @@ const isVimeoUrl = (url) => {
             showMonth={false}
             selectedDate={date}
             onDateSelected={handleDateChange}
+            onWeekChanged={(weekStartDate, weekEndDate) => {
+              setCurrentWeekStartDate(weekStartDate)
+              if (currentWeekStartDate) {
+                if (currentWeekStartDate.toISOString() != weekStartDate.toISOString()) {
+                  console.log("Week changed:", weekStartDate, weekEndDate);
+                  getExcerciseForWeek(weekStartDate);
+                  dispatch(setSelectedCalendarDate(weekStartDate));
+                  setDate(weekStartDate);
+                }
+              }
+            }}
             calendarAnimation={{ type: "sequence", duration: 30 }}
             customDatesStyles={customDatesStyles}
             highlightDateNameStyle={{ color: "black" }}
@@ -696,6 +730,7 @@ const isVimeoUrl = (url) => {
               justifyContent: "center",
             }}
           >
+           
             <Text
               style={{
                 fontSize: getFontSize(4),
@@ -714,21 +749,25 @@ const isVimeoUrl = (url) => {
               }}
             >
                 <View  style={{marginBottom:10}}>
-              <VideoComponent
-                videoUrl={selectedRestDayVideo?.video}
-                thumbnail={selectedRestDayVideo?.video_thumbnail}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  borderRadius: 10,
-                }}
-              />
+                  {selectedRestDayVideo?.video ?
+                    <VideoComponent
+                      videoUrl={selectedRestDayVideo?.video}
+                      thumbnail={selectedRestDayVideo?.video_thumbnail}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: 10,
+                      }}
+                    />
+                    :
+                    <ActivityIndicator size={'large'} />
+                  }
               </View>
             </View>
           </View>
         )}
         refreshing={false}
-        onRefresh={() => getSingleExcercise(date)}
+        onRefresh={() => getExcerciseForWeek(date)}
         ListHeaderComponent={() => (
           <View
             style={{

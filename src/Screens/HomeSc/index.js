@@ -327,7 +327,7 @@ const HomeSc = ({ navigation, route }) => {
 
         const now = new Date();
         const upcomingEvent = eventsData
-          .filter((event) => new Date(event.start) > now)
+          .filter((event) => new Date(event.end) > now)
           .sort((a, b) => new Date(a.start) - new Date(b.start))[0];
 
         if (upcomingEvent) {

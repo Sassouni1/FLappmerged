@@ -2,10 +2,12 @@ import { ACTIONS } from "../action-types";
 
 const initialState = {
   loader: false,
+  refreshCalanderView:false,
   chats: [],
   allSms: [],
   counts: { consultations: 0, paid: 0 },
-  showPopup:true
+  showPopup:true,
+  calanderSetsCheckmark:[]
   // timer: { hours: 0, minutes: 0, seconds: 0 },
 };
 
@@ -15,6 +17,16 @@ const GernelReducers = (state = initialState, action) => {
       return {
         ...state,
         loader: action.data,
+      };
+    case ACTIONS.SET_REFRESH_CALANDER_VIEW:
+      return {
+        ...state,
+        refreshCalanderView: action.data,
+      };
+    case ACTIONS.CALANDER_SETS_CHECKMARK:
+      return {
+        ...state,
+        calanderSetsCheckmark: action.data,
       };
     case ACTIONS.SET_CHATS:
       return {

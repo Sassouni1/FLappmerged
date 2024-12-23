@@ -4,6 +4,14 @@ export const setLoader = data => ({
   type: ACTIONS.SET_LOADER,
   data,
 });
+export const setCalanderRefreshKey = data => ({
+  type: ACTIONS.SET_REFRESH_CALANDER_VIEW,
+  data,
+});
+export const setCalanderSetsCheckmark = data => ({
+  type: ACTIONS.CALANDER_SETS_CHECKMARK,
+  data,
+});
 export const getChats = data => ({
   type: ACTIONS.GET_CHATS,
   data,
