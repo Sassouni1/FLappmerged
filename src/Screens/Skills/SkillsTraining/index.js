@@ -188,25 +188,26 @@ export default function SkillsTraining({ navigation }) {
       <TouchableOpacity
         key={index}
         onPress={() => {
-          if (isUnlocked) {
           onPressDetail(item, childItem);
-          }
-          else{
-            Alert.alert("Training Locked", 
-            `Complete the previous training to unlock this.`, [
-              {
-                text: "Ok",
-                onPress: () => console.log("Ok Pressed"),
-                style: "destructive",
-              }
-            ]);
-          }
+          // if (isUnlocked) {
+          // onPressDetail(item, childItem);
+          // }
+          // else{
+          //   Alert.alert("Training Locked", 
+          //   `Complete the previous training to unlock this.`, [
+          //     {
+          //       text: "Ok",
+          //       onPress: () => console.log("Ok Pressed"),
+          //       style: "destructive",
+          //     }
+          //   ]);
+          // }
         }}
         style={styles.container1Style}
       >
-          <Text style={{ textAlign: 'right'}}>
+          {/* <Text style={{ textAlign: 'right'}}>
             {getWatchedStatus(item)}
-            </Text>
+            </Text> */}
         <View style={{flexDirection:'row',alignItems:'center',justifyContent: "space-between",}}>
         <View style={styles.rowContainer}>
           <Image

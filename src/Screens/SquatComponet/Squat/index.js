@@ -28,6 +28,9 @@ import VideoSkills from "../../Skills/Video";
 import { fonts } from "../../../constants/fonts";
 import VideoComponent from "../../../Components/VideoComponent";
 
+let apiCallQueue = []; // Queue to hold pending API calls
+let isApiCallInProgress = false; // To track if an API call is ongoing
+
 function formatDuration(seconds) {
   if (seconds < 60) {
       return `${seconds} seconds`;
@@ -237,6 +240,7 @@ export default function Squat({ navigation, route }) {
   const [timerActive, setTimerActive] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
+
   const handleTextChange = (key, text) => {
     // Update the specific input's value
     inputsRef.current[key] = text;
@@ -396,8 +400,14 @@ export default function Squat({ navigation, route }) {
     }
 
     dispatch(setCalanderSetsCheckmark(newIsChecked))
-    await singleSetComplete(set, find_lbs_value,isBodyweightExercise,isDynamicWarmUp,isRevert,currentExercise,userWeight);
-
+    enqueueApiCall(set, find_lbs_value, {
+      isBodyweightExercise: isBodyweightExercise,
+      isDynamicWarmUp: isDynamicWarmUp,
+      isRevert: isRevert,
+      currentExercise: currentExercise,
+      userWeight: userWeight
+    });
+    // await singleSetComplete(set, find_lbs_value,isBodyweightExercise,isDynamicWarmUp,isRevert,currentExercise,userWeight);
     // setIsChecked(newIsChecked);
     dispatch(setLoader(false));
   };
@@ -502,15 +512,62 @@ export default function Squat({ navigation, route }) {
   }
 
 
-const singleSetComplete = async (set, weight,isBodyweightExercise=false,isDynamicWarmUp=false,isRevert=false,currentExercise,userWeight) => {
+// Function to process the queue
+const processApiQueue = async () => {
+  // If an API call is already in progress, don't start the next one
+  if (isApiCallInProgress || apiCallQueue.length === 0) {
+    return; // Exit if there is no call or call is in progress
+  }
+
+  // Mark the API call as in progress
+  isApiCallInProgress = true;
+  const { set, weight, options } = apiCallQueue.shift(); // Get the first call from the queue
+
   try {
-    // dispatch(setLoader(true));
+    console.log("Processing API call:", set._id); // Debugging step
+    await singleSetComplete(set, weight, options); // Process the API call
+  } catch (e) {
+    console.log("API call failed:", e.toString());
+  } 
+  finally {
+    // After the API call finishes (success or failure)
+    isApiCallInProgress = false; // Mark as done
+    processApiQueue(); // Process the next call in the queue (if any)
+  }
+};
+
+// Function to add API call to the queue
+const enqueueApiCall = (set, weight, options = {}) => {
+  console.log("Enqueuing API call:", set._id); // Debugging step
+  apiCallQueue.push({ set, weight, options }); // Add call details to the queue
+  processApiQueue(); // Start processing if not already started
+};
+
+// Your existing singleSetComplete function
+const singleSetComplete = async (
+  set,
+  weight,
+  {
+    isBodyweightExercise = false,
+    isDynamicWarmUp = false,
+    isRevert = false,
+    currentExercise,
+    userWeight,
+  } = {}
+) => {
+  try {
     const submittedData = {
-      set_id:set._id,
+      set_id: set._id,
       parameter: set?.parameter,
       remaining_time: 0,
-      [set?.parameter]: isBodyweightExercise ? weight :  set[set?.parameter],//is case of BodyWeight( weigth use as reps)
-      weight:isBodyweightExercise ? userWeight : (!isDynamicWarmUp ?  weight : 0)
+      [set?.parameter]: isBodyweightExercise
+        ? weight
+        : set[set?.parameter], // For BodyWeight (weight used as reps)
+      weight: isBodyweightExercise
+        ? userWeight
+        : !isDynamicWarmUp
+        ? weight
+        : 0,
     };
 
     let requestParams = {
@@ -518,32 +575,34 @@ const singleSetComplete = async (set, weight,isBodyweightExercise=false,isDynami
       workout_objId: workout?._id,
       exercise_objId: currentExercise?._id,
       inner_objId: workout?.innerWorkout[0]?._id,
-      dynamicExercises:dynamicExercises,
+      dynamicExercises: dynamicExercises,
       submittedData: submittedData,
       calories: calories || 0,
     };
 
-    console.log("submittedData",submittedData)
-    if(task) {
+    if (task) {
       requestParams.task_objId = currentExercise?._id;
     }
+
     const res = await ApiCall({
-      route: isRevert ? `assignProgram/revert_update_set/${user?.plan_id}` : `assignProgram/update_set/${user?.plan_id}`,
+      route: isRevert
+        ? `assignProgram/revert_update_set/${user?.plan_id}`
+        : `assignProgram/update_set/${user?.plan_id}`,
       verb: "post",
       token: token,
       params: requestParams,
     });
+
     if (res?.status == "200") {
       toast.show("Successfully completed");
-      dispatch(setLoader(false));
     } else {
-      dispatch(setLoader(false));
       toast.show("Enter correct sets");
     }
   } catch (e) {
-    console.log("api get skill error -- ", e.toString());
+    console.log("API error:", e.toString());
   }
 };
+
 
   const singleExerciseComplete = async () => {
     try {

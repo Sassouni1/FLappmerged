@@ -31,7 +31,6 @@ const HTUA = () => {
         verb: "get",
         token: token,
       });
-      console.log("res..",res);
       if (res?.status == 200) {
         setDataList(res?.response?.data?.filter(x=>x.type == "HTUA"));
         dispatch(setLoader(false));

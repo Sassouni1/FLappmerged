@@ -382,6 +382,12 @@ const BotChatScreen = ({ navigation, route }) => {
           GiftedChat.append(previousMessages, newArray)
         );
       });
+      // Listen for message deletion updates
+      socket.on('messageDeleted', (deletedMessageId) => {
+        setMessages((prevMessages) =>
+          prevMessages.filter((msg) => msg._id !== deletedMessageId)
+        );
+      });
     } else if (chatRoomType == "chat") {
       socket.on("chat", (payload) => {
 
@@ -459,6 +465,30 @@ const BotChatScreen = ({ navigation, route }) => {
 
     setMessages(newArray);
   }, [messagesAll,users]);
+
+  const handleDeleteMessage = useCallback((messageToDelete) => {
+    // Emit the delete request to the backend
+    socket.emit('deleteMessage', {groupChatId:communityId, messageId: messageToDelete._id });
+
+    setMessages((prevMessages) =>
+      prevMessages.filter((msg) => msg._id !== messageToDelete._id)
+    );
+  }, []);
+
+  const onLongPress = useCallback((context, message) => {
+    Alert.alert(
+      'Delete Message',
+      'Are you sure you want to delete this message?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => handleDeleteMessage(message),
+        },
+      ]
+    );
+  }, [handleDeleteMessage]);
 
   const renderAvatar = (props) => {
     const { currentMessage } = props;
@@ -607,6 +637,7 @@ const BotChatScreen = ({ navigation, route }) => {
       <View style={styles.chatContainer}>
         <GiftedChat
           renderAvatar={renderAvatar}
+          onLongPress={onLongPress}
           renderBubble={(props) => {
             return (
               <Bubble
