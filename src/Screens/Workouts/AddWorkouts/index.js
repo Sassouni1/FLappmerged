@@ -842,6 +842,9 @@ const isVimeoUrl = (url) => {
                       workout: workout,
                       task: null,
                       exercises: exercises,
+                      selectedDay: selectedDay,
+                      programExercises: programExercises,
+                      dynamicExercises: dynamicExercises,
                     });
                   }}
                   text={`Start Workout`}

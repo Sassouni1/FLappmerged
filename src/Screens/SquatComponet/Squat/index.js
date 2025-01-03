@@ -594,9 +594,11 @@ const singleSetComplete = async (
     });
 
     if (res?.status == "200") {
-      toast.show("Successfully completed");
+      // toast.show("Successfully completed");
+      console.log("Successfully completed")
     } else {
-      toast.show("Enter correct sets");
+      // toast.show("Enter correct sets");
+      console.log("Enter correct sets")
     }
   } catch (e) {
     console.log("API error:", e.toString());
@@ -993,7 +995,7 @@ const singleSetComplete = async (
                   key={index + 1}
                   set={item}
                   no={index + 1}
-                  currentExercise={exercise}
+                  currentExercise={selectedExercise}
                   reps={item[item.parameter] || 0}
                   isSuccess={true}
                   isAdditional={true}
