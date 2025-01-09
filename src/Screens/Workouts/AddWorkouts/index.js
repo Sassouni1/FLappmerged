@@ -29,6 +29,7 @@ import moment from "moment";
 import TabBarComponent from "../../../Components/TabBarComponent";
 import VideoComponent from "../../../Components/VideoComponent";
 import PopupModal from "../../../Components/ErrorPopup";
+import Toast from 'react-native-simple-toast';
 
 const { height, width } = Dimensions.get("screen");
 
@@ -83,12 +84,13 @@ const AddWorkouts = () => {
   const user = useSelector((state) => state.auth.userData);
   const token = useSelector((state) => state.auth.userToken);
   const loader = useSelector((state) => state.gernal.loader);
+  const restDayVideos = useSelector((state) => state.gernal.restDayVideos);
   const refreshCalanderView = useSelector((state) => state.gernal.refreshCalanderView);
   const [userWorkoutProgress, setUserWorkoutProgress] = useState([]);
   const [exercises, setExercises] = useState([]);
   const currentDate = new Date().toISOString();
   const [customDatesStyles, setCustomDatesStyles] = useState([]);
-  const [offDayVideos, setOffDayVideos] = useState([]);
+  const [offDayVideos, setOffDayVideos] = useState(restDayVideos);
   const [selectedDay,setSelectedDay] = useState();
   const [programStartDate,setProgramStartDate] = useState();
   const [dynamicExercises,setDynamicExercises] = useState();
@@ -160,7 +162,7 @@ const completeWorkout = async ()=>{
     dispatch(setLoader(false));
   } else {
     dispatch(setLoader(false));
-    toast.show("Error Updating Exercise");
+    Toast.show("Error Updating Exercise");
   }
 } catch (e) {
   console.log("api get skill error -- ", e.toString());
@@ -186,7 +188,7 @@ const calculateDayDifference = (startFromDate, selectedDate) => {
 
     let dateSelected = new Date(selectedDate);
     dateSelected.setUTCHours(0, 0, 0, 0);
-    let findWorkout = workouts.find(x => new Date(x.workoutDate).toLocaleDateString('en-CA') == dateSelected.toLocaleDateString('en-CA'))
+    let findWorkout = workouts?.find(x => new Date(x.workoutDate).toLocaleDateString('en-CA') == dateSelected.toLocaleDateString('en-CA'))
     if (findWorkout) {
       let workout = findWorkout?.workout;
       let innerWorkout = workout?.innerWorkout[0];
@@ -209,6 +211,36 @@ const calculateDayDifference = (startFromDate, selectedDate) => {
 
   }
 
+  const getExcerciseForDay = async (selectedDate) => {
+    try {
+      dispatch(setLoader(true));
+      setAssigWorkout({});
+      const res = await ApiCall({
+        route: `assignProgram/given-date-workouts/${
+          user?.plan_id
+        }&${selectedDate}`,
+        verb: "get",
+        token: token,
+      });
+      if (res?.status == "200") {
+        let _programStartDate = res?.response?.startDate;
+        let workout = res?.response?.Workout[0];
+
+        console.log("workout..",workout);
+        setProgramStartDate(_programStartDate)
+        setWorkout(workout);
+        setAssigWorkout(workout?.innerWorkout[0]);
+        setExercises(res?.response?.exercises || []);
+
+        dispatch(setLoader(false));
+      } else {
+        dispatch(setLoader(false));
+      }
+    } catch (e) {
+      console.log("api get skill errorrrr -- ", e.toString());
+    }
+  };
+
   const getExcerciseForWeek = async (selectedDate) => {
     try {
       dispatch(setLoader(true));
@@ -222,6 +254,7 @@ const calculateDayDifference = (startFromDate, selectedDate) => {
       });
       if (res?.status == "200") {
         let _programStartDate = res?.response?.startDate;
+        setUserWorkoutProgress(res?.response?.workoutProgress);
         setProgramStartDate(_programStartDate)
         setWorkoutForWeek(res?.response?.Workout);
         setCurrentDateWorkout(res?.response?.Workout,selectedDate,_programStartDate)
@@ -230,7 +263,9 @@ const calculateDayDifference = (startFromDate, selectedDate) => {
         dispatch(setLoader(false));
       }
     } catch (e) {
-      console.log("api get skill errorrrr -- ", e.toString());
+      console.log("Error in week workout call -- ", e.toString());
+      dispatch(setLoader(false));
+      Toast.show("Error Getting Workout");
     }
   };
   
@@ -319,36 +354,17 @@ const calculateDayDifference = (startFromDate, selectedDate) => {
   }, [program, selectedDay])
 
   useEffect(() => {
-    if (restDays && offDayVideos) {
+    if (restDays && restDayVideos) {
       // Find the index of the given day in restDays array
       const dayIndex = restDays.indexOf(selectedDay);
       if (dayIndex != -1) {
         // Use modulus to get the corresponding video
-        const video = offDayVideos[dayIndex % offDayVideos.length];
+        const video = restDayVideos[dayIndex % restDayVideos.length];
         setSelectedRestDayVideo(video);
       }
     }
-  }, [restDays,offDayVideos,selectedDay])
+  }, [restDays,restDayVideos,selectedDay])
 
-  const getInstructions = async () => {
-    try {
-      const res = await ApiCall({
-        route: `appInstruction/all_instructions`,
-        verb: "get",
-        token: token,
-      });
-
-      if (res?.status == 200) {
-        setOffDayVideos(
-          res?.response?.data?.filter((x) => x.type == "Off Day")
-        );
-      } else {
-        console.log(res?.response);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const exerciseProgress = async (selectedDate) => {
     try {
@@ -377,8 +393,7 @@ const calculateDayDifference = (startFromDate, selectedDate) => {
     let dateSelected = selectedCalendarDate || date;
     getExcerciseForWeek(dateSelected);
     getViewProgram();
-    exerciseProgress(dateSelected);
-    getInstructions();
+    // exerciseProgress(dateSelected);
   },[refreshCalanderView])
   
 

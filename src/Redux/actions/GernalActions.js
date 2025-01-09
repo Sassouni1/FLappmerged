@@ -12,6 +12,10 @@ export const setCalanderSetsCheckmark = data => ({
   type: ACTIONS.CALANDER_SETS_CHECKMARK,
   data,
 });
+export const setRestDayVideos = data => ({
+  type: ACTIONS.SET_REST_DAY_VIDEOS,
+  data,
+});
 export const getChats = data => ({
   type: ACTIONS.GET_CHATS,
   data,

@@ -7,7 +7,8 @@ const initialState = {
   allSms: [],
   counts: { consultations: 0, paid: 0 },
   showPopup:true,
-  calanderSetsCheckmark:[]
+  calanderSetsCheckmark:[],
+  restDayVideos:[]
   // timer: { hours: 0, minutes: 0, seconds: 0 },
 };
 
@@ -28,6 +29,11 @@ const GernelReducers = (state = initialState, action) => {
         ...state,
         calanderSetsCheckmark: action.data,
       };
+    case ACTIONS.SET_REST_DAY_VIDEOS:
+        return {
+          ...state,
+          restDayVideos: action.data,
+        };
     case ACTIONS.SET_CHATS:
       return {
         ...state,

@@ -299,6 +299,7 @@ export default function TrainingStats({ navigation }) {
     Week2: 0,
     Week3: 0,
     Week4: 0,
+    Week5: 0,
   });
   const [progressThreeMonth, setProgressThreeMonth] = useState([]);
   const [progressSixMonth, setProgressSixMonth] = useState([]);
@@ -368,6 +369,7 @@ export default function TrainingStats({ navigation }) {
     Week2: 0,
     Week3: 0,
     Week4: 0,
+    Week5: 0
   });
   const [weightProgressThreeMonth, setWeightProgressThreeMonth] = useState([]);
   const [weightProgressSixMonth, setWeightProgressSixMonth] = useState([]);
@@ -1039,33 +1041,27 @@ export default function TrainingStats({ navigation }) {
   const trainingCompletionData = () => {
     switch (tc_dropdown) {
       case "Last 7 Days":
-        return [
-          {
-            value: weeklyProgress.Sunday,
-            label: "Sun",
-          },
-          {
-            value: weeklyProgress.Monday,
-            label: "Mon",
-          },
-          {
-            value: weeklyProgress.Tuesday,
-            label: "Tue",
-          },
+        const days = [
+          { value: weeklyProgress.Sunday, label: "Sun" },
+          { value: weeklyProgress.Monday, label: "Mon" },
+          { value: weeklyProgress.Tuesday, label: "Tue" },
           { value: weeklyProgress.Wednesday, label: "Wed" },
-          {
-            value: weeklyProgress.Thursday,
-            label: "Thurs",
-          },
-          {
-            value: weeklyProgress.Friday,
-            label: "Fri",
-          },
-          {
-            value: weeklyProgress.Saturday,
-            label: "Sat",
-          },
+          { value: weeklyProgress.Thursday, label: "Thurs" },
+          { value: weeklyProgress.Friday, label: "Fri" },
+          { value: weeklyProgress.Saturday, label: "Sat" },
         ];
+
+        // Get the current day as an index (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+        const currentDayIndex = new Date().getDay();
+
+        // Reorder the array to place the current day at the end
+        const reorderedDays = [
+          ...days.slice(currentDayIndex + 1), // Days after the current day
+          ...days.slice(0, currentDayIndex), // Days before the current day
+          days[currentDayIndex], // Current day at the end
+        ];
+
+        return reorderedDays;
       case "This Month":
         return [
           {
@@ -1083,6 +1079,10 @@ export default function TrainingStats({ navigation }) {
           {
             value: monthlyProgress.Week4,
             label: "Week4",
+          },
+          {
+            value: monthlyProgress.Week5,
+            label: "Week5",
           },
         ];
       case "Last 3 Months":
@@ -1449,39 +1449,34 @@ export default function TrainingStats({ navigation }) {
   const strengthProgressData = () => {
     switch (sp_dropdown) {
       case "Last 7 Days":
-        return [
-          {
-            value: weightProgress.Sunday,
-            label: "Sun",
-          },
-          {
-            value: weightProgress.Monday,
-            label: "Mon",
-          },
-          {
-            value: weightProgress.Tuesday,
-            label: "Tue",
-          },
+        const days = [
+          { value: weightProgress.Sunday, label: "Sun" },
+          { value: weightProgress.Monday, label: "Mon" },
+          { value: weightProgress.Tuesday, label: "Tue" },
           { value: weightProgress.Wednesday, label: "Wed" },
-          {
-            value: weightProgress.Thursday,
-            label: "Thurs",
-          },
-          {
-            value: weightProgress.Friday,
-            label: "Fri",
-          },
-          {
-            value: weightProgress.Saturday,
-            label: "Sat",
-          },
+          { value: weightProgress.Thursday, label: "Thurs" },
+          { value: weightProgress.Friday, label: "Fri" },
+          { value: weightProgress.Saturday, label: "Sat" },
         ];
+
+        // Get the current day as an index (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+        const currentDayIndex = new Date().getDay();
+
+        // Reorder the array to place the current day at the end
+        const reorderedDays = [
+          ...days.slice(currentDayIndex + 1), // Days after the current day
+          ...days.slice(0, currentDayIndex), // Days before the current day
+          days[currentDayIndex], // Current day at the end
+        ];
+
+        return reorderedDays;
       case "This Month":
         return [
           { value: monthlyWeightProgress.Week1, label: "Week1" },
           { value: monthlyWeightProgress.Week2, label: "Week2" },
           { value: monthlyWeightProgress.Week3, label: "Week3" },
           { value: monthlyWeightProgress.Week4, label: "Week4" },
+          { value: monthlyWeightProgress.Week5, label: "Week5" },
         ];
       case "Last 3 Months":
         return [

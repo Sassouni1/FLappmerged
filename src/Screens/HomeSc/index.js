@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { appListner, requestUserPermission } from "../Notifications";
 import { getSingleUser } from "../../Redux/actions/AuthActions";
 import { ApiCall } from "../../Services/Apis";
-import { setLoader } from "../../Redux/actions/GernalActions";
+import { setLoader,setRestDayVideos } from "../../Redux/actions/GernalActions";
 import { useNavigation } from "@react-navigation/native";
 import { Calendar } from "react-native-calendars";
 import { colors } from "../../constants/colors";
@@ -123,6 +123,8 @@ const HomeSc = ({ navigation, route }) => {
         token: token,
       });
       if (res?.status == 200) {
+        let restDayVideos = res?.response?.data?.filter(x=>x.type == "Off Day");
+        dispatch(setRestDayVideos(restDayVideos));
         setDataList(res?.response?.data?.filter(x=>x.type == "HomeStore"));
       } else {
         console.log(res?.response);
@@ -278,7 +280,7 @@ const HomeSc = ({ navigation, route }) => {
     const formattedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
     try {
       const res = await ApiCall({
-        route: `assignProgram/given-date-workouts/${
+        route: `assignProgram/given-date-workout_name/${
           user?.plan_id
         }&${formattedDate}`,
         verb: "get",
