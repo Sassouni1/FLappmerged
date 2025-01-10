@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   content: {
-    paddingHorizontal: 16,
+    // paddingHorizontal: 16,
     paddingBottom: 48,
     gap: 48,
   },
@@ -92,7 +92,6 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#FFFFFF',
     borderRadius: 32,
-    width: 343,
     height: 96,
     justifyContent: 'center',
     alignItems: 'center',

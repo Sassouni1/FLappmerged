@@ -4,6 +4,18 @@ export const setLoader = data => ({
   type: ACTIONS.SET_LOADER,
   data,
 });
+export const setCalanderRefreshKey = data => ({
+  type: ACTIONS.SET_REFRESH_CALANDER_VIEW,
+  data,
+});
+export const setCalanderSetsCheckmark = data => ({
+  type: ACTIONS.CALANDER_SETS_CHECKMARK,
+  data,
+});
+export const setRestDayVideos = data => ({
+  type: ACTIONS.SET_REST_DAY_VIDEOS,
+  data,
+});
 export const getChats = data => ({
   type: ACTIONS.GET_CHATS,
   data,
@@ -22,6 +34,10 @@ export const setCounts = data => ({
 });
 export const setAllSms = data => ({
   type: ACTIONS.SET_ALLSMS,
+  data,
+});
+export const setPopup = data => ({
+  type: ACTIONS.SHOW_POPUP,
   data,
 });
 // export const updateTimer = (hours, minutes, seconds) => ({

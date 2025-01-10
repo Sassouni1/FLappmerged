@@ -105,7 +105,7 @@ export default function Achievements({ navigation }) {
   return (
     // <SafeAreaView style={styles.root}>
       <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
-      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
+      {/* <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} /> */}
 
         <ImageBackground
           source={require("../../assets/images/home1.png")}

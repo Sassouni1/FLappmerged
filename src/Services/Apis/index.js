@@ -9,8 +9,6 @@ export const ApiCall = async ({params, route, verb, token, baseurl}) => {
     } else {
       url = `${BASE_URL}/${route}`;
     }
-    console.log('url',url)
-    console.log('params',params)
 
     let response = null;
     switch (verb) {

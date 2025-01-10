@@ -24,6 +24,7 @@ import SubmittedWorkouts from "../../Screens/Workouts/SubmittedWorkouts";
 import Notification from "../../Screens/Notifications";
 import FolderVideo from "../../Screens/Skills/FolderVideo";
 import ExerciseVideo from "../../Screens/Excersises/ExerciseVideo";
+import ExerciseDetail from "../../Screens/Excersises/ExerciseDetail"
 import ExSubFolder from "../../Screens/Excersises/ExSubFolder";
 import SubFolder from "../../Screens/Skills/SubFolder";
 import { useSelector } from "react-redux";
@@ -51,19 +52,29 @@ import Goal1 from "../../Screens/Fitnesssurvey/Goal1";
 import ZEquipment from "../../Screens/Fitnesssurvey/ZEquipment";
 import Weightgoals from "../../Screens/Fitnesssurvey/Weightgoals";
 
-import AddWorkouts from "../../Screens/Workouts/AddWorkouts";
 import WorkoutExercise from "../../Screens/Workouts/WorkoutExercise";
 import AdditionalWorkoutSelected from "../../Screens/Workouts/AdditionalWorkoutSelected";
+import AddWorkouts from "../../Screens/Workouts/AddWorkouts";
+import AdditionalWorkout from "../../Screens/Workouts/AdditionalWorkout";
+import WorkoutDetails from "../../Screens/WorkoutDetails";
 
 import HTUA from "../../Screens/HTUA";
+import {SplashScreen} from "../../Screens/SplashScreen";
 
 const stack = createNativeStackNavigator();
 const HomeStack = () => {
   return (
     <stack.Navigator
-      initialRouteName={"Home"}
+      initialRouteName={"SplashScreen"}
       screenOptions={{ headerShown: false }}
     >
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="SplashScreen"
+        component={SplashScreen}
+      />
       <stack.Screen
         options={{
           headerShown: false,
@@ -226,7 +237,13 @@ const HomeStack = () => {
         name="ExerciseVideo"
         component={ExerciseVideo}
       />
-
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="ExerciseDetail"
+        component={ExerciseDetail}
+      />
       <stack.Screen
         options={{
           headerShown: false,
@@ -429,6 +446,13 @@ const HomeStack = () => {
         }}
         name="AdditionalWorkoutSelected"
         component={AdditionalWorkoutSelected}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="AdditionalWorkout"
+        component={AdditionalWorkout}
       />
     </stack.Navigator>
   );

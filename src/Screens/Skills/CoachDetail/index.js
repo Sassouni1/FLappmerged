@@ -1,42 +1,155 @@
-import { FlatList, Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import {
+  FlatList,
+  Image,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  StatusBar,
+  ActivityIndicator,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { ApiCall } from "../../../Services/Apis";
+import { useSelector } from "react-redux";
 
 // Local Imports
 import GeneralStatusBar from "../../../Components/GeneralStatusBar";
-import { getFontSize, getHeight, getWidth } from "../../../../utils/ResponsiveFun";
+import {
+  getFontSize,
+  getHeight,
+  getWidth,
+} from "../../../../utils/ResponsiveFun";
 import { colors } from "../../../constants/colors";
 import { fonts } from "../../../constants/fonts";
 import CKeyBoardAvoidWrapper from "../../../Components/Common/CKeyBoardAvoidWrapper";
 
-export default function CoachDetail({ navigation,route }) {
-  const {selectedSkill,selectedCoach} = route?.params;
+export default function CoachDetail({ navigation, route }) {
+  const { selectedSkill, selectedCoach } = route?.params;
+  const [videosWithThumbnails, setVideosWithThumbnails] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const token = useSelector((state) => state.auth.userToken);
+  const user = useSelector((state) => state.auth.userData);
 
-  const onPressDetail = (selectedVideo) => navigation.navigate("WorkoutDetail",{selectedVideo:selectedVideo});
+  // Extract Vimeo video ID from URL (supports both public and managed URLs)
+  const extractVimeoVideoID = (url) => {
+    const match = url?.match(/vimeo\.com\/(?:manage\/videos\/)?(\d+)/);
+    return match ? match[1] : null;
+  };
+
+  useEffect(() => {
+    if (selectedCoach?.videos?.length) {
+      fetchThumbnails(selectedCoach.videos);
+    }
+  }, [selectedCoach]);
+
+  const fetchThumbnails = (videos) => {
+    const fetchPromises = videos.map((video) => {
+      if (isVimeoVideo(video.video)) {
+        return fetch(
+          `https://api.vimeo.com/videos/${extractVimeoVideoID(video.video)}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${"0ffaede4b92457da6e58870aace9493d"}`,
+              "Content-Type": "application/json",
+            },
+          }
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            let thumbnailUrl = data.pictures.sizes[3]?.link || null; // Get highest resolution thumbnail
+            return { ...video, video_thumbnail: thumbnailUrl };
+          })
+          .catch((error) => {
+            console.error("Error fetching Vimeo thumbnail:", error);
+            return { ...video, video_thumbnail: null };
+          });
+      } else {
+        return Promise.resolve(video);
+      }
+    });
+
+    Promise.all(fetchPromises).then((updatedVideos) => {
+      setVideosWithThumbnails(updatedVideos);
+      setIsLoading(false); // Set loading to false when data is fetched
+    });
+  };
+
+  const isVimeoVideo = (videoUrl) => {
+    return videoUrl.includes("vimeo.com");
+  };
+
+  const onPressDetail = (selectedVideo) =>{
+    updateSkills(selectedVideo);
+    navigation.navigate("WorkoutDetail", {
+      selectedVideo: selectedVideo,
+      selectedSkill:selectedSkill,
+      selectedCoach:selectedCoach,
+      videos: videosWithThumbnails,
+    });
+  }
+
+  const updateSkills = async (selectedVideo) => {
+    try {
+      const res = await ApiCall({
+        route: `skillVideo/add_watched_user`,
+        verb: "post",
+        token: token,
+        params: {
+          skillVideoId:selectedSkill?._id,
+          childFolderIndex:selectedCoach?._id,
+          videoIndex:selectedVideo?._id,
+          userId:user?._id
+        },
+      });
+      if (res?.status == "200") {
+        console.log("res", res)
+      }
+    } catch (e) {
+      console.log("api error -- ", e.toString());
+    }
+  };
+
   const onPressPlay = () => navigation.navigate("LessonComplete");
-  const onPressStart = () => {};
+
+  const onPressStart = () => {
+    navigation.navigate("WorkoutDetail", {
+      selectedVideo: videosWithThumbnails[0],
+      videos: videosWithThumbnails,
+    });
+  };
+
   const onPressBack = () => navigation.goBack();
 
   const RenderItem = ({ item }) => {
     return (
-      <TouchableOpacity onPress={()=>{onPressDetail(item)}} style={styles.container1Style}>
+      <TouchableOpacity
+        onPress={() => {
+          onPressDetail(item);
+        }}
+        style={styles.container1Style}
+      >
         <View style={[styles.rowContainer, { flex: 1 }]}>
-          <Image source={{uri:item?.video_thumbnail}} style={styles.imageSTyle} />
+          <Image
+            source={{ uri: item?.video_thumbnail }}
+            style={styles.imageSTyle}
+          />
           <View
             style={{
               gap: getHeight(1.5),
               flex: 1,
             }}
           >
-            <Text numberOfLines={1} style={styles.lessonTextStyle}>
-              Foundations
-            </Text>
-            <Text style={styles.titleSTyle} numberOfLines={1}>
-              {item?.title}
-            </Text>
+            <Text style={styles.titleSTyle}>{item?.title}</Text>
             <View style={styles.rowContainer}>
-              <MaterialIcons name="watch-later" size={getFontSize(2)} color={colors.graytext4} />
+              <MaterialIcons
+                name="watch-later"
+                size={getFontSize(2)}
+                color={colors.graytext4}
+              />
               <Text numberOfLines={1} style={styles.timeTextStyle}>
                 05:30
               </Text>
@@ -51,66 +164,89 @@ export default function CoachDetail({ navigation,route }) {
   };
 
   return (
-    <CKeyBoardAvoidWrapper containerStyle={{ flexGrow: 1 }}>
-      <View style={styles.root}>
-        <ImageBackground source={{uri:selectedCoach?.folder_Image}} style={styles.topContainer}>
-          <GeneralStatusBar
-            barStyle="light-content"
-            hidden={false}
-            backgroundColor={colors.darkGray}
-            translucent={true}
-          />
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              paddingHorizontal: getWidth(4),
-              marginTop: getHeight(2),
-            }}
+    <View style={{ flex: 1 }}>
+      <StatusBar
+        barStyle="light-content"
+        translucent
+        backgroundColor="transparent"
+      />
+      <CKeyBoardAvoidWrapper containerStyle={{ flexGrow: 1 }}>
+        <View style={styles.root}>
+          <ImageBackground
+            source={{ uri: selectedCoach?.folder_Image }}
+            style={styles.topContainer}
+            resizeMode="cover"
           >
-            <TouchableOpacity onPress={onPressBack} style={styles.headerBtnStyle}>
-              <Ionicons name="chevron-back" size={getFontSize(2.5)} color={colors.white} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.headerBtnStyle}>
-              <Ionicons name="settings-outline" size={getFontSize(2.5)} color={colors.white} />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.categoryTitleContainer}>
-            <Text style={styles.cTextStyle}>{selectedSkill?.parent_title}</Text>
-          </View>
-          <Text style={styles.headerTextStyles}>{selectedCoach?.folder_title}</Text>
-          <Text style={styles.beginSTyle}>Let’s Begin</Text>
-        </ImageBackground>
-        <View style={styles.bottomContainer}>
-          <Text style={styles.descTextStyle}>
-           {selectedCoach?.folder_description}
-          </Text>
-          <View style={styles.subHeaderStyle}>
-            <Text style={styles.subHeaderTestStyle}>The Foundations</Text>
-          </View>
-          <FlatList
-            data={selectedCoach?.videos}
-            renderItem={RenderItem}
-            keyExtractor={(item) => item._id.toString()}
-            scrollEnabled={false}
-          />
-          <TouchableOpacity onPress={onPressStart} style={styles.nextBtnStyle}>
-            <Text style={styles.backBtnTextStyle}>Start Lesson</Text>
-            <Ionicons
-              name="alarm"
-              size={getFontSize(2.7)}
+            <View
               style={{
-                marginLeft: getWidth(2),
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                paddingHorizontal: getWidth(4),
+                marginTop: getHeight(1),
               }}
-              color={colors.white}
-            />
-          </TouchableOpacity>
+            >
+              <TouchableOpacity
+                onPress={onPressBack}
+                style={styles.headerBtnStyle}
+              >
+                <Ionicons
+                  name="chevron-back"
+                  size={getFontSize(2.5)}
+                  color={colors.white}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.categoryTitleContainer}>
+              <Text style={styles.cTextStyle}>
+                {selectedSkill?.parent_title}
+              </Text>
+            </View>
+            <Text style={styles.headerTextStyles}>
+              {selectedCoach?.folder_title}
+            </Text>
+            <Text style={styles.beginSTyle}>Let’s Begin</Text>
+          </ImageBackground>
+
+          <View style={styles.bottomContainer}>
+            {isLoading ? (
+              // Show loading indicator while fetching thumbnails
+              <ActivityIndicator size="large" color={colors.orange} />
+            ) : (
+              <>
+                <Text style={styles.descTextStyle}></Text>
+                <View style={styles.subHeaderStyle}>
+                  <Text style={styles.subHeaderTestStyle}>Lessons</Text>
+                </View>
+                <FlatList
+                  data={videosWithThumbnails}
+                  renderItem={RenderItem}
+                  keyExtractor={(item) => item._id.toString()}
+                  scrollEnabled={false}
+                />
+                <TouchableOpacity
+                  onPress={onPressStart}
+                  style={styles.nextBtnStyle}
+                >
+                  <Text style={styles.backBtnTextStyle}>Start Lesson</Text>
+                  <Ionicons
+                    name="alarm"
+                    size={getFontSize(2.7)}
+                    style={{
+                      marginLeft: getWidth(2),
+                    }}
+                    color={colors.white}
+                  />
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
         </View>
-      </View>
-    </CKeyBoardAvoidWrapper>
+      </CKeyBoardAvoidWrapper>
+    </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   root: {
@@ -118,13 +254,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   topContainer: {
+    height: getHeight(45), // Adjust this value as needed to control the size of the image background
     backgroundColor: colors.darkGray,
-    paddingBottom: getWidth(16),
     borderBottomLeftRadius: getWidth(10),
     borderBottomRightRadius: getWidth(10),
+    marginBottom: getWidth(3),
+    paddingTop: getHeight(8), // Ensure padding to account for status bar overlap
   },
   headerBtnStyle: {
-    padding: getWidth(2.5),
+    padding: getWidth(2),
     backgroundColor: colors.slateGray,
     borderRadius: 12,
   },
@@ -195,6 +333,7 @@ const styles = StyleSheet.create({
     paddingTop: getWidth(10),
     borderTopLeftRadius: getWidth(10),
     borderTopRightRadius: getWidth(10),
+    justifyContent: "center", // Center loading indicator
   },
   subHeaderTestStyle: {
     color: colors.black,
@@ -211,7 +350,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 14,
     padding: getWidth(2),
-    marginTop: getWidth(22),
+    marginTop: getWidth(20),
     alignSelf: "center",
   },
   cTextStyle: {
@@ -225,7 +364,7 @@ const styles = StyleSheet.create({
     fontSize: getFontSize(1.8),
     fontFamily: fonts.WMe,
     marginHorizontal: getWidth(5),
-    marginBottom: getWidth(2),
+    marginBottom: getWidth(-4),
     textAlign: "center",
   },
   nextBtnStyle: {

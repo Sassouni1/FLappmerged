@@ -9,6 +9,8 @@ import {
   StatusBar,
   Platform,
   Pressable,
+  Alert,
+  Linking
 } from "react-native";
 import { Bubble, GiftedChat } from "react-native-gifted-chat";
 import { getStatusBarHeight } from "react-native-safearea-height";
@@ -46,15 +48,44 @@ import {
   chooseImageGallery,
 } from "../../../utils/ImageAndCamera";
 import HeaderChatBot from "../../Components/HeaderChatBot";
+import UserAvatar from "../UserAvatar";
+
 
 const { io } = require("socket.io-client");
 const socket = io(SOCKET_URL);
-
+const prohibitedPhrases = [
+  "refund",
+  "cancel",
+  "pricing",
+  "charged me",
+  "I got charged",
+  "penis",
+  "dick",
+  "fag",
+  "Fuck You",
+  "this program sucks",
+  "this app is terrible",
+  "scam",
+  "money back",
+  "worst app ever",
+  "ripoff",
+  "not worth it",
+  "horrible experience",
+  "terrible customer service",
+  "broken app",
+  "useless app",
+  "waste of money",
+  "fraud",
+  "fake",
+  "cheated",
+  "misleading",
+  "dishonest",
+];
 const STATUSBAR_HEIGHT =
   Platform.OS === "ios" ? getStatusBarHeight(true) : StatusBar.currentHeight;
 
 const BotChatScreen = ({ navigation, route }) => {
-  const { channelId, channelName, reciver, sender, chatRoomType } =
+  const { channelId,communityId, channelName, reciver, sender, chatRoomType } =
     route.params;
 
   const dispatch = useDispatch();
@@ -64,25 +95,57 @@ const BotChatScreen = ({ navigation, route }) => {
   const [messages, setMessages] = useState([]);
   const [pickerModalVisibile, setPickerModalVisibile] = useState(false);
   const [sms, setSms] = useState("");
+  const [users, setUsers] = useState();
 
+  const usersRef = useRef(users);
+
+  useEffect(() => {
+    usersRef.current = users; // Keep the ref updated with the latest users data
+  }, [users]);
+  
   const sendChat = async (sms) => {
-    console.log("socket emit sms", sms);
+    // Check for prohibited phrases in the message
+    const lowerCaseMessage = sms.toLowerCase();
+    const containsProhibitedPhrase = prohibitedPhrases.some((phrase) =>
+      lowerCaseMessage.includes(phrase)
+    );
+
+    if (containsProhibitedPhrase) {
+      Alert.alert(
+        "Support Needed",
+        "Please reach out to our support team for more assistance.",
+        [
+          {
+            text: "Contact Support",
+            onPress: () => {
+              // Replace the URL with your actual support page URL
+              Linking.openURL("https://www.fightlife.io/contactus");
+            },
+          },
+          { text: "OK", style: "cancel" },
+        ]
+      );
+      return; // Prevent the message from being sent
+    }
+
+
     const date = new Date();
+    const utcDate = date.toISOString();
     if (chatRoomType == "groupChat") {
       socket.emit("group-chat", {
         text: sms,
-        groupChatId: channelId,
+        groupChatId: communityId,
         senderId: sender?._id,
-        date: date,
-        _id:date.valueOf()
+        date: utcDate,
+        _id: date.valueOf(),
       });
     } else if (chatRoomType == "chat") {
       socket.emit("chat", {
         text: sms,
         chatroomId: channelId,
         senderId: sender?._id,
-        date: date,
-        _id:date.valueOf()
+        date: utcDate,
+        _id: date.valueOf(),
       });
     }
 
@@ -199,7 +262,6 @@ const BotChatScreen = ({ navigation, route }) => {
     console.log("imageObject", imageObject);
 
     setPickerModalVisibile(false);
-    console.log("started");
     if (chatRoomType == "groupChat") {
       socket.emit(
         "mob-upload-groupchat",
@@ -237,7 +299,7 @@ const BotChatScreen = ({ navigation, route }) => {
       let res = null;
       if (chatRoomType == "groupChat") {
         res = await ApiCall({
-          route: `groupChat/group_chat_detail/${channelId}`,
+          route: `groupChat/group_chat_detail/${communityId}`,
           verb: "get",
           token: token,
         });
@@ -259,6 +321,7 @@ const BotChatScreen = ({ navigation, route }) => {
           })
         );
         dispatch(setAllSms(newArrayOfObj));
+        setUsers(res?.response?.users);
       } else {
         console.log("error", res);
         dispatch(setLoader(false));
@@ -269,19 +332,26 @@ const BotChatScreen = ({ navigation, route }) => {
       console.log("saga error -- ", e.toString());
     }
   };
+
   useEffect(() => {
+    console.log("getAllSms",)
     getAllSms();
   }, []);
+
   useEffect(() => {
     socket.emit("join", {
       senderId: sender?._id,
-      chatroomId: channelId,
+      chatroomId: communityId,
     });
     if (chatRoomType == "groupChat") {
       socket.on("group-chat", (payload) => {
-        // console.log("payload there", payload);
-
         const newArray = [payload].map((item) =>
+        {
+          let findUser = {};
+          if (usersRef.current) {
+            findUser = usersRef.current?.find(x => x._id == item?.sender)
+          }
+          return(
           item?.sender == sender?._id
             ? {
                 PdfFile: IMAGE_URL + item?.file?.url,
@@ -291,6 +361,8 @@ const BotChatScreen = ({ navigation, route }) => {
                 text: item?.message,
                 createdAt: item?.date,
                 _id: item?._id,
+                profileImage:findUser?.profile_image,
+                userName:findUser?.full_name
               }
             : {
                 PdfFile: IMAGE_URL + item?.file?.url,
@@ -300,15 +372,24 @@ const BotChatScreen = ({ navigation, route }) => {
                 text: item?.message,
                 createdAt: item?.date,
                 _id: item?._id,
+                profileImage:findUser?.profile_image,
+                userName:findUser?.full_name
               }
+         ) }
+        
         );
         setMessages((previousMessages) =>
           GiftedChat.append(previousMessages, newArray)
         );
       });
+      // Listen for message deletion updates
+      socket.on('messageDeleted', (deletedMessageId) => {
+        setMessages((prevMessages) =>
+          prevMessages.filter((msg) => msg._id !== deletedMessageId)
+        );
+      });
     } else if (chatRoomType == "chat") {
       socket.on("chat", (payload) => {
-        // console.log("payload there", payload);
 
         const newArray = [payload].map((item) =>
           item?.sender == sender?._id
@@ -343,12 +424,18 @@ const BotChatScreen = ({ navigation, route }) => {
       // socket.emit('end');
     };
   }, []);
+
   useEffect(() => {
     const sorted = messagesAll.sort(function (a, b) {
-      return b.date.localeCompare(a.date);
+      return b.date.localeCompare(a.date,'en');
     });
+    const newArray = sorted.map((item) =>{
+      let findUser= {};
+      if(users){
+       findUser = users?.find(x=>x._id == item?.user)
+      }
 
-    const newArray = sorted.map((item) =>
+      return(
       item?.user == sender?._id
         ? {
             PdfFile: IMAGE_URL + item?.file?.url,
@@ -358,6 +445,8 @@ const BotChatScreen = ({ navigation, route }) => {
             text: item?.text,
             createdAt: item?.date,
             _id: item?._id,
+            profileImage:findUser?.profile_image,
+            userName:findUser?.full_name
           }
         : {
             PdfFile: IMAGE_URL + item?.file?.url,
@@ -367,15 +456,42 @@ const BotChatScreen = ({ navigation, route }) => {
             text: item?.text,
             createdAt: item?.date,
             _id: item?._id,
+            profileImage:findUser?.profile_image,
+            userName:findUser?.full_name
           }
+      )
+        }
     );
 
     setMessages(newArray);
-  }, [messagesAll]);
+  }, [messagesAll,users]);
+
+  const handleDeleteMessage = useCallback((messageToDelete) => {
+    // Emit the delete request to the backend
+    socket.emit('deleteMessage', {groupChatId:communityId, messageId: messageToDelete._id });
+
+    setMessages((prevMessages) =>
+      prevMessages.filter((msg) => msg._id !== messageToDelete._id)
+    );
+  }, []);
+
+  const onLongPress = useCallback((context, message) => {
+    Alert.alert(
+      'Delete Message',
+      'Are you sure you want to delete this message?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => handleDeleteMessage(message),
+        },
+      ]
+    );
+  }, [handleDeleteMessage]);
 
   const renderAvatar = (props) => {
     const { currentMessage } = props;
-    //console.log("currentMessage", currentMessage);
     const user = currentMessage.user;
     const profileImage = user && user.profile_image;
 
@@ -415,16 +531,83 @@ const BotChatScreen = ({ navigation, route }) => {
     );
   };
 
-  const backHandler = () => navigation.goBack();
+  const RenderUserName = ({ props }) => {
+    return (
+      <View style={{ padding: 5 }}>
+        <Text
+          style={{
+            color:
+              props?.currentMessage?.user?._id == user?._id
+                ? colors.white
+                : colors.black,
+            fontWeight: "bold",
+          }}
+        >
+          {props?.currentMessage?.userName}
+        </Text>
+      </View>
+    );
+  };
 
+  const RenderProfilePic = ({ props }) => {
+    return (
+      <View
+        style={[
+          styles.customView,
+          {
+            borderWidth: 1,
+            borderColor: props.currentMessage.user._id
+              ? colors.orange
+              : colors.greyMedium,
+          },
+        ]}
+      >
+        {!props?.currentMessage?.profileImage ?
+        props?.currentMessage?.userName ?
+          <UserAvatar username={props?.currentMessage?.userName} height={30} width={30} />
+          :
+          <View />
+          :
+          <Image
+            source={{ uri: props?.currentMessage?.profileImage || 'http://' }}
+            style={{ height: "88%", width: "99%", borderRadius: getWidth(3) }}
+          />
+        } 
+      </View>
+    );
+  };
+  const backHandler = () => navigation.goBack();
+  const CustomTime = (props) => {
+    const { currentMessage } = props;
+  
+    return (
+      <View style={styles.timeContainer}>
+        <Text style={styles.timeText}>
+          {/* Format the time as needed */}
+          {new Date(currentMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </Text>
+      </View>
+    );
+  };
+  const CustomDay = (props) => {
+    const { currentMessage } = props;
+  
+    return (
+      <View style={styles.dayContainer}>
+        <Text style={styles.dayText}>
+        {new Date(currentMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </Text>
+      </View>
+    );
+  };
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" style={{ backgroundColor: "white" }} />
       <HeaderChatBot
         title={
           <Text>
-            Coach Jarvis.AI
-            <Text style={styles.headerSubText}>{`\n251 Chats Left`}</Text>
+            Fight Life Teams
+            <Text style={styles.headerSubText}>{`\n`}</Text>
           </Text>
         }
         titelStyle={styles.headerTitle}
@@ -438,21 +621,23 @@ const BotChatScreen = ({ navigation, route }) => {
           </Pressable>
         }
         RightIcon={
-          <Pressable
-            style={styles.headerIconWraaper}
-            onPress={() => navigation.navigate("BotAllChatScreen")}
-          >
-            <Image
-              source={require("../../assets/images/settings.png")}
-              style={styles.headerIcons}
-            />
-          </Pressable>
+          <View />
+          // <Pressable
+          //   style={styles.headerIconWraaper}
+          //   onPress={() => navigation.navigate("BotAllChatScreen")}
+          // >
+          //   <Image
+          //     source={require("../../assets/images/settings.png")}
+          //     style={styles.headerIcons}
+          //   />
+          // </Pressable>
         }
       />
 
       <View style={styles.chatContainer}>
         <GiftedChat
           renderAvatar={renderAvatar}
+          onLongPress={onLongPress}
           renderBubble={(props) => {
             return (
               <Bubble
@@ -471,6 +656,7 @@ const BotChatScreen = ({ navigation, route }) => {
           renderMessageText={(props) => {
             return (
               <View>
+                <RenderUserName props={props} />
                 {props.currentMessage?.text != "" ||
                 props.currentMessage?.text != null ? (
                   <View
@@ -482,24 +668,7 @@ const BotChatScreen = ({ navigation, route }) => {
                       paddingVertical: getHeight(1),
                     }}
                   >
-                    <View
-                      style={{
-                        width: getWidth(10),
-                        height: getWidth(10),
-                        backgroundColor: props.currentMessage.user._id
-                          ? colors.orange
-                          : colors.greyMedium,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        borderRadius: getWidth(3),
-                      }}
-                    >
-                      {props.currentMessage.user._id ? (
-                        <UserChat height={25} width={25} />
-                      ) : (
-                        <BotChat height={25} width={25} />
-                      )}
-                    </View>
+                    <RenderProfilePic props={props} />
                     <Text
                       style={{
                         paddingHorizontal: getWidth(2),
@@ -522,35 +691,23 @@ const BotChatScreen = ({ navigation, route }) => {
                 {props.currentMessage?.fileType == "image/jpeg" ||
                 props.currentMessage?.fileType == "image/png" ||
                 props.currentMessage?.fileType == "image/jpg" ? (
-                  <View
-                    style={{
-                      flexDirection: props.currentMessage.user._id
-                        ? "row-reverse"
-                        : "row",
-                    }}
-                  >
+                  <View>
+                    <RenderUserName props={props} />
                     <View
-                      style={[
-                        styles.customView,
-                        {
-                          backgroundColor: props.currentMessage.user._id
-                            ? colors.orange
-                            : colors.greyMedium,
-                        },
-                      ]}
+                      style={{
+                        flexDirection: props?.currentMessage?.user?._id
+                          ? "row-reverse"
+                          : "row",
+                      }}
                     >
-                      {props.currentMessage.user._id ? (
-                        <UserChat height={25} width={25} />
-                      ) : (
-                        <BotChat height={25} width={25} />
-                      )}
+                      <RenderProfilePic props={props} />
+                      <ImageModal
+                        style={[styles.image, props.imageStyle]}
+                        resizeMode={"cover"}
+                        modalImageResizeMode="contain"
+                        source={{ uri: props.currentMessage?.PdfFile }}
+                      />
                     </View>
-                    <ImageModal
-                      style={[styles.image, props.imageStyle]}
-                      resizeMode={"cover"}
-                      modalImageResizeMode="contain"
-                      source={{ uri: props.currentMessage?.PdfFile }}
-                    />
                   </View>
                 ) : null}
                 {props.currentMessage?.fileType == "image/svg+xml" ? (
@@ -607,45 +764,6 @@ const BotChatScreen = ({ navigation, route }) => {
               </View>
             );
           }}
-          renderDay={(props) => {
-            return (
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  width: getWidth(91.2),
-                  alignSelf: "center",
-                  marginVertical: getHeight(1.5),
-                }}
-              >
-                <View
-                  style={{
-                    backgroundColor: colors.greyMedium,
-                    height: getWidth(0.4),
-                    flex: 1,
-                  }}
-                />
-                <Text
-                  style={{
-                    color: colors.greyText,
-                    paddingHorizontal: getWidth(2),
-                    fontFamily: fonts.WSB,
-                    fontSize: 12,
-                    fontWeight: "600",
-                  }}
-                >
-                  {moment(props.currentMessage.createdAt).format("hh:mm A")}
-                </Text>
-                <View
-                  style={{
-                    backgroundColor: colors.greyMedium,
-                    height: getWidth(0.4),
-                    flex: 1,
-                  }}
-                />
-              </View>
-            );
-          }}
           keyboardShouldPersistTaps={"handled"}
           messagesContainerStyle={{
             paddingBottom: getHeight(6),
@@ -659,9 +777,9 @@ const BotChatScreen = ({ navigation, route }) => {
           user={{
             _id: user?._id,
           }}
-          renderTime={() => {
-            return null;
-          }}
+          renderDay={(props) => <CustomDay {...props} />}
+          renderTime={(props) => {return null}}
+         
         />
       </View>
       <ImagePickerModal
@@ -795,111 +913,26 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: getWidth(10),
     borderTopRightRadius: getWidth(10),
   },
+  dayContainer: {
+    backgroundColor: '#f0f0f0',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    alignSelf: 'center',
+    marginTop: 10,
+  },
+  dayText: {
+    fontSize: 14,
+    color: '#555',
+  },
+  timeContainer: {
+    marginTop: 5,
+    alignItems: 'flex-end',
+  },
+  timeText: {
+    fontSize: 12,
+    color: 'gray',
+  },
 });
 
 export default BotChatScreen;
-
-const oooo = [
-  {
-    PdfFile: "http://54.234.223.198/undefined",
-    _id: "664c3420945d171558b55dc6",
-    createdAt: "2024-05-21T05:41:52+00:00",
-    fileType: undefined,
-    reciver: {},
-    text: "Hello, who are you?",
-    user: {
-      _id: "661e4e621a476bee6cfd68ba",
-      allow_programs: false,
-      chatroomId: "661e4e631a476bee6cfd6b3b",
-      customerId: "cus_Pw0zA3CDcf1aNb",
-      email: "gyruhitav@yopmail.com",
-      fcmToken:
-        "dTivxpfi00mEm1BeX-Sf8U:APA91bFBN9gOUsVk2LqzmLIsE_yYt_EOB0rEgYVh93ngK9KIDhqzzSdE7T77-E1OBts35cDHEC9nGY4iXFioyao34AVI-pMomk4o5wxjST8tJWYEhxANCd-VObDXHzkjK8aHWynzPBMD",
-      full_name: "Eugenia Haley",
-      groupChatId: "652f88e0a3ed8a769d24ce05",
-      height: 5,
-      isAssigned: true,
-      plan_id: "661f8eb81a476bee6cc8cb65",
-      program_id: "660d29bb5d81fb1c1be8eaae",
-      role: "customer",
-      status: true,
-      subscription: [Array],
-      target_weight: 150,
-      userBadge: [Array],
-      user_id: "661e4e611a476bee6cfd6889",
-      verification_status: false,
-      weight: 100,
-      weight_gain: 0,
-      weight_loss: 0,
-      workout_number: 8,
-    },
-  },
-  {
-    PdfFile: "http://54.234.223.198/undefined",
-    _id: "6633ef9ca3f2d7f7aaadc1dc",
-    createdAt: "2024-05-02T19:55:08+00:00",
-    fileType: undefined,
-    reciver: {
-      _id: "661e4e621a476bee6cfd68ba",
-      allow_programs: false,
-      chatroomId: "661e4e631a476bee6cfd6b3b",
-      customerId: "cus_Pw0zA3CDcf1aNb",
-      email: "gyruhitav@yopmail.com",
-      fcmToken:
-        "dTivxpfi00mEm1BeX-Sf8U:APA91bFBN9gOUsVk2LqzmLIsE_yYt_EOB0rEgYVh93ngK9KIDhqzzSdE7T77-E1OBts35cDHEC9nGY4iXFioyao34AVI-pMomk4o5wxjST8tJWYEhxANCd-VObDXHzkjK8aHWynzPBMD",
-      full_name: "Eugenia Haley",
-      groupChatId: "652f88e0a3ed8a769d24ce05",
-      height: 5,
-      isAssigned: true,
-      plan_id: "661f8eb81a476bee6cc8cb65",
-      program_id: "660d29bb5d81fb1c1be8eaae",
-      role: "customer",
-      status: true,
-      subscription: [Array],
-      target_weight: 150,
-      userBadge: [Array],
-      user_id: "661e4e611a476bee6cfd6889",
-      verification_status: false,
-      weight: 100,
-      weight_gain: 0,
-      weight_loss: 0,
-      workout_number: 8,
-    },
-    text: `Hi there! Welcome to Sandow, your personal AI fitness coach. I'm here to guide you on your fitness journey. Whether you want to get fit, lose weight, or build strength, I'm here to help you through! 🙌`,
-    user: {},
-  },
-  {
-    PdfFile: "http://54.234.223.198/undefined",
-    _id: "664c3420945d171558b55dc600",
-    createdAt: "2024-05-21T05:41:52+00:00",
-    fileType: undefined,
-    reciver: {},
-    text: "Wow, amazing!! 💖",
-    user: {
-      _id: "661e4e621a476bee6cfd68ba",
-      allow_programs: false,
-      chatroomId: "661e4e631a476bee6cfd6b3b",
-      customerId: "cus_Pw0zA3CDcf1aNb",
-      email: "gyruhitav@yopmail.com",
-      fcmToken:
-        "dTivxpfi00mEm1BeX-Sf8U:APA91bFBN9gOUsVk2LqzmLIsE_yYt_EOB0rEgYVh93ngK9KIDhqzzSdE7T77-E1OBts35cDHEC9nGY4iXFioyao34AVI-pMomk4o5wxjST8tJWYEhxANCd-VObDXHzkjK8aHWynzPBMD",
-      full_name: "Eugenia Haley",
-      groupChatId: "652f88e0a3ed8a769d24ce05",
-      height: 5,
-      isAssigned: true,
-      plan_id: "661f8eb81a476bee6cc8cb65",
-      program_id: "660d29bb5d81fb1c1be8eaae",
-      role: "customer",
-      status: true,
-      subscription: [Array],
-      target_weight: 150,
-      userBadge: [Array],
-      user_id: "661e4e611a476bee6cfd6889",
-      verification_status: false,
-      weight: 100,
-      weight_gain: 0,
-      weight_loss: 0,
-      workout_number: 8,
-    },
-  },
-];

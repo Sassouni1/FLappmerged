@@ -1,5 +1,6 @@
 import React from "react";
-import { Text, View, StyleSheet, ImageBackground } from "react-native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Text, View, Image, StyleSheet, ImageBackground } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -21,6 +22,7 @@ import AddWorkouts from "../../Screens/Workouts/AddWorkouts";
 import WorkoutHistory from "../../Screens/Workouts/WorkoutHistory";
 import LeaderBoard from "../../Screens/LeaderBoard";
 import SkillsTraining from "../../Screens/Skills/SkillsTraining";
+import WorkoutDetails from "../../Screens/WorkoutDetails";
 
 const Tab = createBottomTabNavigator();
 const borderRadius = 30;
@@ -30,6 +32,32 @@ const tabBarActiveColor = "#F79300";
 const tabBarActiveIconColor = "#000000";
 const tabBarInActiveColor = "#808082";
 const image = require("../../assets/images/tabbaricon.png");
+
+const stack = createNativeStackNavigator();
+const WorkoutStack = ({ route }) => {
+  const { tab } = route.params || {};
+  return (
+    <stack.Navigator
+      initialRouteName={tab == "tab1" ? "WorkoutDetails" : "AddWorkouts"}
+      screenOptions={{ headerShown: false }}
+    >
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="AddWorkouts"
+        component={AddWorkouts}
+      />
+      <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="WorkoutDetails"
+        component={WorkoutDetails}
+      />
+    </stack.Navigator>
+  );
+};
 
 const TabBarText = (title, focused) =>
   !focused ? (
@@ -109,9 +137,9 @@ export default function BottomTab() {
       />
       <Tab.Screen
         name="Workouts"
-        component={Workouts}
+        component={WorkoutStack}
         initialParams={
-          user?.isAssigned !== true ? { data: "tab2" } : { data: "tab1" }
+          user?.program_id ? { tab: "tab2" } : { tab: "tab1" }
         }
         options={{
           headerShown: false,
@@ -122,7 +150,7 @@ export default function BottomTab() {
               icon={
                 <Entypo
                   name="man"
-                  size={getFontSize(2.5)}
+                  size={getFontSize(2.7)}
                   style={{ marginTop: getFontSize(1) }}
                   color={focused ? tabBarActiveIconColor : tabBarInActiveColor}
                 />
@@ -159,16 +187,20 @@ export default function BottomTab() {
         component={SkillsTraining}
         options={{
           headerShown: false,
-          title: "New Skills",
-          tabBarLabel: ({ focused }) => TabBarText("New Skills", focused),
+          title: "Skills",
+          tabBarLabel: ({ focused }) => TabBarText("Skills", focused),
           tabBarIcon: ({ focused, color, size }) => (
             <TabBarIcon
               icon={
-                <FontAwesome5
-                  name="speakap"
-                  size={getFontSize(2.5)}
-                  // style={{ marginTop: getFontSize(1) }}
-                  color={focused ? tabBarActiveIconColor : tabBarInActiveColor}
+                <Image
+                  source={require("../../assets/images/Punch3.png")}
+                  style={{
+                    width: getFontSize(2.3), // Adjust the size as needed
+                    height: getFontSize(2.3), // Adjust the size as needed
+                    tintColor: focused
+                      ? tabBarActiveIconColor
+                      : tabBarInActiveColor,
+                  }}
                 />
               }
               focused={focused}
@@ -176,6 +208,7 @@ export default function BottomTab() {
           ),
         }}
       />
+
       <Tab.Screen
         name="Exercises"
         component={Excercises}

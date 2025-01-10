@@ -21,13 +21,9 @@ import Entypo from "react-native-vector-icons/Entypo";
 import StandAlone from "./StandAlone";
 import { ScrollView } from "react-native-gesture-handler";
 import AdditionalWorkout from "./AdditionalWorkout";
-import { useFocusEffect } from '@react-navigation/native';
-import {  useSelector } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
+import { useSelector } from "react-redux";
 import PopupModal from "../../Components/ErrorPopup";
-
-const Tab1 = () => <WorkoutDetails />;
-const Tab2 = () => <AddWorkouts />;
-const Tab3 = () => <AdditionalWorkout />;
 
 const initialLayout = { width: Dimensions.get("window").width };
 
@@ -40,18 +36,17 @@ const Workouts = ({ route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user.isAssigned != true)
-        setModalVisible(true);
+      if (user.isAssigned != true) setModalVisible(true);
     }, [])
   );
   const toggleModal = () => {
-      setModalVisible(!isModalVisible);
+    setModalVisible(!isModalVisible);
   };
 
   const renderScene = SceneMap({
-    tab1: Tab1,
-    tab2: Tab2,
-    tab3: Tab3,
+    tab1: WorkoutDetails,
+    tab2: AddWorkouts,
+    tab3: AdditionalWorkout,
   });
 
   const [routes] = useState([
@@ -60,21 +55,11 @@ const Workouts = ({ route }) => {
     { key: "tab2", title: "Calendar" },
   ]);
 
-  useEffect(() => {
-    if (route?.params?.data === "tab2") {
-      console.log('Setting index to 1 for "My Calendar" tab');
-      setIndex(2);
-    } else {
-      console.log('Setting index to 0 for "S&C Programs" tab');
-      setIndex(0);
-    }
-  }, [route]);
-
   console.log(route);
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
-      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
+      {/* <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} /> */}
       {/* <GeneralStatusBar hidden={false} translucent={true} /> */}
 
       <View
@@ -84,14 +69,14 @@ const Workouts = ({ route }) => {
         }}
       >
         {index === 0 && (
-          <View style={[styles.header,{marginTop:10}]}>
+          <View style={[styles.header, { marginTop: 20 }]}>
             <View style={styles.headerLeft}>
               <Image
                 source={require("../../assets/images/workoutsgirlpic.png")}
               />
               <View style={styles.headerWords}>
                 <Text style={styles.headerSubtext}>Fight Life 👊 </Text>
-                <Text style={styles.headerText}> Start Training</Text>
+                <Text style={styles.headerText}> Start Trainings</Text>
               </View>
             </View>
             <TouchableOpacity>
@@ -136,28 +121,14 @@ const Workouts = ({ route }) => {
               style={{
                 width: Dimensions.get("screen").width,
                 height: 200,
-                // position: "absolute",
-                borderBottomLeftRadius:15,
-                borderBottomRightRadius:15,
-                borderWidth:10,
-                // top: -60,
+                borderBottomLeftRadius: 15,
+                borderBottomRightRadius: 15,
+                borderWidth: 10,
                 right: 0,
                 left: -10,
                 resizeMode: "cover",
               }}
             />
-            {/* <View
-              style={{
-                borderRadius: 30,
-                width: Dimensions.get("screen").width + 5,
-                height: 100,
-                backgroundColor: "white",
-                position: "absolute",
-                top: 250,
-                right: 0,
-                left: -12,
-              }}
-            /> */}
           </View>
         )}
         <TabView
@@ -184,7 +155,7 @@ const Workouts = ({ route }) => {
                 backgroundColor: "transparent",
               }}
               style={{
-                marginBottom:index ==2 ? 2 : 10,
+                marginBottom: index == 2 ? 2 : 10,
                 backgroundColor: "#f3f3f4",
                 borderRadius: 15,
               }}

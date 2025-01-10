@@ -7,6 +7,7 @@ const initialState = {
   exercises:{exercise:[],cooldown_Exercise:[],warmup_Exercise:[]},
   workoutComments:[],
   exerciseTasks:[],
+  selectedCalendarDate:''
 };
 
 const WorkoutReducers = (state = initialState, action) => {
@@ -23,19 +24,24 @@ const WorkoutReducers = (state = initialState, action) => {
         PastWorkouts: action.data,
       };
       case ACTIONS.SET_EXERCISE:
-        return {
+      return {
           ...state,
           exercises: action.data,
         };
-        case ACTIONS.SET_WORKOUT_COMMENTS:
-          return {
+      case ACTIONS.SET_WORKOUT_COMMENTS:
+      return {
             ...state,
             workoutComments: action.data,
           };
-          case ACTIONS.SET_EXERCISE_TASKS:
-          return {
+      case ACTIONS.SET_EXERCISE_TASKS:
+      return {
             ...state,
             exerciseTasks: action.data,
+          };
+      case ACTIONS.SET_SELECTED_CALENDAR_DATE:
+      return {
+            ...state,
+            selectedCalendarDate: action.data,
           };
     default:
       return state;

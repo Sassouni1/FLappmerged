@@ -50,3 +50,7 @@ export const getUpcomingWorkout = data => ({
     type: ACTIONS.SET_EXERCISE_TASKS,
     data,
   });
+  export const setSelectedCalendarDate = data => ({
+    type: ACTIONS.SET_SELECTED_CALENDAR_DATE,
+    data,
+  });

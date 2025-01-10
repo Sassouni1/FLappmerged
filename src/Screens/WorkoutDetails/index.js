@@ -1,548 +1,425 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
-  TouchableOpacity,
   Text,
-  ImageBackground,
-  Alert,
   Image,
-  ScrollView,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  Alert,
+  Animated,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../Redux/actions/GernalActions";
 import { ApiCall } from "../../Services/Apis";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getHeight, getWidth, getFontSize } from "../../../utils/ResponsiveFun";
+import TabBarComponent from "../../Components/TabBarComponent";
+import { colors, fonts } from "../../constants";
+import PopupModal from "../../Components/ErrorPopup";
+import { useFocusEffect } from "@react-navigation/native";
+
+const HEADER_MAX_HEIGHT = 90;
+const HEADER_MIN_HEIGHT = 0;
+const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 const WorkoutDetails = () => {
   const navigation = useNavigation();
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const [data, setData] = useState([]);
   const [program, setProgram] = useState([]);
-  const [selectedItemId, setSelectedItemId] = useState();
-  const [betweenTwoHandles, setbetweenTwoHandles] = useState(false);
+  const [userPlan, setUserPlan] = useState();
   const token = useSelector((state) => state.auth.userToken);
   const user = useSelector((state) => state.auth.userData);
+  const [isModalVisible, setModalVisible] = useState(false);
+
   const dispatch = useDispatch();
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const [dataList, setDataList] = useState([]);
 
-  const toggleModal = () => {
-    setModalVisible(true);
-  };
+  // Add function to get hardcoded subheader based on program title
+  const getHardcodedSubheader = (title) => {
+    const subheaders = {
+      "Combat Kettlebell": "Kettlebell Only Sports Performance Training",
+      "BODY ARMOR": "Combat Sport Bodyweight Program",
+      "Muay Thai S&C": "In-Camp Muay Thai Training",
+      "Heavy Hitter Boxing": "The definitive program for boxing performance",
+      "The Grind: Grappling & Wrestling": "Grappling & Wrestling Performance",
+      "Brutal Bareknuckle": "Bareknuckle Boxing Strength & Conditioning",
+    };
 
-  const handleDoubleTap = (item) => {
-    navigation.navigate("ViewProgram", {
-      passData: item,
-      url: betweenTwoHandles
-        ? "cont_program/detail_cont_program/"
-        : "program/detail_program/",
-    });
+    // Case-insensitive matching for program titles
+    const matchingTitle = Object.keys(subheaders).find(
+      (key) => title?.toLowerCase() === key.toLowerCase()
+    );
+
+    return matchingTitle ? subheaders[matchingTitle] : "";
   };
 
   useEffect(() => {
-    getContinuousProgram();
     getAllProgram();
+    // getContinuousProgram();
+    getInstructions();
+    // getUserPlan();
   }, []);
 
-  const handleDayPress = (day) => {
-    setSelectedDate(day.dateString);
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
   };
-
-  const handleSelect = (index) => {
-    if (index == "S&C Program") {
-      setbetweenTwoHandles(false);
-      getAllProgram();
-    } else {
-      setbetweenTwoHandles(true);
-      getContinuousProgram();
-    }
-  };
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user?.showGuestUserPopup == true && user.isGuestUser == true)
+        setModalVisible(true);
+    }, [])
+  );
 
   const getContinuousProgram = async () => {
     dispatch(setLoader(true));
     setData([]);
-
     try {
       const res = await ApiCall({
         route: "cont_program/all_cont_programs",
         verb: "get",
         token: token,
       });
-
       if (res?.status == "200") {
         setData(res?.response?.detail?.filter((el) => !el?.isDeleted));
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        Alert.alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        Alert.alert(res?.response?.message);
       }
     } catch (e) {
-      console.log("api get skill error -- ", e.toString());
+      console.log("api error -- ", e.toString());
+    }
+  };
+
+
+  // const getUserPlan = async () => {
+  //   try {
+  //     const res = await ApiCall({
+  //       route: `assignProgram/view_assignProgram_user/${user?.plan_id}`,
+  //       verb: "get",
+  //       token: token,
+  //     });
+  //     if (res?.status == "200") {
+  //       setUserPlan(res?.response?.Assigned_Program)
+  //       console.log("userPlan", res);
+  //     } else {
+  //       Alert.alert(res?.response?.message);
+  //     }
+  //   } catch (e) {
+  //     console.log("api error -- ", e.toString());
+  //   }
+  // };
+
+  const getInstructions = async () => {
+    dispatch(setLoader(true));
+    try {
+      const res = await ApiCall({
+        route: 'appInstruction/all_instructions',
+        verb: "get",
+        token: token,
+      });
+      if (res?.status == 200) {
+        setDataList(
+          res?.response?.data?.filter((x) => x.type == "WorkoutProgram")
+        );
+      } else {
+        console.log(res?.response);
+      }
+      dispatch(setLoader(false));
+    } catch (error) {
+      console.log(error);
+      dispatch(setLoader(false));
     }
   };
 
   const getAllProgram = async () => {
     dispatch(setLoader(true));
     setProgram([]);
-
     try {
       const res = await ApiCall({
-        route: "program/all_programs",
+        route: "program/all_active_programs",
         verb: "get",
         token: token,
       });
-
       if (res?.status == "200") {
-        setProgram(res?.response?.detail?.filter((el) => !el?.isDeleted));
+        const programData = res?.response?.detail;
+
+        // Define the priority order with the correct sequence
+        const priorityOrder = [
+          "Combat Kettlebell",
+          "body armor",
+          "Muay Thai s&C",
+          "heavy hitter",
+          "the grind",
+        ];
+
+        // Sort programs based on priority
+        const sortedProgramData = programData.sort((a, b) => {
+          const aTitle = a.title ? a.title.toLowerCase() : "";
+          const bTitle = b.title ? b.title.toLowerCase() : "";
+
+          // Find the index of the program in the priority order, default to a high number if not found
+          const aPriority = priorityOrder.findIndex((keyword) =>
+            aTitle.includes(keyword.toLowerCase())
+          );
+          const bPriority = priorityOrder.findIndex((keyword) =>
+            bTitle.includes(keyword.toLowerCase())
+          );
+
+          // If not found in the priority list, they get the last rank
+          const aRank = aPriority !== -1 ? aPriority : priorityOrder.length;
+          const bRank = bPriority !== -1 ? bPriority : priorityOrder.length;
+
+          return aRank - bRank;
+        });
+
+        setProgram(sortedProgramData);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        Alert.alert(res?.response?.message, [
-          { text: "OK", onPress: () => console.log("OK Pressed") },
-        ]);
+        Alert.alert(res?.response?.message);
       }
     } catch (e) {
-      console.log("api get skill error -- ", e.toString());
+      console.log("api error -- ", e.toString());
     }
   };
 
-  useEffect(() => {
-    const fetchSelectedItemId = async () => {
-      const latestSelectedItemId = await AsyncStorage.getItem(
-        "latestSelectedItemId"
-      );
+  const headerHeight = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+    extrapolate: "clamp",
+  });
 
-      if (latestSelectedItemId) {
-        setSelectedItemId(latestSelectedItemId);
-      }
-    };
-    fetchSelectedItemId();
-  }, []);
-
-  const toggleSelection = async (item) => {
-    console.log("item inside toggle selection", item);
-    let prevSelectedItems = await AsyncStorage.getItem("selectedItems");
-    prevSelectedItems = JSON.parse(prevSelectedItems) || [];
-
-    const index = prevSelectedItems.findIndex(
-      (selectedItem) => selectedItem._id === item._id
-    );
-
-    if (index !== -1) {
-      prevSelectedItems.splice(index, 1);
-    } else {
-      prevSelectedItems.push(item);
-    }
-
-    await AsyncStorage.setItem(
-      "selectedItems",
-      JSON.stringify(prevSelectedItems)
-    );
-
-    await AsyncStorage.setItem("latestSelectedItemId", item._id);
-    setSelectedItemId(item._id);
-  };
-
-  const handleAddToCalendar = () => {
-    if (user?.isAssigned === true) {
-      Alert.alert("", " Do you want to switch to new program?", [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "destructive",
-        },
-        { text: "Continue", onPress: () => toggleModal(), style: "default" },
-      ]);
-    } else {
-      toggleModal();
-    }
-  };
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, HEADER_SCROLL_DISTANCE],
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  });
 
   return (
-    <ScrollView>
-      <TouchableOpacity
-        onPress={() => navigation.navigate("Howtoreadprogram")}
-        style={{ width: "100%", marginTop: -30, marginBottom: -10 }}
+    <View style={{ flex: 1 }}>
+      <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
+      <Animated.View
+        style={[
+          styles.header,
+          {
+            height: headerHeight,
+            opacity: headerOpacity,
+          },
+        ]}
       >
-        <Image
-          source={require("../../assets/images/workoutsbtn1.png")}
-          style={{ width: "100%", resizeMode: "contain" }}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => navigation.navigate("Fitnesssurvey")}
-        style={{ width: "100%", marginTop: -50 }}
-      >
-        <Image
-          source={require("../../assets/images/workoutsquizbtn.png")}
-          style={{ width: "100%", resizeMode: "contain" }}
-        />
-      </TouchableOpacity>
-      <View
-        style={{
-          padding: 6,
-          gap: 14,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: "700",
-            }}
-          >
-            All programs
-          </Text>
-          <Text
-            style={{
-              color: "darkorange",
-            }}
-          >
-            See all
-          </Text>
+        <View style={styles.headerLeft}>
+          <Image
+            source={{ uri: user?.profile_image }}
+            style={styles.profileImage}
+          />
+          <View style={styles.headerWords}>
+            <Text style={styles.headerSubtext}>Fight Life 👊</Text>
+            <Text style={styles.headerText}>Start Training</Text>
+          </View>
         </View>
-        {program.length > 0 &&
-          program.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() =>
-                navigation.navigate("ViewProgram", {
-                  passData: item,
-                  url: "program/detail_program/",
-                })
-              }
-            >
-              <View
-                style={{
-                  borderRadius: 30,
-                  marginBottom: 10,
-                }}
+      </Animated.View>
+      <TabBarComponent
+        activeTab={0}
+        setActiveTab={(index) => {
+          if (index === 1 || index === 2) navigation.navigate("AddWorkouts");
+        }}
+      />
+      <Animated.ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 50 }}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
+      >
+        <View style={styles.contentContainer}>
+          <Text style={styles.sectionTitle}>Choose Your Program</Text>
+          {/* <Text style={styles.subTitle}>
+            After adding your program, complete 5 workouts to unlock more training!
+          </Text> */}
+          {program.length > 0 &&
+            program.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() =>
+                  navigation.navigate("ViewProgram", {
+                    passData: item,
+                    // userPlan:userPlan,
+                    programVideos: dataList?.filter(
+                      (x) => x.program == item?._id
+                    ),
+                    url: "program/detail_program/",
+                  })
+                }
               >
-                <Image
-                  source={{ uri: item?.program_Image }}
-                  style={{
-                    width: "100%",
-                    objectFit: "cover",
-                    borderRadius: 30,
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    right: 0,
-                  }}
-                />
-                <View
-                  style={{
-                    padding: 20,
-                    justifyContent: "space-between",
-                    height: 220,
-                  }}
-                >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 10,
-                    }}
-                  >
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 6,
-                      }}
-                    >
-                      <Image
-                        source={require("../../assets/images/homeclockicon.png")}
-                      />
-                      <Text
-                        style={{
-                          color: "white",
-                        }}
-                      >
-                        {item?.equipments_needed}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        height: 5,
-                        width: 5,
-                        backgroundColor: "gray",
-                        borderRadius: 10,
-                      }}
-                    />
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 6,
-                      }}
-                    >
-                      <Image
-                        source={require("../../assets/images/homefireicon.png")}
-                      />
-                      <Text
-                        style={{
-                          color: "white",
-                        }}
-                      >
-                        {item?.program_for}
-                      </Text>
-                    </View>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "column",
-                      gap: 6,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 22,
-                        color: "white",
-                        fontWeight: "700",
-                      }}
-                    >
-                      {item?.title}
-                    </Text>
-
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <View style={{flex:1}}>
-                      <Text
-                        style={{color: "white"}}
-                        numberOfLines={1}
-                      >
-                        {item?.description}
-                      </Text>
+                <View style={styles.programContainer}>
+                  <Image
+                    source={{ uri: item?.program_Image }}
+                    style={styles.programImage}
+                  />
+                  <View style={styles.programContent}>
+                    <View style={styles.programHeader}>
+                      <View style={styles.programInfoLeft}>
+                        <Image
+                          source={require("../../assets/images/homeclockicon.png")}
+                        />
+                        <Text style={styles.programInfoText}>
+                          {item?.equipments_needed}
+                        </Text>
                       </View>
-                      <View
-                        style={{
-                          backgroundColor: "rgba(170, 170, 170, 0.42)",
-                          paddingVertical: 6,
-                          paddingHorizontal: 10,
-                          borderRadius: 12,
-                        }}
-                      >
-                        <Text
-                          style={{
-                            color: "white",
-                            fontWeight: "600",
-                            fontSize: 12,
-                          }}
-                        >
-                          START
+                      <View style={styles.programInfoRight}>
+                        <Image
+                          source={require("../../assets/images/homefireicon.png")}
+                        />
+                        <Text style={styles.programInfoText}>
+                          {item?.program_for}
                         </Text>
                       </View>
                     </View>
-                  </View>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-      </View>
-      <View
-        style={{
-          padding: 6,
-          gap: 14,
-          marginTop: 26,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-              gap: 4,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "700",
-              }}
-            >
-              Recent Workouts
-            </Text>
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "700",
-                color: "gray",
-              }}
-            >
-              {`(${data.length})`}
-            </Text>
-          </View>
-
-          <Text
-            style={{
-              color: "darkorange",
-            }}
-          >
-            See all
-          </Text>
-        </View>
-        {data.length > 0 &&
-          data.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              style={{
-                borderRadius: 30,
-                backgroundColor: "#e8ebed",
-              }}
-              onPress={() =>
-                navigation.navigate("ViewProgram", {
-                  passData: item,
-                  url: "cont_program/detail_cont_program/",
-                })
-              }
-            >
-              <View
-                style={{
-                  padding: 14,
-                  flexDirection: "row",
-                  gap: 10,
-                }}
-              >
-                <Image
-                  source={require("../../assets/images/workoutsyoga.png")}
-                  style={{
-                    width: 60,
-                    height: 60,
-                  }}
-                />
-                <View
-                  style={{
-                    flexDirection: "column",
-                    gap: 6,
-                    width: "75%",
-                  }}
-                >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      gap: 8,
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 18,
-                        color: "black",
-                        fontWeight: "700",
-                      }}
-                    >
-                      {item?.title}
+                    <Text style={styles.programTitle}>{item?.title}</Text>
+                    <Text style={styles.programDesc}>
+                      {getHardcodedSubheader(item?.title)}
                     </Text>
-                    <View
-                      style={{
-                        padding: 6,
-                        borderWidth: 1,
-                        borderRadius: 10,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 10,
-                          color: "black",
-                          fontWeight: "600",
-                        }}
-                      >
-                        YOGA
-                      </Text>
-                    </View>
-                  </View>
-                  <View
-                    style={{
-                      width: "100%",
-                      backgroundColor: "lightgray",
-                      height: 6,
-                    }}
-                  />
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      gap: 10,
-                      alignItems: "center",
-                      marginTop: 4,
-                    }}
-                  >
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        gap: 4,
-                        alignItems: "center",
-                        marginTop: 4,
-                      }}
-                    >
-                      <Image
-                        source={require("../../assets/images/workoutdocicon.png")}
-                        style={{
-                          width: 16,
-                          height: 16,
-                        }}
-                      />
-                      <Text
-                        style={{
-                          color: "black",
-                        }}
-                      >
-                        Movement 4
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        gap: 4,
-                        alignItems: "center",
-                        marginTop: 4,
-                      }}
-                    >
-                      <Image
-                        source={require("../../assets/images/workoutstopwatchicon.png")}
-                        style={{
-                          width: 16,
-                          height: 16,
-                        }}
-                      />
-                      <Text
-                        style={{
-                          color: "black",
-                        }}
-                      >
-                        87%
-                      </Text>
+                    <View style={styles.startButton}>
+                      <Text style={styles.startButtonText}>START</Text>
                     </View>
                   </View>
                 </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-      </View>
-      <View style={{height:100}} />
-    </ScrollView>
+              </TouchableOpacity>
+            ))}
+        </View>
+      </Animated.ScrollView>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: getHeight(2),
+    backgroundColor: "white",
+  },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  profileImage: {
+    width: 55,
+    height: 55,
+    marginLeft: 15,
+    borderRadius: 20,
+    resizeMode: "cover",
+  },
+  headerWords: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+  },
+  headerSubtext: {
+    fontFamily: "Ubuntu",
+    fontWeight: "500",
+    fontStyle: "normal",
+    textAlign: "center",
+    color: "gray",
+  },
+  headerText: {
+    fontFamily: "Ubuntu",
+    fontSize: 26,
+    fontWeight: "700",
+    fontStyle: "normal",
+    color: "black",
+  },
+  contentContainer: {
+    padding: 6,
+    gap: 14,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 10,
+  },
+  subTitle: {
+    color: "black",
+    fontWeight: "400",
+    fontSize: 13,
+    paddingRight: 60,
+    paddingLeft: 2,
+    marginTop: -20,
+  },
+  programContainer: {
+    borderRadius: 30,
+    marginBottom: 10,
+    overflow: "hidden",
+  },
+  programImage: {
+    width: "100%",
+    height: 220,
+    resizeMode: "cover",
+  },
+  programContent: {
+    padding: 10,
+    backgroundColor: "rgba(0, 0, 0, .3)",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    top: 0,
+  },
+  programHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+    paddingHorizontal: 10,
+  },
+  programInfoLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingLeft: 10,
+  },
+  programInfoRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingRight: 10,
+  },
+  programInfoText: {
+    color: "white",
+  },
+  programTitle: {
+    fontSize: 22,
+    color: "white",
+    fontWeight: "700",
+    marginBottom: 0,
+    marginTop: 90,
+    shadowColor: "black",
+    shadowOpacity: 0.5,
+    left: 5,
+  },
+  programDesc: {
+    color: "white",
+    marginBottom: 5,
+    left: 5,
+  },
+  startButton: {
+    backgroundColor: "rgba(170, 170, 170, 0.42)",
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    alignSelf: "flex-start",
+    left: 5,
+  },
+  startButtonText: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 10,
+  },
+});
 
 export default WorkoutDetails;

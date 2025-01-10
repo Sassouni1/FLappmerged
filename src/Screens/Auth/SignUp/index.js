@@ -175,7 +175,7 @@ const SignUp = ({ navigation }) => {
                       setState({ ...state, emailError: error })
                     )
                   }
-                  onSubmitEditing={() => inputRefs["password"].current.focus()}
+                  onSubmitEditing={() => onClickSignUp()}
                   onChangeText={(email) => changeHandler("email", email.trim())}
                   blurOnSubmit={false}
                 />

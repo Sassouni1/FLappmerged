@@ -5,30 +5,17 @@ import {
   View,
   TouchableOpacity,
   Image,
-  TextInput,
   StatusBar,
   Platform,
-  Pressable,
   SectionList,
 } from "react-native";
-import { Bubble, GiftedChat } from "react-native-gifted-chat";
 import { getStatusBarHeight } from "react-native-safearea-height";
 import { useSelector, useDispatch } from "react-redux";
-import { SvgUri } from "react-native-svg";
-import SimpleToast from "react-native-simple-toast";
-import ImageModal from "react-native-image-modal";
 import moment from "moment";
-import fs from "react-native-fs";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { GernalStyle } from "../../../constants/GernalStyle";
 import { colors } from "../../constants/colors";
-import {
-  CameraPicker,
-  SendMsg,
-  SpeakIcon,
-  UserChat,
-  BotChat,
-} from "../../../assets/images";
+
 import {
   getFontSize,
   getHeight,
@@ -37,19 +24,19 @@ import {
 } from "../../../utils/ResponsiveFun";
 import { fonts } from "../../constants/fonts";
 import ChatsCard from "../../Components/Chats/ChatsCard";
-import {
-  captureImage,
-  chooseImageGallery,
-} from "../../../utils/ImageAndCamera";
+
 import HeaderChatBot from "../../Components/HeaderChatBot";
 import { ApiCall } from "../../Services/Apis";
 import { setLoader } from "../../Redux/actions/GernalActions";
 import PopupModal from "../../Components/ErrorPopup";
-import { useFocusEffect } from '@react-navigation/native';
-
+import { useFocusEffect } from "@react-navigation/native";
 
 const STATUSBAR_HEIGHT =
   Platform.OS === "ios" ? getStatusBarHeight(true) : StatusBar.currentHeight;
+
+const backHandler = () => {
+  navigation.goBack(); // Navigates to the previous screen in the stack
+};
 
 const BotAllChatScreen = ({ navigation, route }) => {
   const user = useSelector((state) => state.auth.userData);
@@ -62,12 +49,11 @@ const BotAllChatScreen = ({ navigation, route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user.isAssigned != true)
-        setModalVisible(true);
+      if (user?.showGuestUserPopup == true && user.isGuestUser == true) setModalVisible(true);
     }, [])
   );
   const toggleModal = () => {
-      setModalVisible(!isModalVisible);
+    setModalVisible(!isModalVisible);
   };
 
   useEffect(() => {
@@ -99,8 +85,32 @@ const BotAllChatScreen = ({ navigation, route }) => {
     }
   };
 
-  const backHandler = () => {
-    navigation.goBack();
+  const checkLastVisit = async () => {
+    try {
+      const lastVisit = await AsyncStorage.getItem('lastVisit');
+
+      if (lastVisit) {
+        // Parse stored date and compare only the date part (YYYY-MM-DD)
+        const today = moment().format('YYYY-MM-DD');
+        const lastVisitDate = moment(lastVisit, moment.ISO_8601).format('YYYY-MM-DD');
+
+        // Check if the stored date is the same as today
+        if (today === lastVisitDate) {
+          // If the last visit was today, navigate to ChatScreen
+          navigation.navigate('ChatScreen');
+        } else {
+          // If the last visit was not today, update the storage and navigate to CreateChatScreen
+          await AsyncStorage.setItem('lastVisit', moment().toISOString()); // Store in ISO format
+          navigation.navigate('CreateChatScreen');
+        }
+      } else {
+        // If there is no last visit stored, navigate to CreateChatScreen and store the date
+        await AsyncStorage.setItem('lastVisit', moment().toISOString()); // Store in ISO format
+        navigation.navigate('CreateChatScreen');
+      }
+    } catch (error) {
+      console.error('Error checking last visit:', error);
+    }
   };
 
   const renderItem = ({ item, index }) => {
@@ -108,13 +118,14 @@ const BotAllChatScreen = ({ navigation, route }) => {
       <TouchableOpacity
         onPress={() =>
           item.title === "Coach Jarvis.AI"
-            ? navigation.navigate("CreateChatScreen")
+            ? checkLastVisit()
             : navigation.navigate("ConversationScreen", {
                 channelId: item._id,
                 channelName: item.title,
-                receiver: item.subText === "GPT-4" ? {} : item.admin,
+                receiver: item.subText === "Chat with our community" ? {} : item.admin,
                 sender: user,
-                chatRoomType: item.subText === "GPT-4" ? "groupChat" : "chat",
+                chatRoomType: item.subText === "Chat with our community" ? "groupChat" : "chat",
+                communityId: community.find(x=>x.community_name == "App Community")?._id
               })
         }
       >
@@ -156,35 +167,29 @@ const BotAllChatScreen = ({ navigation, route }) => {
             {
               title: "Chats",
               data: [
-                ...community.map((item) => ({
+                ...admin.map((item) => ({
                   _id: item._id,
                   title: "Fight Life Team",
-                  subText: "GPT-4",
-                  msgCount: item?.messages
-                    ? item?.messages.length.toString()
-                    : "0",
-                  iconUrl: require("../../assets/images/support.png"),
+                  subText: "Chat with our community", // Custom subtext
+                  iconUrl: require("../../assets/images/fistemoji.png"),
                   colors: colors.greenlight,
+                  admin: item?.admin
                 })),
                 {
                   _id: "team",
                   title: "Coach Jarvis.AI",
-                  subText: "Team",
-                  msgCount: "1.7K",
-                  iconUrl: require("../../assets/images/teamIcon.png"),
+                  subText: "Chat with Coach Jarvis.AI", // Custom subtext
+                  iconUrl: require("../../assets/images/Robot.png"), // Use iconUrl again
                   colors: colors.lightBlue,
                 },
-                ...admin.map((item) => ({
-                  _id: item._id,
-                  title: "Customer Support",
-                  subText: "Support",
-                  msgCount: item?.messages
-                    ? item?.messages.length.toString()
-                    : "0",
-                  iconUrl: require("../../assets/images/aiIcon.png"),
-                  colors: colors.lightRed,
-                  admin: item?.admin,
-                })),
+                // ...community.map((item) => ({
+                //   _id: item._id,
+                //   title: "Upcoming Updates & Announcements",
+                //   subText: "Upcoming updates", // Custom subtext
+                //   iconUrl: require("../../assets/images/Accouncements.png"),
+                //   colors: colors.lightRed,
+                //   admin: item?.admin,
+                // })),
               ],
             },
           ]}
@@ -193,7 +198,6 @@ const BotAllChatScreen = ({ navigation, route }) => {
           renderSectionHeader={({ section: { title } }) => (
             <View style={styles.titleWrapperRow}>
               <Text style={styles.headingText}>{title}</Text>
-              <Text style={[styles.sellAllText]}>{"See all"}</Text>
             </View>
           )}
         />
@@ -246,11 +250,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     paddingTop: getHeight(2),
     color: colors.white,
-    fontSize: 30,
+    fontSize: 25,
     fontFamily: fonts.WB,
     fontWeight: "700",
     textAlign: "left",
     alignSelf: "flex-start",
+    paddingLeft: getWidth(4),
     paddingBottom: getHeight(2),
   },
   titleWrapper: {
@@ -265,7 +270,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   headingText: {
-    paddingTop: getHeight(2),
+    paddingTop: getHeight(4),
     color: colors.black,
     fontSize: 16,
     fontFamily: fonts.WB,
@@ -281,31 +286,3 @@ const styles = StyleSheet.create({
 });
 
 export default BotAllChatScreen;
-
-const DATA = [
-  {
-    title: "Chats",
-    data: [
-      { title: "Fight Life Team", subText: "Team", msgCount: "1.7K" },
-      {
-        title: "Coach Jarvis.AI",
-        subText: "My AI Coach",
-        msgCount: "870",
-        iconUrl: require("../../assets/images/aiIcon.png"),
-        colors: colors.lightRed,
-      },
-    ],
-  },
-  {
-    title: "Customer Support",
-    data: [
-      {
-        title: "Customer Support",
-        subText: "GPT-4",
-        msgCount: "875",
-        iconUrl: require("../../assets/images/support.png"),
-        colors: colors.greenlight,
-      },
-    ],
-  },
-];

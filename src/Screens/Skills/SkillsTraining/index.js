@@ -5,13 +5,14 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Alert,
   SafeAreaView,
 } from "react-native";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { ApiCall } from "../../../Services/Apis";
-import {useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setLoader } from "../../../Redux/actions/GernalActions";
 
 // Local Imports
@@ -23,26 +24,31 @@ import {
 } from "../../../../utils/ResponsiveFun";
 import { colors } from "../../../constants/colors";
 import { fonts } from "../../../constants/fonts";
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "@react-navigation/native";
 import PopupModal from "../../../Components/ErrorPopup";
-
 
 export default function SkillsTraining({ navigation }) {
   const [selectedTab, setSelectedTab] = useState(0);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.userToken);
-  const [skills,setSkills] = useState();
+  const [skills, setSkills] = useState();
   const [isModalVisible, setModalVisible] = useState(false);
   const user = useSelector((state) => state.auth.userData);
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user.isAssigned != true)
-        setModalVisible(true);
+      if (user?.showGuestUserPopup == true && user.isGuestUser == true) setModalVisible(true);
     }, [])
   );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getSkills();
+    }, [])
+  );
+
   const toggleModal = () => {
-      setModalVisible(!isModalVisible);
+    setModalVisible(!isModalVisible);
   };
 
   const onPressTab = (id) => {
@@ -52,18 +58,16 @@ export default function SkillsTraining({ navigation }) {
     setSelectedTab(id);
   };
 
-  useEffect(() => {
-    getSkills();
-  }, []);
 
   const getSkills = async () => {
     try {
+      dispatch(setLoader(true));
       const res = await ApiCall({
         route: `skillVideo/active_skill_videos`,
         verb: "get",
         token: token,
       });
-      console.log("list",res?.response?.video_list[0].child_folder[0]);
+      console.log("list", res?.response?.video_list);
       if (res?.response) {
         setSkills(res?.response?.video_list);
         dispatch(setLoader(false));
@@ -84,12 +88,71 @@ export default function SkillsTraining({ navigation }) {
     }
 
     return totalVideos;
-  }
+  };
 
   const onPressSearch = () => navigation.navigate("SearchWorkout");
 
-  const onPressDetail = (selectedSkill,selectedCoach) => {
-    navigation.navigate("CoachDetail",{selectedSkill:selectedSkill,selectedCoach:selectedCoach})
+  const getWatchedStatus = (data, userId=user._id) => {
+    try{
+    let totalVideos = 0;
+    let watchedCount = 0;
+  
+    // Iterate through all folders and videos
+    data.child_folder.forEach(folder => {
+      folder.videos.forEach(video => {
+        totalVideos++; // Count total videos
+        if (video.watchedUsers.includes(userId)) {
+          watchedCount++; // Count watched videos
+        }
+      });
+    });
+  
+    // Determine the status based on watchedCount
+      if (watchedCount === totalVideos && totalVideos > 0) {
+        return <Text style={{color:'green'}}>Completed</Text>;
+      } else if (watchedCount > 0) {
+        return <Text style={{color:'blue'}}>In Complete</Text>;
+      } else {
+        return <Text style={{color:'red'}}>Not Started</Text>;
+      }
+  }
+  catch(e){
+    return <Text></Text>;
+  }
+  };
+  const getWatchedStatusText = (data, userId=user._id) => {
+    try{
+    let totalVideos = 0;
+    let watchedCount = 0;
+  
+    // Iterate through all folders and videos
+    data.child_folder.forEach(folder => {
+      folder.videos.forEach(video => {
+        totalVideos++; // Count total videos
+        if (video.watchedUsers.includes(userId)) {
+          watchedCount++; // Count watched videos
+        }
+      });
+    });
+  
+    // Determine the status based on watchedCount
+      if (watchedCount === totalVideos && totalVideos > 0) {
+        return "Completed";
+      } else if (watchedCount > 0) {
+        return "In Complete";
+      } else {
+        return "Not Started";
+      }
+  }
+  catch(e){
+    return <Text></Text>;
+  }
+  };
+  const onPressDetail = (selectedSkill, selectedCoach) => {
+    navigation.navigate("CoachDetail", {
+      selectedSkill: selectedSkill,
+      selectedCoach: selectedCoach,
+    });
   };
   const onPressCategory = () => navigation.navigate("Squat");
 
@@ -118,52 +181,72 @@ export default function SkillsTraining({ navigation }) {
     </View>
   );
 
-  const RenderSkillItem = ({ item }) => (
+  const RenderSkillItem = ({ item,skillIndex }) =>{
+    const isUnlocked = skillIndex === 0 || getWatchedStatusText(skills[skillIndex - 1]) === "Completed";
+    return(
     item?.child_folder?.map((childItem, index) => (
-      <TouchableOpacity key={index} onPress={()=>{onPressDetail(item,childItem)}} style={styles.container1Style}>
-      <View style={styles.rowContainer}>
-        <Image
-          source={{uri:childItem?.folder_Image}}
-          style={styles.imageSTyle}
-        />
-        <View style={{ gap: getHeight(1), flex: 1 }}>
-          <View style={styles.categoryContainer}>
-            <Text style={styles.categoryTextStyle}>{item?.parent_title}</Text>
-          </View>
-          <Text style={styles.titleSTyle} numberOfLines={1}>
-            {childItem?.folder_title}
-          </Text>
-          <View style={styles.descRowContainer}>
-            <View style={styles.rowContainer}>
-              <Entypo name="star" size={getFontSize(2)} color={colors.orange} />
-              <Text numberOfLines={1} style={styles.lessonTextStyle}>
-                {getLessonsCount(item?.child_folder)+ " lessons"}
-              </Text>
+      <TouchableOpacity
+        key={index}
+        onPress={() => {
+          onPressDetail(item, childItem);
+          // if (isUnlocked) {
+          // onPressDetail(item, childItem);
+          // }
+          // else{
+          //   Alert.alert("Training Locked", 
+          //   `Complete the previous training to unlock this.`, [
+          //     {
+          //       text: "Ok",
+          //       onPress: () => console.log("Ok Pressed"),
+          //       style: "destructive",
+          //     }
+          //   ]);
+          // }
+        }}
+        style={styles.container1Style}
+      >
+          {/* <Text style={{ textAlign: 'right'}}>
+            {getWatchedStatus(item)}
+            </Text> */}
+        <View style={{flexDirection:'row',alignItems:'center',justifyContent: "space-between",}}>
+        <View style={styles.rowContainer}>
+          <Image
+            source={{ uri: childItem?.folder_Image }}
+            style={styles.imageSTyle}
+          />
+          <View style={{ gap: getHeight(1), flex: 1 }}>
+            <View style={styles.categoryContainer}>
+              <Text style={styles.categoryTextStyle}>{item?.parent_title}</Text>
             </View>
-            <Text style={styles.lessonTextStyle}>•</Text>
-            <View style={styles.rowContainer}>
-              <Ionicons
-                name="person"
-                size={getFontSize(2)}
-                color={colors.darkBlue}
-              />
-              <Text numberOfLines={1} style={styles.lessonTextStyle}>
-                 {item?.child_folder?.length+ " Coaches"}
-              </Text>
+            <Text style={styles.titleSTyle} numberOfLines={1}>
+              {childItem?.folder_title}
+            </Text>
+            <View style={styles.descRowContainer}>
+              <View style={styles.rowContainer}>
+                <Entypo
+                  name="star"
+                  size={getFontSize(2)}
+                  color={colors.orange}
+                />
+                <Text numberOfLines={1} style={styles.lessonTextStyle}>
+                  {getLessonsCount(item?.child_folder) + " lessons"}
+                </Text>
+              </View>
+              <View style={styles.rowContainer}></View>
             </View>
           </View>
         </View>
-      </View>
-      <TouchableOpacity>
-        <Ionicons
-          name="chevron-forward-outline"
-          size={getFontSize(4)}
-          color={colors.slateGray}
-        />
+        <TouchableOpacity>
+          <Ionicons
+            name="chevron-forward-outline"
+            size={getFontSize(4)}
+            color={colors.slateGray}
+          />
+        </TouchableOpacity>
+        </View>
       </TouchableOpacity>
-    </TouchableOpacity>
     ))
-  );
+    )};
 
   const RenderPopularSkillItem = ({ item }) => (
     <TouchableOpacity onPress={onPressCategory} style={styles.container1Style}>
@@ -205,8 +288,8 @@ export default function SkillsTraining({ navigation }) {
     </TouchableOpacity>
   );
 
-  const renderItem = ({ item }) => {
-    return <RenderSkillItem item={item} />;
+  const renderItem = ({ item,index }) => {
+    return <RenderSkillItem item={item} skillIndex={index} />;
 
     if (item.type === "skill") {
       return <RenderSkillItem item={item} />;
@@ -242,9 +325,13 @@ export default function SkillsTraining({ navigation }) {
       {RenderHeader()}
       <FlatList
         data={skills}
+        refreshing={false}
+        onRefresh={() => getSkills()}
         renderItem={renderItem}
         keyExtractor={(item) => item._id}
-        contentContainerStyle={{ paddingBottom: getHeight(4) }}
+        contentContainerStyle={{ paddingBottom: getHeight(4) }} // this already adds padding to the overall list
+        ListFooterComponent={<View style={{ height: getHeight(8) }} />} // this
+        ListHeaderComponent={<View style={{ height: getHeight(2) }} />} // padding above the first item
       />
     </View>
   );
@@ -317,8 +404,8 @@ const styles = StyleSheet.create({
     marginHorizontal: getWidth(5),
     borderRadius: 32,
     padding: getWidth(4),
-    flexDirection: "row",
-    alignItems: "center",
+    // flexDirection: "row",
+    // alignItems: "center",
     justifyContent: "space-between",
   },
   rowContainer: {

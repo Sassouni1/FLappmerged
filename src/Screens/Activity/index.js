@@ -7,9 +7,10 @@ import {
   SectionList,
   StyleSheet,
   Text,
+  Button,
   TouchableOpacity,
   View,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -17,6 +18,9 @@ import { BarChart, LineChart } from "react-native-gifted-charts";
 import Entypo from "react-native-vector-icons/Entypo";
 import MultiSLider from "@ptomasroos/react-native-multi-slider";
 import { Dropdown } from "react-native-element-dropdown";
+import UpdateProfiles from "../../Screens/UpdateProfile";
+import MetricsComponent from "../../Components/MetricsComponent";
+const moment = require('moment');
 
 //Local Imports
 import { colors } from "../../constants/colors";
@@ -30,40 +34,249 @@ import { ApiCall } from "../../Services/Apis";
 import SelectDropdown from "react-native-select-dropdown";
 // import session from "redux-persist/lib/storage/session";
 import PopupModal from "../../Components/ErrorPopup";
+import AppleHealthKit from "react-native-health";
 
 const defaultDropDownValue = "Last 7 Days";
-
 export default function TrainingStats({ navigation }) {
-  const [value, setValue] = React.useState("");
-
+  const [appleStatGraphData, setAppleStatGraphData] = useState([]);
+  const [selectedAppleStat, setSelectedAppleStat] = useState("steps");
+  const [appleStatsDataList,setAppleStatsDataList] = useState([]);
+  const [appleStats_dropdown, set_appleStats_dropdown] =
+    useState("Last 7 Days");
   const dispatch = useDispatch();
   const [date, setDate] = useState(new Date());
   const { height, width } = Dimensions.get("window");
   const [isModalVisible, setModalVisible] = useState(false);
+  const user = useSelector((state) => state.auth.userData);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      if (user.isAssigned != true)
-        setModalVisible(true);
-    }, [])
-  );
-  const toggleModal = () => {
-      setModalVisible(!isModalVisible);
+  const [healthData, setHealthData] = useState({
+    vo2Max: null,
+    heartRate: null,
+    heartRateVariability: null,
+    restingHeartRate: null,
+    distanceWalkingRunning: null,
+    dailyStepCount: null,
+    activeEnergyBurned: null,
+    basalEnergyBurned: null,
+    stepCount: null,
+  });
+
+  let options = {
+    permissions: {
+      read: [
+        "StepCount",
+        "DistanceWalkingRunning",
+        "ActiveEnergyBurned",
+        "HeartRate",
+        "RestingHeartRate",
+        "HeartRateVariability",
+        "SleepAnalysis",
+        "BodyFatPercentage",
+        "BodyMassIndex",
+        "BasalEnergyBurned",
+        "BodyMassIndex",
+        "LeanBodyMass",
+      ],
+      write: [],
+    },
+  };
+
+  useEffect(() => {
+    requestPermissionsAndFetchData();
+  }, []);
+
+  function addCommasToNumber(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  // Function to request permissions and fetch health data
+  const requestPermissionsAndFetchData = () => {
+    AppleHealthKit.initHealthKit(options, (err, results) => {
+      if (err) {
+        console.log("results", err);
+        return;
+      }
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 6);
+
+      // Fetch VO2 Max
+      AppleHealthKit.getVo2MaxSamples(
+        { startDate: new Date(2023, 0, 1).toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching VO2 Max:", err);
+            return;
+          }
+          setHealthData((prevData) => ({
+            ...prevData,
+            vo2Max: results,
+          }));
+        }
+      );
+
+      // Fetch Heart Rate
+      AppleHealthKit.getHeartRateSamples(
+        { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching heart rate:", err);
+            return;
+          }
+          setHealthData((prevData) => ({
+            ...prevData,
+            heartRate: results,
+          }));
+        }
+      );
+
+      // Fetch Heart Rate Variability
+      AppleHealthKit.getHeartRateVariabilitySamples(
+        { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching heart rate variability.:", err);
+            return;
+          }
+          setHealthData((prevData) => ({
+            ...prevData,
+            heartRateVariability: results,
+          }));
+        }
+      );
+
+      // Fetch Resting Heart Rate
+      AppleHealthKit.getRestingHeartRateSamples(
+        { startDate: new Date(2023, 0, 1).toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching resting heart rate:", err);
+            return;
+          }
+          setHealthData((prevData) => ({
+            ...prevData,
+            restingHeartRate: results,
+          }));
+        }
+      );
+
+      // Fetch Distance Walking Running
+      AppleHealthKit.getDailyDistanceWalkingRunningSamples(
+        { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching distance walking/running:", err);
+            return;
+          }
+          setHealthData((prevData) => ({
+            ...prevData,
+            distanceWalkingRunning: results,
+          }));
+        }
+      );
+
+      // Fetch Daily Step Count
+      AppleHealthKit.getDailyStepCountSamples(
+        { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching daily step count:", err);
+            return;
+          }
+          const totalSteps =
+            results?.reduce((total, sample) => total + sample.value, 0) ||
+            "N/A";
+          setHealthData((prevData) => ({
+            ...prevData,
+            dailyStepCount: results,
+          }));
+        }
+      );
+
+      // Fetch Active Energy Burned
+      AppleHealthKit.getActiveEnergyBurned(
+        { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching active energy burned:", err);
+            return;
+          }
+          setHealthData((prevData) => ({
+            ...prevData,
+            activeEnergyBurned: results,
+          }));
+        }
+      );
+
+      // Fetch Basal Energy Burned
+      AppleHealthKit.getBasalEnergyBurned(
+        { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching basal energy burned:", err);
+            return;
+          }
+          setHealthData((prevData) => ({
+            ...prevData,
+            basalEnergyBurned: results?.[0]?.value || "N/A",
+          }));
+        }
+      );
+
+      // Fetch Step Count
+      AppleHealthKit.getStepCount(
+        { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+        (err, results) => {
+          if (err) {
+            console.log("Error fetching step count:", err);
+            return;
+          }
+          setHealthData((prevData) => ({
+            ...prevData,
+            stepCount: results?.value || "N/A",
+          }));
+        }
+      );
+    });
   };
 
   useFocusEffect(
     React.useCallback(() => {
-      set_tc_dropdown(defaultDropDownValue)
-      set_cb_dropdown(defaultDropDownValue)
-      set_sp_dropdown(defaultDropDownValue)
+      if (user?.showGuestUserPopup == true && user.isGuestUser == true) setModalVisible(true);
+    }, [])
+  );
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+
+  function calculatePercentage(value) {
+    const minValue = 80;
+    const maxValue = 450;
+    const maxPercentage = 90;
+
+    // Ensure the value is within the expected range
+    if (value < minValue) {
+      return 0;
+    } else if (value > maxValue) {
+      return maxPercentage;
+    }
+
+    // Calculate the percentage
+    const percentage =
+      ((value - minValue) / (maxValue - minValue)) * maxPercentage;
+    return percentage;
+  }
+
+  useFocusEffect(
+    React.useCallback(() => {
+      set_tc_dropdown(defaultDropDownValue);
+      set_cb_dropdown(defaultDropDownValue);
+      set_sp_dropdown(defaultDropDownValue);
 
       dispatch(setLoader(true));
-      // getSingleExcercise(date);
-      // exerciseWeekProgress(date);
-      // getMessagesProgress();
-      exerciseProgress();
-      getCaloriesProgress();
-      getWeightProgress();
+      getExerciseProgress("weekly", setWeeklyProgress, true);
+      getCaloriesProgress("weekly", setCaloriesProgress, true);
+      getWeightProgress("weekly", setWeightProgress);
     }, [])
   );
 
@@ -86,6 +299,7 @@ export default function TrainingStats({ navigation }) {
     Week2: 0,
     Week3: 0,
     Week4: 0,
+    Week5: 0,
   });
   const [progressThreeMonth, setProgressThreeMonth] = useState([]);
   const [progressSixMonth, setProgressSixMonth] = useState([]);
@@ -155,6 +369,7 @@ export default function TrainingStats({ navigation }) {
     Week2: 0,
     Week3: 0,
     Week4: 0,
+    Week5: 0
   });
   const [weightProgressThreeMonth, setWeightProgressThreeMonth] = useState([]);
   const [weightProgressSixMonth, setWeightProgressSixMonth] = useState([]);
@@ -213,56 +428,63 @@ export default function TrainingStats({ navigation }) {
   const [tc_dropdown, set_tc_dropdown] = useState();
   const [cb_dropdown, set_cb_dropdown] = useState();
   const [sp_dropdown, set_sp_dropdown] = useState();
-  const [caloriesBurned,setCaloriesBurned] = useState(0);
-  const [total_lbs,setTotal_lbs] = useState(0);
-  const [workoutsThisWeek,setWorkoutsThisWeek] = useState();
+  const [caloriesBurned, setCaloriesBurned] = useState(0);
+  const [total_lbs, setTotal_lbs] = useState(0);
+  const [workoutsThisWeek, setWorkoutsThisWeek] = useState();
 
-  const [maxLBS,setMaxLBS] = useState();
-  const [exerciseName,setExerciseName] = useState();
-  const [exerciseDate,setExerciseDate] = useState();
-  const [parameter,setParameter] = useState();
+  const [maxLBS, setMaxLBS] = useState();
+  const [exerciseName, setExerciseName] = useState();
+  const [exerciseDate, setExerciseDate] = useState();
+  const [parameter, setParameter] = useState();
 
-  const [maxLBS_DL,setMaxLBS_DL] = useState();
-  const [exerciseName_DL,setExerciseName_DL] = useState();
-  const [exerciseDate_DL,setExerciseDate_DL] = useState();
-  const [parameter_DL,setParameter_DL] = useState();
+  const [maxLBS_DL, setMaxLBS_DL] = useState();
+  const [exerciseName_DL, setExerciseName_DL] = useState();
+  const [exerciseDate_DL, setExerciseDate_DL] = useState();
+  const [parameter_DL, setParameter_DL] = useState();
 
-  useEffect(()=>{
+  useEffect(() => {
     let maxLBS = 0;
-    let exerciseName = '';
-    let exerciseDate = '';
-    let parameter = '';
+    let exerciseName = "";
+    let exerciseDate = "";
+    let parameter = "";
 
     let maxLBS_DL = 0;
-    let exerciseName_DL = '';
-    let exerciseDate_DL = '';
-    let parameter_DL = '';
-    workoutsThisWeek?.forEach(dayWorkout => {
-      dayWorkout?.innerWorkout?.forEach(element => {
-        element?.exercise?.forEach(exercise => {
-          console.log("submitted_sets",exercise?.submitted_sets)
-          exercise?.sets?.forEach(additionalSet => {
+    let exerciseName_DL = "";
+    let exerciseDate_DL = "";
+    let parameter_DL = "";
+    workoutsThisWeek?.forEach((dayWorkout) => {
+      dayWorkout?.innerWorkout?.forEach((element) => {
+        element?.exercise?.forEach((exercise) => {
+          exercise?.sets?.forEach((additionalSet) => {
             let _exerciseName = exercise?.exercise_name?.toLowerCase();
-            if(_exerciseName?.includes("squat") && (additionalSet.parameter == 'lbs' || additionalSet.parameter == 'weight'))
-            {
-              let isLBS = additionalSet.parameter == 'lbs';
-              let _max = isLBS ? parseInt(additionalSet?.lbs || 0) : parseInt(additionalSet?.weight || 0);
-              if (maxLBS < _max)
-              {
+            if (
+              _exerciseName?.includes("squat") &&
+              (additionalSet.parameter == "lbs" ||
+                additionalSet.parameter == "weight")
+            ) {
+              let isLBS = additionalSet.parameter == "lbs";
+              let _max = isLBS
+                ? parseInt(additionalSet?.lbs || 0)
+                : parseInt(additionalSet?.weight || 0);
+              if (maxLBS < _max) {
                 maxLBS = _max;
-                parameter= isLBS ? additionalSet.parameter : 'kg'
+                parameter = isLBS ? additionalSet.parameter : "kg";
                 exerciseName = exercise?.exercise_name;
                 exerciseDate = dayWorkout?.workoutDate;
               }
             }
-            if(_exerciseName?.includes("deadlift") && (additionalSet.parameter == 'lbs' || additionalSet.parameter == 'weight'))
-            {
-              let isLBS = additionalSet.parameter == 'lbs';
-              let _max = isLBS ? parseInt(additionalSet?.lbs || 0) : parseInt(additionalSet?.weight || 0);
-              if (maxLBS_DL < _max)
-              {
+            if (
+              _exerciseName?.includes("deadlift") &&
+              (additionalSet.parameter == "lbs" ||
+                additionalSet.parameter == "weight")
+            ) {
+              let isLBS = additionalSet.parameter == "lbs";
+              let _max = isLBS
+                ? parseInt(additionalSet?.lbs || 0)
+                : parseInt(additionalSet?.weight || 0);
+              if (maxLBS_DL < _max) {
                 maxLBS_DL = _max;
-                parameter_DL= isLBS ? additionalSet.parameter : 'kg'
+                parameter_DL = isLBS ? additionalSet.parameter : "kg";
                 exerciseName_DL = exercise?.exercise_name;
                 exerciseDate_DL = dayWorkout?.workoutDate;
               }
@@ -280,15 +502,15 @@ export default function TrainingStats({ navigation }) {
     setParameter_DL(parameter_DL);
     setExerciseName_DL(exerciseName_DL);
     setExerciseDate_DL(exerciseDate_DL);
-  }, [workoutsThisWeek])
+  }, [workoutsThisWeek]);
 
   function formatDate(date) {
     date = new Date(date);
     // Get the day, month, and year from the date object
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
     const year = date.getFullYear();
-  
+
     // Return the formatted date string
     return `${month}/${day}/${year}`;
   }
@@ -302,492 +524,132 @@ export default function TrainingStats({ navigation }) {
   ]);
 
   const [assigWorkout, setAssigWorkout] = useState([]);
-  const user = useSelector((state) => state.auth.userData);
-  const [sliderValue, setSliderValue] = React.useState([user?.weight,user?.target_weight]);
+  const [sliderValue, setSliderValue] = React.useState([
+    user?.weight,
+    user?.target_weight,
+  ]);
   const token = useSelector((state) => state.auth.userToken);
 
-  const onChangeDropDown = (selectedType,section) => {
-    console.log("selectedType", selectedType);
-    toggleTypeSelection(selectedType,section);
+  const onChangeDropDown = (selectedType, section) => {
+    if (section != "appleStats")
+      toggleTypeSelection(selectedType, section);
+    if (section == "tc") set_tc_dropdown(selectedType);
+    else if (section == "cb") set_cb_dropdown(selectedType);
+    else if (section == "sp") set_sp_dropdown(selectedType);
+    else if (section == "appleStats") set_appleStats_dropdown(selectedType);
+  };
 
-    if (section == "tc")
-      set_tc_dropdown(selectedType)
-    else if (section == "cb")
-      set_cb_dropdown(selectedType)
-    else if (section == "sp")
-      set_sp_dropdown(selectedType)
-  }
+  const handleAppleStatSelection = (stat) => {
+    setSelectedAppleStat(stat);
+  };
+  const getExerciseProgress = async (
+    timePeriod,
+    setProgressFunction,
+    isPost = false
+  ) => {
+    const routes = {
+      weekly: `assignProgram/user_progress/${user?.user_id}`,
+      monthly: `assignProgram/monthly_progress/${user?.user_id}`,
+      threeMonth: `assignProgram/last_three_months_progress/${user?.user_id}`,
+      sixMonth: `assignProgram/last_six_months_progress/${user?.user_id}`,
+      allMonths: `assignProgram/all_months_progress/${user?.user_id}`,
+    };
 
-  // all exercise progress apis functions
-  const exerciseProgress = async () => {
     try {
       const res = await ApiCall({
-        route: `assignProgram/user_progress/${user?.user_id}`,
-        verb: "post",
+        route: routes[timePeriod],
+        verb: isPost ? "post" : "get",
         token: token,
-        params: {
-          givenDate: new Date(),
-        },
+        ...(isPost && { params: { givenDate: new Date() } }), // Include params if it's a POST request
       });
 
       if (res?.status == "200") {
-        setWorkoutsThisWeek(res?.response?.workoutsThisWeek);
-        setWeeklyProgress(res?.response?.weeklyProgress);
+        setProgressFunction(
+          res?.response?.weeklyProgress ||
+            res?.response?.monthlyProgress ||
+            res?.response?.yearlyProgress
+        );
+        if (timePeriod === "weekly") {
+          setWorkoutsThisWeek(res?.response?.workoutsThisWeek); // Additional data for weekly progress
+        }
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
+        console.log(`error in ${timePeriod} exercise progress`);
       }
     } catch (e) {
-      console.log("api get user_progress error -- ", e.toString());
+      console.log(`api get ${timePeriod}Progress error -- `, e.toString());
     }
   };
 
-  const getExerciseMonthProgress = async () => {
+  const getWeightProgress = async (timePeriod, setProgressFunction) => {
+    const routes = {
+      weekly: `assignProgram/weeklyWeight/${user?.plan_id}`,
+      monthly: `assignProgram/monthlyWeight/${user?.plan_id}`,
+      threeMonth: `assignProgram/lastThreeMonthWeight/${user?.plan_id}`,
+      sixMonth: `assignProgram/lastSixMonthWeight/${user?.plan_id}`,
+      allMonths: `assignProgram/allMonthsWeight/${user?.plan_id}`,
+    };
+
     try {
       const res = await ApiCall({
-        route: `assignProgram/monthly_progress/${user?.user_id}`,
+        route: routes[timePeriod],
         verb: "get",
         token: token,
       });
-      console.log("responseeeeee", res?.response);
+
+      console.log(`response of getWeight${timePeriod}Progress`, res?.response);
+
       if (res?.status == "200") {
-        setMonthlyProgress(res?.response?.weeklyProgress);
+        setProgressFunction(
+          res?.response?.monthlyWeight || res?.response?.weeklyWeight
+        );
+        setTotal_lbs(res?.response?.total_lbs);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        console.log("errorrrr in montly exercise progress");
+        console.log(`error in ${timePeriod} progress`);
       }
     } catch (e) {
-      console.log("api gettttt monthly_progress error -- ", e.toString());
+      console.log(`api get ${timePeriod}Weight error -- `, e.toString());
     }
   };
 
-  const getExerciseThreeMonthProgress = async () => {
+  const getCaloriesProgress = async (
+    timePeriod,
+    setProgressFunction,
+    isPost = false
+  ) => {
+    const routes = {
+      weekly: `assignProgram/user_weekly_calories/${user?.user_id}`,
+      monthly: `assignProgram/monthly_calories/${user?.user_id}`,
+      threeMonth: `assignProgram/last_three_months_calories/${user?.user_id}`,
+      sixMonth: `assignProgram/last_six_months_calories/${user?.user_id}`,
+      allMonths: `assignProgram/all_months_calories/${user?.user_id}`,
+    };
+
     try {
       const res = await ApiCall({
-        route: `assignProgram/last_three_months_progress/${user?.user_id}`,
-        verb: "get",
+        route: routes[timePeriod],
+        verb: isPost ? "post" : "get",
         token: token,
-      });
-      if (res?.status == "200") {
-        setProgressThreeMonth(res?.response?.monthlyProgress);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in three month exercise progress");
-      }
-    } catch (e) {
-      console.log("api get last_three_months_progress error -- ", e.toString());
-    }
-  };
-
-  const getExerciseSixMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/last_six_months_progress/${user?.user_id}`,
-        verb: "get",
-        token: token,
-      });
-      if (res?.status == "200") {
-        setProgressSixMonth(res?.response?.monthlyProgress);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in six month exercise progress");
-      }
-    } catch (e) {
-      console.log("api get last_six_months_progress error -- ", e.toString());
-    }
-  };
-
-  const getExerciseAllMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/all_months_progress/${user?.user_id}`,
-        verb: "get",
-        token: token,
-      });
-      if (res?.status == "200") {
-        setYearProgress(res?.response?.yearlyProgress);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in all month exercise progress");
-      }
-    } catch (e) {
-      console.log("api gettt all_months_progress error -- ", e.toString());
-    }
-  };
-
-  // all messages progress apis functions
-  const getMessagesProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/totalMessages/${user?._id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("setMessagesProgress", res?.response);
-      if (res?.status == "200") {
-        setMessagesProgress(res?.response?.weeklyProgress);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get totalMessages error -- ", e.toString());
-    }
-  };
-
-  const getMessagesMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/monthlyMessages/${user?._id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of month", res?.response);
-      if (res?.status == "200") {
-        setMessagesProgressMonth(res?.response?.weeklyProgress);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get monthlyMessages error -- ", e.toString());
-    }
-  };
-
-  const getMessagesThreeMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/last_three_monthly_messages/${user?._id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("last_three_monthly_messages", res?.response);
-      if (res?.status == "200") {
-        setMessagesProgressThreeMonth(res?.response?.monthlyProgress);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log(
-        "api get last_three_monthly_messages error -- ",
-        e.toString()
-      );
-    }
-  };
-
-  const getMessagesSixMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/last_six_monthly_messages/${user?._id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of last_six_monthly_messages", res?.response);
-      if (res?.status == "200") {
-        setMessagesProgressSixMonth(res?.response?.monthlyProgress);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get last_six_monthly_messages error -- ", e.toString());
-    }
-  };
-
-  const getMessagesAllMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/all_monthly_messages/${user?._id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of all_monthly_messages", res?.response);
-      if (res?.status == "200") {
-        setMessagesProgressAllMonth(res?.response?.yearlyProgress);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get all_monthly_messages error -- ", e.toString());
-    }
-  };
-
-  // all weight progress apis functions
-  const getWeightProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/weeklyWeight/${user?.plan_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("getWeightProgress", res);
-      if (res?.status == "200") {
-        setWeightProgress(res?.response?.weeklyWeight);
-        setTotal_lbs(res?.response?.total_lbs)
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get weeklyWeight error -- ", e.toString());
-    }
-  };
-
-  const getWeightMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/monthlyWeight/${user?.plan_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of getWeightMonthProgress", res?.response);
-
-      if (res?.status == "200") {
-        setMonthlyWeightProgess(res?.response?.monthlyWeight);
-        setTotal_lbs(res?.response?.total_lbs)
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get monthlyWeight error -- ", e.toString());
-    }
-  };
-
-  const getWeightThreeMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/lastThreeMonthWeight/${user?.plan_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of getWeightThreeMonthProgress", res?.response);
-      if (res?.status == "200") {
-        setWeightProgressThreeMonth(res?.response?.monthlyWeight);
-        setTotal_lbs(res?.response?.total_lbs)
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get lastThreeMonthWeight error -- ", e.toString());
-    }
-  };
-
-  const getWeightSixMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/lastSixMonthWeight/${user?.plan_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of getWeightSixMonthProgress", res?.response);
-
-      if (res?.status == "200") {
-        setWeightProgressSixMonth(res?.response?.monthlyWeight);
-        setTotal_lbs(res?.response?.total_lbs)
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get lastSixMonthWeight error -- ", e.toString());
-    }
-  };
-
-  const getWeightAllMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/allMonthsWeight/${user?.plan_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of getWeightAllMonthProgress", res?.response);
-
-      if (res?.status == "200") {
-        setWeightProgressAllMonth(res?.response?.monthlyWeight);
-        setTotal_lbs(res?.response?.total_lbs)
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get allMonthsWeight error -- ", e.toString());
-    }
-  };
-
-  // all Calories progress apis functions
-  const getCaloriesProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/user_weekly_calories/${user?.user_id}`,
-        verb: "post",
-        token: token,
-        params: {
-          givenDate: new Date(),
-        },
-      });
-      console.log("ressss", res?.response);
-      if (res?.status == "200") {
-        setCaloriesProgress(res?.response?.weeklyProgress);
-        setCaloriesBurned(res?.response?.totalCalories);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get weeklyWeight error -- ", e.toString());
-    }
-  };
-
-  const getCaloriesMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/monthly_calories/${user?.user_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of weight", res?.response);
-
-      if (res?.status == "200") {
-        setMonthlyCaloriesProgess(res?.response?.weeklyProgress);
-        setCaloriesBurned(res?.response?.totalCalories);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get monthlyWeight error -- ", e.toString());
-    }
-  };
-
-  const getCaloriesThreeMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/last_three_months_calories/${user?.user_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of weightLKL", res?.response);
-      if (res?.status == "200") {
-        setCaloriesProgressThreeMonth(res?.response?.monthlyProgress);
-        setCaloriesBurned(res?.response?.totalCalories);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get lastThreeMonthWeight error -- ", e.toString());
-    }
-  };
-
-  const getCaloriesSixMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/last_six_months_calories/${user?.user_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of weightHJJH", res?.response);
-
-      if (res?.status == "200") {
-        setCaloriesProgressSixMonth(res?.response?.monthlyProgress);
-        setCaloriesBurned(res?.response?.totalCalories);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get lastSixMonthWeight error -- ", e.toString());
-    }
-  };
-
-  const getCaloriesAllMonthProgress = async () => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/all_months_calories/${user?.user_id}`,
-        verb: "get",
-        token: token,
-      });
-      console.log("response of weightJKJK", res?.response);
-
-      if (res?.status == "200") {
-        setCaloriesProgressAllMonth(res?.response?.yearlyProgress);
-        setCaloriesBurned(res?.response?.totalCalories);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
-      }
-    } catch (e) {
-      console.log("api get allMonthsWeight error -- ", e.toString());
-    }
-  };
-
-  // all calender progress apis functions
-  const getSingleExcercise = async (selectedDate) => {
-    console.log(selectedDate);
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/given_date_workout/${user?.plan_id
-          }&${selectedDate.toISOString()}`,
-        verb: "get",
-        token: token,
-      });
-      if (res?.status == "200") {
-        setAssigWorkout(res?.response?.Workout);
-        dispatch(setLoader(false));
-      } else {
-        dispatch(setLoader(false));
-        setAssigWorkout([]);
-        console.log("errorrrr in calenders");
-      }
-    } catch (e) {
-      console.log("api get skill error -- ", e.toString());
-    }
-  };
-
-  const exerciseWeekProgress = async (selectedDate) => {
-    try {
-      const res = await ApiCall({
-        route: `assignProgram/user_status/${user?.user_id}`,
-        verb: "post",
-        token: token,
-        params: {
-          givenDate: selectedDate,
-        },
+        ...(isPost && { params: { givenDate: new Date() } }), // Include params if it's a POST request
       });
 
       if (res?.status == "200") {
-        setWeekDataProgress(res?.response?.weeklyProgress);
+        setProgressFunction(
+          res?.response?.weeklyProgress ||
+            res?.response?.monthlyProgress ||
+            res?.response?.yearlyProgress
+        );
+        setCaloriesBurned(res?.response?.totalCalories); // Common for all progress types
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
-        console.log("errorrrr in calenders progress");
+        console.log(`error in ${timePeriod} calories progress`);
       }
     } catch (e) {
-      console.log("api get skill error -- ", e.toString());
+      console.log(`api get ${timePeriod}Calories error -- `, e.toString());
     }
   };
 
@@ -949,56 +811,61 @@ export default function TrainingStats({ navigation }) {
   }
 
   // select api function from dropdown
-  const toggleTypeSelection = (selectedType,section) => {
+  const toggleTypeSelection = (selectedType, section) => {
     dispatch(setLoader(true));
 
-    if (selectedType == "Last 7 Days") {
-      if (section == 'tc')
-        exerciseProgress();
-      else if (section == 'cb')
-        getCaloriesProgress();
-      else if (section == 'sp')
-        getWeightProgress();
+    // Define the mappings for selectedType to progress type
+    const progressMap = {
+      "Last 7 Days": "weekly",
+      "This Month": "monthly",
+      "Last 3 Months": "threeMonth",
+      "Last 6 Months": "sixMonth",
+      "All Time": "allMonths",
+    };
 
-    } else if (selectedType == "This Month") {
+    // Define the mappings for section to their respective progress functions
+    const sectionMap = {
+      tc: getExerciseProgress,
+      cb: getCaloriesProgress,
+      sp: getWeightProgress,
+    };
 
-      if (section == 'tc')
-        getExerciseMonthProgress();
-      else if (section == 'cb')
-        getCaloriesMonthProgress();
-      else if (section == 'sp')
-        getWeightMonthProgress();
+    const setProgressMap = {
+      tc: {
+        weekly: setWeeklyProgress,
+        monthly: setMonthlyProgress,
+        threeMonth: setProgressThreeMonth,
+        sixMonth: setProgressSixMonth,
+        allMonths: setYearProgress,
+      },
+      cb: {
+        weekly: setCaloriesProgress,
+        monthly: setMonthlyCaloriesProgess,
+        threeMonth: setCaloriesProgressThreeMonth,
+        sixMonth: setCaloriesProgressSixMonth,
+        allMonths: setCaloriesProgressAllMonth,
+      },
+      sp: {
+        weekly: setWeightProgress,
+        monthly: setMonthlyWeightProgess,
+        threeMonth: setWeightProgressThreeMonth,
+        sixMonth: setWeightProgressSixMonth,
+        allMonths: setWeightProgressAllMonth,
+      },
+    };
 
-    } else if (selectedType == "Last 3 Months") {
+    // Retrieve the progressType based on the selectedType
+    const progressType = progressMap[selectedType];
 
-      if (section == 'tc')
-        getExerciseThreeMonthProgress();
-      else if (section == 'cb')
-        getCaloriesThreeMonthProgress();
-      else if (section == 'sp')
-        getWeightThreeMonthProgress();
-      
-    } else if (selectedType == "Last 6 Months") {
+    // Ensure progressType and section are valid
+    if (progressType && sectionMap[section]) {
+      const setProgress = setProgressMap[section][progressType];
+      const isPost = selectedType === "Last 7 Days"; // Weekly requires POST request
 
-      if (section == 'tc')
-        getExerciseSixMonthProgress();
-      else if (section == 'cb')
-        getCaloriesSixMonthProgress();
-      else if (section == 'sp')
-        getWeightSixMonthProgress();
-
-
-    } else if (selectedType == "All Time") {
-
-      if (section == 'tc')
-        getExerciseAllMonthProgress();
-      else if (section == 'cb')
-        getCaloriesAllMonthProgress();
-      else if (section == 'sp')
-        getWeightAllMonthProgress();
-
+      // Call the respective function
+      sectionMap[section](progressType, setProgress, isPost);
     } else {
-      console.log("NO select type selected");
+      console.log("No valid type or section selected");
     }
   };
 
@@ -1163,44 +1030,38 @@ export default function TrainingStats({ navigation }) {
 
     if (data) {
       let length = data?.length;
-      data.forEach(element => {
+      data.forEach((element) => {
         total = total + element.value;
       });
-      completionRate = (total/(100*length))*100
+      completionRate = (total / (100 * length)) * 100;
     }
     return Math.round(completionRate);
-  }
+  };
 
   const trainingCompletionData = () => {
     switch (tc_dropdown) {
       case "Last 7 Days":
-        return [
-          {
-            value: weeklyProgress.Sunday,
-            label: "Sun",
-          },
-          {
-            value: weeklyProgress.Monday,
-            label: "Mon",
-          },
-          {
-            value: weeklyProgress.Tuesday,
-            label: "Tue",
-          },
+        const days = [
+          { value: weeklyProgress.Sunday, label: "Sun" },
+          { value: weeklyProgress.Monday, label: "Mon" },
+          { value: weeklyProgress.Tuesday, label: "Tue" },
           { value: weeklyProgress.Wednesday, label: "Wed" },
-          {
-            value: weeklyProgress.Thursday,
-            label: "Thurs",
-          },
-          {
-            value: weeklyProgress.Friday,
-            label: "Fri",
-          },
-          {
-            value: weeklyProgress.Saturday,
-            label: "Sat",
-          },
+          { value: weeklyProgress.Thursday, label: "Thurs" },
+          { value: weeklyProgress.Friday, label: "Fri" },
+          { value: weeklyProgress.Saturday, label: "Sat" },
         ];
+
+        // Get the current day as an index (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+        const currentDayIndex = new Date().getDay();
+
+        // Reorder the array to place the current day at the end
+        const reorderedDays = [
+          ...days.slice(currentDayIndex + 1), // Days after the current day
+          ...days.slice(0, currentDayIndex), // Days before the current day
+          days[currentDayIndex], // Current day at the end
+        ];
+
+        return reorderedDays;
       case "This Month":
         return [
           {
@@ -1217,7 +1078,11 @@ export default function TrainingStats({ navigation }) {
           },
           {
             value: monthlyProgress.Week4,
-            label: "Week4"
+            label: "Week4",
+          },
+          {
+            value: monthlyProgress.Week5,
+            label: "Week5",
           },
         ];
       case "Last 3 Months":
@@ -1442,43 +1307,176 @@ export default function TrainingStats({ navigation }) {
     }
   };
 
+  useEffect(() => {
+    if (selectedAppleStat == "steps")
+      setAppleStatGraphData(healthData?.dailyStepCount)
+    else if (selectedAppleStat == "hrv")
+      setAppleStatGraphData(healthData?.heartRateVariability)
+    else if (selectedAppleStat == "hr")
+      setAppleStatGraphData(healthData?.heartRate)
+    else if (selectedAppleStat == "rhr")
+      setAppleStatGraphData(healthData?.restingHeartRate)
+    else if (selectedAppleStat == "aeb")
+      setAppleStatGraphData(healthData?.activeEnergyBurned)
+    else if (selectedAppleStat == "wd")
+      setAppleStatGraphData(healthData?.distanceWalkingRunning)
+
+  }, [healthData, selectedAppleStat])
+
+  const appleStatsDataByRange = (data, range) => {
+
+    const now = moment(); // Current time
+    let startDate;
+    let totalValueCount = 0; // Initialize total value
+
+    switch (range) {
+       case 'Last 7 Days': {
+      // Get the previous Sunday
+      const lastSunday = now.clone().day(0); // .day(0) gets the last Sunday (Sunday is day 0 in moment.js)
+      
+      // Get the last 7 days starting from Sunday
+      const result = [...Array(7)].map((_, i) => {
+        const day = lastSunday.clone().add(i, 'days'); // Add i days from Sunday
+        const dayData = data.find(item => moment(item.startDate).isSame(day, 'day'));
+
+        const value = dayData ? dayData.value : 0; // Use 0 if no data
+        totalValueCount += value;
+        return {
+          label: day.format('ddd'),  // Short weekday name (e.g., 'Sun', 'Mon')
+          value: value
+        };
+      });
+      if (typeof totalValueCount === 'number' && !Number.isInteger(totalValueCount)) {
+        return totalValueCount.toFixed(2);
+    }
+      return { data: result, total: totalValueCount };
+    }
+  
+      case 'This Month':{
+        startDate = now.clone().startOf('month');
+        
+        // Group by weeks in the current month
+        const weeksOfMonth = [...Array(4)].map((_, index) => {
+          const weekStart = startDate.clone().add(index * 7, 'days');
+          const weekEnd = weekStart.clone().add(7, 'days');
+          
+          const weekData = data.filter(item =>
+            moment(item.startDate).isBetween(weekStart, weekEnd)
+          );
+          
+          const totalValue = weekData.reduce((acc, curr) => acc + curr.value, 0);
+          totalValueCount += totalValue;
+          return {
+            label: `Week${index + 1}`,
+            value: totalValue || 0,  // 0 if no data for the week
+          };
+        });
+        if (typeof totalValueCount === 'number' && !Number.isInteger(totalValueCount)) {
+          totalValueCount = totalValueCount.toFixed(2);
+        }
+        return { data: weeksOfMonth, total: totalValueCount };
+      }
+  
+      case 'Last 3 Months':{
+        startDate = now.clone().subtract(3, 'months');
+        const last3Months = [...Array(3)].map((_, i) => now.clone().subtract(i, 'months')).reverse();
+        
+        const result = last3Months.map(month => {
+          const monthData = data.filter(item =>
+            moment(item.startDate).isSame(month, 'month')
+          );
+          
+          const totalValue = monthData.reduce((acc, curr) => acc + curr.value, 0);
+          totalValueCount += totalValue;
+          return {
+            label: month.format('MMM'),
+            value: totalValue || 0,  // 0 if no data for the month
+          };
+        });
+        if (typeof totalValueCount === 'number' && !Number.isInteger(totalValueCount)) {
+          totalValueCount = totalValueCount.toFixed(2);
+        }
+        return { data: result, total: totalValueCount };
+      }
+  
+      case 'Last 6 Months':{
+        startDate = now.clone().subtract(6, 'months');
+        const last6Months = [...Array(6)].map((_, i) => now.clone().subtract(i, 'months')).reverse();
+        
+        const result = last6Months.map(month => {
+          const monthData = data.filter(item =>
+            moment(item.startDate).isSame(month, 'month')
+          );
+          
+          const totalValue = monthData.reduce((acc, curr) => acc + curr.value, 0);
+          totalValueCount += totalValue;
+          return {
+            label: month.format('MMM'),
+            value: totalValue || 0,  // 0 if no data for the month
+          };
+        });
+        if (typeof totalValueCount === 'number' && !Number.isInteger(totalValueCount)) {
+          totalValueCount = totalValueCount.toFixed(2);
+        }
+        return { data: result, total: totalValueCount };
+      }
+  
+      case 'All Time':{
+        const allMonths = [...Array(12)].map((_, index) => moment().month(index).startOf('month'));
+        
+        const result = allMonths.map(month => {
+          const monthData = data.filter(item =>
+            moment(item.startDate).isSame(month, 'month')
+          );
+          
+          const totalValue = monthData.reduce((acc, curr) => acc + curr.value, 0);
+          totalValueCount += totalValue;
+          return {
+            label: month.format('MMM'),
+            value: totalValue || 0,  // 0 if no data for the month
+          };
+        });
+        if (typeof totalValueCount === 'number' && !Number.isInteger(totalValueCount)) {
+          totalValueCount = totalValueCount.toFixed(2);
+        }
+        return { data: result, total: totalValueCount };
+      }
+      default:
+        return [];
+    }
+  };
 
   const strengthProgressData = () => {
     switch (sp_dropdown) {
       case "Last 7 Days":
-        return [
-          {
-            value: weightProgress.Sunday,
-            label: "Sun",
-          },
-          {
-            value: weightProgress.Monday,
-            label: "Mon",
-          },
-          {
-            value: weightProgress.Tuesday,
-            label: "Tue",
-          },
+        const days = [
+          { value: weightProgress.Sunday, label: "Sun" },
+          { value: weightProgress.Monday, label: "Mon" },
+          { value: weightProgress.Tuesday, label: "Tue" },
           { value: weightProgress.Wednesday, label: "Wed" },
-          {
-            value: weightProgress.Thursday,
-            label: "Thurs",
-          },
-          {
-            value: weightProgress.Friday,
-            label: "Fri",
-          },
-          {
-            value: weightProgress.Saturday,
-            label: "Sat",
-          },
+          { value: weightProgress.Thursday, label: "Thurs" },
+          { value: weightProgress.Friday, label: "Fri" },
+          { value: weightProgress.Saturday, label: "Sat" },
         ];
+
+        // Get the current day as an index (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+        const currentDayIndex = new Date().getDay();
+
+        // Reorder the array to place the current day at the end
+        const reorderedDays = [
+          ...days.slice(currentDayIndex + 1), // Days after the current day
+          ...days.slice(0, currentDayIndex), // Days before the current day
+          days[currentDayIndex], // Current day at the end
+        ];
+
+        return reorderedDays;
       case "This Month":
         return [
           { value: monthlyWeightProgress.Week1, label: "Week1" },
           { value: monthlyWeightProgress.Week2, label: "Week2" },
           { value: monthlyWeightProgress.Week3, label: "Week3" },
           { value: monthlyWeightProgress.Week4, label: "Week4" },
+          { value: monthlyWeightProgress.Week5, label: "Week5" },
         ];
       case "Last 3 Months":
         return [
@@ -1568,7 +1566,6 @@ export default function TrainingStats({ navigation }) {
     }
   };
 
-
   const renderItem = (item) => {
     return (
       <TouchableOpacity style={[styles.containerStyle, { gap: 10 }]}>
@@ -1594,30 +1591,34 @@ export default function TrainingStats({ navigation }) {
     );
   };
 
-  const CustomMarkerLeft = ({currentValue }) => {
+  const CustomMarkerLeft = ({ currentValue, customStyles }) => {
     return (
-      <View style={styles.customMarkerStyle}>
-        <Text style={styles.sliderTextStyle}>{currentValue}</Text>
+      <View style={[styles.customMarkerStyle, customStyles]}>
+        <Text style={[styles.sliderTextStyle]}>{currentValue}</Text>
       </View>
     );
   };
-  const CustomMarkerRight = ({currentValue }) => {
+  const CustomMarkerRight = ({ currentValue, customStyles }) => {
     return (
-      <View style={styles.targetMarkerContainer}>
-        <Text style={styles.targetMarkerTextStyle}>{"Weight Goal: "+ currentValue}</Text>
-        <Image  style={styles.targetMarker} source={require("../../assets/images/down-arrow.png")}/>
+      <View style={[styles.targetMarkerContainer, customStyles]}>
+        <Text style={styles.targetMarkerTextStyle}>
+          {"Weight Goal: " + currentValue}
+        </Text>
+        <Image
+          style={styles.targetMarker}
+          source={require("../../assets/images/down-arrow.png")}
+        />
       </View>
     );
   };
 
-
-  const RenderDropdown = ({value,section}) => {
+  const RenderDropdown = ({ value, section }) => {
     return (
       <SelectDropdown
         defaultValue={value}
         data={allTypes}
         onSelect={(value) => {
-          onChangeDropDown(value,section)
+          onChangeDropDown(value, section);
         }}
         // defaultButtonText={defaultDropDownValue}
         buttonTextAfterSelection={(selectedItem, index) => {
@@ -1712,7 +1713,9 @@ export default function TrainingStats({ navigation }) {
         <View style={styles.chartOuterContainer}>
           <View style={styles.headerTopContainer}>
             <View style={styles.headerTextStyle}>
-              <Text style={styles.percentageStyle}>{trainingCompletionRate()+"%"}</Text>
+              <Text style={styles.percentageStyle}>
+                {trainingCompletionRate() + "%"}
+              </Text>
               <Text style={styles.completionStyle}>Completion rate</Text>
             </View>
             <RenderDropdown value={tc_dropdown} section={"tc"} />
@@ -1734,7 +1737,7 @@ export default function TrainingStats({ navigation }) {
           />
         </View>
       </View>
-    )
+    );
   });
   const _CaloriesBurnedComponent = React.memo(() => {
     return (
@@ -1753,7 +1756,7 @@ export default function TrainingStats({ navigation }) {
               <Text style={styles.percentageStyle}>{caloriesBurned}</Text>
               <Text style={styles.completionStyle}>Calories Burned</Text>
             </View>
-            <RenderDropdown value = {cb_dropdown} section={"cb"} />
+            <RenderDropdown value={cb_dropdown} section={"cb"} />
           </View>
           <LineChart
             areaChart
@@ -1777,7 +1780,7 @@ export default function TrainingStats({ navigation }) {
           />
         </View>
       </View>
-    )
+    );
   });
   const _StrengthProgressComponent = React.memo(() => {
     return (
@@ -1791,24 +1794,25 @@ export default function TrainingStats({ navigation }) {
           />
         </View>
         <Text style={styles.totalVolumeStyle}>
-          {`Total Volume: ${Math.round(total_lbs)} lbs lifted`}
+          {`Total Volume: ${addCommasToNumber(Math.round(total_lbs) || 0)} lbs lifted`}
         </Text>
         <View style={styles.chartOuterContainer}>
           <View style={styles.headerTopContainer}>
-            <View style={styles.headerTextStyle}>
-              <Text style={styles.percentageStyle}>{Math.round(total_lbs)}</Text>
-              <Text
-                style={[styles.completionStyle, { fontSize: getWidth(3) }]}
-              >
+            <View style={{marginBottom:5}}>
+              <Text style={[styles.percentageStyle,{fontSize:24}]}>
+                {addCommasToNumber(Math.round(total_lbs) || 0)}
+              </Text>
+              <Text style={[styles.completionStyle, { fontSize: getWidth(3) }]}>
                 Total lbs lifted
               </Text>
             </View>
-            <RenderDropdown value = {sp_dropdown}  section={"sp"}  />
+            <RenderDropdown value={sp_dropdown} section={"sp"} />
           </View>
           <BarChart
             frontColor={colors.orange}
             data={strengthProgressData()}
-            maxValue={20000}
+            // maxValue={Math.round(total_lbs) > 10 ? Math.round(total_lbs) : 10}
+            maxValue={100}
             dashGap={0}
             spacing={8}
             barBorderRadius={4}
@@ -1821,8 +1825,8 @@ export default function TrainingStats({ navigation }) {
           />
         </View>
       </View>
-    )
-  })
+    );
+  });
 
   const TopImageComponent = useMemo(() => {
     return <TopImage onPressBack={onPressBack} />;
@@ -1840,49 +1844,150 @@ export default function TrainingStats({ navigation }) {
     return <_StrengthProgressComponent />;
   }, [strengthProgressData()]);
 
-
   return (
     <ScrollView>
       <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
       {TopImageComponent}
       <View style={styles.innerContainerStyle}>
         {TrainingCompletionComponent}
-        {CaloriesBurnedComponent}
+        {/* {CaloriesBurnedComponent} */}
         {StrengthProgressComponent}
 
+        <View>
+          <View style={styles.trainingContainerStyle}>
+            <Text style={styles.trainingFontStyle}>Apple Stats</Text>
+          </View>
+          <Text style={styles.completionStyle}>
+
+                  {selectedAppleStat === "steps"
+                    ? "Total Steps"
+                    : "Latest HRV (ms)"}
+                </Text>
+          <View style={styles.chartOuterContainer}>
+            <View style={styles.headerTopContainer}>
+              <View style={styles.headerTextStyle}>
+                <Text style={[styles.percentageStyle,{fontSize:getFontSize(4)}]}>
+                  {appleStatsDataByRange(appleStatGraphData || [],appleStats_dropdown)?.total || "N/A"}
+                </Text>
+                
+              </View>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Dropdown
+                  style={[
+                    styles.dropdown,
+                    { marginRight: 10, width: getWidth(25) },
+                  ]} // Adjust width as needed
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={{
+                    fontSize: getFontSize(1.8), // Smaller text for selected item
+                    color: colors.black,
+                    fontFamily: fonts.WMe,
+                  }}
+                  itemTextStyle={{
+                    fontSize: getFontSize(1.8), // Smaller text for all items in the dropdown
+                    color: colors.black,
+                    fontFamily: fonts.WMe,
+                  }}
+                  data={[
+                    { label: "Steps", value: "steps" },
+                    { label: "Heart Rate", value: "hr" },
+                    { label: "Heart Rate Variability", value: "hrv" },
+                    { label: "Resting Heart Rate", value: "rhr" },
+                    { label: "Active energy burned", value: "aeb" },
+                    { label: "Walking distance", value: "wd" },
+                  ]}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Select stat"
+                  value={selectedAppleStat}
+                  onChange={(item) => handleAppleStatSelection(item.value)}
+                />
+                <RenderDropdown
+                  value={appleStats_dropdown}
+                  section={"appleStats"}
+                />
+              </View>
+            </View>
+            <LineChart
+              areaChart
+              curved
+              data={appleStatsDataByRange(appleStatGraphData || [],appleStats_dropdown)?.data}
+              width={width - getFontSize(20)}
+              spacing={getFontSize(15)}
+              initialSpacing={5}
+              color={colors.orange}
+              hideDataPoints
+              startFillColor1={colors.orange}
+              startOpacity={0.8}
+              endOpacity={0.3}
+              dashGap={0}
+              thickness={2}
+              rulesColor={colors.rulesColor}
+              yAxisThickness={0}
+              xAxisColor={colors.rulesColor}
+              xAxisLabelTextStyle={{ color: colors.axisColor }}
+              yAxisTextStyle={{ color: colors.axisColor }}
+            />
+          </View>
+        </View>
+
+        {/* New metrics */}
+        {MetricsComponent}
 
         <View style={styles.weightContainer}>
           <Text style={styles.bodyTextStyle}>Bodyweight Goal</Text>
           <Text style={styles.lbsTextStyle}>Lbs</Text>
         </View>
-        <MultiSLider
-          values={sliderValue}
-          onValuesChangeFinish={(values)=>setSliderValue(values)}
-          trackStyle={styles.sliderStyle}
-          customMarkerLeft={(e) => <CustomMarkerLeft currentValue={e.currentValue} />}
-          customMarkerRight={(e) => <CustomMarkerRight  currentValue={e.currentValue} />}
-          isMarkersSeparated={true}
-          min={80}
-          max={450}
-          sliderLength={getWidth(90)}
-          markerOffsetY={0}
-          step={1}
-          allowOverlap={true}
-          selectedStyle={{ backgroundColor: colors.orange }}
-        />
-     
-        <TouchableOpacity onPress={()=>{setSliderValue([user?.weight,user?.target_weight])}}>
+        <View
+          style={{
+            height: 13,
+            borderRadius: 10,
+            marginVertical: 15,
+            backgroundColor: colors.orange,
+          }}
+        >
+          <CustomMarkerLeft
+            customStyles={{
+              position: "absolute",
+              top: -6,
+              left: calculatePercentage(user?.weight) + "%",
+            }}
+            currentValue={user?.weight}
+          />
+          <CustomMarkerRight
+            customStyles={{
+              position: "absolue",
+              top: -33,
+              left: calculatePercentage(user?.target_weight) + "%",
+            }}
+            currentValue={user?.target_weight}
+          />
+        </View>
+
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("UpdateProfiles");
+          }}
+        >
           <Text style={styles.updateTextStyle}>Update Weight</Text>
         </TouchableOpacity>
       </View>
-      {RenderSectionHeader("Apple Watch Stats")}
-      {renderItem({ title: "Sleep", des: "Time in Bed: 7 Hrs 20 mins " })}
-      {renderItem({ title: "Steps", des: "40,000 steps" })}
 
-      {RenderSectionHeader("Personal Records")}
-     
-      {renderItem({ title: "Deadlift Variations", des: `${maxLBS_DL} ${parameter_DL} max: ${exerciseName_DL} - ${exerciseDate_DL ? formatDate(exerciseDate_DL) : ''}`})}
-      {renderItem({ title: "Squat Variation", des: `${maxLBS} ${parameter} max: ${exerciseName} - ${exerciseDate ? formatDate(exerciseDate) : ''}`})}
+      {/* {RenderSectionHeader("Personal Records")}
+
+      {renderItem({
+        title: "Deadlift Variations",
+        des: `${maxLBS_DL} ${parameter_DL} max: ${exerciseName_DL} - ${
+          exerciseDate_DL ? formatDate(exerciseDate_DL) : ""
+        }`,
+      })}
+      {renderItem({
+        title: "Squat Variation",
+        des: `${maxLBS} ${parameter} max: ${exerciseName} - ${
+          exerciseDate ? formatDate(exerciseDate) : ""
+        }`,
+      })} */}
 
       <View style={{ height: 100 }} />
     </ScrollView>
@@ -1989,6 +2094,11 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontSize: getFontSize(2),
     fontFamily: fonts.WB,
+    // Move the text up by 10 pixels (adjust as needed)
+    marginBottom: 20, // Reduce bottom margin
+    // Alternatively, use position
+    // position: 'relative',
+    // top: -10,  // Moves it 10 pixels up
   },
   lbsTextStyle: {
     color: colors.grayText1,
@@ -2068,27 +2178,27 @@ const styles = StyleSheet.create({
   },
   customMarkerStyle: {
     paddingHorizontal: getWidth(2.5),
-    height: getHeight(4),
-    width: getWidth(11),
+    height: 27,
+    width: getWidth(12),
     backgroundColor: colors.green,
     borderRadius: 3,
-    marginTop: getHeight(2),
+    // marginTop: getHeight(2),
     borderWidth: 4,
     borderColor: colors.white,
     alignItems: "center",
     justifyContent: "center",
   },
-  targetMarkerContainer:{
+  targetMarkerContainer: {
     width: getWidth(10),
   },
-  targetMarker:{
+  targetMarker: {
     height: getHeight(2),
     width: getWidth(5),
-    alignSelf:'center',
-    marginBottom:34,
+    alignSelf: "center",
+    marginBottom: 34,
   },
-  targetMarkerTextStyle:{
-    textAlign:'center',
+  targetMarkerTextStyle: {
+    textAlign: "center",
     fontSize: getFontSize(1),
     color: colors.black,
     fontFamily: fonts.WB,

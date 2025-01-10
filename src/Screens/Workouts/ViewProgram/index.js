@@ -6,7 +6,7 @@ import {
   Image,
   ScrollView,
   Dimensions,
-  Alert
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { GernalStyle } from "../../../constants/GernalStyle";
@@ -24,14 +24,35 @@ import { ApiCall } from "../../../Services/Apis";
 import Button from "../../../Components/Button";
 import Modal from "react-native-modal";
 import { Calendar } from "react-native-calendars";
+import VideoComponent from "../../../Components/VideoComponent";
+import { getSingleUser } from "../../../Redux/actions/AuthActions";
+
+const getDurationText = (days) => {
+  const weeks = days / 7;
+  const roundedWeeks = Math.floor(weeks);
+  const remainingDays = days % 7;
+
+  if (remainingDays === 0) {
+    return `${roundedWeeks} ${roundedWeeks === 1 ? "week" : "weeks"} Program`;
+  } else if (roundedWeeks === 0) {
+    return `${days} ${days === 1 ? "day" : "days"} Program`;
+  } else {
+    return `${roundedWeeks} ${
+      roundedWeeks === 1 ? "week" : "weeks"
+    } and ${remainingDays} ${remainingDays === 1 ? "day" : "days"} Program`;
+  }
+};
 
 const ViewProgram = ({ route }) => {
   const navigation = useNavigation();
-  const { _id } = route?.params?.passData
+  const { _id } = route?.params?.passData;
   const url = route?.params?.url;
+  const programVideos = route?.params?.programVideos;
+  // const userPlan = route?.params?.userPlan;
+
   const [program, setProgram] = useState(null);
   const [data, setData] = useState(null);
-  const token = useSelector((state) => state.auth.userToken)
+  const token = useSelector((state) => state.auth.userToken);
   const user = useSelector((state) => state.auth.userData);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -89,11 +110,12 @@ const ViewProgram = ({ route }) => {
       });
       if (res?.status == "200") {
         dispatch(setLoader(false));
+        dispatch(getSingleUser(token));
         navigation.navigate("WorkoutSucessfully", { selectDate: selectedDate });
       } else {
         dispatch(setLoader(false));
 
-        Alert.alert(res?.response?.message || 'Error', [
+        Alert.alert(res?.response?.message || "Error", [
           { text: "OK", onPress: () => console.log("OK Pressed") },
         ]);
       }
@@ -120,11 +142,12 @@ const ViewProgram = ({ route }) => {
       });
       if (res?.status == "200") {
         dispatch(setLoader(false));
+        dispatch(getSingleUser(token));
         navigation.navigate("WorkoutSucessfully", { selectDate: selectedDate });
       } else {
         dispatch(setLoader(false));
 
-        Alert.alert(res?.response?.message || 'Error', [
+        Alert.alert(res?.response?.message || "Error", [
           { text: "OK", onPress: () => console.log("OK Pressed") },
         ]);
       }
@@ -133,22 +156,53 @@ const ViewProgram = ({ route }) => {
     }
   };
 
+  function hasCompletedWorkouts(plan, requiredProgress = 75, requiredCount = 5) {
+    // Filter workouts with progress greater than or equal to the required progress
+    const completedWorkouts = plan?.workout?.filter(workout => workout.progress >= requiredProgress);
+
+    // Check if the count of completed workouts is at least the required count
+    const isGoalMet = completedWorkouts.length >= requiredCount;
+
+    // Return both the goal met status and the count of completed workouts
+    return {
+      isGoalMet,
+      completedCount: completedWorkouts.length
+    };
+  }
+
   const handleAddToCalendar = () => {
-    if (user?.isAssigned === true) {
-      Alert.alert("Switch Program", " Do you want to switch to new program?", [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "destructive",
-        },
-        { 
-          text: "Continue",
-           onPress: () => setModalVisible(true),
-          style: "default" },
-      ]);
-    } else {
-      setModalVisible(true);
-    }
+    setModalVisible(true);
+    return
+    // if (user?.isAssigned === true) {
+    //   const workoutsCompleted = hasCompletedWorkouts(userPlan);
+    //   if (workoutsCompleted.isGoalMet) {
+    //     Alert.alert("Switch Program", " Do you want to switch to new program?", [
+    //       {
+    //         text: "Cancel",
+    //         onPress: () => console.log("Cancel Pressed"),
+    //         style: "destructive",
+    //       },
+    //       {
+    //         text: "Continue",
+    //         onPress: () => setModalVisible(true),
+    //         style: "default",
+    //       },
+    //     ]);
+    //   }
+    //   else{
+    //     const remainingCount = Math.max(0, 5 - workoutsCompleted.completedCount);
+    //     Alert.alert("Program Locked", 
+    //     `Complete ${remainingCount} more workout${remainingCount !== 1 ? "s" : ""} in your current program to unlock this program.`, [
+    //       {
+    //         text: "Ok",
+    //         onPress: () => console.log("Ok Pressed"),
+    //         style: "destructive",
+    //       }
+    //     ]);
+    //   }
+    // } else {
+    //   setModalVisible(true);
+    // }
   };
 
   const handleDayPress = (day) => {
@@ -161,7 +215,6 @@ const ViewProgram = ({ route }) => {
         position: "relative",
       }}
     >
-
       <Modal
         isVisible={isModalVisible}
         onBackdropPress={() => setModalVisible(false)}
@@ -187,7 +240,7 @@ const ViewProgram = ({ route }) => {
           <TouchableOpacity
             onPress={() => {
               setModalVisible(false);
-              if (user?.isAssigned === true) {
+              if (user?.program_id) {
                 setModalVisible(false);
                 SwitchProgram();
               } else {
@@ -211,16 +264,18 @@ const ViewProgram = ({ route }) => {
       </Modal>
 
       <Image
-        source={{uri:data?.program_Image}}
+        source={{ uri: data?.program_Image }}
         style={{
           objectFit: "fill",
           position: "absolute",
-          top: 0,
-          height: 320,
+          marginTop: -20,
+          height: 290,
           width: Dimensions.get("screen").width,
-          borderRadius: 30,
+          borderBottomRightRadius: 30,
+          borderBottomLeftRadius: 30,
         }}
       />
+
       <TouchableOpacity
         style={{
           position: "absolute",
@@ -242,9 +297,9 @@ const ViewProgram = ({ route }) => {
       <View
         style={{
           justifyContent: "center",
-          alignSelf:'center',
+          alignSelf: "center",
           alignItems: "center",
-          marginTop: 160,
+          marginTop: 130,
           gap: 10,
         }}
       >
@@ -253,7 +308,7 @@ const ViewProgram = ({ route }) => {
             borderWidth: 1,
             borderRadius: 8,
             borderColor: "white",
-            backgroundColor:'black',
+            backgroundColor: "black",
             padding: 8,
             flexDirection: "row",
             alignItems: "center",
@@ -265,6 +320,7 @@ const ViewProgram = ({ route }) => {
             style={{
               height: 20,
               width: 20,
+              marginTop: 2,
             }}
           />
           <Text
@@ -281,7 +337,7 @@ const ViewProgram = ({ route }) => {
             fontSize: 26,
             color: "white",
             fontWeight: "700",
-            marginTop: 4,
+            marginTop: 0,
           }}
         >
           About
@@ -290,8 +346,8 @@ const ViewProgram = ({ route }) => {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            gap: 6,
-            marginTop: 6,
+            gap: 0,
+            marginTop: 0,
           }}
         >
           <Image
@@ -301,12 +357,8 @@ const ViewProgram = ({ route }) => {
               width: 20,
             }}
           />
-          <Text
-            style={{
-              color: "white",
-            }}
-          >
-             {data?.no_of_days} days Program
+          <Text style={{ color: "white" }}>
+            {getDurationText(data?.no_of_days)}
           </Text>
         </View>
       </View>
@@ -316,7 +368,7 @@ const ViewProgram = ({ route }) => {
           justifyContent: "flex-start",
           alignItems: "flex-start",
           marginTop: 70,
-          gap: 10,
+          gap: 0,
           paddingHorizontal: 16,
         }}
       >
@@ -325,7 +377,7 @@ const ViewProgram = ({ route }) => {
             flexDirection: "column",
             justifyContent: "flex-start",
             alignItems: "flex-start",
-            gap: 6,
+            gap: 0,
           }}
         >
           <Text
@@ -334,7 +386,7 @@ const ViewProgram = ({ route }) => {
               fontSize: 22,
             }}
           >
-            Description
+            Program Description
           </Text>
           <Text
             style={{
@@ -345,110 +397,158 @@ const ViewProgram = ({ route }) => {
             {data?.description}
           </Text>
         </View>
+          <View
+            style={{
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              alignItems: "flex-start",
+              gap: 0,
+              marginTop: 10,
+            }}
+          >
+            <View>
+            {programVideos?.length > 0 && (
+              <>
+              <View style={{ gap: 10 }}>
+                <Text style={{ fontWeight: 700, fontSize: 18 }}>
+                  {programVideos[0].title}
+                </Text>
+                <Text
+                  style={{
+                    lineHeight: 22,
+                    textAlign: "left",
+                    color: "#676C75",
+                    letterSpacing: 0.8,
+                  }}
+                >
+                  {programVideos[0].description}
+                </Text>
+              </View>
+              <View
+                style={{
+                  width: Dimensions.get("screen").width - 38,
+                  objectFit: "contain",
+                }}
+              >
+                <VideoComponent
+                  videoUrl={programVideos[0]?.video}
+                  thumbnail={programVideos[0]?.video_thumbnail}
+                />
+              </View>
+              </>
+            )}
+              <View style={{ marginVertical: 20 }}>
+                <Button
+                  onPress={() => {
+                    handleAddToCalendar();
+                  }}
+                  text={`Start ${data?.title}`}
+                  btnStyle={{
+                    ...GernalStyle.btn,
+                    borderRadius: 20,
+                    height: 60,
+                    backgroundColor: colors.orange,
+                  }}
+                  btnTextStyle={GernalStyle.btnText}
+                />
+                <Button
+                  onPress={() => navigation.goBack()}
+                  text="No, Go Back"
+                  btnStyle={{
+                    ...GernalStyle.btn,
+                    borderRadius: 20,
+                    height: 60,
+                    backgroundColor: colors.black,
+                    marginTop: 20,
+                    marginBottom: -20,
+                  }}
+                  btnTextStyle={GernalStyle.btnText}
+                />
+              </View>
+              {programVideos?.length > 0 && (
+                <>
+                  <View
+                    style={{
+                      borderBottomWidth: 1,
+                      borderBottomColor: "#E5E5E5",
+                      width: "100%",
+                      marginVertical: 20,
+                    }}
+                  />
+
+                  <Text
+                    style={{ fontWeight: "700", fontSize: 22, marginBottom: 10 }}
+                  >
+                    Additional Details:
+                  </Text>
+
+                  {programVideos.slice(1).map((item, index) => (
+                    <View key={index}>
+                      <View style={{ gap: 5 }}>
+                        <Text style={{ fontWeight: 700, fontSize: 15 }}>
+                          {item.title}
+                        </Text>
+                        <Text
+                          style={{
+                            lineHeight: 22,
+                            textAlign: "left",
+                            color: "#676C75",
+                            letterSpacing: 0.8,
+                          }}
+                        >
+                          {item.description}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          width: Dimensions.get("screen").width - 38,
+                          objectFit: "contain",
+                        }}
+                      >
+                        <VideoComponent
+                          videoUrl={item?.video}
+                          thumbnail={item?.video_thumbnail}
+                        />
+                      </View>
+                    </View>
+                  ))}
+                </>
+              )}
+            </View>
+          </View>
+
         <View
           style={{
             flexDirection: "column",
             justifyContent: "flex-start",
             alignItems: "flex-start",
-            gap: 6,
-            marginTop: 10,
+            gap: 0,
           }}
-        >
-          <Text
-            style={{
-              fontWeight: "700",
-              fontSize: 22,
-            }}
-          >
-            Video
-          </Text>
-          <Image
-            source={require("../../../assets/images/workoutsvideo.png")}
-            style={{
-              width: Dimensions.get("screen").width - 38,
-              objectFit: "contain",
-              marginTop: -200,
-            }}
-          />
-        </View>
-        <View
-          style={{
-            flexDirection: "column",
-            justifyContent: "flex-start",
-            alignItems: "flex-start",
-            gap: 6,
-            marginTop: -180,
-          }}
-        >
-          <Text
-            style={{
-              fontWeight: "700",
-              fontSize: 22,
-            }}
-          >
-            Benefits
-          </Text>
-          <Text
-            style={{
-              color: "#7d7d7d",
-              lineHeight: 20,
-            }}
-          >
-            There are many benefits of doing morning activities, here are the
-            most important:
-          </Text>
-        </View>
-        <View style={{ height: 200}}>
-        <Button
-            onPress={() => {
-              handleAddToCalendar()
-              //navigation.navigate("ProgramWorkout", { workoutData: route?.params?.passData, programId: _id })
-            }
-            }
-            text={`Start ${data?.title}`}
-            btnStyle={{
-              ...GernalStyle.btn,
-              borderRadius:20,
-              height:60,
-              backgroundColor: colors.orange,
-            }}
-            btnTextStyle={GernalStyle.btnText}
-          /> 
-           <Button
-            onPress={() => navigation.goBack()}
-            text="No, Go Back"
-            btnStyle={{
-              ...GernalStyle.btn,
-              borderRadius:20,
-              height:60,
-              backgroundColor: colors.black,
-              marginTop:20
-            }}
-            btnTextStyle={GernalStyle.btnText}
-          /> 
-        </View>
+        ></View>
       </View>
     </ScrollView>
   );
 };
+
 const styles = StyleSheet.create({
   modalContainer: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 5,
     padding: 20,
   },
   closeButton: {
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
   },
   donebtn: {
     height: getHeight(6),
     borderRadius: 5,
     width: getWidth(25),
     backgroundColor: colors.bluebtn,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
+    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: getHeight(1),
   },
 });
+
 export default ViewProgram;
