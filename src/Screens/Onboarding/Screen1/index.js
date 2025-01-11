@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState,useEffect} from "react";
 import {
   StyleSheet,
   View,
@@ -16,9 +16,18 @@ import LogoImage from "../../../assets/images/Fightlifemain.png";
 import { useDispatch } from "react-redux";
 import { setLoader } from "../../../Redux/actions/GernalActions";
 import { loginRequest } from "../../../Redux/actions/AuthActions";
+import {ApiCall} from '../../../Services/Apis';
+import { useFocusEffect } from "@react-navigation/native";
 
 const WelcomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
+  const [showSignUpButton, setShowSignUpButton] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getPermissionByName();
+    }, [])
+  );
 
   const loginAsGuest = async () => {
     const email = "Guestuser@gmail.com";
@@ -40,7 +49,19 @@ const WelcomeScreen = ({ navigation }) => {
       dispatch(setLoader(false));
     }
   };
-
+  const getPermissionByName = async () => {
+    try {
+      const res = await ApiCall({
+        route: `auth/getPermissionByName/signupbutton`,
+        verb: "get",
+      });
+      if (res?.status == 200) {
+        setShowSignUpButton(res?.response?.data?.value)
+      } 
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <ImageBackground source={BackgroundImage} style={styles.backgroundImage}>
       <ImageBackground source={OverlayImage} style={styles.overlayImage}>
@@ -97,6 +118,18 @@ const WelcomeScreen = ({ navigation }) => {
                 <Text style={styles.signInLink}>Continue as Guest</Text>
               </Text>
             </TouchableOpacity>
+
+            {showSignUpButton &&
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("SignUp")
+                }}
+              >
+                <Text style={styles.signInText}>
+                  <Text style={styles.signInLink}>Sign Up</Text>
+                </Text>
+              </TouchableOpacity>
+            }
             <Text style={styles.poweredByText}>
               Powered By Sassouni Digital Media
             </Text>
@@ -119,6 +152,7 @@ const styles = StyleSheet.create({
   },
   signInLink: {
     color: "#FF8036",
+    textAlign:'center',
     textDecorationLine: "underline",
   },
   backgroundImage: {

@@ -125,7 +125,7 @@ const HomeSc = ({ navigation, route }) => {
       if (res?.status == 200) {
         let restDayVideos = res?.response?.data?.filter(x=>x.type == "Off Day");
         dispatch(setRestDayVideos(restDayVideos));
-        setDataList(res?.response?.data?.filter(x=>x.type == "HomeStore"));
+        setDataList(res?.response?.data?.filter(x=>x.type == "HomeStore" && x.isActive == true));
       } else {
         console.log(res?.response);
       }

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef ,useEffect} from "react";
 import { Text, View, TouchableOpacity, Image, StyleSheet,ScrollView } from "react-native";
 import { TextInput } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -9,6 +9,7 @@ import validator from "../../../../utils/validation/validator";
 import { setLoader } from "../../../Redux/actions/GernalActions";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useFocusEffect } from "@react-navigation/native";
+import {ApiCall} from '../../../Services/Apis';
 
 const Login = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -24,6 +25,7 @@ const Login = ({ navigation }) => {
   });
   useFocusEffect(
     React.useCallback(() => {
+      getPermissionByName();
       setState({
         email: "",
         emailError: "",
@@ -33,6 +35,8 @@ const Login = ({ navigation }) => {
     }, [])
   );
   const [hidePass, setHidePass] = useState(true);
+  const [showSignUpButton, setShowSignUpButton] = useState(false);
+
 
   const login = async () => {
     const { email, password } = state;
@@ -65,7 +69,20 @@ const Login = ({ navigation }) => {
       dispatch(setLoader(false));
     }
   };
-  
+
+  const getPermissionByName = async () => {
+    try {
+      const res = await ApiCall({
+        route: `auth/getPermissionByName/signupbutton`,
+        verb: "get",
+      });
+      if (res?.status == 200) {
+        setShowSignUpButton(res?.response?.data?.value)
+      } 
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const changeHandler = (type, value) => setState({ ...state, [type]: value });
   return (
     <ScrollView style={styles.container}>
@@ -220,10 +237,19 @@ const Login = ({ navigation }) => {
             />
           </TouchableOpacity>
         </View> */}
-
-        <TouchableOpacity onPress={()=>{loginAsGuest()}} style={styles.footerContainer}>
-          <Text style={styles.footerText}>Continue as Guest</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          {showSignUpButton &&
+            <>
+              <TouchableOpacity onPress={() => { navigation.navigate("SignUp") }} style={styles.footerContainer}>
+                <Text style={styles.footerText}>Sign Up</Text>
+              </TouchableOpacity>
+              <Text style={styles.footerText}>   |   </Text>
+            </>
+          }
+          <TouchableOpacity onPress={() => { loginAsGuest() }} style={styles.footerContainer}>
+            <Text style={styles.footerText}>Continue as Guest</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );

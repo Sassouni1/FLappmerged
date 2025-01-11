@@ -12,6 +12,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import randomstring from 'randomstring';
 import {put} from 'redux-saga/effects';
 import {ApiCall} from '../../../Services/Apis';
+import SimpleToast from 'react-native-simple-toast';
 
 const SignUp = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -45,12 +46,12 @@ const SignUp = ({ navigation }) => {
 
     
     const onClickSignUp = async () => {
-        const { name,email } = state;
-        const password = randomstring.generate(6);
+        const { name,email,password } = state;
         const nameError = await validator("name", name);
         const emailError = await validator("email", email);
+        const passwordError = await validator("password", password);
 
-        if (!nameError && !emailError) {
+        if (!nameError && !emailError && !passwordError) {
             let obj = {
                 full_name:name,
                 email: email,
@@ -65,21 +66,22 @@ const SignUp = ({ navigation }) => {
                     route: "admin/add_client",
                     verb: "post",
                 });
-                if (res.status == 200 || res?.response?.message == 'Email already exist') {
-                    dispatch(
-                        loginRequest({ email: email, password: password, role: "customer", isGuestUser: true })
-                    );
+                if (res.status == 200) {
+                   navigation.navigate("Login")
+                   SimpleToast.show("Successfully Created Account");
                 }
                 else {
                     dispatch(setLoader(false));
+                    SimpleToast.show(res?.response?.message);
                 }
             }
             catch (e) {
                 dispatch(setLoader(false));
+                SimpleToast.show(e?.message);
             }
         } else {
             dispatch(setLoader(false));
-            setState({ ...state,nameError, emailError });
+            setState({ ...state,nameError, emailError,passwordError });
         }
     };
 
@@ -104,7 +106,7 @@ const SignUp = ({ navigation }) => {
             />
           </View>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>LogIn as guest user To Fight Life</Text>
+            <Text style={styles.title}>Sign Up To Fight Life</Text>
             <Text style={styles.subtitle}>Train Like a World Champion</Text>
           </View>
         </View>
@@ -175,7 +177,6 @@ const SignUp = ({ navigation }) => {
                       setState({ ...state, emailError: error })
                     )
                   }
-                  onSubmitEditing={() => onClickSignUp()}
                   onChangeText={(email) => changeHandler("email", email.trim())}
                   blurOnSubmit={false}
                 />
@@ -186,11 +187,59 @@ const SignUp = ({ navigation }) => {
           )}
           </View>
          
-
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Password</Text>
+            <View style={styles.inputContent}>
+              <View style={styles.inputText}>
+                <Image
+                  source={require("../../../assets/images/Monotonelockpassword.png")}
+                  style={styles.inputIcon}
+                />
+                <TextInput
+                  mode="outlined"
+                  label={<Text style={styles.inputPlaceholder}>Password</Text>}
+                  theme={{ roundness: 19 }}
+                  outlineColor="#F3F3F4"
+                  activeOutlineColor="#F3F3F4"
+                  style={styles.input}
+                  ref={inputRefs.password}
+                  value={state.password}
+                  returnKeyType={"send"}
+                  secureTextEntry={hidePass ? true : false}
+                  right={
+                    <TextInput.Icon
+                      icon={() => (
+                        <MaterialCommunityIcons
+                          name={hidePass ? "eye-off-outline" : "eye-outline"}
+                          size={24}
+                          color="#393C43"
+                          onPress={() => setHidePass(!hidePass)}
+                        />
+                      )}
+                    />
+                  }
+                  onFocus={() => setState({ ...state, passwordError: "" })}
+                  onBlur={() =>
+                    validateFields(state.password, "password", (error) =>
+                      setState({ ...state, passwordError: error })
+                    )
+                  }
+                  onSubmitEditing={() => onClickSignUp()}
+                  onChangeText={(password) =>
+                    changeHandler("password", password.trim())
+                  }
+                  blurOnSubmit={false}
+                />
+              </View>
+            </View>
+            {state.passwordError && (
+            <Text style={styles.errorText}>{state.passwordError}</Text>
+          )}
+          </View>
 
           <TouchableOpacity style={styles.button} onPress={() => onClickSignUp()}>
             <View style={styles.buttonContent}>
-              <Text style={styles.buttonText}>Sign In</Text>
+              <Text style={styles.buttonText}>Sign Up</Text>
               <Image
                 source={require("../../../assets/images/Monotonearrowright.png")}
                 style={styles.buttonIcon}
@@ -272,7 +321,7 @@ const styles = StyleSheet.create({
     color: "#393C43",
   },
   formContainer: {
-    marginBottom: 48,
+    marginBottom: 20,
     marginTop: -10,
   },
   inputContainer: {

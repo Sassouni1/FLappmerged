@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet,Linking } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet,Linking,Alert } from 'react-native';
 import Modal from 'react-native-modal';
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
@@ -9,6 +9,15 @@ const PopupModal = ({isVisible,toggleModal}) => {
   const navigate = useNavigation();
   const dispatch = useDispatch();
 
+  const openURL = async (url) => {
+    const supported = await Linking.canOpenURL(url);
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      Alert.alert(`Don't know how to open this URL: ${url}`);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Modal isVisible={isVisible}>
@@ -16,16 +25,14 @@ const PopupModal = ({isVisible,toggleModal}) => {
         <Text style={styles.modalTitle}>Upgrade to Premium</Text>
           <Text style={styles.modalText}>You are currently using a free account. To access premium features, please create an account and upgrade.</Text>
           
-          <View style={{flexDirection:'row'}}>
-          <Text style={{fontSize:14,marginBottom:15}}>To subscribe please visit:</Text>
-          <Text style={{fontSize:14, color:'blue'}}>FightLife.io</Text>
-          </View>
 
           <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={()=>{ openURL("https://www.fightlife.io/darustrong")}} style={styles.upgradeButton}>
+              <Text style={styles.buttonText}>Upgrade Account</Text>
+            </TouchableOpacity>
             <TouchableOpacity onPress={()=>{toggleModal(); navigate.navigate("Exercises")}} style={styles.cancelButton}>
               <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
-          
           </View>
           <TouchableOpacity onPress={()=>dispatch(logout())}><Text style={{fontSize:14,marginTop:10, color:'blue'}}>Logout</Text></TouchableOpacity>
         </View>
@@ -60,7 +67,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   buttonContainer: {
-    flexDirection: 'row',
+    // flexDirection: 'row',
     justifyContent: 'space-between',
     width: '80%',
   },
@@ -69,7 +76,13 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginRight: 10,
-    flex: 1,
+  },
+  upgradeButton: {
+    backgroundColor: "#256CD0",
+    padding: 10,
+    borderRadius: 5,
+    marginBottom:5,
+    marginRight: 10,
   },
   subscribeButton: {
     backgroundColor: '#2196F3',
