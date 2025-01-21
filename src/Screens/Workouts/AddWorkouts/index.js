@@ -124,6 +124,7 @@ const AddWorkouts = () => {
   };
 
   const handleDateChange = (selectedDate) => {
+    getCurrentDayWorkout(selectedDate);
     setSelectedRestDayVideo({});
     dispatch(setSelectedCalendarDate(selectedDate));
     setDate(selectedDate);
@@ -186,11 +187,10 @@ const calculateDayDifference = (startFromDate, selectedDate) => {
   const setCurrentDateWorkout = (workouts, selectedDate,progStartDate) => {
     calculateDayDifference(progStartDate,selectedDate)
 
-    let dateSelected = new Date(selectedDate);
-    dateSelected.setUTCHours(0, 0, 0, 0);
-    let findWorkout = workouts?.find(x => new Date(x.workoutDate).toLocaleDateString('en-CA') == dateSelected.toLocaleDateString('en-CA'))
-    if (findWorkout) {
-      let workout = findWorkout?.workout;
+    let workout = workouts[0]
+    if (workout) {
+      let workout = workouts[0]
+
       let innerWorkout = workout?.innerWorkout[0];
       if (innerWorkout) {
         setWorkout(workout);
@@ -254,7 +254,7 @@ const calculateDayDifference = (startFromDate, selectedDate) => {
       });
       if (res?.status == "200") {
         let _programStartDate = res?.response?.startDate;
-        setUserWorkoutProgress(res?.response?.workoutProgress);
+        // setUserWorkoutProgress(res?.response?.workoutProgress);
         setProgramStartDate(_programStartDate)
         setWorkoutForWeek(res?.response?.Workout);
         setCurrentDateWorkout(res?.response?.Workout,selectedDate,_programStartDate)
@@ -268,7 +268,36 @@ const calculateDayDifference = (startFromDate, selectedDate) => {
       Toast.show("Error Getting Workout");
     }
   };
-  
+  const getCurrentDayWorkout = async (selectedDate) => {
+    try {
+      dispatch(setLoader(true));
+      setAssigWorkout({});
+      const res = await ApiCall({
+        route: `assignProgram/given-date-workouts/${
+          user?.plan_id
+        }&${selectedDate}`,
+        verb: "get",
+        token: token,
+      });
+      if (res?.status == "200") {
+        console.log("response..",res);
+
+        let _programStartDate = res?.response?.startDate;
+        // setUserWorkoutProgress(res?.response?.workoutProgress);
+        setProgramStartDate(_programStartDate)
+        console.log(_programStartDate)
+        // setWorkoutForWeek(res?.response?.Workout);
+        setCurrentDateWorkout(res?.response?.Workout,selectedDate,_programStartDate)
+        dispatch(setLoader(false));
+      } else {
+        dispatch(setLoader(false));
+      }
+    } catch (e) {
+      console.log("Error in week workout call -- ", e.toString());
+      dispatch(setLoader(false));
+      Toast.show("Error Getting Workout");
+    }
+  };
   const getViewProgram = async () => {
     dispatch(setLoader(true));
     try {
@@ -391,7 +420,8 @@ const calculateDayDifference = (startFromDate, selectedDate) => {
   useEffect(()=>{
     dispatch(setCalanderRefreshKey(false));
     let dateSelected = selectedCalendarDate || date;
-    getExcerciseForWeek(dateSelected);
+    getCurrentDayWorkout(dateSelected)
+    // getExcerciseForWeek(dateSelected);
     getViewProgram();
     // exerciseProgress(dateSelected);
   },[refreshCalanderView])
@@ -689,17 +719,17 @@ const isVimeoUrl = (url) => {
             showMonth={false}
             selectedDate={date}
             onDateSelected={handleDateChange}
-            onWeekChanged={(weekStartDate, weekEndDate) => {
-              setCurrentWeekStartDate(weekStartDate)
-              if (currentWeekStartDate) {
-                if (currentWeekStartDate.toISOString() != weekStartDate.toISOString()) {
-                  console.log("Week changed:", weekStartDate, weekEndDate);
-                  getExcerciseForWeek(weekStartDate);
-                  dispatch(setSelectedCalendarDate(weekStartDate));
-                  setDate(weekStartDate);
-                }
-              }
-            }}
+            // onWeekChanged={(weekStartDate, weekEndDate) => {
+            //   setCurrentWeekStartDate(weekStartDate)
+            //   if (currentWeekStartDate) {
+            //     if (currentWeekStartDate.toISOString() != weekStartDate.toISOString()) {
+            //       console.log("Week changed:", weekStartDate, weekEndDate);
+            //       getExcerciseForWeek(weekStartDate);
+            //       dispatch(setSelectedCalendarDate(weekStartDate));
+            //       setDate(weekStartDate);
+            //     }
+            //   }
+            // }}
             calendarAnimation={{ type: "sequence", duration: 30 }}
             customDatesStyles={customDatesStyles}
             highlightDateNameStyle={{ color: "black" }}
@@ -782,7 +812,7 @@ const isVimeoUrl = (url) => {
           </View>
         )}
         refreshing={false}
-        onRefresh={() => getExcerciseForWeek(date)}
+        onRefresh={() => getCurrentDayWorkout(date)}
         ListHeaderComponent={() => (
           <View
             style={{

@@ -573,6 +573,7 @@ const singleSetComplete = async (
     let requestParams = {
       setId: set?._id,
       workout_objId: workout?._id,
+      workoutDate:workout.workoutDate,
       exercise_objId: currentExercise?._id,
       inner_objId: workout?.innerWorkout[0]?._id,
       dynamicExercises: dynamicExercises,
@@ -594,7 +595,7 @@ const singleSetComplete = async (
     });
 
     if (res?.status == "200") {
-      // toast.show("Successfully completed");
+      toast.show("Successfully completed");
       console.log("Successfully completed")
     } else {
       // toast.show("Enter correct sets");

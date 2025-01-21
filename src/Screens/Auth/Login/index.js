@@ -1,5 +1,5 @@
 import React, { useState, useRef ,useEffect} from "react";
-import { Text, View, TouchableOpacity, Image, StyleSheet,ScrollView } from "react-native";
+import { Text, View, TouchableOpacity, Image, StyleSheet,ScrollView,Linking,Alert,ActivityIndicator } from "react-native";
 import { TextInput } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { validateFields } from "../../../../utils/validation/validate-fields";
@@ -32,9 +32,15 @@ const Login = ({ navigation }) => {
         password: "",
         passwordError: "",
       });
+      setPasswordIsEditable(false)
     }, [])
   );
   const [hidePass, setHidePass] = useState(true);
+  const [passwordIsEditable, setPasswordIsEditable] = useState(false);
+  const [emailLoading, setEmailLoading] = useState(false);
+
+  const [isFirstLogin, setIsFirstLogin] = useState(false);
+
   const [showSignUpButton, setShowSignUpButton] = useState(false);
 
 
@@ -51,6 +57,58 @@ const Login = ({ navigation }) => {
       dispatch(setLoader(false));
       setState({ ...state, emailError, passwordError });
     }
+  };
+
+  const openURL = async (url) => {
+    const supported = await Linking.canOpenURL(url);
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      Alert.alert(`Don't know how to open this URL: ${url}`);
+    }
+  };
+
+  const verifyUser = async (email) => {
+    try {
+      const res = await ApiCall({
+        route: 'auth/checkLoginStatus',
+        verb: 'post',
+        params: { email: email },
+      });
+      console.log("res",res)
+      if (res && res?.response?.code == 200) {
+        if (res?.response?.loginStatus == true) {
+          showFirstTimeLoginAlert(email)
+        }
+        setPasswordIsEditable(true)
+      }
+      else{
+        setPasswordIsEditable(false)
+      }
+    }
+    catch (e) {
+      console.log(e)
+    }
+  }
+
+  const showFirstTimeLoginAlert = (email) => {
+    Alert.alert(
+      "First Time Login",
+      "Since this is your first time logging in, you will need to create a password.",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel pressed"),
+          style: "cancel"
+        },
+        {
+          text: "Create Password",
+          onPress: () =>navigation.navigate("CreatePassword",{email:email}),
+          // Navigate to password creation screen or function
+        }
+      ],
+      { cancelable: false } // Disables dismissing alert by tapping outside
+    );
   };
 
   const loginAsGuest = async () => {
@@ -132,13 +190,35 @@ const Login = ({ navigation }) => {
                   returnKeyType={"next"}
                   keyboardType="email-address"
                   onFocus={() => setState({ ...state, emailError: "" })}
+                  right={
+                    passwordIsEditable ?
+                    <TextInput.Icon
+                      icon={() => (
+                        <MaterialCommunityIcons
+                          name={"check-circle"}
+                          size={24}
+                          color="green"
+                        />
+                      )}
+                    />
+                    :
+                    null
+                  }
                   onBlur={() =>
                     validateFields(state.email, "email", (error) =>
                       setState({ ...state, emaiolError: error })
                     )
                   }
                   onSubmitEditing={() => inputRefs["password"].current.focus()}
-                  onChangeText={(email) => changeHandler("email", email.trim())}
+                  onChangeText={async (email) => {
+                    const emailError = await validator("email", email);
+                    if(!emailError){
+                      verifyUser(email)
+                      console.log("valid",email)
+                    }
+                    changeHandler("email", email.trim())
+
+                  }}
                   blurOnSubmit={false}
                 />
               </View>
@@ -147,7 +227,6 @@ const Login = ({ navigation }) => {
           {state.emailError && (
             <Text style={styles.errorText}>{state.emailError}</Text>
           )}
-
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Password</Text>
             <View style={styles.inputContent}>
@@ -160,6 +239,7 @@ const Login = ({ navigation }) => {
                   mode="outlined"
                   label={<Text style={styles.inputPlaceholder}>Password</Text>}
                   theme={{ roundness: 19 }}
+                  editable={passwordIsEditable}
                   outlineColor="#F3F3F4"
                   activeOutlineColor="#F3F3F4"
                   style={styles.input}
@@ -240,7 +320,7 @@ const Login = ({ navigation }) => {
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
           {showSignUpButton &&
             <>
-              <TouchableOpacity onPress={() => { navigation.navigate("SignUp") }} style={styles.footerContainer}>
+              <TouchableOpacity onPress={() => { openURL("https://www.fightlife.io/darustrong") }} style={styles.footerContainer}>
                 <Text style={styles.footerText}>Sign Up</Text>
               </TouchableOpacity>
               <Text style={styles.footerText}>   |   </Text>
@@ -258,6 +338,7 @@ const Login = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop:50,
     backgroundColor: "#FFFFFF",
   },
   backgroundImage: {

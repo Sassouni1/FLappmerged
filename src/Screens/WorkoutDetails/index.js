@@ -200,7 +200,7 @@ const WorkoutDetails = () => {
   });
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1,paddingTop:70,backgroundColor:'white' }}>
       <PopupModal isVisible={isModalVisible} toggleModal={toggleModal} />
       <Animated.View
         style={[

@@ -16,6 +16,7 @@ import Screen5 from "../../Screens/Onboarding/Screen5";
 
 import WelcomeChatScreen from "../../Screens/ChatBot/WelcomeChat";
 import {SplashScreenAuth} from "../../Screens/SplashScreen";
+import CreatePassword from "../../Screens/Auth/CreatePassword"
 
 const stack = createNativeStackNavigator();
 const AuthStack = () => {
@@ -110,6 +111,13 @@ const AuthStack = () => {
         }}
         name="OTP"
         component={OTP}
+      />
+       <stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="CreatePassword"
+        component={CreatePassword}
       />
     </stack.Navigator>
   );

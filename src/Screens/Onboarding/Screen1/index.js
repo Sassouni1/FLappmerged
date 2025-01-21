@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   ImageBackground,
   Image,
+  Linking,
+  Alert,
   Dimensions,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -28,7 +30,14 @@ const WelcomeScreen = ({ navigation }) => {
       getPermissionByName();
     }, [])
   );
-
+  const openURL = async (url) => {
+    const supported = await Linking.canOpenURL(url);
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      Alert.alert(`Don't know how to open this URL: ${url}`);
+    }
+  };
   const loginAsGuest = async () => {
     const email = "Guestuser@gmail.com";
     const password = "123456";
@@ -122,7 +131,7 @@ const WelcomeScreen = ({ navigation }) => {
             {showSignUpButton &&
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate("SignUp")
+                  openURL("https://www.fightlife.io/darustrong")
                 }}
               >
                 <Text style={styles.signInText}>
