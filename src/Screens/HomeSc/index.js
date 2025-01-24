@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { appListner, requestUserPermission } from "../Notifications";
 import { getSingleUser } from "../../Redux/actions/AuthActions";
 import { ApiCall } from "../../Services/Apis";
-import { setLoader,setRestDayVideos } from "../../Redux/actions/GernalActions";
+import { setLoader, setRestDayVideos } from "../../Redux/actions/GernalActions";
 import { useNavigation } from "@react-navigation/native";
 import { Calendar } from "react-native-calendars";
 import { colors } from "../../constants/colors";
@@ -29,33 +29,34 @@ function LiveCallComponent({ upComingEvent }) {
   const [time, setTime] = useState(timeRemaining(upComingEvent?.start));
 
   useEffect(() => {
-      const interval = setInterval(() => {
-          setTime(timeRemaining(upComingEvent?.start));
-      }, 1000); // Update every second
+    const interval = setInterval(() => {
+      console.log(upComingEvent, "the value of upcoming event is...")
+      setTime(timeRemaining(upComingEvent?.start));
+    }, 1000); // Update every second
 
-      return () => clearInterval(interval); // Clean up on unmount
+    return () => clearInterval(interval); // Clean up on unmount
   }, [upComingEvent?.start]);
 
   const handlePress = () => {
-      if (time === "Live call is now!") {
-          openURL(upComingEvent?.link);
-      } else {
-          Alert.alert("No live calls scheduled for today.");
-      }
+    if (time === "Live call is now!") {
+      openURL(upComingEvent?.link);
+    } else {
+      Alert.alert("No live calls scheduled for today.");
+    }
   };
 
   return (
-      <TouchableOpacity style={styles.liveCallsBtn} onPress={handlePress}>
-          <Image
-              source={require("../../assets/images/WhiteCalendar.png")}
-              style={styles.whiteCalendar}
-          />
-          <Text style={styles.liveCallsBtnText}>
-              {time === "Live call is now!"
-                  ? "Live call is now! Click here to Join"
-                  : `Live Call Is In ${time} with ${upComingEvent?.speakers[0]?.name}`}
-          </Text>
-      </TouchableOpacity>
+    <TouchableOpacity style={styles.liveCallsBtn} onPress={handlePress}>
+      <Image
+        source={require("../../assets/images/WhiteCalendar.png")}
+        style={styles.whiteCalendar}
+      />
+      <Text style={styles.liveCallsBtnText}>
+        {time === "Live call is now!"
+          ? "Live call is now! Click here to Join"
+          : `Live Call Is In ${time} with ${upComingEvent?.speakers[0]?.name}`}
+      </Text>
+    </TouchableOpacity>
   );
 }
 
@@ -67,7 +68,7 @@ function timeRemaining(targetDate) {
   const timeDiff = endDate - now;
 
   if (timeDiff <= 0) {
-      return "Live call is now!";
+    return "Live call is now!";
   }
 
   const seconds = Math.floor((timeDiff / 1000) % 60);
@@ -123,9 +124,9 @@ const HomeSc = ({ navigation, route }) => {
         token: token,
       });
       if (res?.status == 200) {
-        let restDayVideos = res?.response?.data?.filter(x=>x.type == "Off Day");
+        let restDayVideos = res?.response?.data?.filter(x => x.type == "Off Day");
         dispatch(setRestDayVideos(restDayVideos));
-        setDataList(res?.response?.data?.filter(x=>x.type == "HomeStore" && x.isActive == true));
+        setDataList(res?.response?.data?.filter(x => x.type == "HomeStore" && x.isActive == true));
       } else {
         console.log(res?.response);
       }
@@ -240,7 +241,7 @@ const HomeSc = ({ navigation, route }) => {
   const getAdminAlert = async () => {
     try {
       const res = await ApiCall({
-        route: auth/get-recent-alert,
+        route: auth / get - recent - alert,
         verb: "get",
         token: token,
       });
@@ -280,9 +281,8 @@ const HomeSc = ({ navigation, route }) => {
     const formattedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
     try {
       const res = await ApiCall({
-        route: `assignProgram/given-date-workout_name/${
-          user?.plan_id
-        }&${formattedDate}`,
+        route: `assignProgram/given-date-workout_name/${user?.plan_id
+          }&${formattedDate}`,
         verb: "get",
         token: token,
       });
@@ -333,7 +333,7 @@ const HomeSc = ({ navigation, route }) => {
 
         if (upcomingEvent) {
           setUpcomingEvent(upcomingEvent);
-          console.log("upcomingEvent",upcomingEvent)
+          console.log("upcomingEvent", upcomingEvent)
           setUpcomingCallDescription(
             `Upcoming call with ${upcomingEvent.speakers[0]?.name} on ${moment(
               upcomingEvent.start
@@ -376,19 +376,19 @@ const HomeSc = ({ navigation, route }) => {
           <Text style={styles.dateText}>{currentDate}</Text>
         </View>
         <View style={styles.headerInfo}>
-        {user?.profile_image ?
-          <View style={styles.profilePicture}>
+          {user?.profile_image ?
+            <View style={styles.profilePicture}>
               <Image
                 source={{ uri: user?.profile_image }}
                 style={styles.profileImage}
               />
-          </View>
-          :
-          <UserAvatar username={user?.isGuestUser ? "Guest" : user?.full_name} height={54} width={54} />
-        }
+            </View>
+            :
+            <UserAvatar username={user?.isGuestUser ? "Guest" : user?.full_name} height={54} width={54} />
+          }
           <View style={styles.headerContent}>
             <Text style={styles.greeting}>
-              {"Hello " + (user?.isGuestUser ? "Guest" :  user?.full_name?.split(" ")[0])}
+              {"Hello " + (user?.isGuestUser ? "Guest" : user?.full_name?.split(" ")[0])}
             </Text>
           </View>
           <Entypo
@@ -451,19 +451,19 @@ const HomeSc = ({ navigation, route }) => {
               { paddingBottom: 20 },
             ]}
           >
-              <View style={styles.frameContentUpper}>
-                <View style={styles.workoutMessageContainer}>
-                  {todayWorkout &&
-                    <>
-                      <Image
-                        source={require("../../assets/images/firefire2.png")}
-                        style={styles.fireIcon}
-                      />
-                      <Text style={styles.workoutMessage}>Enjoy your workout</Text>
-                    </>
-                  }
-                </View>
+            <View style={styles.frameContentUpper}>
+              <View style={styles.workoutMessageContainer}>
+                {todayWorkout &&
+                  <>
+                    <Image
+                      source={require("../../assets/images/firefire2.png")}
+                      style={styles.fireIcon}
+                    />
+                    <Text style={styles.workoutMessage}>Enjoy your workout</Text>
+                  </>
+                }
               </View>
+            </View>
             <View style={styles.frameContentLower}>
               <View style={styles.frameText}>
                 <Text style={styles.frameTitle}>
@@ -488,7 +488,7 @@ const HomeSc = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
       {upComingEvent ? (
-        <LiveCallComponent upComingEvent={upComingEvent}/>
+        <LiveCallComponent upComingEvent={upComingEvent} />
         // <TouchableOpacity
         //   style={styles.liveCallsBtn}
         //   onPress={() => {
@@ -559,23 +559,23 @@ const HomeSc = ({ navigation, route }) => {
             <Text style={styles.coachBookingTitleshop}>Shop & Upgrades</Text>
           </View>
         }
-        {dataList.map((item,index) => (
+        {dataList.map((item, index) => (
           <TouchableOpacity
-          onPress={()=>{openURL(item.video)}}
-           key={index} style={styles.coachBookingItem}>
+            onPress={() => { openURL(item.video) }}
+            key={index} style={styles.coachBookingItem}>
             <View style={styles.coachBookingContent}>
               <View style={styles.coachBookingImage}>
                 {item?.store_image &&
-                  <Image 
-                  style={{height:'100%',width:'100%',borderRadius:10}}
-                  source={{ uri: item?.store_image }} >
+                  <Image
+                    style={{ height: '100%', width: '100%', borderRadius: 10 }}
+                    source={{ uri: item?.store_image }} >
                   </Image>
                 }
               </View>
               <View style={styles.coachBookingText}>
                 <View style={styles.coachBookingTextUpper}>
                   <Text style={styles.coachBookingTitle}>
-                    {item?.title }
+                    {item?.title}
                   </Text>
                   <Text style={styles.coachBookingSubtitle}>{item?.sub_title}</Text>
                   <Text style={styles.coachBookingDesc}>
@@ -738,8 +738,8 @@ const styles = StyleSheet.create({
   },
   workoutMessageContainer: {
     flexDirection: "row",
-    alignItems: "left",
-    justifyContent: "left",
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
     width: "100%",
   },
   fireIcon: {
