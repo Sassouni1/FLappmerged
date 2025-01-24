@@ -320,7 +320,7 @@ const Login = ({ navigation }) => {
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
           {showSignUpButton &&
             <>
-              <TouchableOpacity onPress={() => { openURL("https://www.fightlife.io/darustrong") }} style={styles.footerContainer}>
+              <TouchableOpacity onPress={() => { openURL("https://www.fightlife.io/darustrong-21628731712") }} style={styles.footerContainer}>
                 <Text style={styles.footerText}>Sign Up</Text>
               </TouchableOpacity>
               <Text style={styles.footerText}>   |   </Text>

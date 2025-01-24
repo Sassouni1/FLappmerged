@@ -27,7 +27,7 @@ const PopupModal = ({isVisible,toggleModal}) => {
           
 
           <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={()=>{ openURL("https://www.fightlife.io/darustrong")}} style={styles.upgradeButton}>
+          <TouchableOpacity onPress={()=>{ openURL("https://www.fightlife.io/darustrong-1")}} style={styles.upgradeButton}>
               <Text style={styles.buttonText}>Upgrade Account</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={()=>{toggleModal(); navigate.navigate("Exercises")}} style={styles.cancelButton}>
