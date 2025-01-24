@@ -48,6 +48,7 @@ export default function SkillsTraining({ navigation }) {
   );
 
   const toggleModal = () => {
+    
     setModalVisible(!isModalVisible);
   };
 
