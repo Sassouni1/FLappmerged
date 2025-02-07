@@ -131,7 +131,7 @@ const WelcomeScreen = ({ navigation }) => {
             {showSignUpButton &&
               <TouchableOpacity
                 onPress={() => {
-                  openURL("https://www.fightlife.io/darustrong")
+                  openURL("https://www.fightlife.io/darustrong-1")
                 }}
               >
                 <Text style={styles.signInText}>

@@ -7,11 +7,9 @@
 // export const SOCKET_URL = 'https://dbtnak4j84k6c.cloudfront.net/';
 // export const BASE_URL = 'https://dbtnak4j84k6c.cloudfront.net//api';
 
-export const IMAGE_URL = "http://54.147.3.191/";
-export const SOCKET_URL = "http://54.147.3.191/";
-// export const BASE_URL = "http://54.147.3.191/api";
+export const IMAGE_URL = "http://3.222.82.186/";
+export const SOCKET_URL = "http://3.222.82.186/";
 export const BASE_URL = "http://3.222.82.186/api";
-
 
 
 // export const IMAGE_URL = 'http://54.234.223.198/';

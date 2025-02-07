@@ -36,6 +36,7 @@ import SelectDropdown from "react-native-select-dropdown";
 import PopupModal from "../../Components/ErrorPopup";
 import AppleHealthKit from "react-native-health";
 
+const userCurrentDate = new Date().toISOString();
 const defaultDropDownValue = "Last 7 Days";
 export default function TrainingStats({ navigation }) {
   const [appleStatGraphData, setAppleStatGraphData] = useState([]);
@@ -44,6 +45,7 @@ export default function TrainingStats({ navigation }) {
   const [appleStats_dropdown, set_appleStats_dropdown] =
     useState("Last 7 Days");
   const dispatch = useDispatch();
+  const [totalWorkoutDays, setTotalWorkoutDays] = useState(0);
   const [date, setDate] = useState(new Date());
   const { height, width } = Dimensions.get("window");
   const [isModalVisible, setModalVisible] = useState(false);
@@ -548,11 +550,11 @@ export default function TrainingStats({ navigation }) {
     isPost = false
   ) => {
     const routes = {
-      weekly: `assignProgram/user_progress/${user?.user_id}`,
-      monthly: `assignProgram/monthly_progress/${user?.user_id}`,
-      threeMonth: `assignProgram/last_three_months_progress/${user?.user_id}`,
-      sixMonth: `assignProgram/last_six_months_progress/${user?.user_id}`,
-      allMonths: `assignProgram/all_months_progress/${user?.user_id}`,
+      weekly: `assignProgram/user_progress/${user?.user_id}/${userCurrentDate}`,
+      monthly: `assignProgram/monthly_progress/${user?.user_id}/${userCurrentDate}`,
+      threeMonth: `assignProgram/last_three_months_progress/${user?.user_id}/${userCurrentDate}`,
+      sixMonth: `assignProgram/last_six_months_progress/${user?.user_id}/${userCurrentDate}`,
+      allMonths: `assignProgram/all_months_progress/${user?.user_id}/${userCurrentDate}`,
     };
 
     try {
@@ -564,6 +566,7 @@ export default function TrainingStats({ navigation }) {
       });
 
       if (res?.status == "200") {
+        setTotalWorkoutDays(res?.response?.totalWorkoutDays || 0)
         setProgressFunction(
           res?.response?.weeklyProgress ||
             res?.response?.monthlyProgress ||
@@ -584,11 +587,11 @@ export default function TrainingStats({ navigation }) {
 
   const getWeightProgress = async (timePeriod, setProgressFunction) => {
     const routes = {
-      weekly: `assignProgram/weeklyWeight/${user?.plan_id}`,
-      monthly: `assignProgram/monthlyWeight/${user?.plan_id}`,
-      threeMonth: `assignProgram/lastThreeMonthWeight/${user?.plan_id}`,
-      sixMonth: `assignProgram/lastSixMonthWeight/${user?.plan_id}`,
-      allMonths: `assignProgram/allMonthsWeight/${user?.plan_id}`,
+      weekly: `assignProgram/weeklyWeight/${user?.plan_id}/${userCurrentDate}`,
+      monthly: `assignProgram/monthlyWeight/${user?.plan_id}/${userCurrentDate}`,
+      threeMonth: `assignProgram/lastThreeMonthWeight/${user?.plan_id}/${userCurrentDate}`,
+      sixMonth: `assignProgram/lastSixMonthWeight/${user?.plan_id}/${userCurrentDate}`,
+      allMonths: `assignProgram/allMonthsWeight/${user?.plan_id}/${userCurrentDate}`,
     };
 
     try {
@@ -1029,7 +1032,7 @@ export default function TrainingStats({ navigation }) {
     let total = 0;
 
     if (data) {
-      let length = data?.length;
+      let length = totalWorkoutDays > 0 ? totalWorkoutDays : data?.length;
       data.forEach((element) => {
         total = total + element.value;
       });

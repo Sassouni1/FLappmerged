@@ -763,7 +763,7 @@ const isVimeoUrl = (url) => {
                   fontSize: getFontSize(2.5),
                 }}
               >
-                {'No Dynamic Warm Up Found'}
+                {''}
               </Text>
             </View>
           :
@@ -831,12 +831,12 @@ const isVimeoUrl = (url) => {
                 marginTop: 8,
                 textAlign: "center",
                 paddingHorizontal: 20,
-                lineHeight: 20,
+                // lineHeight: 20,
               }}
             >
               {assigWorkout?.description}
             </Text>
-            {exercises.length > 0 &&
+            {filterExercises(exercises,dynamicExercises,true).length > 0 &&
               <DividerWithText label={"DYNAMIC WARM UP"} />
             }
           </View>
@@ -845,7 +845,7 @@ const isVimeoUrl = (url) => {
           exercises.length > 0 ?
             <View>
               <FlatList
-                style={{ marginTop: 20, flex: 1 }}
+                style={{ marginTop: 0, flex: 1 }}
                 data={filterExercises(exercises, dynamicExercises, false)}
                 initialNumToRender={5}
                 showsHorizontalScrollIndicator={false}
@@ -936,7 +936,7 @@ const innerStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 10,
+    marginVertical: 7,
   },
   line: {
     flex: 1,

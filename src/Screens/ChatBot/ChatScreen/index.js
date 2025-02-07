@@ -33,6 +33,7 @@ import {
 } from "../../../../utils/ImageAndCamera";
 import HeaderChatBot from "../../../Components/HeaderChatBot";
 import Messages from "../../../Screens/Messages";
+import {SOCKET_URL} from '../../../Services/Constants';
 
 const STATUSBAR_HEIGHT =
   Platform.OS === "ios" ? getStatusBarHeight(true) : StatusBar.currentHeight;
@@ -82,7 +83,7 @@ const BotChatScreen = ({ navigation, route }) => {
         ])
       );
 
-      fetch("http://54.147.3.191/assistant", {
+      fetch(SOCKET_URL+"assistant", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

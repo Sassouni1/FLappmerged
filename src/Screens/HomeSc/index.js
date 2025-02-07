@@ -898,11 +898,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   coachBookingTitleshop: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#111214",
-    marginLeft: 200,
-    textAlign: "right",
+    marginLeft:20,
+    textAlign: "left",
   },
   buttonText: {
     fontSize: 16,
@@ -1118,7 +1118,6 @@ const styles = StyleSheet.create({
   coachBookingHeader: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     marginBottom: 16,
   },
   coachBookingTitle: {

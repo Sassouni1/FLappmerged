@@ -37,10 +37,7 @@ const Login = ({ navigation }) => {
   );
   const [hidePass, setHidePass] = useState(true);
   const [passwordIsEditable, setPasswordIsEditable] = useState(false);
-  const [emailLoading, setEmailLoading] = useState(false);
-
-  const [isFirstLogin, setIsFirstLogin] = useState(false);
-
+  const [emailFocus, setEmailFocus] = useState(false);
   const [showSignUpButton, setShowSignUpButton] = useState(false);
 
 
@@ -76,6 +73,7 @@ const Login = ({ navigation }) => {
         params: { email: email },
       });
       console.log("res",res)
+      setEmailFocus(true)
       if (res && res?.response?.code == 200) {
         if (res?.response?.loginStatus == true) {
           showFirstTimeLoginAlert(email)
@@ -202,20 +200,36 @@ const Login = ({ navigation }) => {
                       )}
                     />
                     :
+                    emailFocus ?
+                    <TextInput.Icon
+                      icon={() => (
+                        <MaterialCommunityIcons
+                          name={"close-circle-outline"}
+                          size={24}
+                          color="red"
+                        />
+                      )}
+                    />
+                    :
                     null
                   }
-                  onBlur={() =>
+                  onBlur={async () =>{
+                    console.log(state.email)
+                    const emailError = await validator("email", state.email);
+                    if(!emailError){
+                      verifyUser(state.email)
+                    }
+                    else{
+                      setPasswordIsEditable(false)
+                    }
+
                     validateFields(state.email, "email", (error) =>
                       setState({ ...state, emaiolError: error })
                     )
                   }
+                  }
                   onSubmitEditing={() => inputRefs["password"].current.focus()}
                   onChangeText={async (email) => {
-                    const emailError = await validator("email", email);
-                    if(!emailError){
-                      verifyUser(email)
-                      console.log("valid",email)
-                    }
                     changeHandler("email", email.trim())
 
                   }}
@@ -239,7 +253,6 @@ const Login = ({ navigation }) => {
                   mode="outlined"
                   label={<Text style={styles.inputPlaceholder}>Password</Text>}
                   theme={{ roundness: 19 }}
-                  editable={passwordIsEditable}
                   outlineColor="#F3F3F4"
                   activeOutlineColor="#F3F3F4"
                   style={styles.input}
@@ -320,7 +333,7 @@ const Login = ({ navigation }) => {
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
           {showSignUpButton &&
             <>
-              <TouchableOpacity onPress={() => { openURL("https://www.fightlife.io/darustrong-21628731712") }} style={styles.footerContainer}>
+              <TouchableOpacity onPress={() => { openURL("https://www.fightlife.io/darustrong-1") }} style={styles.footerContainer}>
                 <Text style={styles.footerText}>Sign Up</Text>
               </TouchableOpacity>
               <Text style={styles.footerText}>   |   </Text>
