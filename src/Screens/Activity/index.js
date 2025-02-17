@@ -84,7 +84,9 @@ export default function TrainingStats({ navigation }) {
   };
 
   useEffect(() => {
+    if(Platform.OS==="ios"){
     requestPermissionsAndFetchData();
+    }
   }, []);
 
   function addCommasToNumber(number) {
@@ -1856,84 +1858,86 @@ export default function TrainingStats({ navigation }) {
         {/* {CaloriesBurnedComponent} */}
         {StrengthProgressComponent}
 
-        <View>
-          <View style={styles.trainingContainerStyle}>
-            <Text style={styles.trainingFontStyle}>Apple Stats</Text>
-          </View>
-          <Text style={styles.completionStyle}>
-
-                  {selectedAppleStat === "steps"
-                    ? "Total Steps"
-                    : "Latest HRV (ms)"}
-                </Text>
-          <View style={styles.chartOuterContainer}>
-            <View style={styles.headerTopContainer}>
-              <View style={styles.headerTextStyle}>
-                <Text style={[styles.percentageStyle,{fontSize:getFontSize(4)}]}>
-                  {appleStatsDataByRange(appleStatGraphData || [],appleStats_dropdown)?.total || "N/A"}
-                </Text>
-                
-              </View>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Dropdown
-                  style={[
-                    styles.dropdown,
-                    { marginRight: 10, width: getWidth(25) },
-                  ]} // Adjust width as needed
-                  placeholderStyle={styles.placeholderStyle}
-                  selectedTextStyle={{
-                    fontSize: getFontSize(1.8), // Smaller text for selected item
-                    color: colors.black,
-                    fontFamily: fonts.WMe,
-                  }}
-                  itemTextStyle={{
-                    fontSize: getFontSize(1.8), // Smaller text for all items in the dropdown
-                    color: colors.black,
-                    fontFamily: fonts.WMe,
-                  }}
-                  data={[
-                    { label: "Steps", value: "steps" },
-                    { label: "Heart Rate", value: "hr" },
-                    { label: "Heart Rate Variability", value: "hrv" },
-                    { label: "Resting Heart Rate", value: "rhr" },
-                    { label: "Active energy burned", value: "aeb" },
-                    { label: "Walking distance", value: "wd" },
-                  ]}
-                  maxHeight={300}
-                  labelField="label"
-                  valueField="value"
-                  placeholder="Select stat"
-                  value={selectedAppleStat}
-                  onChange={(item) => handleAppleStatSelection(item.value)}
-                />
-                <RenderDropdown
-                  value={appleStats_dropdown}
-                  section={"appleStats"}
-                />
-              </View>
+        {Platform.OS === "ios" &&
+          <View>
+            <View style={styles.trainingContainerStyle}>
+              <Text style={styles.trainingFontStyle}>Apple Stats</Text>
             </View>
-            <LineChart
-              areaChart
-              curved
-              data={appleStatsDataByRange(appleStatGraphData || [],appleStats_dropdown)?.data}
-              width={width - getFontSize(20)}
-              spacing={getFontSize(15)}
-              initialSpacing={5}
-              color={colors.orange}
-              hideDataPoints
-              startFillColor1={colors.orange}
-              startOpacity={0.8}
-              endOpacity={0.3}
-              dashGap={0}
-              thickness={2}
-              rulesColor={colors.rulesColor}
-              yAxisThickness={0}
-              xAxisColor={colors.rulesColor}
-              xAxisLabelTextStyle={{ color: colors.axisColor }}
-              yAxisTextStyle={{ color: colors.axisColor }}
-            />
+            <Text style={styles.completionStyle}>
+
+              {selectedAppleStat === "steps"
+                ? "Total Steps"
+                : "Latest HRV (ms)"}
+            </Text>
+            <View style={styles.chartOuterContainer}>
+              <View style={styles.headerTopContainer}>
+                <View style={styles.headerTextStyle}>
+                  <Text style={[styles.percentageStyle, { fontSize: getFontSize(4) }]}>
+                    {appleStatsDataByRange(appleStatGraphData || [], appleStats_dropdown)?.total || "N/A"}
+                  </Text>
+
+                </View>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Dropdown
+                    style={[
+                      styles.dropdown,
+                      { marginRight: 10, width: getWidth(25) },
+                    ]} // Adjust width as needed
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={{
+                      fontSize: getFontSize(1.8), // Smaller text for selected item
+                      color: colors.black,
+                      fontFamily: fonts.WMe,
+                    }}
+                    itemTextStyle={{
+                      fontSize: getFontSize(1.8), // Smaller text for all items in the dropdown
+                      color: colors.black,
+                      fontFamily: fonts.WMe,
+                    }}
+                    data={[
+                      { label: "Steps", value: "steps" },
+                      { label: "Heart Rate", value: "hr" },
+                      { label: "Heart Rate Variability", value: "hrv" },
+                      { label: "Resting Heart Rate", value: "rhr" },
+                      { label: "Active energy burned", value: "aeb" },
+                      { label: "Walking distance", value: "wd" },
+                    ]}
+                    maxHeight={300}
+                    labelField="label"
+                    valueField="value"
+                    placeholder="Select stat"
+                    value={selectedAppleStat}
+                    onChange={(item) => handleAppleStatSelection(item.value)}
+                  />
+                  <RenderDropdown
+                    value={appleStats_dropdown}
+                    section={"appleStats"}
+                  />
+                </View>
+              </View>
+              <LineChart
+                areaChart
+                curved
+                data={appleStatsDataByRange(appleStatGraphData || [], appleStats_dropdown)?.data}
+                width={width - getFontSize(20)}
+                spacing={getFontSize(15)}
+                initialSpacing={5}
+                color={colors.orange}
+                hideDataPoints
+                startFillColor1={colors.orange}
+                startOpacity={0.8}
+                endOpacity={0.3}
+                dashGap={0}
+                thickness={2}
+                rulesColor={colors.rulesColor}
+                yAxisThickness={0}
+                xAxisColor={colors.rulesColor}
+                xAxisLabelTextStyle={{ color: colors.axisColor }}
+                yAxisTextStyle={{ color: colors.axisColor }}
+              />
+            </View>
           </View>
-        </View>
+        }
 
         {/* New metrics */}
         {MetricsComponent}
