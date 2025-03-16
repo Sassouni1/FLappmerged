@@ -96,7 +96,7 @@ const BotChatScreen = ({ navigation, route }) => {
   const [pickerModalVisibile, setPickerModalVisibile] = useState(false);
   const [sms, setSms] = useState("");
   const [users, setUsers] = useState();
-
+  const [inputHeight, setInputHeight] = useState(40);
   const usersRef = useRef(users);
 
   useEffect(() => {
@@ -669,17 +669,19 @@ const BotChatScreen = ({ navigation, route }) => {
                     }}
                   >
                     <RenderProfilePic props={props} />
-                    <Text
-                      style={{
-                        paddingHorizontal: getWidth(2),
-                        color: props.currentMessage.user._id
-                          ? colors.white
-                          : colors.black,
-                        fontFamily: fonts.WM,
-                        fontSize: getFontSize(2),
-                        maxWidth: "90%",
-                      }}
-                    >{`${props.currentMessage?.text}`}</Text>
+                    
+                      <Text
+                        style={{
+                          paddingHorizontal: getWidth(2),
+                          color: props.currentMessage.user._id ? colors.white : colors.black,
+                          fontFamily: fonts.WM,
+                          fontSize: getFontSize(2),
+                          maxWidth: "90%",
+                          flexShrink: 1, // Ensure text wraps instead of overflowing
+                        }}
+                      >
+                        {`${props.currentMessage?.text}`}
+                      </Text>
                   </View>
                 ) : null}
               </View>
@@ -725,7 +727,7 @@ const BotChatScreen = ({ navigation, route }) => {
           renderInputToolbar={() => {
             return (
               // null
-              <View style={{ ...styles.inputCon }}>
+              <View style={[{ ...styles.inputCon },{bottom:  Platform.OS === "ios" ? inputHeight+40 : inputHeight-10}]}>
                 <View style={styles.textinputCon}>
                   <TextInput
                     style={{
@@ -733,12 +735,20 @@ const BotChatScreen = ({ navigation, route }) => {
                       marginTop: 0,
                       paddingLeft: getWidth(3),
                       paddingVertical: 20,
+                      maxHeight:130,
+                      minHeight:60
                     }}
+                    multiline
                     value={sms}
                     onChangeText={(e) => setSms(e)}
                     onSubmitEditing={() => sendChat(sms)}
                     placeholder="Type a message..."
                     placeholderTextColor={colors.darkGray}
+                    onContentSizeChange={(event) => {
+                      let height =event.nativeEvent.contentSize.height
+                      if (height < 85)
+                        setInputHeight(event.nativeEvent.contentSize.height);
+                    }}
                   />
                   <TouchableOpacity
                     onPress={() => setPickerModalVisibile(true)}
@@ -905,9 +915,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     paddingHorizontal: getWidth(2),
     alignSelf: "center",
+    height:300,
     width: getWidth(100),
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     paddingBottom: getHeight(4),
     bottom: getHeight(7),
     borderTopLeftRadius: getWidth(10),

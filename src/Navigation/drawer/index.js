@@ -104,7 +104,7 @@ const CustomDrawerContent = (props) => {
       <DrawerItemList {...props} />
       <View style={styles.bottomItems}>
         <Divider style={styles.secondaryDivider} />
-        {renderSecondaryDrawerItem("Privacy Policy & Terms", "PrivacyPolicy")}
+        {renderSecondaryDrawerItem("Privacy Policy & Terms", "PrivacyPolicy",navigation)}
 
         <Divider style={styles.bottomDivider} />
         {user?.isGuestUser == true &&
@@ -130,7 +130,7 @@ const renderDrawerItem = (label, onPress, iconName, color = "white") => (
   />
 );
 
-const renderSecondaryDrawerItem = (label, screenName) => (
+const renderSecondaryDrawerItem = (label, screenName,navigation) => (
   <DrawerItem
     label={label}
     labelStyle={styles.secondaryDrawerItemLabel}
@@ -143,7 +143,7 @@ const MyDrawer = () => {
   const dispatch = useDispatch();
 
   const handleBilling = () => {
-    Linking.openURL("https://billing.stripe.com/p/login/dR68wAbVE4nOb4Y5kk");
+    Linking.openURL("https://billing.stripe.com/p/login/14k14zg9z2St3iE4gg");
   };
 
   return (

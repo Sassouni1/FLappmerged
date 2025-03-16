@@ -14,6 +14,20 @@ import { GernalStyle } from "../../constants/GernalStyle";
 import { colors } from "../../constants/colors";
 import HeaderBottom from "../../Components/HeaderBottom";
 import messaging from "@react-native-firebase/messaging";
+import PushNotification from 'react-native-push-notification'
+
+PushNotification.createChannel(
+  {
+    channelId: "default-channel-id", // (required)
+    channelName: "My channel", // (required)
+    channelDescription: "A channel to categorise your notifications", // (optional) default: undefined.
+    playSound: true, // (optional) default: true
+    soundName: "default", // (optional) See `soundName` parameter of `localNotification` function
+    importance: 4, // (optional) default: 4. Int value of the Android notification importance
+    vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
+  },
+  (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
+);
 
 export const requestUserPermission = async (token) => {
   try {
@@ -34,7 +48,7 @@ export const requestUserPermission = async (token) => {
 
 export const getFcmToken = async (token) => {
   try {
-    const apnsToken = await messaging().setAPNSToken("test");
+    const apnsToken = await messaging().getAPNSToken();
     console.log("APNS token:", apnsToken);
     const fcmToken = await messaging().getToken();
     sendFcm(token, fcmToken);
@@ -122,6 +136,14 @@ export const appListner = async (navigation) => {
 
   messaging().onMessage(async (remoteMessage) => {
     if (remoteMessage) {
+      PushNotification.localNotification({
+        message: remoteMessage.notification.body,
+        title: remoteMessage.notification.title,
+        channelId:"default-channel-id",
+        // bigPictureUrl: remoteMessage.notification?.android.imageUrl,
+        userInfo: remoteMessage.data,
+      });
+      
       console.log(
         "Notification caused app to open from quit state:",
         remoteMessage.notification

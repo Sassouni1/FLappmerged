@@ -123,6 +123,21 @@ const AddWorkouts = () => {
     setModalVisible(!isModalVisible);
   };
 
+  function formatDate(date) {
+    if (!date) return "----";
+  
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const d = new Date(date);
+  
+    if (isNaN(d.getTime())) return "----"; // Handle invalid dates
+  
+    const day = d.getUTCDate().toString().padStart(2, "0"); // Use UTC date
+    const month = months[d.getUTCMonth()]; // Use UTC month
+    const year = d.getUTCFullYear(); // Use UTC year
+  
+    return `${day}-${month}-${year}`;
+  }
+
   const handleDateChange = (selectedDate) => {
     getCurrentDayWorkout(selectedDate);
     setSelectedRestDayVideo({});
@@ -130,6 +145,7 @@ const AddWorkouts = () => {
     setDate(selectedDate);
     setCurrentDateWorkout(workoutForWeek,selectedDate,programStartDate);
   };
+
 const handleCompleteWorkout = () =>{
   Alert.alert(
     "Are you sure?",
@@ -280,7 +296,6 @@ const calculateDayDifference = (startFromDate, selectedDate) => {
         token: token,
       });
       if (res?.status == "200") {
-        console.log("response..",res);
 
         let _programStartDate = res?.response?.startDate;
         // setUserWorkoutProgress(res?.response?.workoutProgress);
@@ -295,7 +310,6 @@ const calculateDayDifference = (startFromDate, selectedDate) => {
     } catch (e) {
       console.log("Error in week workout call -- ", e.toString());
       dispatch(setLoader(false));
-      Toast.show("Error Getting Workout");
     }
   };
   const getViewProgram = async () => {
@@ -744,6 +758,7 @@ const isVimeoUrl = (url) => {
               paddingHorizontal: 2,
             }}
             calendarHeaderStyle={{ color: "white" }}
+            iconStyle={{tintColor:'white'}}
             iconContainer={{ flex: 0.05 }}
           />
         </ImageBackground>
@@ -784,8 +799,14 @@ const isVimeoUrl = (url) => {
                 fontFamily: "Ubuntu-Bold",
                 marginBottom: getHeight(3),
               }}
-            >
-              Rest & Recovery!{"\n"}Enjoy Your Rest Day!
+            >{
+              selectedDay && !loader ?
+              selectedDay?.split(" ")[1] > 0 ?
+              `Rest & Recovery!\nEnjoy Your Rest Day!` :
+              `Your training starts on (${formatDate(programStartDate)}). Enjoy your recovery days in the meantime!`
+              :
+              ''
+            }
             </Text>
             <View
               style={{
@@ -805,7 +826,11 @@ const isVimeoUrl = (url) => {
                       }}
                     />
                     :
+                    selectedDay?.split(" ")[1] > 0 ?
                     <ActivityIndicator size={'large'} />
+                    :
+                    <View />
+                    
                   }
               </View>
             </View>

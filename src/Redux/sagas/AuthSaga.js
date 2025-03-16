@@ -15,9 +15,8 @@ function* loginRequest(params) {
       route: 'auth/login',
       verb: 'post',
     });
-    console.log('res of login1', res);
+    console.log('res of login', res);
     if (res?.status == '200') {
-      console.log('res of login', res);
       yield put(setLoginData(res));
 
       yield put(setLoader(false));

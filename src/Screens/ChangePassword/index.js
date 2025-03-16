@@ -1,100 +1,78 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TextInput,
   Pressable,
-  Image,
   TouchableOpacity,
+  Image
 } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { setLoader } from "../../Redux/actions/GernalActions";
+import { ApiCall } from "../../Services/Apis";
 import Toast from "react-native-simple-toast";
 import validator from "../../../utils/validation/validator";
-import { ApiCall } from "../../Services/Apis";
-import { useFocusEffect } from "@react-navigation/native";
+import { setLoader } from "../../Redux/actions/GernalActions";
+import { useNavigation } from '@react-navigation/native';
 
-const ChangePassword = ({ navigation }) => {
+const ChangePassword = ({ route }) => {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
-  const inputRefs = {
-    oldPassword: useRef(null),
-    newPassword: useRef(null),
-    cnfrPassword: useRef(null),
-  };
-  const [state, setState] = useState({
-    oldPassword: "",
-    oldPasswordError: "",
-    newPassword: "",
-    newPasswordError: "",
-    cnfrPassword: "",
-    cnfrPasswordError: "",
-  });
-  useFocusEffect(
-    React.useCallback(() => {
-      setState({
-        oldPassword: "",
-        oldPasswordError: "",
-        newPassword: "",
-        newPasswordError: "",
-        cnfrPassword: "",
-        cnfrPasswordError: "",
-      });
-    }, [])
-  );
-  const [showOldPassword, setShowOldPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showCnfPassword, setShowCnfPassword] = useState(false);
-  const token = useSelector((state) => state.auth.userToken);
+  // const { email } = route?.params;
+  const user = useSelector((state) => state.auth.userData);
 
-  const handlePasswordUpdate = async () => {
-    const { oldPassword, newPassword, cnfrPassword } = state;
-    const cnfrPasswordError = await validator("passwordC", cnfrPassword);
+  const token = useSelector((state) => state.auth.userToken);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [error, setError] = useState("")
+
+  const handlePasswordChangePassword = async () => {
+    const cnfrPasswordError = await validator("passwordC", confirmPassword);
     const newPasswordError = await validator("passwordN", newPassword);
-    const oldPasswordError = await validator("passwordO", oldPassword);
     if (
       !cnfrPasswordError &&
       !newPasswordError &&
-      !oldPasswordError &&
-      newPassword === cnfrPassword
+      newPassword === confirmPassword
     ) {
-      dispatch(setLoader(true));
-      const data = {
-        new_password: newPassword,
-        old_password: oldPassword,
-        confirm_password: cnfrPassword,
-      };
-      updatePassword(data);
+      setError("");
+      resetPassword();
     } else {
-      if (newPasswordError || cnfrPasswordError || oldPasswordError) {
-        setState({
-          ...state,
-          cnfrPasswordError,
-          newPasswordError,
-          oldPasswordError,
-        });
-        return;
-      } else {
-        setState({
-          ...state,
-          cnfrPasswordError: "Both Passwords do not match!",
-        });
+      if (newPasswordError && cnfrPasswordError) {
+        setError(newPasswordError+"\n"+cnfrPasswordError)
+      }
+      else if(newPasswordError){
+        setError(newPasswordError)
+      }
+      else if(cnfrPasswordError){
+        setError(cnfrPasswordError)
+      }
+       else {
+        setError('Both Passwords do not match!')
       }
     }
   };
 
-  const updatePassword = async (param) => {
+  const resetPassword = async () => {
+    let param={
+      email:user?.email,
+      password:newPassword,
+      confirm_password:confirmPassword
+    }
     try {
+      dispatch(setLoader(true))
       const res = await ApiCall({
-        route: "auth/change_password",
+        route: "auth/reset_password_new",
         token: token,
         params: param,
         verb: "put",
       });
-      if (res?.status === "200") {
+      console.log(res);
+      if (res?.response?.code == "200") {
         navigation.goBack();
-        Toast.show("Password Updated Successfully");
+        Toast.show("Update Password Successfully");
         dispatch(setLoader(false));
       } else {
         alert(res?.response?.message);
@@ -105,12 +83,72 @@ const ChangePassword = ({ navigation }) => {
       console.log("Error changing password -- ", e.toString());
     }
   };
+  const handleNewPasswordChange = (value) => {
+    setNewPassword(value);
+  };
 
-  const handleChange = (type, value) => setState({ ...state, [type]: value });
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
+
+  const toggleNewPasswordVisibility = () => {
+    setShowNewPassword((prevShowNewPassword) => !prevShowNewPassword);
+  };
+
+  const getPasswordStrengthColor = () => {
+    switch (getPasswordStrength(newPassword)) {
+      case "none":
+        return "#e54f5d"; // Red for weak
+      case "Moderate":
+        return "#eeb045"; // Yellow for moderate
+      case "Strong":
+        return "#4fe568"; // Green for strong
+      default:
+        return "#FFFFFF"; // White for no password entered
+    }
+  };
+
+  const getProgressBarWidth = () => {
+    const passwordLength = newPassword.length;
+    if (passwordLength === 0) {
+      return "0%"; // No width for no password entered
+    } else if (passwordLength < 6) {
+      return "25%"; // 25% width for weak passwords
+    } else if (passwordLength >= 6 && passwordLength < 8) {
+      return "50%"; // 50% width for moerate passwords
+    } else if (passwordLength >= 8) {
+      return "100%"; // 100% width for strong passwords
+    }
+  };
+
+  const getPasswordStrength = (password) => {
+    if (!password) return "None";
+    const length = password.length;
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (length < 6) return "Weak";
+    if (
+      length >= 6 &&
+      (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecialChar)
+    )
+      return "Moderate";
+    if (
+      length >= 8 &&
+      hasUppercase &&
+      hasLowercase &&
+      hasNumber &&
+      hasSpecialChar
+    )
+      return "Strong";
+    return "None";
+  };
 
   return (
     <View style={styles.container}>
-       <View style={styles.header}>
+      <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backBtn}
@@ -123,46 +161,21 @@ const ChangePassword = ({ navigation }) => {
         <Text style={styles.headerText}>Change Password</Text>
       </View>
 
+      {/* Input Fields */}
       <View style={styles.inputFieldsContainer}>
         <View style={styles.inputFieldContainer}>
-          <Text style={styles.inputLabel}>Old Password</Text>
+          <Text style={styles.inputLabel}>Create New Password</Text>
           <View style={styles.inputField}>
             <View style={styles.inputContent}>
               <TextInput
                 style={styles.inputText}
-                value={state.oldPassword}
-                onChangeText={(value) => handleChange("oldPassword", value)}
-                placeholder="*************"
-                placeholderTextColor="#393C43"
-                secureTextEntry={!showOldPassword}
-                ref={inputRefs.oldPassword}
-              />
-              <Pressable onPress={() => setShowOldPassword(!showOldPassword)}>
-                <MaterialCommunityIcons
-                  name={showOldPassword ? "eye-off-outline" : "eye-outline"}
-                  size={24}
-                  color="#393C43"
-                />
-              </Pressable>
-            </View>
-            <Text style={styles.errorText}>{state.oldPasswordError}</Text>
-          </View>
-        </View>
-
-        <View style={styles.inputFieldContainer}>
-          <Text style={styles.inputLabel}>New Password</Text>
-          <View style={styles.inputField}>
-            <View style={styles.inputContent}>
-              <TextInput
-                style={styles.inputText}
-                value={state.newPassword}
-                onChangeText={(value) => handleChange("newPassword", value)}
+                value={newPassword}
+                onChangeText={handleNewPasswordChange}
                 placeholder="*************"
                 placeholderTextColor="#393C43"
                 secureTextEntry={!showNewPassword}
-                ref={inputRefs.newPassword}
               />
-              <Pressable onPress={() => setShowNewPassword(!showNewPassword)}>
+              <Pressable onPress={toggleNewPasswordVisibility}>
                 <MaterialCommunityIcons
                   name={showNewPassword ? "eye-off-outline" : "eye-outline"}
                   size={24}
@@ -170,7 +183,6 @@ const ChangePassword = ({ navigation }) => {
                 />
               </Pressable>
             </View>
-            <Text style={styles.errorText}>{state.newPasswordError}</Text>
           </View>
         </View>
 
@@ -180,29 +192,50 @@ const ChangePassword = ({ navigation }) => {
             <View style={styles.inputContent}>
               <TextInput
                 style={styles.inputText}
-                value={state.cnfrPassword}
-                onChangeText={(value) => handleChange("cnfrPassword", value)}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
                 placeholder="*************"
                 placeholderTextColor="#393C43"
-                secureTextEntry={!showCnfPassword}
-                ref={inputRefs.cnfrPassword}
+                secureTextEntry={!showPassword}
               />
-              <Pressable onPress={() => setShowCnfPassword(!showCnfPassword)}>
+              <Pressable onPress={togglePasswordVisibility}>
                 <MaterialCommunityIcons
-                  name={showCnfPassword ? "eye-off-outline" : "eye-outline"}
+                  name={showPassword ? "eye-off-outline" : "eye-outline"}
                   size={24}
                   color="#393C43"
                 />
               </Pressable>
             </View>
-            <Text style={styles.errorText}>{state.cnfrPasswordError}</Text>
           </View>
         </View>
       </View>
 
-      <Pressable style={styles.primaryButton} onPress={handlePasswordUpdate}>
+      {error &&
+        <Text style={styles.errorText}>{error}</Text>
+      }
+      {/* Password Strength */}
+      <Text style={styles.passwordStrength}>Password Strength</Text>
+      <View style={[styles.progressBar, { backgroundColor: "#FFFFFF" }]}>
+        <View
+          style={[
+            styles.progressBarFill,
+            {
+              width: getProgressBarWidth(),
+              backgroundColor: getPasswordStrengthColor(),
+            },
+          ]}
+        />
+      </View>
+      <Text style={styles.weakStrength}>
+        {getPasswordStrength(newPassword) === "Weak"
+          ? "Weak Increase strength"
+          : getPasswordStrength(newPassword)}
+      </Text>
+
+      {/* Button Primary Icon */}
+      <Pressable onPress={handlePasswordChangePassword} style={styles.primaryButton}>
         <View style={styles.buttonContent}>
-          <Text style={styles.buttonText}>Update Password</Text>
+          <Text style={styles.buttonText}>Change Password</Text>
           <MaterialCommunityIcons
             name="arrow-right"
             size={24}
@@ -210,6 +243,9 @@ const ChangePassword = ({ navigation }) => {
           />
         </View>
       </Pressable>
+
+      {/* Home Indicator */}
+      <View style={styles.homeIndicator} />
     </View>
   );
 };
@@ -219,47 +255,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFFFF",
   },
-  header: {
-    backgroundColor: "#111214",
-    height: 204,
-    // justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    paddingHorizontal: 16,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
-    position: "relative",
-  },
-  headerContainer: {
-    backgroundColor: "#1c1c1c",
-    paddingVertical: 20,
-    flexDirection: "row",
-    alignItems: "center",
-  },
   backBtn: {
-    // position: "absolute",
-    // left: 20,
-  },
-  icon: {
-    width: 24,
-    height: 24,
-    marginRight: 20,
-  },
-headerText: {
-    fontFamily: "Work Sans",
-    fontWeight: "700",
-    fontSize: 22,
-    lineHeight: 21,
-    textAlign: "left",
-    // marginRight: 130,
-    // letterSpacing: -0.004,
-    color: "#FFFFFF",
+ 
   },
   inputFieldsContainer: {
-    marginHorizontal: 16,
-    marginTop: 20,
+    padding:16,
+    marginTop: 40,
     gap: 10,
-    paddingBottom: 24,
+    paddingBottom: 24, // Add some padding at the bottom
   },
   inputFieldContainer: {
     marginBottom: 16,
@@ -288,7 +291,13 @@ headerText: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    width: "100%",
+    gap: 134,
+    width: 311,
+    height: 24,
+  },
+  errorText: {
+    color: "#ff5252",
+    marginBottom:10,
   },
   inputText: {
     fontFamily: "Work Sans",
@@ -299,19 +308,49 @@ headerText: {
     color: "#393C43",
     flex: 1,
   },
-  errorText: {
-    color: "#ff5252",
+  passwordStrength: {
+    fontFamily: "Work Sans",
+    fontWeight: "700",
+    fontSize: 18,
+    lineHeight: 21,
+    textAlign: "center",
+    letterSpacing: -0.004,
+    color: "#393C43",
+    marginTop: -6, // Decrease the marginTop value
+  },
+  progressBar: {
+    height: 10,
+    marginTop: 8,
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    borderRadius: 6,
+  },
+  progressBarFill: {
+    height: 10,
+    borderRadius: 3,
+  },
+  weakStrength: {
+    fontFamily: "Work Sans",
+    fontWeight: "500",
+    fontSize: 16,
+    lineHeight: 19,
+    textAlign: "center",
+    letterSpacing: -0.003,
+    color: "#393C43",
+    marginTop: 8,
   },
   primaryButton: {
-    marginLeft: 8,
-    marginRight: 8,
+    marginLeft: 8, // Adjust the left margin
+    marginRight: 200, // Auto margin on the right to push the button left
     marginTop: 24,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: 16,
     paddingHorizontal: 24,
-    width: "95%",
+    width: "95%", // Slightly reduce the button width
     height: 56,
     backgroundColor: "#111214",
     borderRadius: 19,
@@ -325,9 +364,38 @@ headerText: {
   buttonText: {
     fontFamily: "Work Sans",
     fontWeight: "600",
-    fontSize: 16,
-    lineHeight: 19,
+    fontSize: 16, // Increase the font size if needed
+    lineHeight: 19, // Adjust the line height if needed
     letterSpacing: -0.003,
+    color: "#FFFFFF",
+  },
+  arrowIcon: {
+    width: 24,
+    height: 24,
+    borderColor: "#FFFFFF",
+    borderWidth: 2,
+  },
+  header: {
+    backgroundColor: "#111214",
+    height: 204,
+    alignItems: "center",
+    flexDirection: "row",
+    paddingHorizontal: 16,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+    position: "relative",
+  },
+icon: {
+    width: 24,
+    height: 24,
+    marginRight: 20,
+  },
+headerText: {
+    fontFamily: "Work Sans",
+    fontWeight: "700",
+    fontSize: 22,
+    lineHeight: 21,
+    textAlign: "left",
     color: "#FFFFFF",
   },
 });

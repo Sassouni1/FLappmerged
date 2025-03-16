@@ -116,8 +116,8 @@ const styles = StyleSheet.create({
   },
   vimeoContainer: {
     width: "100%",
-    borderRadius: 15,
-    height: 200,
+    height: 250,
+    backgroundColor:'black',
     overflow: "hidden",
   },
 });

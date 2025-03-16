@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "619452518242",
-    "project_id": "darustrong-cfd74",
-    "storage_bucket": "darustrong-cfd74.appspot.com"
+    "project_number": "945007097",
+    "project_id": "fightlife-e8687",
+    "storage_bucket": "fightlife-e8687.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:619452518242:android:f6c9f045f60f349451a63b",
+        "mobilesdk_app_id": "1:945007097:android:f30dfe0df125d54fd3b528",
         "android_client_info": {
           "package_name": "com.app.fightlife"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyByYeJ3Dva1ZWwnxU36YbWJ5XInt5tSi2k"
+          "current_key": "AIzaSyD5x-SLFKFh6i0aMpNs-_B81M5P1aMb5m8"
         }
       ],
       "services": {

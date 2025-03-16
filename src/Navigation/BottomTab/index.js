@@ -84,7 +84,6 @@ const TabBarIcon = ({ icon, focused }) =>
   );
 export default function BottomTab() {
   const user = useSelector((state) => state.auth.userData);
-  console.log("user", user);
   return (
     <Tab.Navigator
       tabBarOptions={{

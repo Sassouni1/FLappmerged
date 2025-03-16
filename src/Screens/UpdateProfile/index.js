@@ -284,7 +284,7 @@ const UpdateProfiles = () => {
           </View>
 
           <View style={styles.inputFieldContainer}>
-            <Text style={styles.inputLabel}>Current Weight</Text>
+            <Text style={styles.inputLabel}>Current Weight: lbs</Text>
             <View
               style={[styles.inputField, weightError && styles.inputFieldError]}
             >
@@ -310,7 +310,7 @@ const UpdateProfiles = () => {
             {weightError && <Text style={styles.errorText}>{weightError}</Text>}
           </View>
           <View style={styles.inputFieldContainer}>
-            <Text style={styles.inputLabel}>Goal Weight</Text>
+            <Text style={styles.inputLabel}>Goal Weight: lbs</Text>
             <View
               style={[styles.inputField, weightError && styles.inputFieldError]}
             >
@@ -333,7 +333,7 @@ const UpdateProfiles = () => {
             </View>
           </View>
           <View style={styles.inputFieldContainer}>
-            <Text style={styles.inputLabel}>Height</Text>
+            <Text style={styles.inputLabel}>Height: Feet</Text>
             <View
               style={[styles.inputField, heightError && styles.inputFieldError]}
             >

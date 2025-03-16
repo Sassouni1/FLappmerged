@@ -1,4 +1,5 @@
-import React from "react";
+import React,{useState,useEffect} from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MyDrawer from "../drawer";
 import Help from "../../Screens/Help";
@@ -63,9 +64,32 @@ import {SplashScreen} from "../../Screens/SplashScreen";
 
 const stack = createNativeStackNavigator();
 const HomeStack = () => {
+  const [initialRoute, setInitialRoute] = useState(null); // Set to null initially
+
+  useEffect(() => {
+    const checkFirstTime = async () => {
+      const lastShown = await AsyncStorage.getItem("lastSplashShown");
+      const today = new Date().toISOString().split("T")[0];
+
+      if (lastShown === today) {
+        setInitialRoute("Home");
+      } else {
+        await AsyncStorage.setItem("lastSplashShown", today);
+        setInitialRoute("SplashScreen");
+      }
+    };
+
+    checkFirstTime();
+  }, []);
+
+  // Avoid rendering the navigator until the initial route is set
+  if (initialRoute === null) {
+    return null; // Or show a loading indicator
+  }
+
   return (
     <stack.Navigator
-      initialRouteName={"SplashScreen"}
+      initialRouteName={initialRoute}
       screenOptions={{ headerShown: false }}
     >
        <stack.Screen

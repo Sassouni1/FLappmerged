@@ -1709,11 +1709,11 @@ export default function TrainingStats({ navigation }) {
       <View>
         <View style={styles.trainingContainerStyle}>
           <Text style={styles.trainingFontStyle}>Training Completion</Text>
-          <Ionicons
+          {/* <Ionicons
             name="settings"
             size={getFontSize(2.5)}
             color={colors.axisColor}
-          />
+          /> */}
         </View>
         <View style={styles.chartOuterContainer}>
           <View style={styles.headerTopContainer}>
@@ -1749,11 +1749,11 @@ export default function TrainingStats({ navigation }) {
       <View>
         <View style={styles.trainingContainerStyle}>
           <Text style={styles.trainingFontStyle}>Calories Burned</Text>
-          <Ionicons
+          {/* <Ionicons
             name="settings"
             size={getFontSize(2.5)}
             color={colors.axisColor}
-          />
+          /> */}
         </View>
         <View style={styles.chartOuterContainer}>
           <View style={styles.headerTopContainer}>
@@ -1792,11 +1792,11 @@ export default function TrainingStats({ navigation }) {
       <View>
         <View style={styles.trainingContainerStyle}>
           <Text style={styles.trainingFontStyle}>Strength Progress</Text>
-          <Ionicons
+          {/* <Ionicons
             name="settings"
             size={getFontSize(2.5)}
             color={colors.axisColor}
-          />
+          /> */}
         </View>
         <Text style={styles.totalVolumeStyle}>
           {`Total Volume: ${addCommasToNumber(Math.round(total_lbs) || 0)} lbs lifted`}

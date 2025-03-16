@@ -4,6 +4,7 @@ const initialState = {
   userToken: null,
   FirstTime: true,
   userData: null,
+  isExistingUser:true,
   assprogram: null,
   //timer: { hours: 0, minutes: 0, seconds: 0 },
   workoutTimers: {},
@@ -16,6 +17,7 @@ const authReducer = (state = initialState, action) => {
         ...state,
         userToken: action.data?.response.token,
         userData: action.data?.response.user,
+        isExistingUser:action?.data?.response?.isExistingUser
       };
 
     case ACTIONS.LOGOUT:
@@ -23,6 +25,7 @@ const authReducer = (state = initialState, action) => {
         ...state,
         userToken: null,
         userData: null,
+        isExistingUser:true
       };
     case ACTIONS.SET_SINGLE_USER:
       return {

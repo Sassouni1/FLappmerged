@@ -272,10 +272,6 @@ export default function Squat({ navigation, route }) {
 
   useFocusEffect(
     React.useCallback(() => {
-      dispatch(setLoader(true))
-      setTimeout(() => {
-        dispatch(setLoader(false))
-      }, 3000);
       if (exercise?.additional_sets)
         setAdditionalSets(exercise?.additional_sets);
     }, [exercise])

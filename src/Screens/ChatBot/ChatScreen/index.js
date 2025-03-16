@@ -34,6 +34,7 @@ import {
 import HeaderChatBot from "../../../Components/HeaderChatBot";
 import Messages from "../../../Screens/Messages";
 import {SOCKET_URL} from '../../../Services/Constants';
+import UserAvatar from "../../UserAvatar";
 
 const STATUSBAR_HEIGHT =
   Platform.OS === "ios" ? getStatusBarHeight(true) : StatusBar.currentHeight;
@@ -239,10 +240,14 @@ const BotChatScreen = ({ navigation, route }) => {
             },
           ]}
         >
+          {user?.profile_image ?
           <Image
             source={{ uri: user?.profile_image }}
             style={{ height: "88%", width: "99%", borderRadius: getWidth(3) }}
           />
+          :
+          <UserAvatar username={user?.isGuestUser ? "Guest" : user?.full_name} height={40} width={40} />
+    }
         </View>
       );
     }

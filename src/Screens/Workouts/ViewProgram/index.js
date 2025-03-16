@@ -96,12 +96,15 @@ const ViewProgram = ({ route }) => {
   };
   const AssignProgram = async () => {
     dispatch(setLoader(true));
-    const today = new Date();
-    today.setDate(today.getDate() + 7);
+    const today = new Date().toISOString().split("T")[0]
+    let _selectedDate = selectedDate;
+    if (!_selectedDate)
+      _selectedDate = today;
+
     try {
       const res = await ApiCall({
         params: {
-          startDate: selectedDate,
+          startDate: _selectedDate,
           programId: data._id,
         },
         route: "assignProgram/assign_Program",
@@ -111,7 +114,7 @@ const ViewProgram = ({ route }) => {
       if (res?.status == "200") {
         dispatch(setLoader(false));
         dispatch(getSingleUser(token));
-        navigation.navigate("WorkoutSucessfully", { selectDate: selectedDate });
+        navigation.navigate("WorkoutSucessfully", { selectDate: _selectedDate });
       } else {
         dispatch(setLoader(false));
 
@@ -125,13 +128,15 @@ const ViewProgram = ({ route }) => {
   };
   const SwitchProgram = async () => {
     dispatch(setLoader(true));
-    const today = new Date();
-    today.setDate(today.getDate() + 7);
+     const today = new Date().toISOString().split("T")[0]
+    let _selectedDate = selectedDate;
+    if (!_selectedDate)
+      _selectedDate = today;
 
     try {
       const res = await ApiCall({
         params: {
-          startDate: selectedDate,
+          startDate: _selectedDate,
           programId: data._id,
           planId: user?.plan_id,
           isContinuous: "false",
@@ -143,7 +148,7 @@ const ViewProgram = ({ route }) => {
       if (res?.status == "200") {
         dispatch(setLoader(false));
         dispatch(getSingleUser(token));
-        navigation.navigate("WorkoutSucessfully", { selectDate: selectedDate });
+        navigation.navigate("WorkoutSucessfully", { selectDate: _selectedDate });
       } else {
         dispatch(setLoader(false));
 

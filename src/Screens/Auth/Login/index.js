@@ -1,5 +1,5 @@
 import React, { useState, useRef ,useEffect} from "react";
-import { Text, View, TouchableOpacity, Image, StyleSheet,ScrollView,Linking,Alert,ActivityIndicator } from "react-native";
+import { Text, View, TouchableOpacity, Image, StyleSheet,ScrollView,Linking,Alert,ActivityIndicator,KeyboardAvoidingView } from "react-native";
 import { TextInput } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { validateFields } from "../../../../utils/validation/validate-fields";
@@ -72,7 +72,6 @@ const Login = ({ navigation }) => {
         verb: 'post',
         params: { email: email },
       });
-      console.log("res",res)
       setEmailFocus(true)
       if (res && res?.response?.code == 200) {
         if (res?.response?.loginStatus == true) {
@@ -141,6 +140,10 @@ const Login = ({ navigation }) => {
   };
   const changeHandler = (type, value) => setState({ ...state, [type]: value });
   return (
+    <KeyboardAvoidingView
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+    style={{ flex: 1 }}
+  >
     <ScrollView style={styles.container}>
       <Image
         source={require("../../../assets/images/jakajake.jpg")}
@@ -172,10 +175,10 @@ const Login = ({ navigation }) => {
               <View style={styles.inputText}>
                 <Image
                   source={require("../../../assets/images/Monotoneemail.png")}
-                  style={styles.inputIcon}
+                  style={[styles.inputIcon,{marginRight:8}]}
                 />
                 <TextInput
-                  mode="outlined"
+                  // mode="outlined"
                   label={
                     <Text style={styles.inputPlaceholder}>Email Address</Text>
                   }
@@ -247,10 +250,10 @@ const Login = ({ navigation }) => {
               <View style={styles.inputText}>
                 <Image
                   source={require("../../../assets/images/Monotonelockpassword.png")}
-                  style={styles.inputIcon}
+                  style={[styles.inputIcon,{marginRight:8}]}
                 />
                 <TextInput
-                  mode="outlined"
+                  // mode="outlined"
                   label={<Text style={styles.inputPlaceholder}>Password</Text>}
                   theme={{ roundness: 19 }}
                   outlineColor="#F3F3F4"
@@ -345,6 +348,7 @@ const Login = ({ navigation }) => {
         </View>
       </View>
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -455,7 +459,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: "Work Sans",
     fontSize: 16,
-    color: "#393C43",
+    // color: "#393C43",
     backgroundColor: "transparent",
     borderWidth: 0,
     paddingHorizontal: 0,

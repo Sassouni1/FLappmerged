@@ -558,6 +558,8 @@ PODS:
     - React-Core
   - RNCMaskedView (0.3.1):
     - React-Core
+  - RNCPushNotificationIOS (1.11.0):
+    - React-Core
   - RNDeviceInfo (10.13.2):
     - React-Core
   - RNFastImage (8.6.3):
@@ -668,6 +670,7 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-community/clipboard`)"
   - "RNCMaskedView (from `../node_modules/@react-native-masked-view/masked-view`)"
+  - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
@@ -807,6 +810,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/clipboard"
   RNCMaskedView:
     :path: "../node_modules/@react-native-masked-view/masked-view"
+  RNCPushNotificationIOS:
+    :path: "../node_modules/@react-native-community/push-notification-ios"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
   RNFastImage:
@@ -893,25 +898,26 @@ SPEC CHECKSUMS:
   React-RCTVibration: 6bd85328388ac2e82ae0ca11afe48ad5555b483a
   React-rncore: fda7b1ae5918fa7baa259105298a5487875a57c8
   React-runtimeexecutor: 57d85d942862b08f6d15441a0badff2542fd233c
-  React-runtimescheduler: 78ae3872d28313f5038035ca03e0749a0f9aeb79
-  React-utils: ee4e6bf16d6882500500d517d36f9035874c5f6a
-  ReactCommon: 3a7c359a28c6973c304fb1b0152b096b195dd5fc
-  RNAppleHealthKit: 86ef7ab70f762b802f5c5289372de360cca701f9
-  RNCAsyncStorage: aa75595c1aefa18f868452091fa0c411a516ce11
-  RNCClipboard: b0541df1bb88935d40bdc93b41b7d8e3334c998a
-  RNCMaskedView: de80352547bd4f0d607bf6bab363d826822bd126
-  RNDeviceInfo: ff9a4419a29d343280ea19a2e381bac25cb0e146
-  RNFastImage: 462a183c4b0b6b26fdfd639e1ed6ba37536c3b87
-  RNFBApp: aadada421dfe12b21692f6973e9501f45b0057ce
-  RNFBMessaging: 66535c56b29b5c111deb3e61999069345f1ebe74
-  RNFS: 89de7d7f4c0f6bafa05343c578f61118c8282ed8
-  RNGestureHandler: 5ae428abcc1bf7d89b42ee17a1d5a53e38de7acd
-  RNImageCropPicker: d14a08134d1b5bc2d5f29a12ce3ac1d402dd2389
-  RNPermissions: 210e33f813c741101d9886877717f9424efab9f8
-  RNReanimated: 62b79ed6bac05a0eb49a61b8302ce6432e9a9f28
-  RNScreens: 448026fcd1beb88770b0a67a871a3d1bf9cdde0a
-  RNSVG: 4cab00c621b328a4a2fedaaedc15d8822216723e
-  RNVectorIcons: 2d86acb67d3b496b55ec50893f751ce5ce74783e
+  React-runtimescheduler: f23e337008403341177fc52ee4ca94e442c17ede
+  React-utils: fa59c9a3375fb6f4aeb66714fd3f7f76b43a9f16
+  ReactCommon: dd03c17275c200496f346af93a7b94c53f3093a4
+  RNAppleHealthKit: 60a6beefdd89a75811e9a8873a5e24f351dee681
+  RNCAsyncStorage: 826b603ae9c0f88b5ac4e956801f755109fa4d5c
+  RNCClipboard: 41d8d918092ae8e676f18adada19104fa3e68495
+  RNCMaskedView: 090213d32d8b3bb83a4dcb7d12c18f0152591906
+  RNCPushNotificationIOS: 64218f3c776c03d7408284a819b2abfda1834bc8
+  RNDeviceInfo: 42aadf1282ffa0a88dc38a504a7be145eb010dfa
+  RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
+  RNFBApp: 9b25191f7a5e72c185b7e43fffb0d906869c4659
+  RNFBMessaging: 99621af036e0aa85506390f77d79c9e6353aacca
+  RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
+  RNGestureHandler: d678f94a8f74de70ce3d9f5d23eb0f97b686e943
+  RNImageCropPicker: e7ab6fb43d2fc3e84651e786ef4a080d63b0ed3d
+  RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
+  RNReanimated: 9d4971e437f38c11fd2c43344ac9d40c330058b1
+  RNScreens: 93ae3be2f119d955620f9bbb39ad372adb53b7a9
+  RNSVG: d00c8f91c3cbf6d476451313a18f04d220d4f396
+  RNVectorIcons: bfb663f3f7b37340cd90120151b720641523dc84
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
@@ -919,6 +925,6 @@ SPEC CHECKSUMS:
   TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
   Yoga: b76f1acfda8212aa16b7e26bcce3983230c82603
 
-PODFILE CHECKSUM: b0301e48eeca2b2eaec57332c3359fe7c9d8adbd
+PODFILE CHECKSUM: e1a2a68b9675f818787513b1b3599e7a5d5d815a
 
 COCOAPODS: 1.16.2

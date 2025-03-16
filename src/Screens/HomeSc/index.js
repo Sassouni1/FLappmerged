@@ -95,6 +95,7 @@ const HomeSc = ({ navigation, route }) => {
   const navigate = useNavigation();
   const token = useSelector((state) => state.auth.userToken);
   const user = useSelector((state) => state.auth.userData);
+  const isExistingUser = useSelector((state) => state.auth.isExistingUser);
   const dispatch = useDispatch();
   const [adminAlert, setAdminAlert] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
@@ -267,6 +268,11 @@ const HomeSc = ({ navigation, route }) => {
       if (user.isAssigned) dispatch(getSingleUser(token));
       appListner(navigation);
     }
+    if (isExistingUser == false) {
+      if (!user?.weight || !user?.target_weight ||  !user?.height){
+        navigation.navigate("UpdateProfiles");
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -308,7 +314,6 @@ const HomeSc = ({ navigation, route }) => {
       });
 
       if (res?.status == "200") {
-        console.log("events", res?.response?.admin);
         const eventsData = res?.response?.admin;
         setEvents(eventsData);
 
@@ -417,11 +422,11 @@ const HomeSc = ({ navigation, route }) => {
             <Text style={styles.vidTitleText}>({todayWorkout ? 1 : 0})</Text>
           </View>
 
-          <View style={styles.moreVertical}>
+          {/* <View style={styles.moreVertical}>
             <View style={styles.moreVerticalLine} />
             <View style={styles.moreVerticalLine} />
             <View style={styles.moreVerticalLine} />
-          </View>
+          </View> */}
         </View>
         <TouchableOpacity
           style={styles.frameContainer}
