@@ -8,6 +8,7 @@ import {
   Linking,
   TouchableOpacity,
   Alert,
+  Platform,
   ScrollView,
 } from "react-native";
 import moment from "moment";
@@ -24,6 +25,7 @@ import { colors } from "../../constants/colors";
 import { useFocusEffect } from "@react-navigation/native";
 import TodoList from "../../Components/TodoList";
 import UserAvatar from "../UserAvatar";
+import DeviceInfo from 'react-native-device-info';
 
 function LiveCallComponent({ upComingEvent }) {
   const [time, setTime] = useState(timeRemaining(upComingEvent?.start));
@@ -113,6 +115,48 @@ const HomeSc = ({ navigation, route }) => {
       if (user?.showGuestUserPopup == true && user.isGuestUser == true) setModalVisible(true);
     }, [])
   );
+
+  const checkForUpdate = async () => {
+    try {
+      // Fetch latest version from API 
+      const response = await ApiCall({
+        route: `auth/getPermissionByName/appversion`,
+        verb: "get",
+      });
+      if (response?.status == 200) {
+
+      const latestVersion = response?.response?.data?.code; // Example: "1.2.0"
+      const currentVersion = DeviceInfo.getVersion(); // Example: "1.1.0"
+     
+      if (latestVersion !== currentVersion) {
+        Alert.alert(
+          'Update Required',
+          'A new version of the app is available. Please update to continue.',
+          [
+            {
+              text: 'Update Now',
+              onPress: () => {
+                const storeUrl = Platform.OS === 'ios' 
+                  ? 'https://apps.apple.com/app/6612025042' 
+                  : 'https://play.google.com/store/apps/details?id=com.app.fightlife';
+                Linking.openURL(storeUrl);
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+    }
+    } catch (error) {
+      console.error('Error checking update:', error);
+    }
+  };
+  
+  // Call this function in `useEffect` or when the app starts
+  useEffect(() => {
+    checkForUpdate();
+  }, []);
+
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
