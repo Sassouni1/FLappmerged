@@ -1,20 +1,12 @@
- def node_require(script)
-   # Resolve script with node to allow for hoisting
-   require Pod::Executable.execute_command('node', ['-p',
-     "require.resolve(
-       '#{script}',
-       {paths: [process.argv[1]]},
-     )", __dir__]).strip
- end
+# Resolve react_native_pods.rb with node to allow for hoisting
+require Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+    "react-native/scripts/react_native_pods.rb",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
 
-node_require('react-native/scripts/react_native_pods.rb')
-node_require('react-native-permissions/scripts/setup.rb')
-# platform :ios, min_ios_version_supported
-platform :ios, "13.0"
+platform :ios, min_ios_version_supported
 prepare_react_native_project!
-setup_permissions([
-   'Siri',
-])
 
 
 
@@ -22,11 +14,11 @@ setup_permissions([
 # because `react-native-flipper` depends on (FlipperKit,...) that will be excluded
 #
 # To fix this you can also exclude `react-native-flipper` using a `react-native.config.js`
-# js
+# ```js
 # module.exports = {
 #   dependencies: {
 #     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
-# 
+# ```
 # flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
 # :flipper_configuration => FlipperConfiguration.enabled(["Debug"], { 'Flipper' => '0.250.0' }),
 
@@ -49,7 +41,7 @@ $RNFirebaseAsStaticFramework = true
   use_react_native!(
     :path => config[:reactNativePath],
     # Hermes is now enabled by default. Disable by setting this flag to false.
-      :hermes_enabled => false,
+    :hermes_enabled => flags[:hermes_enabled],
     :fabric_enabled => flags[:fabric_enabled],
     # Enables Flipper.
     #
@@ -64,35 +56,14 @@ $RNFirebaseAsStaticFramework = true
     inherit! :complete
     # Pods for testing
   end
-  # use_flipper!
-  # use_flipper!({ 'Flipper-Folly' => '2.3.0' })
-  # post_install do |installer|
-  #   react_native_post_install(installer)
-  #   __apply_Xcode_12_5_M1_post_install_workaround(installer)
+  use_flipper!
+  post_install do |installer|
+    react_native_post_install(installer)
+    __apply_Xcode_12_5_M1_post_install_workaround(installer)
     
-<<<<<<< HEAD
-  #   installer.pods_project.build_configurations.each do |config|
-  #       installer.pods_project.targets.each do |target|
-  #           if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
-  #               config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
-  #           end
-  #           if target.name == 'Flipper'
-  #             file_path = 
-  #             'Pods/Flipper/xplat/Flipper/FlipperTransportTypes.h'
-  #             contents = File.read(file_path)
-  #             unless contents.include?('#include <functional>')
-  #               File.open(file_path, 'w') do |file|
-  #                 file.puts('#include <functional>')
-  #                 file.puts(contents)
-  #               end
-  #             end
-  #           end
-  #       end
-=======
     installer.pods_project.build_configurations.each do |config|
         installer.pods_project.targets.each do |target|
           config.build_settings['ENABLE_BITCODE'] = 'NO' # Disable Bitcode
-
             if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
                 config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
             end
@@ -108,50 +79,12 @@ $RNFirebaseAsStaticFramework = true
               end
             end
         end
->>>>>>> 50cd111 (bug fixes)
         
 
-  #       # Set the preprocessing macro for the whole Pods project
-  #       existing_flags = config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-  #       existing_flags << '_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION'
-  #       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = existing_flags
-  #   end
-  # end
-
-  post_install do |installer|
-    
-    bitcode_strip_path = `xcrun --find bitcode_strip`.chop!
-      def strip_bitcode_from_framework(bitcode_strip_path, framework_relative_path)
-        framework_path = File.join(Dir.pwd, framework_relative_path)
-        command = "#{bitcode_strip_path} #{framework_path} -r -o #{framework_path}"
-        puts "Stripping bitcode: #{command}"
-        system(command)
-      end
-
-      framework_paths = [
-        "Pods/LogRocket/LogRocket.xcframework/ios-arm64/LogRocket.framework/LogRocket",
-        "Pods/hermes-engine/destroot/Library/Frameworks/macosx/hermes.framework/hermes",
-        "Pods/hermes-engine/destroot/Library/Frameworks/macosx/hermes.framework/Versions/Current/hermes",
-        "Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework/ios-arm64/hermes.framework/hermes",
-        "Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework/ios-arm64_x86_64-maccatalyst/hermes.framework/hermes"
-      ]
-
-      framework_paths.each do |framework_relative_path|
-        strip_bitcode_from_framework(bitcode_strip_path, framework_relative_path)
-      end
-      
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)', '_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION']
-        
-        end
+        # Set the preprocessing macro for the whole Pods project
+        existing_flags = config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+        existing_flags << '_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = existing_flags
     end
-    react_native_post_install(
-      installer,
-      # Set `mac_catalyst_enabled` to `true` in order to apply patches
-      # necessary for Mac Catalyst builds
-      :mac_catalyst_enabled => false
-    )
-    __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end
