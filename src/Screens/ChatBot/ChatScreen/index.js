@@ -314,6 +314,7 @@ const BotChatScreen = ({ navigation, route }) => {
             multiline={true} // Enable multiline input
             value={sms}
             onChangeText={(e) => setSms(e)}
+            placeholderTextColor={colors.gray3}
             onContentSizeChange={(e) => {
               setInputHeight(
                 Math.min(e.nativeEvent.contentSize.height, getHeight(15))

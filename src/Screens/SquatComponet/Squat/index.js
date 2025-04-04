@@ -10,6 +10,7 @@ import {
   TextInput,
   Dimensions,
   Alert,
+  Platform
 } from "react-native";
 import React, { useEffect, useState, useMemo,useRef } from "react";
 import { colors } from "../../../constants/colors";
@@ -159,7 +160,7 @@ const RenderRest = React.memo(({ uniqueKey, restTime }) => {
 const TopVideo = React.memo(({ videoUrl, title, onPressBack }) => {
   // Component logic
   return (
-    <View style={{marginTop:videoUrl ? 0 : 30}}>
+    <View style={{marginTop:videoUrl ? 0 :  30}}>
       {videoUrl &&
         <>
           <VideoComponent videoUrl={videoUrl} thumbnail={''} Name={title} />
@@ -197,6 +198,7 @@ const TopVideo = React.memo(({ videoUrl, title, onPressBack }) => {
       style={{
         textAlign: 'center',
         fontSize: getFontSize(3),
+        color:'#000',
         fontWeight: '700',
         marginLeft: !videoUrl ? 10 : 0,
       }}
@@ -221,7 +223,7 @@ export default function Squat({ navigation, route }) {
   const onPressBack = () => {
     navigation.goBack();
   };
-  const { exercise, workout,selectedDay, task, exercises, calories,programExercises,dynamicExercises } = route?.params;
+  const { exercise, workout,selectedDay, task, exercises, calories,programExercises,dynamicExercises,scrollIndex } = route?.params;
   const user = useSelector((state) => state.auth.userData);
   const dispatch = useDispatch();
   const scrollViewRef = useRef(null);
@@ -328,6 +330,29 @@ export default function Squat({ navigation, route }) {
   const scrollToTop = () => {
     scrollViewRef.current?.scrollTo({ y: 0, animated: true });
   };
+
+  const scrollToSection = (index) => {
+    if (sectionRefs.current[index]) {
+      sectionRefs.current[index].measureLayout(
+        scrollViewRef.current,
+        (x, y) => {
+          scrollViewRef.current?.scrollTo({ y, animated: true });
+        },
+        (error) => {
+          console.log('Measure failed', error);
+        }
+      );
+    }
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      scrollToSection(scrollIndex);
+    }, 100); // small delay to make sure layout is done
+
+    return () => clearTimeout(timer);
+  }, [scrollIndex]); // or any other trigger dependency
+
 
   const onPressNextExercise = () => {
     const currentIndex = findCurrentIndex();
@@ -749,11 +774,13 @@ const singleSetComplete = async (
                 paddingBottom: getWidth(1.5),
                 height:50,
                 padding:10,
+                color:'#000',
                 borderColor:colors.orange,
                 borderRadius:10,
                 borderWidth:1
               }}
               placeholder={"_______"}
+              placeholderTextColor={colors.gray3}
               keyboardType="numeric"
               editable={isDynamicWarmUp ? false : true}
               onChangeText={(text) => handleTextChange(uniqueKey, text)}
@@ -894,6 +921,7 @@ const singleSetComplete = async (
             style={{
               ...styles.text,
               fontFamily: fonts.URe,
+              color:'#000',
               textAlign: "center",
             }}
           >
@@ -928,7 +956,7 @@ const singleSetComplete = async (
   };
 
   return (
-    <View style={{ flex: 1,paddingTop:50, backgroundColor: colors.white }}>
+    <View style={{ flex: 1,paddingTop:Platform.OS==="android" ? 0 : 50, backgroundColor: colors.white }}>
       {isVisible ? (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
           <View
@@ -963,9 +991,6 @@ const singleSetComplete = async (
               >
               <TopVideo videoUrl={item?.exerciseVideo || item?.video} title={item?.exercise_name} onPressBack={onPressBack} />
                 <RenderExercise exercise={item} addon={"task" + index} />
-                {selectedTask?.length != index + 1 && (
-                  <View style={styles.divider} />
-                )}
               </View>
             ))
           ) : (
@@ -1267,8 +1292,8 @@ const styles = StyleSheet.create({
   },
   divider: {
     borderWidth: 5,
-    backgroundColor: colors.orange,
-    borderColor: colors.orange,
+    backgroundColor: '#BBBBBE',
+    borderColor: '#BBBBBE',
     marginVertical: 10,
   },
 });

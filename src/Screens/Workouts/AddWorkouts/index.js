@@ -10,7 +10,7 @@ import {
   Alert,
   ActivityIndicator
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { colors } from "../../../constants/colors";
 import { GernalStyle } from "../../../constants/GernalStyle";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -30,6 +30,7 @@ import TabBarComponent from "../../../Components/TabBarComponent";
 import VideoComponent from "../../../Components/VideoComponent";
 import PopupModal from "../../../Components/ErrorPopup";
 import Toast from 'react-native-simple-toast';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const { height, width } = Dimensions.get("screen");
 
@@ -70,13 +71,22 @@ function checkTimeFormate(seconds) {
 const AddWorkouts = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const calendarRef = useRef(null);
+  const startOfCurrentWeek = moment().startOf("isoWeek"); // Start of this week
+  const maxAllowedDate = startOfCurrentWeek.clone().add(14, "days"); // 2 weeks ahead limit
+  const minAllowedDate = startOfCurrentWeek.clone().subtract(7, "days"); // 1 week back limit
+  
   const selectedCalendarDate = useSelector((state) => state.workout.selectedCalendarDate);
   const [date, setDate] = useState(() => {
     const currentDate = new Date();
     const formattedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
     return formattedDate;
   });
-
+  const [fixedCurrentDate, setFixedCurrentDate] = useState(() => {
+    const currentDate = new Date();
+    const formattedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+    return formattedDate;
+  });
   const [program, setProgram] = useState();
   const [workoutForWeek, setWorkoutForWeek] = useState([]);
   const [workout, setWorkout] = useState({});
@@ -300,7 +310,6 @@ const calculateDayDifference = (startFromDate, selectedDate) => {
         let _programStartDate = res?.response?.startDate;
         // setUserWorkoutProgress(res?.response?.workoutProgress);
         setProgramStartDate(_programStartDate)
-        console.log(_programStartDate)
         // setWorkoutForWeek(res?.response?.Workout);
         setCurrentDateWorkout(res?.response?.Workout,selectedDate,_programStartDate)
         dispatch(setLoader(false));
@@ -522,16 +531,30 @@ const calculateDayDifference = (startFromDate, selectedDate) => {
       </View>
     );
   };
-
+  const DividerWithoutText = () => {
+    return (
+      <View style={[innerStyles.container,{marginVertical:15}]}>
+        <View style={innerStyles.line} />
+        <View style={innerStyles.line} />
+      </View>
+    );
+  };
   // Function to check if URL is a Vimeo link
 const isVimeoUrl = (url) => {
   const vimeoRegex = /vimeo\.com\/(?:manage\/videos\/)?(\d+)/;
   return vimeoRegex.test(url);
 };
  
-  const RenderExercise = ({ item }) => {
+  const RenderExercise = ({ item,isSuperset,parentIndex,index }) => {
+    const sequenceNumber = parentIndex + 1; 
+    const letter = String.fromCharCode(65 + index);
     return (
       <View style={{ flex: 1, flexDirection: "row", zIndex: 1 }}>
+        {isSuperset &&
+          <Text style={{ color: '#000',alignSelf:'center',paddingHorizontal:8, fontSize: 14, }}>
+            {`${sequenceNumber}${letter}`}
+          </Text>
+        }
         <View style={{ flex: 1 }}>
           <Image
             source={item.video ?
@@ -558,7 +581,7 @@ const isVimeoUrl = (url) => {
           }}
         >
           <View style={{ flex: 3, justifyContent: "flex-end" }}>
-            <Text style={{ fontWeight: "700", fontSize: 20 }}>
+            <Text numberOfLines={3} style={{ fontWeight: "700",color:'#000', fontSize: 18 }}>
               {item?.exercise_name}
             </Text>
           </View>
@@ -570,7 +593,7 @@ const isVimeoUrl = (url) => {
               alignItems: "flex-end",
             }}
           >
-            <Text>{`Reps: ${item?.sets?.length}x${findMaxReps(item)?.parameterValue == 'seconds' ? formatDuration(findMaxReps(item)?.maxReps) : findMaxReps(item)?.maxReps}${findMaxReps(item)?.parameterValue ? ` (${findMaxReps(item)?.parameterValue == 'seconds' ? checkTimeFormate(findMaxReps(item)?.maxReps) : findMaxReps(item)?.parameterValue})` : ''}`}</Text>
+            <Text style={{color:'#000'}}>{`Reps: ${item?.sets?.length}x${findMaxReps(item)?.parameterValue == 'seconds' ? formatDuration(findMaxReps(item)?.maxReps) : findMaxReps(item)?.maxReps}${findMaxReps(item)?.parameterValue ? ` (${findMaxReps(item)?.parameterValue == 'seconds' ? checkTimeFormate(findMaxReps(item)?.maxReps) : findMaxReps(item)?.parameterValue})` : ''}`}</Text>
           </View>
         </View>
         <View
@@ -594,10 +617,12 @@ const isVimeoUrl = (url) => {
       style={{
         backgroundColor: "#F3F3F4",
         borderRadius: 25,
+        paddingRight:25,
+        paddingLeft:33,
         width: "100%",
         marginTop: 0, // Change this to 0 if it was positive before
-        marginBottom: 0, // Ensure this is 0
-        padding: 10,
+        marginBottom: 20, // Ensure this is 0
+        // padding: 10,
         borderWidth: 0, // Ensure there's no border
       }}
       onPress={() => {
@@ -620,18 +645,19 @@ const isVimeoUrl = (url) => {
   const renderMergedItem = (parentitem, parentIndex) => (
     <View>
       {parentitem?.task?.map((item, index) => (
-        <View key={index} style={{}}>
+        <View key={index} style={{paddingRight:25}}>
           <TouchableOpacity
             style={{
               backgroundColor: "#F3F3F4",
               borderRadius: 25,
               width: "100%",
-              padding: 10,
+              // padding: 10,
               zIndex: 2,
             }}
             onPress={() => {
               navigation.navigate("Squat", {
                 exercise: item,
+                scrollIndex:index,
                 workout: workout,
                 task: parentitem?.task,
                 selectedDay:selectedDay,
@@ -643,24 +669,50 @@ const isVimeoUrl = (url) => {
             }}
             activeOpacity={0.8}
           >
-            <RenderExercise item={item} />
+            <RenderExercise isSuperset={true} parentIndex={parentIndex} index={index} item={item} />
           </TouchableOpacity>
           {index < parentitem?.task?.length - 1 ? (
+            <View style={{flexDirection:'row',left:45,alignItems:'center'}}>
             <View
               style={{
-                left: 30,
-                width: 8,
-                height: 40,
-                backgroundColor: colors.black,
+                width: 6,
+                height: 33,
+                backgroundColor: '#000',
               }}
             />
+            <Text style={{ color:'#000', letterSpacing:1, fontSize: 13,left:5 }}>
+              {"Superset"}
+            </Text>
+            </View>
           ) : (
-            <View style={{ marginBottom: 10 }} />
+            <View style={{ marginBottom: 20 }} />
+            // <DividerWithoutText />
           )}
         </View>
       ))}
     </View>
   );
+
+  const handleWeekChange = (direction) => {
+    let newDate = moment(fixedCurrentDate).add(direction === "next" ? 7 : -7, "days");
+
+    if (newDate.isAfter(maxAllowedDate)) {
+      Alert.alert("Stay Focused", "Stay on track! Finish this week's workouts first.");
+      return; // Stop navigation if out of range
+    }
+
+    setFixedCurrentDate(newDate); // Update selected date
+    if (calendarRef.current) {
+      calendarRef.current.updateWeekView(newDate); // Update CalendarStrip
+    }
+  };
+
+  const datesBlacklist = (date) => {
+    const today = moment(); // Aaj ki date
+    const twoWeeksLater = moment().add(14, 'days'); // 2 weeks ke baad ki date
+    
+    return date.isAfter(twoWeeksLater); // 2 weeks ke baad ki sari dates disable hongi
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -730,20 +782,41 @@ const isVimeoUrl = (url) => {
             }}
           />
           <ReactNativeCalendarStrip
+            ref={calendarRef}
             showMonth={false}
             selectedDate={date}
             onDateSelected={handleDateChange}
+            datesBlacklist={datesBlacklist}
             // onWeekChanged={(weekStartDate, weekEndDate) => {
-            //   setCurrentWeekStartDate(weekStartDate)
-            //   if (currentWeekStartDate) {
-            //     if (currentWeekStartDate.toISOString() != weekStartDate.toISOString()) {
-            //       console.log("Week changed:", weekStartDate, weekEndDate);
-            //       getExcerciseForWeek(weekStartDate);
-            //       dispatch(setSelectedCalendarDate(weekStartDate));
-            //       setDate(weekStartDate);
-            //     }
+            //   const startOfCurrentWeek = moment().startOf("isoWeek"); // Current week's start date
+            //   const maxAllowedDate = startOfCurrentWeek.clone().add(14, "days"); // 2 weeks limit
+            //   if (weekStartDate.isAfter(maxAllowedDate)) {
+            //     Alert.alert("Restriction", "Stay on track! Finish this week's workouts first.");
+            //     return;
             //   }
             // }}
+            leftSelector={
+              <TouchableOpacity
+                style={innerStyles.iconContainer}
+                onPress={() => {handleWeekChange("prev") }}
+              >
+                <Image
+                  style={ innerStyles.calanderArrow}
+                  source={require("../../../assets/images/left-arrow-black.png")}
+                />
+              </TouchableOpacity>
+            }
+            rightSelector={
+              <TouchableOpacity
+                style={innerStyles.iconContainer}
+                onPress={() => { handleWeekChange("next") }}
+              >
+                <Image
+                  style={innerStyles.calanderArrow}
+                  source={require("../../../assets/images/right-arrow-black.png")}
+                />
+              </TouchableOpacity>
+            }
             calendarAnimation={{ type: "sequence", duration: 30 }}
             customDatesStyles={customDatesStyles}
             highlightDateNameStyle={{ color: "black" }}
@@ -846,7 +919,7 @@ const isVimeoUrl = (url) => {
             }}
           >
             <Text
-              style={{ fontWeight: "700", textAlign: "center", fontSize: 20 }}
+              style={{ fontWeight: "700", textAlign: "center",color:'#000', fontSize: 20 }}
             >
               {assigWorkout?.workoutName}
             </Text>
@@ -880,6 +953,7 @@ const isVimeoUrl = (url) => {
                   <View style={{ alignItems: 'center' }}>
                     <Text
                       style={{
+                        color:'#000',
                         fontSize: getFontSize(2.5),
                       }}
                     >
@@ -973,5 +1047,16 @@ const innerStyles = StyleSheet.create({
     color: '#C1C1C1', // light gray color
     fontSize: 16,
     letterSpacing: 2, // spacing between letters
+  },
+  calanderArrow:{
+      resizeMode: "contain",
+      height:30,
+      width:30,
+      tintColor:'white'
+  },
+  iconContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center"
   },
 });

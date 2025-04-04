@@ -80,8 +80,8 @@ android {
         multiDexEnabled true
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 5
-        versionName "1.0"
+        versionCode 8
+        versionName "1.1"
     }
     signingConfigs {
         debug {

@@ -74,6 +74,8 @@
 		<string>WorkSans-Bold.ttf</string>
 		<string>WorkSans-Medium.ttf</string>
 		<string>WorkSans-Regular.ttf</string>
+		<string>Montserrat-Regular.ttf</string>
+        <string>Commuters_Sans_Regular.otf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

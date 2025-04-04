@@ -1,7 +1,7 @@
 import {BASE_URL} from '../Constants';
 import axios from 'axios';
 
-export const ApiCall = async ({params, route, verb, token, baseurl}) => {
+export const ApiCall = async ({params, route, verb, token, baseurl,multiform}) => {
   try {
     let url = null;
     if (baseurl == false) {
@@ -33,7 +33,10 @@ export const ApiCall = async ({params, route, verb, token, baseurl}) => {
         response = await axios.put(
           url,
           params,
-          token ? {headers: {'x-sh-auth': token}} : null,
+          token ? 
+          multiform ? {headers: {'x-sh-auth': token,'Content-Type': 'multipart/form-data'}}
+           : {headers: {'x-sh-auth': token}} :
+          null,
 
         );
         break;

@@ -74,7 +74,7 @@ const HTUA = () => {
       {dataList.map((item, index) => (
       <View key={index} style={{paddingHorizontal: 15 }}>
         <View style={{ gap: 10 }}>
-          <Text style={{ fontWeight: 700, fontSize: 18 }}>
+          <Text style={{ fontWeight: 700, fontSize: 18,color:'#000' }}>
             {item.title}
           </Text>
           <Text

@@ -151,16 +151,19 @@ const UpdateProfiles = () => {
         formData.append("weight", weight);
         formData.append("target_weight", targetWeight);
 
-        formData.append("profile_image", imageCrop);
+        if (imageCrop)
+          formData.append("profile_image", imageCrop);
 
         const res = await ApiCall({
           params: formData,
           route: "user/update_user",
           token: token,
           verb: "put",
+          multiform:true
         });
 
-        if (res?.response) {
+        console.log("res",res)
+        if (res?.status ==200) {
           navigation.goBack();
           dispatch(getSingleUser(token));
           toast.show(res?.response?.message);
@@ -169,10 +172,12 @@ const UpdateProfiles = () => {
         } else {
           dispatch(setLoader(false));
           console.log(res);
+          toast.show(res?.response?.message || 'Error');
           // Alert.alert('Awesome!','Profile update successful');
         }
       } catch (e) {
         console.log("profile update error -- ", e.toString());
+        toast.show("profile update error -- ", e.toString());
       }
     } else {
       setFullnameError(fullnameValidationError);
@@ -391,7 +396,7 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#111214",
-    height: 204,
+    height: 180,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
@@ -416,7 +421,7 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     position: "absolute",
-    top: 200, // Adjust the top value to place it correctly
+    top: 160, // Adjust the top value to place it correctly
     left: "50%",
     transform: [{ translateX: -48 }, { translateY: -48 }], // Adjust according to your needs
     zIndex: 1,
@@ -482,6 +487,7 @@ const styles = StyleSheet.create({
   inputText: {
     fontFamily: "Work Sans",
     fontWeight: "500",
+    height:50,
     fontSize: 16,
     lineHeight: 19,
     letterSpacing: 1,

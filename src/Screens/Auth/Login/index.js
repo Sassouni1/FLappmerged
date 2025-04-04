@@ -1,5 +1,5 @@
 import React, { useState, useRef ,useEffect} from "react";
-import { Text, View, TouchableOpacity, Image, StyleSheet,ScrollView,Linking,Alert,ActivityIndicator,KeyboardAvoidingView } from "react-native";
+import { Text, View, TouchableOpacity, Image, StyleSheet,ScrollView,Linking,Alert,ActivityIndicator,KeyboardAvoidingView,Platform } from "react-native";
 import { TextInput } from "react-native-paper";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { validateFields } from "../../../../utils/validation/validate-fields";
@@ -355,7 +355,7 @@ const Login = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop:50,
+    paddingTop:Platform.OS==="android" ? 0 : 50,
     backgroundColor: "#FFFFFF",
   },
   backgroundImage: {

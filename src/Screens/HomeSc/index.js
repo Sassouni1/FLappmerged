@@ -119,14 +119,18 @@ const HomeSc = ({ navigation, route }) => {
     try {
       // Fetch latest version from API 
       const response = await ApiCall({
-        route: `auth/getPermissionByName/appversion`,
+        route: `auth/getPermissionByName/${Platform.OS === 'ios' ? 'appversion' : 'androidappversion'}`,
         verb: "get",
       });
       if (response?.status == 200) {
 
       const latestVersion = response?.response?.data?.code; // Example: "1.2.0"
       const currentVersion = DeviceInfo.getVersion(); // Example: "1.1.0"
-     
+
+     if(currentVersion == 3.9)
+      return;
+    
+     console.log(currentVersion);
       if (latestVersion !== currentVersion) {
         Alert.alert(
           'Update Required',

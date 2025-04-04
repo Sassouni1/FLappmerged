@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   description: {
     fontSize: getFontSize(2),
     fontFamily: fonts.WM,
-    color: colors.greyText,
+    color: colors.gray7,
   },
 });
 

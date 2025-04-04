@@ -733,6 +733,7 @@ const BotChatScreen = ({ navigation, route }) => {
                     style={{
                       width: getWidth(60),
                       marginTop: 0,
+                      color:'#000',
                       paddingLeft: getWidth(3),
                       paddingVertical: 20,
                       maxHeight:130,

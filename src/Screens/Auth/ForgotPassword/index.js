@@ -7,6 +7,7 @@ import { ApiCall } from '../../../Services/Apis';
 import { validateFields } from '../../../../utils/validation/validate-fields';
 import validator from '../../../../utils/validation/validator';
 import SimpleToast from 'react-native-simple-toast';
+import { colors } from '../../../constants/colors';
 
 const ResetPassword = () => {
   const navigation = useNavigation();
@@ -120,6 +121,7 @@ const ResetPassword = () => {
                 onChangeText={(email) => changeHandler('email', email.trim())}
                 blurOnSubmit={false}
                 placeholder="Email Address"
+                placeholderTextColor={colors.gray3}
               />
             </View>
           </View>
@@ -162,7 +164,7 @@ const styles = StyleSheet.create({
     marginTop: -297,
   },
   button: {
-    marginTop: 30,
+    // marginTop: 30,
     backgroundColor: '#111214',
     borderRadius: 19,
     flexDirection: 'row',
@@ -293,7 +295,7 @@ const styles = StyleSheet.create({
     height: 24,
   },
   inputContainer: {
-    marginBottom: 24,
+    // marginBottom: 24,
   },
   label: {
     fontFamily: 'Work Sans',
@@ -328,7 +330,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#393C43',
     backgroundColor: 'transparent',
-    borderWidth: 0,
+    height:40,
     paddingHorizontal: 0,
   },
   errorText: {

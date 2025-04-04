@@ -291,9 +291,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    gap: 134,
-    width: 311,
-    height: 24,
+    // gap: 134,
+    // width: 311,
+    height: 40,
   },
   errorText: {
     color: "#ff5252",
@@ -306,6 +306,7 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     letterSpacing: 1,
     color: "#393C43",
+    height:40,
     flex: 1,
   },
   passwordStrength: {

@@ -389,6 +389,7 @@ const ViewProgram = ({ route }) => {
             style={{
               fontWeight: "700",
               fontSize: 22,
+              color:'#000'
             }}
           >
             Program Description
@@ -447,7 +448,7 @@ const ViewProgram = ({ route }) => {
                   onPress={() => {
                     handleAddToCalendar();
                   }}
-                  text={`Start ${data?.title}`}
+                  text={`Start ${data?.title ? data?.title : ''}`}
                   btnStyle={{
                     ...GernalStyle.btn,
                     borderRadius: 20,
