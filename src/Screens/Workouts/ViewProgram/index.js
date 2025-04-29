@@ -46,6 +46,7 @@ const getDurationText = (days) => {
 const ViewProgram = ({ route }) => {
   const navigation = useNavigation();
   const { _id } = route?.params?.passData;
+  const isContinue = route?.params?.isContinue;
   const url = route?.params?.url;
   const programVideos = route?.params?.programVideos;
   // const userPlan = route?.params?.userPlan;
@@ -107,14 +108,16 @@ const ViewProgram = ({ route }) => {
           startDate: _selectedDate,
           programId: data._id,
         },
-        route: "assignProgram/assign_Program",
+        route:isContinue ?
+         "assignProgram/assign-continuous-program" :
+          "assignProgram/assign_Program",
         verb: "post",
         token: token,
       });
       if (res?.status == "200") {
         dispatch(setLoader(false));
         dispatch(getSingleUser(token));
-        navigation.navigate("WorkoutSucessfully", { selectDate: _selectedDate });
+        navigation.navigate("WorkoutSucessfully");
       } else {
         dispatch(setLoader(false));
 
@@ -126,6 +129,7 @@ const ViewProgram = ({ route }) => {
       console.log("api get skill error -- ", e.toString());
     }
   };
+ 
   const SwitchProgram = async () => {
     dispatch(setLoader(true));
      const today = new Date().toISOString().split("T")[0]
@@ -139,7 +143,7 @@ const ViewProgram = ({ route }) => {
           startDate: _selectedDate,
           programId: data._id,
           planId: user?.plan_id,
-          isContinuous: "false",
+          isContinuous: isContinue ? "true" :  "false",
         },
         route: "assignProgram/switch_assign_Program",
         verb: "post",
@@ -148,7 +152,7 @@ const ViewProgram = ({ route }) => {
       if (res?.status == "200") {
         dispatch(setLoader(false));
         dispatch(getSingleUser(token));
-        navigation.navigate("WorkoutSucessfully", { selectDate: _selectedDate });
+        navigation.navigate("WorkoutSucessfully");
       } else {
         dispatch(setLoader(false));
 

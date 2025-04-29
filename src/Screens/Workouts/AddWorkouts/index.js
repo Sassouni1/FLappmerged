@@ -115,7 +115,7 @@ const AddWorkouts = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user?.showGuestUserPopup == true && user.isGuestUser == true) setModalVisible(true);
+      if (user?.showGuestUserPopup == true && user.isGuestUser == true && user?.hasCombatKettlebell != true) setModalVisible(true);
       else{
         if(!user?.program_id){
           Alert.alert("No Program Added", "You have not added any program yet. Please add a program first.", [
@@ -324,9 +324,11 @@ const calculateDayDifference = (startFromDate, selectedDate) => {
   const getViewProgram = async () => {
     dispatch(setLoader(true));
     try {
+      console.log("isContinue",user?.isContinueProgram)
       const res = await ApiCall({
         params: { category_name: "skill" },
-        route: `program/detail_program/${user?.program_id}`,
+        route:user?.isContinueProgram ? `cont_program/detail_cont_program/${user?.program_id}` :
+         `program/detail_program/${user?.program_id}`,
         verb: "get",
         token: token,
       });
@@ -899,9 +901,6 @@ const isVimeoUrl = (url) => {
                       }}
                     />
                     :
-                    selectedDay?.split(" ")[1] > 0 ?
-                    <ActivityIndicator size={'large'} />
-                    :
                     <View />
                     
                   }
@@ -1050,8 +1049,8 @@ const innerStyles = StyleSheet.create({
   },
   calanderArrow:{
       resizeMode: "contain",
-      height:30,
-      width:30,
+      height:25,
+      width:25,
       tintColor:'white'
   },
   iconContainer: {

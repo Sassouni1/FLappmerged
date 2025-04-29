@@ -246,7 +246,7 @@ export default function TrainingStats({ navigation }) {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user?.showGuestUserPopup == true && user.isGuestUser == true) setModalVisible(true);
+      if (user?.showGuestUserPopup == true && user.isGuestUser == true && user?.hasCombatKettlebell != true) setModalVisible(true);
     }, [])
   );
   const toggleModal = () => {

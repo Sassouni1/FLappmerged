@@ -16,7 +16,6 @@ import { useDispatch } from "react-redux";
 
 const WorkoutSucessfully = ({ route }) => {
   const navigation = useNavigation();
-  const selectDate = route?.params;
   const dispatch = useDispatch();
 
   const styles = StyleSheet.create({

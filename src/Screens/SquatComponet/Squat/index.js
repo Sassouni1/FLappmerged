@@ -413,11 +413,11 @@ export default function Squat({ navigation, route }) {
     if (existingItem) {
       // If the object exists, toggle the `value` field (true to false, or false to true)
       newIsChecked = newIsChecked.map((item) =>
-        item.index === index ? { ...item, value: !item.value } : item
+        item.index === index ? { ...item, value: !item.value,inputValue:item.value ==true ? 0 : find_lbs_value} : item
       );
     } else {
       // If the object does not exist, add a new object with `index` and `value: true`
-      newIsChecked.push({ index: index, value: !isRevert });
+      newIsChecked.push({ index: index, value: !isRevert,inputValue:find_lbs_value });
     }
 
     dispatch(setCalanderSetsCheckmark(newIsChecked))
@@ -793,17 +793,17 @@ const singleSetComplete = async (
              <>
              {selectedCategory == 'Bodyweight' ?
              <>
-              <Text style={styles.descStyle}>{`${findInputValueWithKey(uniqueKey,currentExercise,set?._id)} Reps`}</Text>
-              <Text style={styles.descStyle}>{`${userWeight} lbs`}</Text>
+              <Text style={styles.descStyle}>{`${existingItem?.inputValue ? existingItem?.inputValue : findInputValueWithKey(uniqueKey,currentExercise,set?._id)} Reps`}</Text>
+              <Text style={styles.descStyle}>{`${existingItem?.inputValue ? existingItem?.inputValue : userWeight} lbs`}</Text>
               </>
               :
-              <Text style={styles.descStyle}>{`${findInputValueWithKey(uniqueKey,currentExercise,set?._id)} Reps`}</Text>
+              <Text style={styles.descStyle}>{`${existingItem?.inputValue ? existingItem?.inputValue : findInputValueWithKey(uniqueKey,currentExercise,set?._id)} Reps`}</Text>
             }
               </>
             
             ) : (
               !isDynamicWarmUp && (
-                <Text style={styles.descStyle}>{`${findInputValueWithKey(uniqueKey,currentExercise,set?._id)} lbs`}</Text>
+                <Text style={styles.descStyle}>{`${existingItem?.inputValue ? existingItem?.inputValue : findInputValueWithKey(uniqueKey,currentExercise,set?._id)} lbs`}</Text>
               )
             )}
           </View>

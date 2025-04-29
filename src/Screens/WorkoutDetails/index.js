@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Alert,
+  Linking,
   Animated,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -26,7 +27,7 @@ const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 const WorkoutDetails = () => {
   const navigation = useNavigation();
-  const [data, setData] = useState([]);
+  const [continuePrograms, setContinuePrograms] = useState([]);
   const [program, setProgram] = useState([]);
   const [userPlan, setUserPlan] = useState();
   const token = useSelector((state) => state.auth.userToken);
@@ -58,7 +59,7 @@ const WorkoutDetails = () => {
 
   useEffect(() => {
     getAllProgram();
-    // getContinuousProgram();
+    getContinuousProgram();
     getInstructions();
     // getUserPlan();
   }, []);
@@ -68,14 +69,40 @@ const WorkoutDetails = () => {
   };
   useFocusEffect(
     React.useCallback(() => {
-      if (user?.showGuestUserPopup == true && user.isGuestUser == true)
+      if (user?.showGuestUserPopup == true && user.isGuestUser == true && user?.hasCombatKettlebell != true)
         setModalVisible(true);
     }, [])
   );
 
+  const showPremiumAlert = () => {
+    Alert.alert(
+      "Upgrade to Premium",
+      "Join the fight life premium subscription to gain access",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        {
+          text: "Upgrade",
+          onPress: () => openURL("https://www.fightlife.io/darustrong-1")
+        }
+      ]
+    );
+  }
+  const openURL = async (url) => {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert(`Don't know how to open this URL: ${url}`);
+      }
+    };
+
   const getContinuousProgram = async () => {
     dispatch(setLoader(true));
-    setData([]);
+    setContinuePrograms([]);
     try {
       const res = await ApiCall({
         route: "cont_program/all_cont_programs",
@@ -83,7 +110,8 @@ const WorkoutDetails = () => {
         token: token,
       });
       if (res?.status == "200") {
-        setData(res?.response?.detail?.filter((el) => !el?.isDeleted));
+        console.log("detail",res?.response?.detail)
+        setContinuePrograms(res?.response?.detail);
         dispatch(setLoader(false));
       } else {
         dispatch(setLoader(false));
@@ -93,7 +121,7 @@ const WorkoutDetails = () => {
       console.log("api error -- ", e.toString());
     }
   };
-
+  const normalize = (str) => str.replace(/\s+/g, ' ').trim().toLowerCase();
 
   // const getUserPlan = async () => {
   //   try {
@@ -134,6 +162,7 @@ const WorkoutDetails = () => {
       dispatch(setLoader(false));
     }
   };
+
 
   const getAllProgram = async () => {
     dispatch(setLoader(true));
@@ -246,15 +275,96 @@ const WorkoutDetails = () => {
             program.map((item, index) => (
               <TouchableOpacity
                 key={index}
-                onPress={() =>
-                  navigation.navigate("ViewProgram", {
-                    passData: item,
-                    // userPlan:userPlan,
-                    programVideos: dataList?.filter(
-                      (x) => x.program == item?._id
-                    ),
-                    url: "program/detail_program/",
-                  })
+                onPress={() => {
+                  let isNavigate = true;
+                  if (user?.showGuestUserPopup == true && user.isGuestUser == true && user?.hasCombatKettlebell == true) {
+                    if (normalize(item.title) !== 'combat kettlebell 2.0') {
+                      isNavigate = false;
+                    }
+                  }
+                  else {
+                    isNavigate = true
+                  }
+                  if (isNavigate == true) {
+                    navigation.navigate("ViewProgram", {
+                      passData: item,
+                      programVideos: dataList?.filter(
+                        (x) => x.program == item?._id
+                      ),
+                      url: "program/detail_program/",
+                    })
+                  }
+                  else{
+                    showPremiumAlert()
+                  }
+                }
+                }
+              >
+                <View style={styles.programContainer}>
+                  <Image
+                    source={{ uri: item?.program_Image }}
+                    style={styles.programImage}
+                  />
+                  <View style={styles.programContent}>
+                    <View style={styles.programHeader}>
+                      <View style={styles.programInfoLeft}>
+                        <Image
+                          source={require("../../assets/images/homeclockicon.png")}
+                        />
+                        <Text style={styles.programInfoText}>
+                          {item?.equipments_needed}
+                        </Text>
+                      </View>
+                      <View style={styles.programInfoRight}>
+                        <Image
+                          source={require("../../assets/images/homefireicon.png")}
+                        />
+                        <Text style={styles.programInfoText}>
+                          {item?.program_for}
+                        </Text>
+                      </View>
+                    </View>
+                    <Text style={styles.programTitle}>{item?.title}</Text>
+                    <Text style={styles.programDesc}>
+                      {getHardcodedSubheader(item?.title)}
+                    </Text>
+                    <View style={styles.startButton}>
+                      <Text style={styles.startButtonText}>START</Text>
+                    </View>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))}
+
+          <Text style={styles.sectionTitle}>Team Programs</Text>
+          {continuePrograms.length > 0 &&
+            continuePrograms.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() =>{
+                  let isNavigate = true;
+                  if (user?.showGuestUserPopup == true && user.isGuestUser == true && user?.hasCombatKettlebell == true) {
+                    if (normalize(item.title) !== 'combat kettlebell 2.0') {
+                      isNavigate = false;
+                    }
+                  }
+                  else {
+                    isNavigate = true
+                  }
+                  if (isNavigate == true) {
+                    navigation.navigate("ViewProgram", {
+                      passData: item,
+                      isContinue: true,
+                      programVideos: dataList?.filter(
+                        (x) => x.program == item?._id
+                      ),
+                      url: "cont_program/detail_cont_program/",
+                    })
+                  }
+                  else{
+                    showPremiumAlert()
+                  }
+                }
                 }
               >
                 <View style={styles.programContainer}>
@@ -338,6 +448,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: 6,
+    marginBottom:20,
     gap: 14,
   },
   sectionTitle: {

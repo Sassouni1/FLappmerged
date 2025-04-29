@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import { logout } from "../../Redux/actions/AuthActions";
 
-const PopupModal = ({isVisible,toggleModal}) => {
+const PopupModal = ({isVisible,toggleModal,hasCombatKettlebell}) => {
   const navigate = useNavigation();
   const dispatch = useDispatch();
 
@@ -23,8 +23,10 @@ const PopupModal = ({isVisible,toggleModal}) => {
       <Modal isVisible={isVisible}>
         <View style={styles.modalContainer}>
         <Text style={styles.modalTitle}>Upgrade to Premium</Text>
-          <Text style={styles.modalText}>You are currently using a free account. To access premium features, please create an account and upgrade.</Text>
-          
+          <Text style={styles.modalText}>{
+          hasCombatKettlebell == true ?
+           'Join the fight life premium subscription to gain access' :
+            'You are currently using a free account. To access premium features, please create an account and upgrade.'}</Text>
 
           <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={()=>{ openURL("https://www.fightlife.io/darustrong-1")}} style={styles.upgradeButton}>
