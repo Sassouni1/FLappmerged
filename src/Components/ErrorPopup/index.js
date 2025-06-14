@@ -1,13 +1,81 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet,Linking,Alert } from 'react-native';
 import Modal from 'react-native-modal';
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import { logout } from "../../Redux/actions/AuthActions";
 
 const PopupModal = ({isVisible,toggleModal,hasCombatKettlebell}) => {
   const navigate = useNavigation();
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.userData);
+  const [title,setTitle] = useState("");
+  const [description,setDescription] = useState("");
+  const [redirectLink,setRedirectLink] = useState("");
+  const [buttonText,setButtontext] = useState("");
+
+
+
+  useEffect(() => {
+    if (user?.isLoginWithGuestEmail === true) {
+      setTitle("Upgrade to Premium");
+      setDescription("You are currently using a free account. To access premium features, please create an account and upgrade.");
+      setRedirectLink("http://www.fightlife.io/darustrong-1");
+      setButtontext("Upgrade Account");
+      return;
+    }
+  
+    const hasCombat = user?.hasCombatKettlebell === true;
+    const hasBuildDifferent = user?.hasBuildDifferent === true;
+    const isCancelled = user?.isCancelled === true;
+  
+    if (hasCombat && hasBuildDifferent) {
+      setTitle(isCancelled ? "Membership Canceled" : "Payment Failed");
+      setDescription(
+        isCancelled
+          ? "You still have lifetime access to Combat Kettlebell 2.0 and Built Different, but your Fight Life membership was canceled. Restart now to regain access to all programs and features."
+          : "You still have lifetime access to Combat Kettlebell 2.0 and Built Different, but your Fight Life membership is paused. Update your billing info to unlock all programs and features."
+      );
+      setRedirectLink(
+        isCancelled
+          ? "http://www.fightlife.io/darustrong-1"
+          : "https://billing.stripe.com/p/login/14k14zg9z2St3iE4gg"
+      );
+      setButtontext(isCancelled ? "Restart Membership" : "Update Billing");
+    } else if (hasCombat) {
+      setTitle(isCancelled ? "Membership Canceled" : "Payment Failed");
+      setDescription(
+        isCancelled
+          ? "You still have lifetime access to Combat Kettlebell 2.0, but your Fight Life membership was canceled. Restart now to regain access to all programs and features."
+          : "You still have lifetime access to Combat Kettlebell 2.0, but your Fight Life membership is paused. Update your billing info to unlock all programs and features."
+      );
+      setRedirectLink(
+        isCancelled
+          ? "http://www.fightlife.io/darustrong-1"
+          : "https://billing.stripe.com/p/login/14k14zg9z2St3iE4gg"
+      );
+      setButtontext(isCancelled ? "Restart Membership" : "Update Billing");
+    } else if (hasBuildDifferent) {
+      setTitle(isCancelled ? "Membership Canceled" : "Payment Failed");
+      setDescription(
+        isCancelled
+          ? "You still have lifetime access to Built Different, but your Fight Life membership was canceled. Restart now to regain access to all programs and features."
+          : "You still have lifetime access to Built Different, but your Fight Life membership is paused. Update your billing info to unlock all programs and features."
+      );
+      setRedirectLink(
+        isCancelled
+          ? "http://www.fightlife.io/darustrong-1"
+          : "https://billing.stripe.com/p/login/14k14zg9z2St3iE4gg"
+      );
+      setButtontext(isCancelled ? "Restart Membership" : "Update Billing");
+    } else {
+      setTitle("Upgrade to Premium");
+      setDescription("You are currently using a free account. To access premium features, please create an account and upgrade.");
+      setRedirectLink("http://www.fightlife.io/darustrong-1");
+      setButtontext("Upgrade Account");
+    }
+  }, [user]);
+  
 
   const openURL = async (url) => {
     const supported = await Linking.canOpenURL(url);
@@ -22,15 +90,14 @@ const PopupModal = ({isVisible,toggleModal,hasCombatKettlebell}) => {
     <View style={styles.container}>
       <Modal isVisible={isVisible}>
         <View style={styles.modalContainer}>
-        <Text style={styles.modalTitle}>Upgrade to Premium</Text>
-          <Text style={styles.modalText}>{
-          hasCombatKettlebell == true ?
-           'Join the fight life premium subscription to gain access' :
-            'You are currently using a free account. To access premium features, please create an account and upgrade.'}</Text>
+        <Text style={styles.modalTitle}>
+          {title}
+          </Text>
+          <Text style={styles.modalText}>{description}</Text>
 
           <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={()=>{ openURL("https://www.fightlife.io/darustrong-1")}} style={styles.upgradeButton}>
-              <Text style={styles.buttonText}>Upgrade Account</Text>
+          <TouchableOpacity onPress={()=>{ openURL(redirectLink)}} style={styles.upgradeButton}>
+              <Text style={styles.buttonText}>{buttonText}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={()=>{toggleModal(); navigate.navigate("Exercises")}} style={styles.cancelButton}>
               <Text style={styles.buttonText}>Cancel</Text>

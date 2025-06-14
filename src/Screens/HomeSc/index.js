@@ -111,7 +111,9 @@ const HomeSc = ({ navigation, route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user?.showGuestUserPopup == true && user.isGuestUser == true && user?.hasCombatKettlebell != true) setModalVisible(true);
+      console.log("user",user)
+      if (user?.showGuestUserPopup == true && user.isGuestUser == true && user?.hasCombatKettlebell != true && user?.hasBuildDifferent !=true)
+        setModalVisible(true);
     }, [])
   );
 
@@ -287,7 +289,7 @@ const HomeSc = ({ navigation, route }) => {
   const getAdminAlert = async () => {
     try {
       const res = await ApiCall({
-        route: auth/get-recent-alert,
+        route: "auth/get-recent-alert",
         verb: "get",
         token: token,
       });
@@ -435,11 +437,11 @@ const HomeSc = ({ navigation, route }) => {
               />
           </View>
           :
-          <UserAvatar username={user?.isGuestUser ? "Guest" : user?.full_name} height={54} width={54} />
+          <UserAvatar username={user?.isLoginWithGuestEmail ? "Guest" : user?.full_name} height={54} width={54} />
         }
           <View style={styles.headerContent}>
             <Text style={styles.greeting}>
-              {"Hello " + (user?.isGuestUser ? "Guest" :  user?.full_name?.split(" ")[0])}
+              {"Hello " + (user?.isLoginWithGuestEmail ? "Guest" :  user?.full_name?.split(" ")[0])}
             </Text>
           </View>
           <Entypo

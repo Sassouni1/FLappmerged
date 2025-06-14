@@ -69,28 +69,65 @@ const WorkoutDetails = () => {
   };
   useFocusEffect(
     React.useCallback(() => {
-      if (user?.showGuestUserPopup == true && user.isGuestUser == true && user?.hasCombatKettlebell != true)
+      if (user?.showGuestUserPopup == true && user.isGuestUser == true && user?.hasCombatKettlebell != true && user?.hasBuildDifferent !=true)
         setModalVisible(true);
     }, [])
   );
 
   const showPremiumAlert = () => {
+    const hasCombat = user?.hasCombatKettlebell === true;
+    const hasBuildDifferent = user?.hasBuildDifferent === true;
+    const isCancelled = user?.isCancelled === true;
+  
+    let title = "";
+    let description = "";
+    let redirectLink = "";
+    let buttonText = "";
+  
+    if (hasCombat && hasBuildDifferent) {
+      title = isCancelled ? "Membership Canceled" : "Payment Failed";
+      description = isCancelled
+        ? "You still have lifetime access to Combat Kettlebell 2.0 and Built Different, but your Fight Life membership was canceled. Restart now to regain access to all programs and features."
+        : "You still have lifetime access to Combat Kettlebell 2.0 and Built Different, but your Fight Life membership is paused. Update your billing info to unlock all programs and features.";
+      redirectLink = isCancelled
+        ? "http://www.fightlife.io/darustrong-1"
+        : "https://billing.stripe.com/p/login/14k14zg9z2St3iE4gg";
+      buttonText = isCancelled ? "Restart Membership" : "Update Billing";
+    } else if (hasCombat) {
+      title = isCancelled ? "Membership Canceled" : "Payment Failed";
+      description = isCancelled
+        ? "You still have lifetime access to Combat Kettlebell 2.0, but your Fight Life membership was canceled. Restart now to regain access to all programs and features."
+        : "You still have lifetime access to Combat Kettlebell 2.0, but your Fight Life membership is paused. Update your billing info to unlock all programs and features.";
+      redirectLink = isCancelled
+        ? "http://www.fightlife.io/darustrong-1"
+        : "https://billing.stripe.com/p/login/14k14zg9z2St3iE4gg";
+      buttonText = isCancelled ? "Restart Membership" : "Update Billing";
+    } else if (hasBuildDifferent) {
+      title = isCancelled ? "Membership Canceled" : "Payment Failed";
+      description = isCancelled
+        ? "You still have lifetime access to Built Different, but your Fight Life membership was canceled. Restart now to regain access to all programs and features."
+        : "You still have lifetime access to Built Different, but your Fight Life membership is paused. Update your billing info to unlock all programs and features.";
+      redirectLink = isCancelled
+        ? "http://www.fightlife.io/darustrong-1"
+        : "https://billing.stripe.com/p/login/14k14zg9z2St3iE4gg";
+      buttonText = isCancelled ? "Restart Membership" : "Update Billing";
+    } else {
+      title = "Upgrade Required";
+      description = "This content is available to Fight Life members only. Please update your subscription to continue.";
+      redirectLink = "http://www.fightlife.io";
+      buttonText = "Upgrade";
+    }
+  
     Alert.alert(
-      "Upgrade to Premium",
-      "Join the fight life premium subscription to gain access",
+      title,
+      description,
       [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel"
-        },
-        {
-          text: "Upgrade",
-          onPress: () => openURL("https://www.fightlife.io/darustrong-1")
-        }
+        { text: "Cancel", style: "cancel" },
+        { text: buttonText, onPress: () => openURL(redirectLink) },
       ]
     );
-  }
+  };
+  
   const openURL = async (url) => {
       const supported = await Linking.canOpenURL(url);
       if (supported) {
@@ -275,32 +312,59 @@ const WorkoutDetails = () => {
             program.map((item, index) => (
               <TouchableOpacity
                 key={index}
-                onPress={() => {
+                onPress={async () => {
                   let isNavigate = true;
-                  if (user?.showGuestUserPopup == true && user.isGuestUser == true && user?.hasCombatKettlebell == true) {
-                    if (normalize(item.title) !== 'combat kettlebell 2.0') {
-                      isNavigate = false;
+                
+                  // Restrict guests who own a single premium program
+                  if (user?.showGuestUserPopup && user?.isGuestUser) {
+                    isNavigate = false; // block by default
+                
+                    // Allow Combat Kettlebell owners to open CK 2.0
+                    if (
+                      user?.hasCombatKettlebell &&
+                      normalize(item.title) === 'combat kettlebell 2.0'
+                    ) {
+                      isNavigate = true;
+                    }
+                
+                    // Allow Build Different owners to open Build Different programs
+                    if (
+                      user?.hasBuildDifferent &&
+                      item.title?.includes('Built Different')
+                    ) {
+                      isNavigate = true;
                     }
                   }
-                  else {
-                    isNavigate = true
-                  }
-                  if (isNavigate == true) {
-                    navigation.navigate("ViewProgram", {
+                
+                  // Navigate or show upgrade alert
+                  if (isNavigate) {
+                    navigation.navigate('ViewProgram', {
                       passData: item,
                       programVideos: dataList?.filter(
-                        (x) => x.program == item?._id
+                        (x) => x.program === item?._id
                       ),
-                      url: "program/detail_program/",
-                    })
+                      url: 'program/detail_program/',
+                    });
+                  } else {
+                    showPremiumAlert();
                   }
-                  else{
-                    showPremiumAlert()
-                  }
-                }
-                }
+                }}
               >
-                <View style={styles.programContainer}>
+                <View style={
+                  [styles.programContainer,
+                    {
+                      opacity:
+                        user?.showGuestUserPopup === true &&
+                          user?.isGuestUser === true
+                          ? (
+                            (user?.hasCombatKettlebell && normalize(item.title) === "combat kettlebell 2.0") ||
+                            (user?.hasBuildDifferent && item.title?.includes("Built Different"))
+                          )
+                            ? 1
+                            : 0.4
+                          : 1
+                   }
+                ]}>
                   <Image
                     source={{ uri: item?.program_Image }}
                     style={styles.programImage}
@@ -367,7 +431,15 @@ const WorkoutDetails = () => {
                 }
                 }
               >
-                <View style={styles.programContainer}>
+                <View style={[styles.programContainer,
+                    {
+                      opacity:
+                        user?.showGuestUserPopup == true &&
+                          user.isGuestUser == true &&
+                          user?.hasCombatKettlebell == true &&
+                          normalize(item.title) !== 'combat kettlebell 2.0' ? 0.4 : 1
+                   }
+                ]}>
                   <Image
                     source={{ uri: item?.program_Image }}
                     style={styles.programImage}

@@ -115,7 +115,7 @@ const AddWorkouts = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user?.showGuestUserPopup == true && user.isGuestUser == true && user?.hasCombatKettlebell != true) setModalVisible(true);
+      if (user?.showGuestUserPopup == true && user.isGuestUser == true && user?.hasCombatKettlebell != true && user?.hasBuildDifferent !=true) setModalVisible(true);
       else{
         if(!user?.program_id){
           Alert.alert("No Program Added", "You have not added any program yet. Please add a program first.", [
