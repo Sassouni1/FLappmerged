@@ -113,9 +113,9 @@ const WorkoutDetails = () => {
       buttonText = isCancelled ? "Restart Membership" : "Update Billing";
     } else {
       title = "Upgrade Required";
-      description = "This content is available to Fight Life members only. Please update your subscription to continue.";
+      description = "To access this please add this program to your account.";
       redirectLink = "http://www.fightlife.io";
-      buttonText = "Upgrade";
+      buttonText = "Unlock Program";
     }
   
     Alert.alert(
@@ -335,6 +335,14 @@ const WorkoutDetails = () => {
                       isNavigate = true;
                     }
                   }
+                  else{
+                    if(!user?.hasCombatKettlebell && normalize(item.title) === 'combat kettlebell 2.0'){
+                      isNavigate = false;
+                    }
+                    if(!user?.hasBuildDifferent && item.title?.includes('Built Different')){
+                      isNavigate = false;
+                    }
+                  }
                 
                   // Navigate or show upgrade alert
                   if (isNavigate) {
@@ -356,13 +364,16 @@ const WorkoutDetails = () => {
                       opacity:
                         user?.showGuestUserPopup === true &&
                           user?.isGuestUser === true
-                          ? (
+                          ? 
+                          (
                             (user?.hasCombatKettlebell && normalize(item.title) === "combat kettlebell 2.0") ||
-                            (user?.hasBuildDifferent && item.title?.includes("Built Different"))
+                            (user?.hasBuildDifferent && item.title?.includes('Built Different'))
+                          ) ? 1 : 0.4
+                          : (
+                            (!user?.hasCombatKettlebell && normalize(item.title) === "combat kettlebell 2.0") ||
+                            (!user?.hasBuildDifferent && item.title?.includes('Built Different'))
                           )
-                            ? 1
-                            : 0.4
-                          : 1
+                          ? 0.4 : 1
                    }
                 ]}>
                   <Image

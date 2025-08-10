@@ -69,10 +69,18 @@ const PopupModal = ({isVisible,toggleModal,hasCombatKettlebell}) => {
       );
       setButtontext(isCancelled ? "Restart Membership" : "Update Billing");
     } else {
-      setTitle("Upgrade to Premium");
-      setDescription("You are currently using a free account. To access premium features, please create an account and upgrade.");
-      setRedirectLink("http://www.fightlife.io/darustrong-1");
-      setButtontext("Upgrade Account");
+      setTitle(isCancelled ? "Membership Canceled" : "Payment Failed");
+      setDescription(
+        isCancelled
+          ? "Your Fight Life membership was canceled. Restart now to regain access to all programs and features."
+          : "Your Fight Life membership is paused. Update your billing info to unlock all programs and features."
+      );
+      setRedirectLink(
+        isCancelled
+          ? "http://www.fightlife.io/darustrong-1"
+          : "https://billing.stripe.com/p/login/14k14zg9z2St3iE4gg"
+      );
+      setButtontext(isCancelled ? "Restart Membership" : "Update Billing");
     }
   }, [user]);
   
@@ -98,6 +106,9 @@ const PopupModal = ({isVisible,toggleModal,hasCombatKettlebell}) => {
           <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={()=>{ openURL(redirectLink)}} style={styles.upgradeButton}>
               <Text style={styles.buttonText}>{buttonText}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={()=>{ openURL('http://fightlife.io/darustrong-1')}} style={styles.startMembershipButton}>
+              <Text style={styles.buttonText}>{'Start New Membership'}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={()=>{toggleModal(); navigate.navigate("Exercises")}} style={styles.cancelButton}>
               <Text style={styles.buttonText}>Cancel</Text>
@@ -153,6 +164,13 @@ const styles = StyleSheet.create({
     marginBottom:5,
     marginRight: 10,
   },
+  startMembershipButton: {
+    backgroundColor: "#e87b35",
+    padding: 10,
+    borderRadius: 5,
+    marginBottom:5,
+    marginRight: 10,
+  },
   subscribeButton: {
     backgroundColor: '#2196F3',
     padding: 10,
@@ -161,6 +179,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
+    fontWeight:'bold',
     textAlign: 'center',
   },
 });
