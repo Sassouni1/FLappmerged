@@ -6,6 +6,7 @@ const initialState = {
   userData: null,
   isExistingUser:true,
   assprogram: null,
+  userTimezone: 'UTC',
   //timer: { hours: 0, minutes: 0, seconds: 0 },
   workoutTimers: {},
 };
@@ -17,7 +18,8 @@ const authReducer = (state = initialState, action) => {
         ...state,
         userToken: action.data?.response.token,
         userData: action.data?.response.user,
-        isExistingUser:action?.data?.response?.isExistingUser
+        isExistingUser:action?.data?.response?.isExistingUser,
+        userTimezone: action.data?.response?.user?.timezone || state.userTimezone
       };
 
     case ACTIONS.LOGOUT:
@@ -25,7 +27,8 @@ const authReducer = (state = initialState, action) => {
         ...state,
         userToken: null,
         userData: null,
-        isExistingUser:true
+        isExistingUser:true,
+        userTimezone: 'UTC'
       };
     case ACTIONS.SET_SINGLE_USER:
       return {
@@ -76,6 +79,11 @@ const authReducer = (state = initialState, action) => {
       return {
         ...state,
         workoutTimers: updatedWorkoutTimers,
+      };
+    case ACTIONS.SET_USER_TIMEZONE:
+      return {
+        ...state,
+        userTimezone: action.data,
       };
     default:
       return state;

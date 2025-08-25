@@ -10,6 +10,7 @@ import { setLoader } from "../../../Redux/actions/GernalActions";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useFocusEffect } from "@react-navigation/native";
 import {ApiCall} from '../../../Services/Apis';
+import { getTimeZone } from 'react-native-localize';
 
 const Login = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ const Login = ({ navigation }) => {
     password: "",
     passwordError: "",
   });
+  const [userTimezone, setUserTimezone] = useState('UTC');
   useFocusEffect(
     React.useCallback(() => {
       getPermissionByName();
@@ -32,7 +34,17 @@ const Login = ({ navigation }) => {
         password: "",
         passwordError: "",
       });
-      setPasswordIsEditable(false)
+      setPasswordIsEditable(false);
+      
+      // Automatically detect user's timezone
+      try {
+        const detectedTimezone = getTimeZone();
+        console.log('Detected user timezone:', detectedTimezone);
+        setUserTimezone(detectedTimezone);
+      } catch (error) {
+        console.warn('Could not detect timezone, using UTC:', error);
+        setUserTimezone('UTC');
+      }
     }, [])
   );
   const [hidePass, setHidePass] = useState(true);
@@ -47,8 +59,15 @@ const Login = ({ navigation }) => {
     const passwordError = await validator("password", password);
     if (!emailError && !passwordError) {
       dispatch(setLoader(true));
+      
+      console.log('Sending login request with timezone:', userTimezone);
       dispatch(
-        loginRequest({ email: email, password: password, role: "customer" })
+        loginRequest({ 
+          email: email, 
+          password: password, 
+          role: "customer",
+          timezone: userTimezone 
+        })
       );
     } else {
       dispatch(setLoader(false));

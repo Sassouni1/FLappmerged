@@ -55,3 +55,8 @@ export const updateTimer = (workoutId, exerciseId, timer) => ({
   type: ACTIONS.UPDATE_TIMER,
   payload: { workoutId, exerciseId, timer },
 });
+
+export const setUserTimezone = timezone => ({
+  type: ACTIONS.SET_USER_TIMEZONE,
+  data: timezone,
+});

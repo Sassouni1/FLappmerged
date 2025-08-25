@@ -20,7 +20,6 @@ import MultiSLider from "@ptomasroos/react-native-multi-slider";
 import { Dropdown } from "react-native-element-dropdown";
 import UpdateProfiles from "../../Screens/UpdateProfile";
 import MetricsComponent from "../../Components/MetricsComponent";
-const moment = require('moment');
 
 //Local Imports
 import { colors } from "../../constants/colors";
@@ -35,8 +34,9 @@ import SelectDropdown from "react-native-select-dropdown";
 // import session from "redux-persist/lib/storage/session";
 import PopupModal from "../../Components/ErrorPopup";
 import AppleHealthKit from "react-native-health";
+import moment from 'moment-timezone';
 
-const userCurrentDate = new Date().toISOString();
+// Remove static userCurrentDate - make it dynamic
 const defaultDropDownValue = "Last 7 Days";
 export default function TrainingStats({ navigation }) {
   const [appleStatGraphData, setAppleStatGraphData] = useState([]);
@@ -50,6 +50,7 @@ export default function TrainingStats({ navigation }) {
   const { height, width } = Dimensions.get("window");
   const [isModalVisible, setModalVisible] = useState(false);
   const user = useSelector((state) => state.auth.userData);
+  const userTimezone = useSelector((state) => state.auth.userTimezone || 'UTC');
 
   const [healthData, setHealthData] = useState({
     vo2Max: null,
@@ -551,6 +552,9 @@ export default function TrainingStats({ navigation }) {
     setProgressFunction,
     isPost = false
   ) => {
+    // Generate fresh current date for each API call
+    const userCurrentDate = new Date().toISOString();
+    
     const routes = {
       weekly: `assignProgram/user_progress/${user?.user_id}/${userCurrentDate}`,
       monthly: `assignProgram/monthly_progress/${user?.user_id}/${userCurrentDate}`,
@@ -588,6 +592,9 @@ export default function TrainingStats({ navigation }) {
   };
 
   const getWeightProgress = async (timePeriod, setProgressFunction) => {
+    // Generate fresh current date for each API call
+    const userCurrentDate = new Date().toISOString();
+    
     const routes = {
       weekly: `assignProgram/weeklyWeight/${user?.plan_id}/${userCurrentDate}`,
       monthly: `assignProgram/monthlyWeight/${user?.plan_id}/${userCurrentDate}`,
@@ -603,12 +610,23 @@ export default function TrainingStats({ navigation }) {
         token: token,
       });
 
+      console.log(`=== FRONTEND API RESPONSE ===`);
       console.log(`response of getWeight${timePeriod}Progress`, res?.response);
+      console.log(`API Status:`, res?.status);
+      console.log(`Raw response:`, res);
 
       if (res?.status == "200") {
-        setProgressFunction(
-          res?.response?.monthlyWeight || res?.response?.weeklyWeight
-        );
+        const weightData = res?.response?.monthlyWeight || res?.response?.weeklyWeight;
+        console.log(`Setting weight progress data:`, weightData);
+        
+        if (weightData && typeof weightData === 'object') {
+          console.log(`Weight data keys:`, Object.keys(weightData));
+          console.log(`Weight data values:`, Object.values(weightData));
+          setProgressFunction(weightData);
+        } else {
+          console.log('Weight data is undefined or not an object:', weightData);
+          setProgressFunction({});
+        }
         setTotal_lbs(res?.response?.total_lbs);
         dispatch(setLoader(false));
       } else {
@@ -1056,8 +1074,8 @@ export default function TrainingStats({ navigation }) {
           { value: weeklyProgress.Saturday, label: "Sat" },
         ];
 
-        // Get the current day as an index (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-        const currentDayIndex = new Date().getDay();
+        // Get the current day as an index based on user's timezone (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+        const currentDayIndex = moment.tz(userTimezone).day();
 
         // Reorder the array to place the current day at the end
         const reorderedDays = [
@@ -1463,9 +1481,10 @@ export default function TrainingStats({ navigation }) {
           { value: weightProgress.Friday, label: "Fri" },
           { value: weightProgress.Saturday, label: "Sat" },
         ];
+        console.log('strengthProgressData for Last 7 Days:', days);
 
-        // Get the current day as an index (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-        const currentDayIndex = new Date().getDay();
+        // Get the current day as an index based on user's timezone (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+        const currentDayIndex = moment.tz(userTimezone).day();
 
         // Reorder the array to place the current day at the end
         const reorderedDays = [
@@ -1816,8 +1835,7 @@ export default function TrainingStats({ navigation }) {
           <BarChart
             frontColor={colors.orange}
             data={strengthProgressData()}
-            // maxValue={Math.round(total_lbs) > 10 ? Math.round(total_lbs) : 10}
-            maxValue={100}
+            maxValue={Math.max(...strengthProgressData().map(item => item.value || 0), 1000)}
             dashGap={0}
             spacing={8}
             barBorderRadius={4}
@@ -1827,6 +1845,12 @@ export default function TrainingStats({ navigation }) {
             xAxisColor={colors.rulesColor}
             xAxisLabelTextStyle={{ color: colors.axisColor }}
             yAxisTextStyle={{ color: colors.axisColor }}
+            formatYLabel={(value) => {
+              if (value >= 1000) {
+                return (value / 1000).toFixed(1) + 'K';
+              }
+              return value.toString();
+            }}
           />
         </View>
       </View>
@@ -2216,3 +2240,4 @@ const styles = StyleSheet.create({
     fontFamily: fonts.WB,
   },
 });
+
