@@ -616,8 +616,9 @@ const singleSetComplete = async (
     });
 
     if (res?.status == "200") {
-      toast.show("Successfully completed");
-      console.log("Successfully completed")
+      const message = isRevert ? "Set successfully removed" : "Successfully completed";
+      toast.show(message);
+      console.log(message)
     } else {
       // toast.show("Enter correct sets");
       console.log("Enter correct sets")

@@ -279,9 +279,11 @@ export default function TrainingStats({ navigation }) {
       set_sp_dropdown(defaultDropDownValue);
 
       dispatch(setLoader(true));
-      getExerciseProgress("weekly", setWeeklyProgress, true);
+      
+      // Use new analytics APIs for initial load
+      getTrainingCompletionV2("weekly", setWeeklyProgress);
       getCaloriesProgress("weekly", setCaloriesProgress, true);
-      getWeightProgress("weekly", setWeightProgress);
+      getStrengthProgressV2("weekly", setWeightProgress);
     }, [])
   );
 
@@ -520,7 +522,27 @@ export default function TrainingStats({ navigation }) {
     return `${month}/${day}/${year}`;
   }
 
+  // Separate dropdown options - Training Completion keeps Today, Strength Progress removes it
+  const [trainingCompletionTypes] = useState([
+    "Today",
+    "Last 7 Days",
+    "This Month",
+    "Last 3 Months",
+    "Last 6 Months",
+    "All Time",
+  ]);
+
+  const [strengthProgressTypes] = useState([
+    // "Today", // Removed Today from Strength Progress as requested
+    "Last 7 Days",
+    "This Month",
+    "Last 3 Months",
+    "Last 6 Months",
+    "All Time",
+  ]);
+
   const [allTypes, setAllTypes] = useState([
+    "Today", // Keep for Calories Burned and other sections
     "Last 7 Days",
     "This Month",
     "Last 3 Months",
@@ -547,6 +569,112 @@ export default function TrainingStats({ navigation }) {
   const handleAppleStatSelection = (stat) => {
     setSelectedAppleStat(stat);
   };
+  // Enhanced function for training completion using new analytics APIs
+  const getTrainingCompletionV2 = async (timePeriod, setProgressFunction) => {
+    const periodMap = {
+      today: 'today',
+      weekly: 'last7days',
+      monthly: 'thismonth',
+      threeMonth: 'last3months',
+      sixMonth: 'last6months',
+      allMonths: 'alltime',
+    };
+
+    const period = periodMap[timePeriod];
+    if (!period) {
+      console.log('Invalid time period for training completion:', timePeriod);
+      return;
+    }
+
+    try {
+      const res = await ApiCall({
+        route: `assignProgram/training-completion/${user?.user_id}/${period}?timezone=${encodeURIComponent(userTimezone)}`,
+        verb: "get",
+        token: token,
+      });
+
+      console.log(`=== NEW TRAINING COMPLETION API RESPONSE ===`);
+      console.log(`response of getTrainingCompletion${period}:`, res?.response?.data);
+      console.log(`API Status:`, res?.status);
+
+      if (res?.status == 200 && res?.response?.data && !res?.response?.error) {
+        const data = res.response.data;
+        
+        try {
+          // Ensure data is valid object
+          if (!data || typeof data !== 'object') {
+            console.log('Invalid training completion data received:', data);
+            setProgressFunction({});
+            return;
+          }
+          
+          if (period === 'last7days' && data.trainingCompletionData && Array.isArray(data.trainingCompletionData)) {
+            // Convert to the format expected by existing UI
+            const weeklyData = {
+              Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0,
+              Thursday: 0, Friday: 0, Saturday: 0
+            };
+            
+            data.trainingCompletionData.forEach(day => {
+              if (day && day.label && typeof day.value === 'number' && !isNaN(day.value)) {
+                const dayName = getDayNameFromLabel(day.label);
+                if (dayName && weeklyData.hasOwnProperty(dayName)) {
+                  weeklyData[dayName] = Math.max(0, Math.min(100, day.value)); // Clamp between 0-100
+                }
+              }
+            });
+            console.log('Setting training completion weekly data:', weeklyData);
+            setProgressFunction(weeklyData);
+          } else if (period === 'today') {
+            // For today, show just today's data
+            const completionValue = (typeof data.completionPercentage === 'number' && !isNaN(data.completionPercentage)) ? data.completionPercentage : 0;
+            const todayData = {
+              [getDayName(new Date())]: completionValue
+            };
+            setProgressFunction(todayData);
+          } else {
+            // For other periods, typically no chart data available
+            console.log(`Period ${period}: No training completion chart data available`);
+            setProgressFunction({
+              Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0,
+              Thursday: 0, Friday: 0, Saturday: 0
+            });
+          }
+        } catch (dataProcessingError) {
+          console.log(`Error processing training completion data:`, dataProcessingError);
+          setProgressFunction({
+            Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0,
+            Thursday: 0, Friday: 0, Saturday: 0
+          });
+        }
+        
+        dispatch(setLoader(false));
+      } else {
+        console.log(`Error in new training completion API:`, res);
+        // Fallback to old API
+        getExerciseProgress(timePeriod, setProgressFunction, timePeriod === 'weekly');
+      }
+    } catch (e) {
+      console.log(`New training completion API error:`, e.toString());
+      // Fallback to old API
+      getExerciseProgress(timePeriod, setProgressFunction, timePeriod === 'weekly');
+    }
+  };
+
+  // Helper function to convert chart labels to day names
+  const getDayNameFromLabel = (label) => {
+    const labelMap = {
+      'Sun': 'Sunday',
+      'Mon': 'Monday',
+      'Tue': 'Tuesday',
+      'Wed': 'Wednesday',
+      'Thurs': 'Thursday',
+      'Fri': 'Friday',
+      'Sat': 'Saturday'
+    };
+    return labelMap[label] || label;
+  };
+
   const getExerciseProgress = async (
     timePeriod,
     setProgressFunction,
@@ -589,6 +717,112 @@ export default function TrainingStats({ navigation }) {
     } catch (e) {
       console.log(`api get ${timePeriod}Progress error -- `, e.toString());
     }
+  };
+
+  // Enhanced function that uses new analytics APIs
+  const getStrengthProgressV2 = async (timePeriod, setProgressFunction) => {
+    const periodMap = {
+      today: 'today',
+      weekly: 'last7days',
+      monthly: 'thismonth',
+      threeMonth: 'last3months',
+      sixMonth: 'last6months',
+      allMonths: 'alltime',
+    };
+
+    const period = periodMap[timePeriod];
+    if (!period) {
+      console.log('Invalid time period for new analytics:', timePeriod);
+      return;
+    }
+
+    try {
+      const res = await ApiCall({
+        route: `assignProgram/strength-progress/${user?.user_id}/${period}?timezone=${encodeURIComponent(userTimezone)}`,
+        verb: "get",
+        token: token,
+      });
+
+      console.log(`=== NEW ANALYTICS API RESPONSE ===`);
+      console.log(`response of getStrengthProgress${period}:`, res?.response?.data);
+      console.log(`API Status:`, res?.status);
+
+      if (res?.status == 200 && res?.response?.data && !res?.response?.error) {
+        const data = res.response.data;
+        
+        try {
+          // Ensure data is valid object
+          if (!data || typeof data !== 'object') {
+            console.log('Invalid data received:', data);
+            setProgressFunction({});
+            setTotal_lbs(0);
+            return;
+          }
+          
+          // Safely extract totalWeight with validation
+          const totalWeight = (typeof data.totalWeight === 'number' && !isNaN(data.totalWeight)) ? data.totalWeight : 0;
+          const total_lbs = (typeof data.total_lbs === 'number' && !isNaN(data.total_lbs)) ? data.total_lbs : totalWeight;
+          
+          if (period === 'last7days') {
+            // Use the weeklyWeight format for compatibility
+            if (data.weeklyWeight && typeof data.weeklyWeight === 'object') {
+              // Validate weeklyWeight data
+              const validWeeklyWeight = {};
+              Object.keys(data.weeklyWeight).forEach(day => {
+                const value = data.weeklyWeight[day];
+                validWeeklyWeight[day] = (typeof value === 'number' && !isNaN(value)) ? value : 0;
+              });
+              console.log(`Setting strength progress data:`, validWeeklyWeight);
+              setProgressFunction(validWeeklyWeight);
+              setTotal_lbs(total_lbs);
+            } else {
+              // Fallback if weeklyWeight is missing
+              console.log('weeklyWeight missing, using fallback');
+              setProgressFunction({
+                Sunday: 0, Monday: 0, Tuesday: 0, Wednesday: 0,
+                Thursday: 0, Friday: 0, Saturday: 0
+              });
+              setTotal_lbs(totalWeight);
+            }
+          } else if (period === 'today') {
+            // For today, show just today's data
+            const todayData = {
+              [getDayName(new Date())]: totalWeight
+            };
+            setProgressFunction(todayData);
+            setTotal_lbs(totalWeight);
+          } else {
+            // For other periods (thismonth, last3months, etc.), handle safely
+            setTotal_lbs(totalWeight);
+            
+            // For longer periods, typically no chart data is available
+            // Just set empty chart data and show total weight
+            console.log(`Period ${period}: No chart data, showing total weight: ${totalWeight}`);
+            setProgressFunction({});
+          }
+        } catch (dataProcessingError) {
+          console.log(`Error processing strength data:`, dataProcessingError);
+          setProgressFunction({});
+          setTotal_lbs(0);
+        }
+        
+        dispatch(setLoader(false));
+      } else {
+        console.log(`Error in new strength progress API:`, res);
+        // Fallback to old API
+        getWeightProgress(timePeriod, setProgressFunction);
+      }
+    } catch (e) {
+      console.log(`New strength progress API error:`, e.toString());
+      // Fallback to old API
+      getWeightProgress(timePeriod, setProgressFunction);
+    }
+  };
+
+  // Helper function to get day name
+  const getDayName = (date) => {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return days[date.getDay()];
   };
 
   const getWeightProgress = async (timePeriod, setProgressFunction) => {
@@ -839,6 +1073,7 @@ export default function TrainingStats({ navigation }) {
 
     // Define the mappings for selectedType to progress type
     const progressMap = {
+      "Today": "today", // Keep for Training Completion
       "Last 7 Days": "weekly",
       "This Month": "monthly",
       "Last 3 Months": "threeMonth",
@@ -846,15 +1081,25 @@ export default function TrainingStats({ navigation }) {
       "All Time": "allMonths",
     };
 
-    // Define the mappings for section to their respective progress functions
+    // Enhanced section map with new analytics functions
     const sectionMap = {
-      tc: getExerciseProgress,
-      cb: getCaloriesProgress,
-      sp: getWeightProgress,
+      tc: {
+        v2: getTrainingCompletionV2,
+        v1: getExerciseProgress
+      },
+      cb: {
+        v2: getCaloriesProgress,  // Keep existing for now
+        v1: getCaloriesProgress
+      },
+      sp: {
+        v2: getStrengthProgressV2,
+        v1: getWeightProgress
+      },
     };
 
     const setProgressMap = {
       tc: {
+        today: setWeeklyProgress,  // Use weekly state for today's data
         weekly: setWeeklyProgress,
         monthly: setMonthlyProgress,
         threeMonth: setProgressThreeMonth,
@@ -862,6 +1107,7 @@ export default function TrainingStats({ navigation }) {
         allMonths: setYearProgress,
       },
       cb: {
+        today: setCaloriesProgress,  // Use weekly state for today's data
         weekly: setCaloriesProgress,
         monthly: setMonthlyCaloriesProgess,
         threeMonth: setCaloriesProgressThreeMonth,
@@ -869,6 +1115,7 @@ export default function TrainingStats({ navigation }) {
         allMonths: setCaloriesProgressAllMonth,
       },
       sp: {
+        today: setWeightProgress,  // Use weekly state for today's data
         weekly: setWeightProgress,
         monthly: setMonthlyWeightProgess,
         threeMonth: setWeightProgressThreeMonth,
@@ -883,12 +1130,22 @@ export default function TrainingStats({ navigation }) {
     // Ensure progressType and section are valid
     if (progressType && sectionMap[section]) {
       const setProgress = setProgressMap[section][progressType];
-      const isPost = selectedType === "Last 7 Days"; // Weekly requires POST request
-
-      // Call the respective function
-      sectionMap[section](progressType, setProgress, isPost);
+      
+      // Use V2 (new analytics) APIs for training completion and strength progress
+      const useV2API = (section === 'tc' || section === 'sp');
+      const apiFunction = useV2API ? sectionMap[section].v2 : sectionMap[section].v1;
+      
+      if (useV2API) {
+        // Call the new analytics API
+        apiFunction(progressType, setProgress);
+      } else {
+        // Call the old API
+        const isPost = selectedType === "Last 7 Days"; // Weekly requires POST request
+        apiFunction(progressType, setProgress, isPost);
+      }
     } else {
       console.log("No valid type or section selected");
+      dispatch(setLoader(false));
     }
   };
 
@@ -1062,16 +1319,22 @@ export default function TrainingStats({ navigation }) {
   };
 
   const trainingCompletionData = () => {
-    switch (tc_dropdown) {
-      case "Last 7 Days":
+    try {
+      switch (tc_dropdown) {
+        case "Today":
+          const todayDayName = getDayName(new Date());
+          return [
+            { value: weeklyProgress[todayDayName] || 0, label: "Today" }
+          ];
+        case "Last 7 Days":
         const days = [
-          { value: weeklyProgress.Sunday, label: "Sun" },
-          { value: weeklyProgress.Monday, label: "Mon" },
-          { value: weeklyProgress.Tuesday, label: "Tue" },
-          { value: weeklyProgress.Wednesday, label: "Wed" },
-          { value: weeklyProgress.Thursday, label: "Thurs" },
-          { value: weeklyProgress.Friday, label: "Fri" },
-          { value: weeklyProgress.Saturday, label: "Sat" },
+          { value: (typeof weeklyProgress.Sunday === 'number' && !isNaN(weeklyProgress.Sunday)) ? weeklyProgress.Sunday : 0, label: "Sun" },
+          { value: (typeof weeklyProgress.Monday === 'number' && !isNaN(weeklyProgress.Monday)) ? weeklyProgress.Monday : 0, label: "Mon" },
+          { value: (typeof weeklyProgress.Tuesday === 'number' && !isNaN(weeklyProgress.Tuesday)) ? weeklyProgress.Tuesday : 0, label: "Tue" },
+          { value: (typeof weeklyProgress.Wednesday === 'number' && !isNaN(weeklyProgress.Wednesday)) ? weeklyProgress.Wednesday : 0, label: "Wed" },
+          { value: (typeof weeklyProgress.Thursday === 'number' && !isNaN(weeklyProgress.Thursday)) ? weeklyProgress.Thursday : 0, label: "Thurs" },
+          { value: (typeof weeklyProgress.Friday === 'number' && !isNaN(weeklyProgress.Friday)) ? weeklyProgress.Friday : 0, label: "Fri" },
+          { value: (typeof weeklyProgress.Saturday === 'number' && !isNaN(weeklyProgress.Saturday)) ? weeklyProgress.Saturday : 0, label: "Sat" },
         ];
 
         // Get the current day as an index based on user's timezone (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
@@ -1088,82 +1351,82 @@ export default function TrainingStats({ navigation }) {
       case "This Month":
         return [
           {
-            value: monthlyProgress.Week1,
+            value: (typeof monthlyProgress?.Week1 === 'number' && !isNaN(monthlyProgress.Week1)) ? monthlyProgress.Week1 : 0,
             label: "Week1",
           },
           {
-            value: monthlyProgress.Week2,
+            value: (typeof monthlyProgress?.Week2 === 'number' && !isNaN(monthlyProgress.Week2)) ? monthlyProgress.Week2 : 0,
             label: "Week2",
           },
           {
-            value: monthlyProgress.Week3,
+            value: (typeof monthlyProgress?.Week3 === 'number' && !isNaN(monthlyProgress.Week3)) ? monthlyProgress.Week3 : 0,
             label: "Week3",
           },
           {
-            value: monthlyProgress.Week4,
+            value: (typeof monthlyProgress?.Week4 === 'number' && !isNaN(monthlyProgress.Week4)) ? monthlyProgress.Week4 : 0,
             label: "Week4",
           },
           {
-            value: monthlyProgress.Week5,
+            value: (typeof monthlyProgress?.Week5 === 'number' && !isNaN(monthlyProgress.Week5)) ? monthlyProgress.Week5 : 0,
             label: "Week5",
           },
         ];
       case "Last 3 Months":
         return [
           {
-            value: percentageOfThreeMonthProgress[0],
-            label: monthNameOfThreeMonthProgress[0],
+            value: (typeof percentageOfThreeMonthProgress?.[0] === 'number' && !isNaN(percentageOfThreeMonthProgress[0])) ? percentageOfThreeMonthProgress[0] : 0,
+            label: monthNameOfThreeMonthProgress?.[0] || "Month1",
           },
           {
-            value: percentageOfThreeMonthProgress[1],
-            label: monthNameOfThreeMonthProgress[1],
+            value: (typeof percentageOfThreeMonthProgress?.[1] === 'number' && !isNaN(percentageOfThreeMonthProgress[1])) ? percentageOfThreeMonthProgress[1] : 0,
+            label: monthNameOfThreeMonthProgress?.[1] || "Month2",
           },
           {
-            value: percentageOfThreeMonthProgress[2],
-            label: monthNameOfThreeMonthProgress[2],
+            value: (typeof percentageOfThreeMonthProgress?.[2] === 'number' && !isNaN(percentageOfThreeMonthProgress[2])) ? percentageOfThreeMonthProgress[2] : 0,
+            label: monthNameOfThreeMonthProgress?.[2] || "Month3",
           },
         ];
       case "Last 6 Months":
         return [
           {
-            value: percentageOfSixMonthProgress[0],
-            label: monthNameOfSixMonthProgress[0],
+            value: (typeof percentageOfSixMonthProgress?.[0] === 'number' && !isNaN(percentageOfSixMonthProgress[0])) ? percentageOfSixMonthProgress[0] : 0,
+            label: monthNameOfSixMonthProgress?.[0] || "Month1",
           },
           {
-            value: percentageOfSixMonthProgress[1],
-            label: monthNameOfSixMonthProgress[1],
+            value: (typeof percentageOfSixMonthProgress?.[1] === 'number' && !isNaN(percentageOfSixMonthProgress[1])) ? percentageOfSixMonthProgress[1] : 0,
+            label: monthNameOfSixMonthProgress?.[1] || "Month2",
           },
           {
-            value: percentageOfSixMonthProgress[2],
-            label: monthNameOfSixMonthProgress[2],
+            value: (typeof percentageOfSixMonthProgress?.[2] === 'number' && !isNaN(percentageOfSixMonthProgress[2])) ? percentageOfSixMonthProgress[2] : 0,
+            label: monthNameOfSixMonthProgress?.[2] || "Month3",
           },
           {
-            value: percentageOfSixMonthProgress[3],
-            label: monthNameOfSixMonthProgress[3],
+            value: (typeof percentageOfSixMonthProgress?.[3] === 'number' && !isNaN(percentageOfSixMonthProgress[3])) ? percentageOfSixMonthProgress[3] : 0,
+            label: monthNameOfSixMonthProgress?.[3] || "Month4",
           },
           {
-            value: percentageOfSixMonthProgress[4],
-            label: monthNameOfSixMonthProgress[4],
+            value: (typeof percentageOfSixMonthProgress?.[4] === 'number' && !isNaN(percentageOfSixMonthProgress[4])) ? percentageOfSixMonthProgress[4] : 0,
+            label: monthNameOfSixMonthProgress?.[4] || "Month5",
           },
           {
-            value: percentageOfSixMonthProgress[5],
-            label: monthNameOfSixMonthProgress[5],
+            value: (typeof percentageOfSixMonthProgress?.[5] === 'number' && !isNaN(percentageOfSixMonthProgress[5])) ? percentageOfSixMonthProgress[5] : 0,
+            label: monthNameOfSixMonthProgress?.[5] || "Month6",
           },
         ];
       case "All Time":
         return [
-          { label: "Jan", value: yearProgress.Jan },
-          { label: "Feb", value: yearProgress.Feb },
-          { label: "Mar", value: yearProgress.Mar },
-          { label: "Apr", value: yearProgress.Apr },
-          { label: "May", value: yearProgress.May },
-          { label: "Jun", value: yearProgress.Jun },
-          { label: "Jul", value: yearProgress.Jul },
-          { label: "Aug", value: yearProgress.Aug },
-          { label: "Sep", value: yearProgress.Sep },
-          { label: "Oct", value: yearProgress.Oct },
-          { label: "Nov", value: yearProgress.Nov },
-          { label: "Dec", value: yearProgress.Dec },
+          { label: "Jan", value: (typeof yearProgress?.Jan === 'number' && !isNaN(yearProgress.Jan)) ? yearProgress.Jan : 0 },
+          { label: "Feb", value: (typeof yearProgress?.Feb === 'number' && !isNaN(yearProgress.Feb)) ? yearProgress.Feb : 0 },
+          { label: "Mar", value: (typeof yearProgress?.Mar === 'number' && !isNaN(yearProgress.Mar)) ? yearProgress.Mar : 0 },
+          { label: "Apr", value: (typeof yearProgress?.Apr === 'number' && !isNaN(yearProgress.Apr)) ? yearProgress.Apr : 0 },
+          { label: "May", value: (typeof yearProgress?.May === 'number' && !isNaN(yearProgress.May)) ? yearProgress.May : 0 },
+          { label: "Jun", value: (typeof yearProgress?.Jun === 'number' && !isNaN(yearProgress.Jun)) ? yearProgress.Jun : 0 },
+          { label: "Jul", value: (typeof yearProgress?.Jul === 'number' && !isNaN(yearProgress.Jul)) ? yearProgress.Jul : 0 },
+          { label: "Aug", value: (typeof yearProgress?.Aug === 'number' && !isNaN(yearProgress.Aug)) ? yearProgress.Aug : 0 },
+          { label: "Sep", value: (typeof yearProgress?.Sep === 'number' && !isNaN(yearProgress.Sep)) ? yearProgress.Sep : 0 },
+          { label: "Oct", value: (typeof yearProgress?.Oct === 'number' && !isNaN(yearProgress.Oct)) ? yearProgress.Oct : 0 },
+          { label: "Nov", value: (typeof yearProgress?.Nov === 'number' && !isNaN(yearProgress.Nov)) ? yearProgress.Nov : 0 },
+          { label: "Dec", value: (typeof yearProgress?.Dec === 'number' && !isNaN(yearProgress.Dec)) ? yearProgress.Dec : 0 },
         ];
       default:
         return [
@@ -1193,6 +1456,18 @@ export default function TrainingStats({ navigation }) {
             label: "Sat",
           },
         ];
+    }
+    } catch (error) {
+      console.log('Error in trainingCompletionData:', error);
+      return [
+        { value: 0, label: "Sun" },
+        { value: 0, label: "Mon" },
+        { value: 0, label: "Tue" },
+        { value: 0, label: "Wed" },
+        { value: 0, label: "Thurs" },
+        { value: 0, label: "Fri" },
+        { value: 0, label: "Sat" },
+      ];
     }
   };
 
@@ -1470,16 +1745,22 @@ export default function TrainingStats({ navigation }) {
   };
 
   const strengthProgressData = () => {
-    switch (sp_dropdown) {
-      case "Last 7 Days":
+    try {
+      switch (sp_dropdown) {
+        // case "Today": // Commented out since Today is removed from dropdown
+        //   const todayDayName = getDayName(new Date());
+        //   return [
+        //     { value: weightProgress[todayDayName] || 0, label: "Today" }
+        //   ];
+        case "Last 7 Days":
         const days = [
-          { value: weightProgress.Sunday, label: "Sun" },
-          { value: weightProgress.Monday, label: "Mon" },
-          { value: weightProgress.Tuesday, label: "Tue" },
-          { value: weightProgress.Wednesday, label: "Wed" },
-          { value: weightProgress.Thursday, label: "Thurs" },
-          { value: weightProgress.Friday, label: "Fri" },
-          { value: weightProgress.Saturday, label: "Sat" },
+          { value: (typeof weightProgress.Sunday === 'number' && !isNaN(weightProgress.Sunday)) ? weightProgress.Sunday : 0, label: "Sun" },
+          { value: (typeof weightProgress.Monday === 'number' && !isNaN(weightProgress.Monday)) ? weightProgress.Monday : 0, label: "Mon" },
+          { value: (typeof weightProgress.Tuesday === 'number' && !isNaN(weightProgress.Tuesday)) ? weightProgress.Tuesday : 0, label: "Tue" },
+          { value: (typeof weightProgress.Wednesday === 'number' && !isNaN(weightProgress.Wednesday)) ? weightProgress.Wednesday : 0, label: "Wed" },
+          { value: (typeof weightProgress.Thursday === 'number' && !isNaN(weightProgress.Thursday)) ? weightProgress.Thursday : 0, label: "Thurs" },
+          { value: (typeof weightProgress.Friday === 'number' && !isNaN(weightProgress.Friday)) ? weightProgress.Friday : 0, label: "Fri" },
+          { value: (typeof weightProgress.Saturday === 'number' && !isNaN(weightProgress.Saturday)) ? weightProgress.Saturday : 0, label: "Sat" },
         ];
         console.log('strengthProgressData for Last 7 Days:', days);
 
@@ -1496,68 +1777,68 @@ export default function TrainingStats({ navigation }) {
         return reorderedDays;
       case "This Month":
         return [
-          { value: monthlyWeightProgress.Week1, label: "Week1" },
-          { value: monthlyWeightProgress.Week2, label: "Week2" },
-          { value: monthlyWeightProgress.Week3, label: "Week3" },
-          { value: monthlyWeightProgress.Week4, label: "Week4" },
-          { value: monthlyWeightProgress.Week5, label: "Week5" },
+          { value: (typeof monthlyWeightProgress?.Week1 === 'number' && !isNaN(monthlyWeightProgress.Week1)) ? monthlyWeightProgress.Week1 : 0, label: "Week1" },
+          { value: (typeof monthlyWeightProgress?.Week2 === 'number' && !isNaN(monthlyWeightProgress.Week2)) ? monthlyWeightProgress.Week2 : 0, label: "Week2" },
+          { value: (typeof monthlyWeightProgress?.Week3 === 'number' && !isNaN(monthlyWeightProgress.Week3)) ? monthlyWeightProgress.Week3 : 0, label: "Week3" },
+          { value: (typeof monthlyWeightProgress?.Week4 === 'number' && !isNaN(monthlyWeightProgress.Week4)) ? monthlyWeightProgress.Week4 : 0, label: "Week4" },
+          { value: (typeof monthlyWeightProgress?.Week5 === 'number' && !isNaN(monthlyWeightProgress.Week5)) ? monthlyWeightProgress.Week5 : 0, label: "Week5" },
         ];
       case "Last 3 Months":
         return [
           {
-            value: percentageOfThreeMonthWeight[0],
-            label: monthNameOfThreeMonthWeight[0],
+            value: (typeof percentageOfThreeMonthWeight?.[0] === 'number' && !isNaN(percentageOfThreeMonthWeight[0])) ? percentageOfThreeMonthWeight[0] : 0,
+            label: monthNameOfThreeMonthWeight?.[0] || "Month1",
           },
           {
-            value: percentageOfThreeMonthWeight[1],
-            label: monthNameOfThreeMonthWeight[1],
+            value: (typeof percentageOfThreeMonthWeight?.[1] === 'number' && !isNaN(percentageOfThreeMonthWeight[1])) ? percentageOfThreeMonthWeight[1] : 0,
+            label: monthNameOfThreeMonthWeight?.[1] || "Month2",
           },
           {
-            value: percentageOfThreeMonthWeight[2],
-            label: monthNameOfThreeMonthWeight[2],
+            value: (typeof percentageOfThreeMonthWeight?.[2] === 'number' && !isNaN(percentageOfThreeMonthWeight[2])) ? percentageOfThreeMonthWeight[2] : 0,
+            label: monthNameOfThreeMonthWeight?.[2] || "Month3",
           },
         ];
       case "Last 6 Months":
         return [
           {
-            value: percentageOfSixMonthWeight[0],
-            label: monthNameOfSixMonthWeight[0],
+            value: (typeof percentageOfSixMonthWeight?.[0] === 'number' && !isNaN(percentageOfSixMonthWeight[0])) ? percentageOfSixMonthWeight[0] : 0,
+            label: monthNameOfSixMonthWeight?.[0] || "Month1",
           },
           {
-            value: percentageOfSixMonthWeight[1],
-            label: monthNameOfSixMonthWeight[1],
+            value: (typeof percentageOfSixMonthWeight?.[1] === 'number' && !isNaN(percentageOfSixMonthWeight[1])) ? percentageOfSixMonthWeight[1] : 0,
+            label: monthNameOfSixMonthWeight?.[1] || "Month2",
           },
           {
-            value: percentageOfSixMonthWeight[2],
-            label: monthNameOfSixMonthWeight[2],
+            value: (typeof percentageOfSixMonthWeight?.[2] === 'number' && !isNaN(percentageOfSixMonthWeight[2])) ? percentageOfSixMonthWeight[2] : 0,
+            label: monthNameOfSixMonthWeight?.[2] || "Month3",
           },
           {
-            value: percentageOfSixMonthWeight[3],
-            label: monthNameOfSixMonthWeight[3],
+            value: (typeof percentageOfSixMonthWeight?.[3] === 'number' && !isNaN(percentageOfSixMonthWeight[3])) ? percentageOfSixMonthWeight[3] : 0,
+            label: monthNameOfSixMonthWeight?.[3] || "Month4",
           },
           {
-            value: percentageOfSixMonthWeight[4],
-            label: monthNameOfSixMonthWeight[4],
+            value: (typeof percentageOfSixMonthWeight?.[4] === 'number' && !isNaN(percentageOfSixMonthWeight[4])) ? percentageOfSixMonthWeight[4] : 0,
+            label: monthNameOfSixMonthWeight?.[4] || "Month5",
           },
           {
-            value: percentageOfSixMonthWeight[5],
-            label: monthNameOfSixMonthWeight[5],
+            value: (typeof percentageOfSixMonthWeight?.[5] === 'number' && !isNaN(percentageOfSixMonthWeight[5])) ? percentageOfSixMonthWeight[5] : 0,
+            label: monthNameOfSixMonthWeight?.[5] || "Month6",
           },
         ];
       case "All Time":
         return [
-          { label: "Jan", value: weightProgressAllMonth.Jan },
-          { label: "Feb", value: weightProgressAllMonth.Feb },
-          { label: "Mar", value: weightProgressAllMonth.Mar },
-          { label: "Apr", value: weightProgressAllMonth.Apr },
-          { label: "May", value: weightProgressAllMonth.May },
-          { label: "Jun", value: weightProgressAllMonth.Jun },
-          { label: "Jul", value: weightProgressAllMonth.Jul },
-          { label: "Aug", value: weightProgressAllMonth.Aug },
-          { label: "Sep", value: weightProgressAllMonth.Sep },
-          { label: "Oct", value: weightProgressAllMonth.Oct },
-          { label: "Nov", value: weightProgressAllMonth.Nov },
-          { label: "Dec", value: weightProgressAllMonth.Dec },
+          { label: "Jan", value: (typeof weightProgressAllMonth?.Jan === 'number' && !isNaN(weightProgressAllMonth.Jan)) ? weightProgressAllMonth.Jan : 0 },
+          { label: "Feb", value: (typeof weightProgressAllMonth?.Feb === 'number' && !isNaN(weightProgressAllMonth.Feb)) ? weightProgressAllMonth.Feb : 0 },
+          { label: "Mar", value: (typeof weightProgressAllMonth?.Mar === 'number' && !isNaN(weightProgressAllMonth.Mar)) ? weightProgressAllMonth.Mar : 0 },
+          { label: "Apr", value: (typeof weightProgressAllMonth?.Apr === 'number' && !isNaN(weightProgressAllMonth.Apr)) ? weightProgressAllMonth.Apr : 0 },
+          { label: "May", value: (typeof weightProgressAllMonth?.May === 'number' && !isNaN(weightProgressAllMonth.May)) ? weightProgressAllMonth.May : 0 },
+          { label: "Jun", value: (typeof weightProgressAllMonth?.Jun === 'number' && !isNaN(weightProgressAllMonth.Jun)) ? weightProgressAllMonth.Jun : 0 },
+          { label: "Jul", value: (typeof weightProgressAllMonth?.Jul === 'number' && !isNaN(weightProgressAllMonth.Jul)) ? weightProgressAllMonth.Jul : 0 },
+          { label: "Aug", value: (typeof weightProgressAllMonth?.Aug === 'number' && !isNaN(weightProgressAllMonth.Aug)) ? weightProgressAllMonth.Aug : 0 },
+          { label: "Sep", value: (typeof weightProgressAllMonth?.Sep === 'number' && !isNaN(weightProgressAllMonth.Sep)) ? weightProgressAllMonth.Sep : 0 },
+          { label: "Oct", value: (typeof weightProgressAllMonth?.Oct === 'number' && !isNaN(weightProgressAllMonth.Oct)) ? weightProgressAllMonth.Oct : 0 },
+          { label: "Nov", value: (typeof weightProgressAllMonth?.Nov === 'number' && !isNaN(weightProgressAllMonth.Nov)) ? weightProgressAllMonth.Nov : 0 },
+          { label: "Dec", value: (typeof weightProgressAllMonth?.Dec === 'number' && !isNaN(weightProgressAllMonth.Dec)) ? weightProgressAllMonth.Dec : 0 },
         ];
       default:
         return [
@@ -1587,6 +1868,18 @@ export default function TrainingStats({ navigation }) {
             label: "Sat",
           },
         ];
+    }
+    } catch (error) {
+      console.log('Error in strengthProgressData:', error);
+      return [
+        { value: 0, label: "Sun" },
+        { value: 0, label: "Mon" },
+        { value: 0, label: "Tue" },
+        { value: 0, label: "Wed" },
+        { value: 0, label: "Thurs" },
+        { value: 0, label: "Fri" },
+        { value: 0, label: "Sat" },
+      ];
     }
   };
 
@@ -1637,10 +1930,21 @@ export default function TrainingStats({ navigation }) {
   };
 
   const RenderDropdown = ({ value, section }) => {
+    // Use different dropdown options based on section
+    const getDropdownData = () => {
+      if (section === 'sp') {
+        return strengthProgressTypes; // Strength Progress without Today
+      } else if (section === 'tc') {
+        return trainingCompletionTypes; // Training Completion with Today
+      } else {
+        return allTypes; // Default for other sections
+      }
+    };
+
     return (
       <SelectDropdown
         defaultValue={value}
-        data={allTypes}
+        data={getDropdownData()}
         onSelect={(value) => {
           onChangeDropDown(value, section);
         }}
@@ -1835,7 +2139,10 @@ export default function TrainingStats({ navigation }) {
           <BarChart
             frontColor={colors.orange}
             data={strengthProgressData()}
-            maxValue={Math.max(...strengthProgressData().map(item => item.value || 0), 1000)}
+            maxValue={Math.max(...(strengthProgressData().map(item => {
+              const value = (typeof item?.value === 'number' && !isNaN(item.value)) ? item.value : 0;
+              return Math.max(value, 0);
+            })), 1000)}
             dashGap={0}
             spacing={8}
             barBorderRadius={4}
